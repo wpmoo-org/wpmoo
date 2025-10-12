@@ -6,8 +6,9 @@
   "version": "1.0.0",
   "authors": [
     {
-      "name": "WPMoo",
-      "email": "hello@wpmoo.org"
+      "name": "cangir",
+      "email": "info@cangir.de",
+      "role": "Developer"
     }
   ],
   "autoload": {
