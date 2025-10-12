@@ -3,6 +3,7 @@
   "description": "WordPress Micro Framework",
   "type": "library",
   "license": "GPL-2.0-or-later",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "WPMoo",
