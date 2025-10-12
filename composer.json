@@ -1,0 +1,22 @@
+{
+  "name": "wpmoo/wpmoo",
+  "description": "WordPress Micro Framework",
+  "type": "library",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Ahmet Cangir",
+      "email": "info@cangir.de",
+      "role": "developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "WPMoo\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.4"
+  },
+  "minimum-stability": "stable"
+}
