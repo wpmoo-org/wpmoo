@@ -5,9 +5,8 @@
   "license": "GPL-2.0-or-later",
   "authors": [
     {
-      "name": "Ahmet Cangir",
-      "email": "info@cangir.de",
-      "role": "developer"
+      "name": "WPMoo",
+      "email": "hello@wpmoo.org"
     }
   ],
   "autoload": {
