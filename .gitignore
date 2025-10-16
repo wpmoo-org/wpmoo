@@ -1,0 +1,8 @@
+# -------------------------
+# BEGIN Whitelisted Files
+# -------------------------
+vendor/
+composer.lock
+# -------------------------
+# END Whitelisted Files
+# -------------------------

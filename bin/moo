@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+/**
+ * WPMoo CLI bootstrap script.
+ *
+ * Github: https://github.com/wpmoo/wpmoo
+ * Website: https://wpmoo.org
+ * License: GNU General Public License v3.0
+ *
+ * @package WPMoo
+ * @since 0.1.0
+ */
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use WPMoo\Core\App;
+use WPMoo\Core\CLI;
+
+App::instance()->boot( __FILE__, 'wpmoo' );
+CLI::run( $argv );
