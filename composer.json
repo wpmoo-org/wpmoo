@@ -1,23 +1,44 @@
 {
-  "name": "wpmoo/wpmoo",
-  "description": "WordPress Micro Framework",
-  "type": "library",
-  "license": "GPL-2.0-or-later",
-  "version": "1.0.0",
+  "name": "wpmoo-org/wpmoo",
+  "description": "WPMoo — WordPress Micro Object-Oriented Framework (PHP 7.4+)",
+  "license": "GPL-3.0",
+  "version": "0.1.0",
+  "homepage": "https://wpmoo.org",
   "authors": [
     {
-      "name": "cangir",
-      "email": "info@cangir.de",
-      "role": "Developer"
+      "name": "Ahmet Cangir",
+      "email": "hello@wpmoo.org",
+      "homepage": "https://wpmoo.org/"
     }
   ],
+  "keywords": [
+    "wordpress",
+    "wp-cli",
+    "framework",
+    "micro-framework",
+    "php",
+    "php7.4",
+    "php8.0",
+    "php8.1",
+    "php8.2",
+    "php8.3",
+    "oop",
+    "object-oriented"
+  ],
+  "support": {
+    "issues": "https://github.com/wpmoo/wpmoo/issues",
+    "source": "https://github.com/wpmoo/wpmoo/"
+  },
+  "type": "wordpress-framework",
+  "require": {
+    "php": ">=7.4"
+  },
   "autoload": {
     "psr-4": {
       "WPMoo\\": "src/"
     }
   },
-  "require": {
-    "php": ">=7.4"
-  },
-  "minimum-stability": "stable"
+  "bin": [
+    "bin/moo"
+  ]
 }
