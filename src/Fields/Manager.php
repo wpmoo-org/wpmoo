@@ -28,6 +28,13 @@ class Manager {
 	protected $types = array();
 
 	/**
+	 * Tracks missing field notifications to avoid duplicates.
+	 *
+	 * @var array<string, bool>
+	 */
+	protected $missing_notices = array();
+
+	/**
 	 * Register a new field type.
 	 *
 	 * @param string $type  Field type key.
@@ -67,10 +74,11 @@ class Manager {
 		}
 
 		if ( ! $this->has( $type ) ) {
-			throw new InvalidArgumentException( sprintf( 'Field type "%s" is not registered.', $type ) );
+			$this->notify_missing_field( $type );
+			return $this->fallback_field( $config );
 		}
 
-		$class = $this->types[ $type ];
+		$class          = $this->types[ $type ];
 		$config['type'] = $type;
 
 		return new $class( $config );
@@ -158,5 +166,70 @@ class Manager {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Notify administrators about missing field types.
+	 *
+	 * @param string $type Missing type key.
+	 * @return void
+	 */
+	protected function notify_missing_field( $type ) {
+		if ( isset( $this->missing_notices[ $type ] ) ) {
+			return;
+		}
+
+		if ( function_exists( 'add_action' ) ) {
+			add_action(
+				'admin_notices',
+				static function () use ( $type ) {
+					printf(
+						'<div class="notice notice-error"><p>%s</p></div>',
+						esc_html( sprintf( 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.', $type ) )
+					);
+				}
+			);
+		}
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( sprintf( 'WPMoo: Field type "%s" is not registered.', $type ) );
+		}
+
+		$this->missing_notices[ $type ] = true;
+	}
+
+	/**
+	 * Provide a harmless fallback field when a type cannot be resolved.
+	 *
+	 * @param array<string, mixed> $config Field configuration.
+	 * @return Field
+	 */
+	protected function fallback_field( array $config ) {
+		$type = isset( $config['type'] ) ? $config['type'] : 'unknown';
+
+		return new class( $config, $type ) extends Field {
+
+			/**
+			 * Missing type slug.
+			 *
+			 * @var string
+			 */
+			protected $missing_type;
+
+			public function __construct( array $config, $missing_type ) {
+				$this->missing_type = $missing_type;
+				parent::__construct( $config );
+			}
+
+			public function render( $name, $value ) {
+				$message = sprintf( 'Missing WPMoo field type "%s". Please register or include the field class.', $this->missing_type );
+				if ( function_exists( 'esc_html' ) ) {
+					$message = esc_html( $message );
+				}
+
+				return sprintf( '<div class="notice notice-error inline"><p>%s</p></div>', $message );
+			}
+
+		};
 	}
 }

@@ -236,15 +236,22 @@ class Page {
 		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name  = $this->field_input_name( $field );
 
+		$args = $field->args();
+		$desc = $field->description();
+		$desc_position = isset( $args['description_position'] ) ? $args['description_position'] : 'field';
+
 		echo '<tr>';
 		echo '<th scope="row">';
 		echo '<label for="' . $this->esc_attr( $field->id() ) . '">' . $this->esc_html( $field->label() ) . '</label>';
+		if ( $desc && 'label' === $desc_position ) {
+			echo '<p class="description">' . $this->esc_html( $desc ) . '</p>';
+		}
 		echo '</th>';
 		echo '<td>';
 		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered field handles escaping internally.
 
-		if ( $field->description() ) {
-			echo '<p class="description">' . $this->esc_html( $field->description() ) . '</p>';
+		if ( $desc && 'field' === $desc_position ) {
+			echo '<p class="description">' . $this->esc_html( $desc ) . '</p>';
 		}
 
 		echo '</td>';
