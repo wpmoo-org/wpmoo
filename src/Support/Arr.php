@@ -1,10 +1,8 @@
 <?php
 /**
  * Array helper utilities.
- * This file is part of WPMoo (https://wpmoo.org)
  *
- * Licensed under the GNU General Public License v3.0
- *
+ * WPMoo — WordPress Micro Object-Oriented Framework.
  * Github: https://github.com/wpmoo/wpmoo
  * Website: https://wpmoo.org
  * License: GNU General Public License v3.0

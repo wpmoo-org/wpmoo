@@ -2,6 +2,7 @@
 /**
  * Repository wrapper around WordPress options.
  *
+ * WPMoo — WordPress Micro Object-Oriented Framework.
  * Github: https://github.com/wpmoo/wpmoo
  * Website: https://wpmoo.org
  * License: GNU General Public License v3.0
