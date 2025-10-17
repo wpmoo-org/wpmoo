@@ -13,10 +13,7 @@
 
 namespace WPMoo\Options;
 
-use WPMoo\Fields\Checkbox\Checkbox as CheckboxField;
 use WPMoo\Fields\Manager;
-use WPMoo\Fields\Text\Text as TextField;
-use WPMoo\Fields\Textarea\Textarea as TextareaField;
 
 /**
  * Facade for interacting with the options subsystem.
@@ -162,19 +159,8 @@ class Options {
 		}
 
 		self::$field_manager = new Manager();
-		self::register_default_fields();
 
 		self::$booted = true;
 	}
 
-	/**
-	 * Register the default field types.
-	 *
-	 * @return void
-	 */
-	protected static function register_default_fields() {
-		self::$field_manager->register( 'text', TextField::class );
-		self::$field_manager->register( 'textarea', TextareaField::class );
-		self::$field_manager->register( 'checkbox', CheckboxField::class );
-	}
 }
