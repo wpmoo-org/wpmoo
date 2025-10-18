@@ -2,16 +2,18 @@
 /**
  * String helper utilities.
  *
- * WPMoo — WordPress Micro Object-Oriented Framework.
- * Github: https://github.com/wpmoo/wpmoo
- * Website: https://wpmoo.org
- * License: GNU General Public License v3.0
- *
  * @package WPMoo\Support
  * @since 0.1.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
 namespace WPMoo\Support;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Provides convenience string helpers.

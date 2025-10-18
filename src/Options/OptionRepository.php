@@ -2,19 +2,19 @@
 /**
  * Repository wrapper around WordPress options.
  *
- * WPMoo — WordPress Micro Object-Oriented Framework.
- * Github: https://github.com/wpmoo/wpmoo
- * Website: https://wpmoo.org
- * License: GNU General Public License v3.0
- *
  * @package WPMoo\Options
  * @since 0.1.0
  * @version 0.1.0
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
 namespace WPMoo\Options;
 
 use WPMoo\Support\Arr;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Provides consistent read/write access to option arrays.
