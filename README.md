@@ -53,3 +53,30 @@ echo $field->render('settings[theme_colors]', $saved_values['theme_colors'] ?? n
 // On save:
 $sanitized = $field->sanitize($_POST['settings']['theme_colors'] ?? []);
 ```
+
+## Roadmap
+
+- [ ] Options builder
+  - [x] Register pages via [`WPMoo\Options\Options::register`](src/Options/Options.php)
+  - [ ] JSON-driven page definitions
+  - [ ] Import/export helpers
+- [ ] Field library
+  - [x] Core inputs (`text`, `textarea`, `checkbox`, `color`)
+  - [ ] Repeatable/complex field groups
+  - [ ] Async field asset loader
+- [ ] Metabox engine
+  - [x] Declarative metabox registration with [`WPMoo\Metabox\Metabox::register`](src/Metabox/Metabox.php)
+  - [ ] Context-aware autosave safeguards
+  - [ ] Gutenberg block bindings
+- [ ] Post type & taxonomy DSL
+  - [ ] Fluent `PostType::register()` API
+  - [ ] Taxonomy registration with relationship mapping
+  - [ ] Relationship resolver between post types
+- [ ] CLI tooling
+  - [x] Bootstrap command router in [`WPMoo\Core\CLI`](src/Core/CLI.php)
+  - [ ] Scaffold generators for providers, fields, post types
+  - [ ] Task runner integration (cache flush, translations)
+- [ ] Developer experience
+  - [ ] Configuration caching
+  - [ ] Type-safe config schema
+  - [ ] Comprehensive unit test suite
