@@ -19,10 +19,18 @@ class Taxonomy {
 	/**
 	 * Start building a new taxonomy.
 	 *
-	 * @param string $taxonomy Taxonomy slug.
+	 * @param string       $taxonomy     Taxonomy slug.
+	 * @param string|array $object_types Optional. Post type(s) to attach to.
 	 * @return Builder
 	 */
-	public static function register( string $taxonomy ): Builder {
-		return new Builder( $taxonomy );
+	public static function register( string $taxonomy, $object_types = null ): Builder {
+		$builder = new Builder( $taxonomy );
+
+		if ( ! is_null( $object_types ) ) {
+			$object_types = is_string( $object_types ) ? array( $object_types ) : $object_types;
+			$builder->attachTo( $object_types );
+		}
+
+		return $builder;
 	}
 }
