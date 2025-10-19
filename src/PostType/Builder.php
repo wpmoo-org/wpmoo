@@ -43,6 +43,20 @@ class Builder {
 	protected $labels = array();
 
 	/**
+	 * Taxonomies to register.
+	 *
+	 * @var array<int, string>
+	 */
+	protected $taxonomies = array();
+
+	/**
+	 * Rewrite slug.
+	 *
+	 * @var string|null
+	 */
+	protected $slug = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $type Post type slug.
@@ -140,6 +154,106 @@ class Builder {
 	}
 
 	/**
+	 * Set rewrite slug.
+	 *
+	 * @param string $slug Custom slug.
+	 * @return $this
+	 */
+	public function slug( string $slug ): self {
+		$this->slug = $slug;
+
+		return $this;
+	}
+
+	/**
+	 * Add taxonomy support.
+	 *
+	 * @param string|array<int, string> $taxonomies Taxonomy name(s).
+	 * @return $this
+	 */
+	public function taxonomy( $taxonomies ): self {
+		$taxonomies = is_string( $taxonomies ) ? array( $taxonomies ) : $taxonomies;
+
+		foreach ( $taxonomies as $taxonomy ) {
+			$this->taxonomies[] = $taxonomy;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Set menu position.
+	 *
+	 * @param int $position Menu position.
+	 * @return $this
+	 */
+	public function menuPosition( int $position ): self {
+		$this->args['menu_position'] = $position;
+
+		return $this;
+	}
+
+	/**
+	 * Set hierarchical.
+	 *
+	 * @param bool $hierarchical Whether hierarchical.
+	 * @return $this
+	 */
+	public function hierarchical( bool $hierarchical = true ): self {
+		$this->args['hierarchical'] = $hierarchical;
+
+		return $this;
+	}
+
+	/**
+	 * Set has archive.
+	 *
+	 * @param bool|string $archive Archive setting.
+	 * @return $this
+	 */
+	public function hasArchive( $archive = true ): self {
+		$this->args['has_archive'] = $archive;
+
+		return $this;
+	}
+
+	/**
+	 * Show in menu.
+	 *
+	 * @param bool|string $show Show in menu.
+	 * @return $this
+	 */
+	public function showInMenu( $show = true ): self {
+		$this->args['show_in_menu'] = $show;
+
+		return $this;
+	}
+
+	/**
+	 * Set capability type.
+	 *
+	 * @param string $capability Capability type.
+	 * @return $this
+	 */
+	public function capabilityType( string $capability ): self {
+		$this->args['capability_type'] = $capability;
+
+		return $this;
+	}
+
+	/**
+	 * Flush rewrite rules.
+	 *
+	 * @param bool $hard Hard flush.
+	 * @return void
+	 */
+	public function flush( bool $hard = true ): void {
+		if ( function_exists( 'flush_rewrite_rules' ) ) {
+			flush_rewrite_rules( $hard );
+		}
+	}
+
+	/**
 	 * Generic argument setter.
 	 *
 	 * @param string $key   Argument key.
@@ -173,10 +287,24 @@ class Builder {
 		$labels = $this->normalize_labels();
 		$args   = array_merge( array( 'labels' => $labels ), $this->args );
 
-		$post_type = $this->type;
+		// Add rewrite slug if set.
+		if ( ! is_null( $this->slug ) && ! isset( $args['rewrite'] ) ) {
+			$args['rewrite'] = array( 'slug' => $this->slug );
+		}
 
-		$callback = static function () use ( $post_type, $args ) {
+		$post_type  = $this->type;
+		$taxonomies = $this->taxonomies;
+
+		$callback = static function () use ( $post_type, $args, $taxonomies ) {
+			// Register post type.
 			register_post_type( $post_type, $args );
+
+			// Register taxonomies.
+			if ( ! empty( $taxonomies ) ) {
+				foreach ( $taxonomies as $taxonomy ) {
+					register_taxonomy_for_object_type( $taxonomy, $post_type );
+				}
+			}
 		};
 
 		if ( did_action( 'init' ) ) {

@@ -52,12 +52,28 @@ class Options {
 	/**
 	 * Register a new options page.
 	 *
+	 * @param string|array<string, mixed> $option_key_or_config Option key or full config array (backward compatibility).
+	 * @return Builder|Page
+	 */
+	public static function register( $option_key_or_config ) {
+		self::boot();
+
+		// Backward compatibility: if array is passed, use old method.
+		if ( is_array( $option_key_or_config ) ) {
+			return self::registerFromArray( $option_key_or_config );
+		}
+
+		// New fluent API: return Builder.
+		return new Builder( $option_key_or_config, self::$field_manager );
+	}
+
+	/**
+	 * Register from array configuration (backward compatibility).
+	 *
 	 * @param array<string, mixed> $config Configuration array.
 	 * @return Page
 	 */
-	public static function register( array $config ) {
-		self::boot();
-
+	protected static function registerFromArray( array $config ): Page {
 		$page = new Page( $config, self::$field_manager );
 
 		self::$pages[] = $page;
@@ -70,6 +86,22 @@ class Options {
 		}
 
 		return $page;
+	}
+
+	/**
+	 * Internal method to register a page from Builder.
+	 *
+	 * @param Page $page Page instance.
+	 * @return void
+	 */
+	public static function registerPage( Page $page ): void {
+		self::$pages[] = $page;
+
+		$repository = $page->repository();
+
+		if ( $repository ) {
+			self::$repositories[ $repository->option_key() ] = $repository;
+		}
 	}
 
 	/**
