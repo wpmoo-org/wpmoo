@@ -69,7 +69,7 @@ $sanitized = $field->sanitize($_POST['settings']['theme_colors'] ?? []);
   - [ ] Context-aware autosave safeguards
   - [ ] Gutenberg block bindings
 - [ ] Post type & taxonomy DSL
-  - [ ] Fluent `PostType::register()` API
+  - [x] Fluent `PostType::register()` API
   - [ ] Taxonomy registration with relationship mapping
   - [ ] Relationship resolver between post types
 - [ ] CLI tooling
@@ -99,3 +99,23 @@ PostType::register( 'event' )
 ```
 
 Calling `register()` automatically hooks into `init` when necessary, so you can declare types during plugin bootstrap without managing additional actions.
+
+## Taxonomies
+
+Register taxonomies fluently and map them to post types.
+
+```php
+use WPMoo\Taxonomy\Taxonomy;
+
+Taxonomy::register( 'genre' )
+    ->singular( 'Genre' )
+    ->plural( 'Genres' )
+    ->hierarchical( false )
+    ->public()
+    ->showInRest()
+    ->rewrite( [ 'slug' => 'event-genre' ] )
+    ->attachTo( [ 'event' ] )
+    ->register();
+```
+
+Attach multiple post types via `attachTo()` or call `register_taxonomy_for_object_type` manually after registration for advanced cases.
