@@ -80,3 +80,22 @@ $sanitized = $field->sanitize($_POST['settings']['theme_colors'] ?? []);
   - [ ] Configuration caching
   - [ ] Type-safe config schema
   - [ ] Comprehensive unit test suite
+
+## Post types
+
+Register custom post types with the fluent builder:
+
+```php
+use WPMoo\PostType\PostType;
+
+PostType::register( 'event' )
+    ->singular( 'Event' )
+    ->plural( 'Events' )
+    ->public()
+    ->showInRest()
+    ->supports( [ 'title', 'editor', 'excerpt', 'thumbnail' ] )
+    ->arg( 'rewrite', [ 'slug' => 'events' ] )
+    ->register();
+```
+
+Calling `register()` automatically hooks into `init` when necessary, so you can declare types during plugin bootstrap without managing additional actions.
