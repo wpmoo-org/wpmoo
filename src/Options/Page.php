@@ -2,19 +2,20 @@
 /**
  * Admin options page handler.
  *
- * Github: https://github.com/wpmoo/wpmoo
- * Website: https://wpmoo.org
- * License: GNU General Public License v3.0
- *
  * @package WPMoo\Options
  * @since 0.1.0
  * @version 0.1.0
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
 namespace WPMoo\Options;
 
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Builds a WordPress admin options page from configuration.
@@ -235,15 +236,22 @@ class Page {
 		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name  = $this->field_input_name( $field );
 
+		$args = $field->args();
+		$desc = $field->description();
+		$desc_position = isset( $args['description_position'] ) ? $args['description_position'] : 'field';
+
 		echo '<tr>';
 		echo '<th scope="row">';
 		echo '<label for="' . $this->esc_attr( $field->id() ) . '">' . $this->esc_html( $field->label() ) . '</label>';
+		if ( $desc && 'label' === $desc_position ) {
+			echo '<p class="description">' . $this->esc_html( $desc ) . '</p>';
+		}
 		echo '</th>';
 		echo '<td>';
 		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered field handles escaping internally.
 
-		if ( $field->description() ) {
-			echo '<p class="description">' . $this->esc_html( $field->description() ) . '</p>';
+		if ( $desc && 'field' === $desc_position ) {
+			echo '<p class="description">' . $this->esc_html( $desc ) . '</p>';
 		}
 
 		echo '</td>';

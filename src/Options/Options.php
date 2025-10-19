@@ -2,21 +2,19 @@
 /**
  * Public API for registering WPMoo option pages.
  *
- * Github: https://github.com/wpmoo/wpmoo
- * Website: https://wpmoo.org
- * License: GNU General Public License v3.0
- *
  * @package WPMoo\Options
  * @since 0.1.0
  * @version 0.1.0
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
 namespace WPMoo\Options;
 
-use WPMoo\Fields\Checkbox\Checkbox as CheckboxField;
 use WPMoo\Fields\Manager;
-use WPMoo\Fields\Text\Text as TextField;
-use WPMoo\Fields\Textarea\Textarea as TextareaField;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Facade for interacting with the options subsystem.
@@ -162,19 +160,8 @@ class Options {
 		}
 
 		self::$field_manager = new Manager();
-		self::register_default_fields();
 
 		self::$booted = true;
 	}
 
-	/**
-	 * Register the default field types.
-	 *
-	 * @return void
-	 */
-	protected static function register_default_fields() {
-		self::$field_manager->register( 'text', TextField::class );
-		self::$field_manager->register( 'textarea', TextareaField::class );
-		self::$field_manager->register( 'checkbox', CheckboxField::class );
-	}
 }
