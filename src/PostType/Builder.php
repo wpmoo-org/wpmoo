@@ -12,6 +12,7 @@
 namespace WPMoo\PostType;
 
 use InvalidArgumentException;
+use WPMoo\Columns\Columns;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -55,6 +56,13 @@ class Builder {
 	 * @var string|null
 	 */
 	protected $slug = null;
+
+	/**
+	 * Columns manager instance.
+	 *
+	 * @var \WPMoo\Columns\Columns|null
+	 */
+	protected $columns_manager = null;
 
 	/**
 	 * Constructor.
@@ -182,6 +190,19 @@ class Builder {
 	}
 
 	/**
+	 * Get or create Columns manager instance.
+	 *
+	 * @return Columns
+	 */
+	public function columns(): Columns {
+		if ( is_null( $this->columns_manager ) ) {
+			$this->columns_manager = new Columns( 'post_type', $this->type );
+		}
+
+		return $this->columns_manager;
+	}
+
+	/**
 	 * Set menu position.
 	 *
 	 * @param int $position Menu position.
@@ -292,10 +313,12 @@ class Builder {
 			$args['rewrite'] = array( 'slug' => $this->slug );
 		}
 
-		$post_type  = $this->type;
-		$taxonomies = $this->taxonomies;
+		$post_type       = $this->type;
+		$taxonomies      = $this->taxonomies;
+		$has_columns     = ! is_null( $this->columns_manager );
+		$columns_manager = $this->columns_manager;
 
-		$callback = static function () use ( $post_type, $args, $taxonomies ) {
+		$callback = function () use ( $post_type, $args, $taxonomies, $has_columns, $columns_manager ) {
 			// Register post type.
 			register_post_type( $post_type, $args );
 
@@ -305,12 +328,87 @@ class Builder {
 					register_taxonomy_for_object_type( $taxonomy, $post_type );
 				}
 			}
+
+			// Register column hooks.
+			if ( $has_columns ) {
+				$this->register_columns_hooks( $post_type, $columns_manager );
+			}
 		};
 
 		if ( did_action( 'init' ) ) {
 			$callback();
 		} else {
 			add_action( 'init', $callback );
+		}
+	}
+
+	/**
+	 * Register hooks for column management.
+	 *
+	 * @param string  $post_type       Post type name.
+	 * @param Columns $columns_manager Column manager instance.
+	 * @return void
+	 */
+	protected function register_columns_hooks( string $post_type, Columns $columns_manager ): void {
+		// Modify columns.
+		add_filter(
+			"manage_{$post_type}_posts_columns",
+			function ( $columns ) use ( $columns_manager ) {
+				return $columns_manager->modifyColumns( $columns );
+			}
+		);
+
+		// Populate custom columns.
+		add_action(
+			"manage_{$post_type}_posts_custom_column",
+			function ( $column, $post_id ) use ( $columns_manager ) {
+				$callbacks = $columns_manager->getPopulateCallbacks();
+				if ( isset( $callbacks[ $column ] ) ) {
+					call_user_func( $callbacks[ $column ], $column, $post_id );
+				}
+			},
+			10,
+			2
+		);
+
+		// Set sortable columns.
+		$sortable = $columns_manager->getSortable();
+		if ( ! empty( $sortable ) ) {
+			add_filter(
+				"manage_edit-{$post_type}_sortable_columns",
+				function ( $columns ) use ( $sortable ) {
+					return array_merge( $columns, $sortable );
+				}
+			);
+
+			// Handle sorting.
+			add_action(
+				'pre_get_posts',
+				function ( $query ) use ( $post_type, $columns_manager ) {
+					if ( ! is_admin() || ! $query->is_main_query() ) {
+						return;
+					}
+
+					if ( $query->get( 'post_type' ) !== $post_type ) {
+						return;
+					}
+
+					$orderby = $query->get( 'orderby' );
+					if ( ! $orderby || ! $columns_manager->isSortable( $orderby ) ) {
+						return;
+					}
+
+					$meta = $columns_manager->sortableMeta( $orderby );
+
+					if ( is_string( $meta ) ) {
+						$query->set( 'meta_key', $meta );
+						$query->set( 'orderby', 'meta_value' );
+					} else {
+						$query->set( 'meta_key', $meta[0] );
+						$query->set( 'orderby', 'meta_value_num' );
+					}
+				}
+			);
 		}
 	}
 
