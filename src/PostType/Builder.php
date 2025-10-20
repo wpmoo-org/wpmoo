@@ -190,13 +190,13 @@ class Builder {
 	}
 
 	/**
-	 * Get or create Columns manager instance.
+	 * Get or create a Columns manager instance for the post type list table.
 	 *
 	 * @return Columns
 	 */
 	public function columns(): Columns {
 		if ( is_null( $this->columns_manager ) ) {
-			$this->columns_manager = new Columns( 'post_type', $this->type );
+			$this->columns_manager = new Columns();
 		}
 
 		return $this->columns_manager;

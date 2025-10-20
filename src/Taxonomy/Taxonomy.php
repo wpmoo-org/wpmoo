@@ -4,6 +4,9 @@
  *
  * @package WPMoo\Taxonomy
  * @since 0.2.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
 namespace WPMoo\Taxonomy;
@@ -19,8 +22,8 @@ class Taxonomy {
 	/**
 	 * Start building a new taxonomy.
 	 *
-	 * @param string       $taxonomy     Taxonomy slug.
-	 * @param string|array $object_types Optional. Post type(s) to attach to.
+	 * @param string                $taxonomy     Taxonomy slug.
+	 * @param string|array<int, string> $object_types Optional. Post type(s) to attach to.
 	 * @return Builder
 	 */
 	public static function register( string $taxonomy, $object_types = null ): Builder {

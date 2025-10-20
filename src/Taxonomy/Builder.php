@@ -4,6 +4,9 @@
  *
  * @package WPMoo\Taxonomy
  * @since 0.2.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
 namespace WPMoo\Taxonomy;
@@ -199,7 +202,7 @@ class Builder {
 	/**
 	 * Set rewrite configuration.
 	 *
-	 * @param array $rewrite Rewrite configuration.
+	 * @param array<string, mixed> $rewrite Rewrite configuration.
 	 * @return $this
 	 */
 	public function rewrite( array $rewrite ): self {
@@ -224,7 +227,7 @@ class Builder {
 	/**
 	 * Merge multiple arguments.
 	 *
-	 * @param array $args Taxonomy arguments.
+	 * @param array<string, mixed> $args Taxonomy arguments.
 	 * @return $this
 	 */
 	public function args( array $args ): self {
@@ -236,7 +239,7 @@ class Builder {
 	/**
 	 * Attach taxonomy to post types.
 	 *
-	 * @param array $object_types Array of post type names.
+	 * @param array<int, string> $object_types Array of post type names.
 	 * @return $this
 	 */
 	public function attachTo( array $object_types ): self {
@@ -258,13 +261,13 @@ class Builder {
 	}
 
 	/**
-	 * Get or create Columns manager instance.
+	 * Get or create a Columns manager instance for custom admin table columns.
 	 *
 	 * @return Columns
 	 */
 	public function columns(): Columns {
 		if ( is_null( $this->columns_manager ) ) {
-			$this->columns_manager = new Columns( 'taxonomy', $this->taxonomy );
+			$this->columns_manager = new Columns();
 		}
 
 		return $this->columns_manager;
