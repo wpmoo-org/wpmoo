@@ -15,6 +15,7 @@ namespace WPMoo\Options;
 use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
+use WPMoo\Support\Assets;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -106,9 +107,12 @@ class Page {
 			return;
 		}
 
-		$assets_url = $this->get_assets_url();
-		
-		$version = '0.2.0';
+		$assets_url = Assets::url();
+		$version    = '0.3.0';
+
+		if ( empty( $assets_url ) ) {
+			return;
+		}
 
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style( 'dashicons' );
@@ -143,15 +147,7 @@ class Page {
 	 * @return string
 	 */
 	protected function get_assets_url() {
-		// Simple approach: find vendor/wpmoo-org/wpmoo in current plugin
-		// This works for symlinked composer packages
-		
-		if ( defined( 'WP_PLUGIN_URL' ) ) {
-			// Hardcode for now - we know wpmoo-starter is loading this
-			return WP_PLUGIN_URL . '/wpmoo-starter/vendor/wpmoo-org/wpmoo/assets/';
-		}
-		
-		return '';
+		return Assets::url();
 	}
 
 	/**
@@ -308,12 +304,14 @@ class Page {
 			);
 		}
 
-		$panel = Panel::make(
+		$panel_id = 'wpmoo-options-panel-' . $this->config['menu_slug'];
+		$panel    = Panel::make(
 			array(
-				'id'          => 'wpmoo-options-panel-' . $this->config['menu_slug'],
+				'id'          => $panel_id,
 				'title'       => $this->config['page_title'],
 				'sections'    => $panel_sections,
 				'collapsible' => false,
+				'active'      => $this->determine_active_section( $panel_id, $panel_sections ),
 			)
 		);
 
@@ -346,6 +344,58 @@ class Page {
 
 		echo '</form>';
 		echo '</div>';
+	}
+
+	/**
+	 * Determine which section should be active on render.
+	 *
+	 * @param string                                 $panel_id Panel identifier.
+	 * @param array<int, array<string, mixed>> $sections Available sections.
+	 * @return string
+	 */
+	protected function determine_active_section( string $panel_id, array $sections ): string {
+		if ( empty( $sections ) ) {
+			return '';
+		}
+
+		$default   = $sections[0]['id'];
+		$requested = '';
+
+		if ( isset( $_REQUEST['_wpmoo_active_panel'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Maintains UI state only.
+			$data = $_REQUEST['_wpmoo_active_panel'];
+
+			if ( is_array( $data ) && isset( $data[ $panel_id ] ) ) {
+				$requested = $this->sanitize_panel_target( $data[ $panel_id ] );
+			} elseif ( is_string( $data ) ) {
+				$requested = $this->sanitize_panel_target( $data );
+			}
+		}
+
+		if ( '' === $requested ) {
+			return $default;
+		}
+
+		foreach ( $sections as $section ) {
+			if ( $section['id'] === $requested ) {
+				return $requested;
+			}
+		}
+
+		return $default;
+	}
+
+	/**
+	 * Sanitize a requested panel target value.
+	 *
+	 * @param string $value Raw value.
+	 * @return string
+	 */
+	protected function sanitize_panel_target( string $value ): string {
+		if ( function_exists( 'sanitize_key' ) ) {
+			return sanitize_key( $value );
+		}
+
+		return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( $value ) );
 	}
 
 	/**

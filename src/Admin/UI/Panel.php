@@ -56,6 +56,13 @@ class Panel {
 	protected $frame = true;
 
 	/**
+	 * Active section identifier.
+	 *
+	 * @var string
+	 */
+	protected $active = '';
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array<string, mixed> $config Panel configuration.
@@ -67,6 +74,7 @@ class Panel {
 			'sections'    => array(),
 			'collapsible' => true,
 			'frame'       => true,
+			'active'      => '',
 		);
 
 		$config = array_merge( $defaults, $config );
@@ -75,6 +83,7 @@ class Panel {
 		$this->title       = $config['title'];
 		$this->collapsible = (bool) $config['collapsible'];
 		$this->frame       = (bool) $config['frame'];
+		$this->active      = is_string( $config['active'] ) ? $config['active'] : '';
 		$this->sections    = $this->normalize_sections( $config['sections'] );
 	}
 
@@ -98,6 +107,8 @@ class Panel {
 
 		$has_multiple_sections = count( $this->sections ) > 1;
 		$classes               = array( 'wpmoo-panel' );
+		$panel_id_attr         = $this->id ? $this->id : 'wpmoo-panel-' . uniqid();
+		$active_section        = $this->resolve_active_section();
 
 		if ( $this->frame ) {
 			$classes[] = 'postbox';
@@ -105,7 +116,7 @@ class Panel {
 			$classes[] = 'wpmoo-panel--embedded';
 		}
 
-		echo '<div id="' . $this->esc_attr( $this->id ) . '" class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" data-wpmoo-panel>';
+		echo '<div id="' . $this->esc_attr( $panel_id_attr ) . '" class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" data-wpmoo-panel data-panel-id="' . $this->esc_attr( $panel_id_attr ) . '" data-panel-active="' . $this->esc_attr( $active_section ) . '">';
 
 		if ( $this->frame ) {
 			echo '<div class="postbox-header">';
@@ -127,10 +138,15 @@ class Panel {
 		echo '<div class="wpmoo-panel__layout">';
 
 		if ( $has_multiple_sections ) {
-			echo '<nav class="wpmoo-panel__tabs" aria-label="' . $this->esc_attr__( 'Section navigation', 'wpmoo' ) . '">';
+			echo '<nav class="wpmoo-panel__tabs" role="tablist" aria-label="' . $this->esc_attr__( 'Section navigation', 'wpmoo' ) . '">';
 			foreach ( $this->sections as $index => $section ) {
-				$is_active = 0 === $index ? ' is-active' : '';
-				echo '<button type="button" class="wpmoo-panel__tab' . $is_active . '" data-panel-tab="' . $this->esc_attr( $section['id'] ) . '">';
+				$section_id = $section['id'];
+				$tab_id     = $section_id . '-tab';
+				$is_active  = $section_id === $active_section || ( '' === $active_section && 0 === $index );
+				$classes    = 'wpmoo-panel__tab' . ( $is_active ? ' is-active' : '' );
+				$selected   = $is_active ? 'true' : 'false';
+
+				echo '<button type="button" class="' . $this->esc_attr( $classes ) . '" id="' . $this->esc_attr( $tab_id ) . '" role="tab" aria-selected="' . $selected . '" aria-controls="' . $this->esc_attr( $section_id ) . '" data-panel-tab="' . $this->esc_attr( $section_id ) . '">';
 
 				if ( $section['icon'] ) {
 					echo '<span class="wpmoo-panel__tab-icon dashicons ' . $this->esc_attr( $section['icon'] ) . '" aria-hidden="true"></span>';
@@ -145,10 +161,13 @@ class Panel {
 		echo '<div class="wpmoo-panel__content">';
 
 		foreach ( $this->sections as $index => $section ) {
-			$is_active = 0 === $index ? ' is-active' : '';
-			$hidden    = 0 === $index ? 'false' : 'true';
+			$section_id = $section['id'];
+			$tab_id     = $section_id . '-tab';
+			$is_active  = $section_id === $active_section || ( '' === $active_section && 0 === $index );
+			$hidden     = $is_active ? 'false' : 'true';
+			$classes    = 'wpmoo-panel__section' . ( $is_active ? ' is-active' : '' );
 
-			echo '<section id="' . $this->esc_attr( $section['id'] ) . '" class="wpmoo-panel__section' . $is_active . '" data-panel-section="' . $this->esc_attr( $section['id'] ) . '" aria-hidden="' . $hidden . '">';
+			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( $classes ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '">';
 
 			if ( $section['description'] ) {
 				echo '<p class="wpmoo-panel__section-description">' . $this->esc_html( $section['description'] ) . '</p>';
@@ -184,6 +203,7 @@ class Panel {
 			$defaults = array(
 				'id'          => '',
 				'label'       => '',
+				'title'       => '',
 				'description' => '',
 				'icon'        => '',
 				'content'     => '',
@@ -195,6 +215,10 @@ class Panel {
 				$section['id'] = $this->slugify( $section['label'] ? $section['label'] : uniqid( 'section_', true ) );
 			}
 
+			if ( '' === $section['label'] && ! empty( $section['title'] ) ) {
+				$section['label'] = $section['title'];
+			}
+
 			if ( '' === $section['label'] ) {
 				$section['label'] = ucfirst( str_replace( array( '-', '_' ), ' ', $section['id'] ) );
 			}
@@ -203,6 +227,23 @@ class Panel {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Resolve the active section identifier.
+	 *
+	 * @return string
+	 */
+	protected function resolve_active_section(): string {
+		if ( $this->active ) {
+			foreach ( $this->sections as $section ) {
+				if ( $section['id'] === $this->active ) {
+					return $this->active;
+				}
+			}
+		}
+
+		return isset( $this->sections[0]['id'] ) ? $this->sections[0]['id'] : '';
 	}
 
 	/**

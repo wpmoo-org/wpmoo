@@ -15,6 +15,7 @@ use WP_Post;
 use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
+use WPMoo\Support\Assets;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -38,6 +39,13 @@ class Metabox {
 	 * @var Manager
 	 */
 	protected static $shared_manager;
+
+	/**
+	 * Whether panel assets are required on admin screens.
+	 *
+	 * @var bool
+	 */
+	protected static $needs_assets = false;
 
 	/**
 	 * Registered metaboxes. 
@@ -133,6 +141,43 @@ class Metabox {
 	 */
 	public static function registerMetabox( Metabox $metabox ): void {
 		self::$metaboxes[] = $metabox;
+
+		if ( $metabox->uses_panel() ) {
+			self::$needs_assets = true;
+		}
+	}
+
+	/**
+	 * Enqueue shared assets when panel layouts are used.
+	 *
+	 * @param string $hook Current admin hook.
+	 * @return void
+	 */
+	public static function enqueue_assets( $hook ) {
+		if ( ! self::$needs_assets ) {
+			return;
+		}
+
+		if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) ) {
+			return;
+		}
+
+		$assets_url = Assets::url();
+		$version    = '0.3.0';
+
+		if ( empty( $assets_url ) ) {
+			return;
+		}
+
+		if ( function_exists( 'wp_enqueue_style' ) ) {
+			wp_enqueue_style( 'dashicons' );
+			wp_enqueue_style( 'wpmoo-framework', $assets_url . 'css/wpmoo-framework.css', array(), $version );
+		}
+
+		if ( function_exists( 'wp_enqueue_script' ) ) {
+			wp_enqueue_script( 'postbox' );
+			wp_enqueue_script( 'wpmoo-framework', $assets_url . 'js/wpmoo-framework.js', array( 'jquery' ), $version, true );
+		}
 	}
 
 	/**
@@ -166,6 +211,10 @@ class Metabox {
 		}
 
 		self::$shared_manager = new Manager();
+
+		if ( function_exists( 'add_action' ) ) {
+			add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
+		}
 
 		self::$booted = true;
 	}
@@ -228,6 +277,15 @@ class Metabox {
 		}
 
 		echo '</div>';
+	}
+
+	/**
+	 * Determine whether the metabox uses the panel layout.
+	 *
+	 * @return bool
+	 */
+	public function uses_panel(): bool {
+		return 'panel' === $this->config['layout'] || ! empty( $this->sections );
 	}
 
 	/**
@@ -446,6 +504,10 @@ class Metabox {
 			$config['screens'] = array( $config['screens'] );
 		}
 
+		if ( ! empty( $config['sections'] ) && 'panel' !== $config['layout'] ) {
+			$config['layout'] = 'panel';
+		}
+
 		return $config;
 	}
 
@@ -508,6 +570,10 @@ class Metabox {
 
 			if ( '' === $section['id'] ) {
 				$section['id'] = $this->slugify( $section['title'] ? $section['title'] : uniqid( 'section_', true ) );
+			}
+
+			if ( '' === $section['title'] ) {
+				$section['title'] = ucfirst( str_replace( array( '-', '_' ), ' ', $section['id'] ) );
 			}
 
 			$field_objects = array();
