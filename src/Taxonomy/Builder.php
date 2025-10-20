@@ -71,7 +71,7 @@ class Builder {
 	 */
 	public function __construct( string $taxonomy ) {
 		if ( empty( $taxonomy ) ) {
-			throw new InvalidArgumentException( 'Taxonomy slug cannot be empty.' );
+			throw new InvalidArgumentException( $this->translate( 'Taxonomy slug cannot be empty.' ) );
 		}
 
 		$this->taxonomy = $taxonomy;
@@ -402,22 +402,32 @@ class Builder {
 			'name'                       => $plural,
 			'singular_name'              => $singular,
 			'menu_name'                  => $plural,
-			'all_items'                  => "All {$plural}",
-			'edit_item'                  => "Edit {$singular}",
-			'view_item'                  => "View {$singular}",
-			'update_item'                => "Update {$singular}",
-			'add_new_item'               => "Add New {$singular}",
-			'new_item_name'              => "New {$singular} Name",
-			'parent_item'                => "Parent {$singular}",
-			'parent_item_colon'          => "Parent {$singular}:",
-			'search_items'               => "Search {$plural}",
-			'popular_items'              => "Popular {$plural}",
-			'separate_items_with_commas' => "Separate {$plural} with commas",
-			'add_or_remove_items'        => "Add or remove {$plural}",
-			'choose_from_most_used'      => "Choose from most used {$plural}",
-			'not_found'                  => "No {$plural} found",
+			'all_items'                  => sprintf( $this->translate( 'All %s' ), $plural ),
+			'edit_item'                  => sprintf( $this->translate( 'Edit %s' ), $singular ),
+			'view_item'                  => sprintf( $this->translate( 'View %s' ), $singular ),
+			'update_item'                => sprintf( $this->translate( 'Update %s' ), $singular ),
+			'add_new_item'               => sprintf( $this->translate( 'Add New %s' ), $singular ),
+			'new_item_name'              => sprintf( $this->translate( 'New %s Name' ), $singular ),
+			'parent_item'                => sprintf( $this->translate( 'Parent %s' ), $singular ),
+			'parent_item_colon'          => sprintf( $this->translate( 'Parent %s:' ), $singular ),
+			'search_items'               => sprintf( $this->translate( 'Search %s' ), $plural ),
+			'popular_items'              => sprintf( $this->translate( 'Popular %s' ), $plural ),
+			'separate_items_with_commas' => sprintf( $this->translate( 'Separate %s with commas' ), $plural ),
+			'add_or_remove_items'        => sprintf( $this->translate( 'Add or remove %s' ), $plural ),
+			'choose_from_most_used'      => sprintf( $this->translate( 'Choose from most used %s' ), $plural ),
+			'not_found'                  => sprintf( $this->translate( 'No %s found' ), $plural ),
 		);
 
 		return array_merge( $defaults, $this->labels );
+	}
+
+	/**
+	 * Translate strings while remaining compatible with non-WordPress contexts.
+	 *
+	 * @param string $text Text to translate.
+	 * @return string
+	 */
+	protected function translate( string $text ): string {
+		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
 }

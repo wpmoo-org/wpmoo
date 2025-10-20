@@ -58,7 +58,7 @@ class Builder {
 	 */
 	public function __construct( string $id, Manager $field_manager ) {
 		if ( empty( $id ) ) {
-			throw new InvalidArgumentException( 'Metabox ID cannot be empty.' );
+			throw new InvalidArgumentException( $this->translate( 'Metabox ID cannot be empty.' ) );
 		}
 
 		$this->id            = $id;
@@ -244,5 +244,15 @@ class Builder {
 		Metabox::registerMetabox( $metabox );
 
 		return $metabox;
+	}
+
+	/**
+	 * Translate strings while remaining compatible with non-WordPress contexts.
+	 *
+	 * @param string $text Text to translate.
+	 * @return string
+	 */
+	protected function translate( string $text ): string {
+		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
 }

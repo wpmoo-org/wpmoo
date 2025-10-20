@@ -58,7 +58,7 @@ class Builder {
 	 */
 	public function __construct( string $option_key, Manager $field_manager ) {
 		if ( empty( $option_key ) ) {
-			throw new InvalidArgumentException( 'Option key cannot be empty.' );
+			throw new InvalidArgumentException( $this->translate( 'Option key cannot be empty.' ) );
 		}
 
 		$this->option_key    = $option_key;
@@ -216,5 +216,15 @@ class Builder {
 		Options::registerPage( $page );
 
 		return $page;
+	}
+
+	/**
+	 * Translate strings while remaining compatible with non-WordPress contexts.
+	 *
+	 * @param string $text Text to translate.
+	 * @return string
+	 */
+	protected function translate( string $text ): string {
+		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
 }

@@ -71,7 +71,7 @@ class Builder {
 	 */
 	public function __construct( string $type ) {
 		if ( empty( $type ) ) {
-			throw new InvalidArgumentException( 'Post type slug cannot be empty.' );
+			throw new InvalidArgumentException( $this->translate( 'Post type slug cannot be empty.' ) );
 		}
 
 		$this->type = $type;
@@ -424,5 +424,15 @@ class Builder {
 		);
 
 		return array_merge( $defaults, $this->labels );
+	}
+
+	/**
+	 * Translate strings while remaining compatible with non-WordPress contexts.
+	 *
+	 * @param string $text Text to translate.
+	 * @return string
+	 */
+	protected function translate( string $text ): string {
+		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
 }
