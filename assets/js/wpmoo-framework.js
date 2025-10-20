@@ -116,7 +116,18 @@
         }
       }
 
-      if (stored && $tabs.filter('[data-panel-tab="' + stored + '"]').length) {
+      var panelPersistAttr = $panel.data("panel-persist");
+      var allowPersistence =
+        panelPersistAttr === undefined ||
+        panelPersistAttr === true ||
+        panelPersistAttr === 1 ||
+        panelPersistAttr === "1";
+
+      if (
+        allowPersistence &&
+        stored &&
+        $tabs.filter('[data-panel-tab="' + stored + '"]').length
+      ) {
         initialTarget = stored;
       }
 
@@ -172,6 +183,11 @@
         toastContainer = $("<div>", { class: "wpmoo-toast-container" });
         $("body").append(toastContainer);
       }
+
+      var allowPersistence =
+        optionsConfig.persistTabs === true ||
+        optionsConfig.persistTabs === 1 ||
+        optionsConfig.persistTabs === "1";
 
       function getString(key, fallback) {
         if (
@@ -266,6 +282,16 @@
                       storageKey,
                       response.data.activePanel
                     );
+                    optionsConfig.persistTabs = true;
+                    allowPersistence = true;
+                    var $panelElement = $(
+                      '[data-panel-id="wpmoo-options-panel-' +
+                        optionsConfig.menuSlug +
+                        '"]'
+                    );
+                    $panelElement
+                      .data('panel-persist', true)
+                      .attr('data-panel-persist', '1');
                   } catch (error) {}
                 }
               }

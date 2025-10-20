@@ -131,6 +131,7 @@ class Page {
 
 		// Enqueue JS.
 		if ( function_exists( 'wp_enqueue_script' ) ) {
+			$persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] );
 			wp_enqueue_script( 'postbox' );
 			wp_enqueue_script(
 				'wpmoo-framework',
@@ -148,6 +149,7 @@ class Page {
 						'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
 						'nonce'    => wp_create_nonce( 'wpmoo_options_save' ),
 						'menuSlug' => $this->config['menu_slug'],
+						'persistTabs' => (bool) $persist_tabs,
 						'strings'  => array(
 							'saving' => function_exists( '__' ) ? __( 'Saving…', 'wpmoo' ) : 'Saving…',
 							'saved'  => function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.',
@@ -386,12 +388,14 @@ class Page {
 
 		$panel_id       = 'wpmoo-options-panel-' . $this->config['menu_slug'];
 		$active_section = $this->determine_active_section( $panel_id, $panel_sections );
+		$persist_tabs   = ! empty( $_REQUEST['_wpmoo_active_panel'] );
 		$panel          = Panel::make(
 			array(
 				'id'          => $panel_id,
 				'title'       => $this->config['page_title'],
 				'sections'    => $panel_sections,
 				'collapsible' => false,
+				'persist'     => $persist_tabs,
 				'active'      => $active_section,
 			)
 		);

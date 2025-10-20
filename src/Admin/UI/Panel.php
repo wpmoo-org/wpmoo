@@ -56,6 +56,13 @@ class Panel {
 	protected $frame = true;
 
 	/**
+	 * Whether the panel should persist active section state.
+	 *
+	 * @var bool
+	 */
+	protected $persist = true;
+
+	/**
 	 * Active section identifier.
 	 *
 	 * @var string
@@ -74,6 +81,7 @@ class Panel {
 			'sections'    => array(),
 			'collapsible' => true,
 			'frame'       => true,
+			'persist'     => true,
 			'active'      => '',
 		);
 
@@ -83,6 +91,7 @@ class Panel {
 		$this->title       = $config['title'];
 		$this->collapsible = (bool) $config['collapsible'];
 		$this->frame       = (bool) $config['frame'];
+		$this->persist     = (bool) $config['persist'];
 		$this->active      = is_string( $config['active'] ) ? $config['active'] : '';
 		$this->sections    = $this->normalize_sections( $config['sections'] );
 	}
@@ -116,7 +125,7 @@ class Panel {
 			$classes[] = 'wpmoo-panel--embedded';
 		}
 
-		echo '<div id="' . $this->esc_attr( $panel_id_attr ) . '" class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" data-wpmoo-panel data-panel-id="' . $this->esc_attr( $panel_id_attr ) . '" data-panel-active="' . $this->esc_attr( $active_section ) . '">';
+		echo '<div id="' . $this->esc_attr( $panel_id_attr ) . '" class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" data-wpmoo-panel data-panel-id="' . $this->esc_attr( $panel_id_attr ) . '" data-panel-active="' . $this->esc_attr( $active_section ) . '" data-panel-persist="' . ( $this->persist ? '1' : '0' ) . '">';
 
 		if ( $this->frame ) {
 			echo '<div class="postbox-header">';
