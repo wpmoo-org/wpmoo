@@ -118,7 +118,10 @@
         initialTarget = stored;
       }
 
-      activate(initialTarget, true);
+      // Safari submits forms before DOM paint; defer activation to next frame.
+      setTimeout(function () {
+        activate(initialTarget, true);
+      }, 0);
 
       $tabs.on("click", function (event) {
         event.preventDefault();
