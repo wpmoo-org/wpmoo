@@ -1,12 +1,20 @@
-# WPMoo
+# WPMoo Framework
 
-WordPress Micro Object-Oriented Framework (PHP 7.4+).
+Modern, lightweight WordPress framework for rapid plugin development with fluent builder APIs.
 
-## Quick start
+## Features
+
+- 🐮 **Modern PHP** - Built with PHP 7.4+ features
+- 🎯 **Type-Safe** - Full type hints and return types
+- 🚀 **Fast** - Optimized performance with minimal overhead
+- 🎨 **Modern UI** - Pines UI/Tailwind CSS admin interface
+- 🔧 **Developer Friendly** - Intuitive, fluent builder APIs for all components
+- 🔄 **Backward Compatible** - Works with both builder and array-based syntax
+
+## Installation
 
 ```bash
-composer install
-php bin/moo info
+composer require wpmoo-org/wpmoo
 ```
 
 ## Bootstrap in a plugin
@@ -17,66 +25,97 @@ require __DIR__ . '/vendor/autoload.php';
 App::instance()->boot(__FILE__, 'your-plugin-textdomain');
 ```
 
-## Fields: ColorGroup
+## Quick Examples
 
-Render a group of color pickers and store values as an associative array.
+### Post Types with Builder
 
 ```php
-use WPMoo\Fields\Manager;
+use WPMoo\PostType\Builder;
 
-$manager = new Manager();
-
-// Auto-resolves class `WPMoo\\Fields\\ColorGroup\\ColorGroup` from type `color_group`.
-$field = $manager->make([
-	'id'          => 'theme_colors',
-	'type'        => 'color_group',
-	'label'       => 'Theme Colors',
-	'description' => 'Configure brand colors',
-	'default'     => [
-		'primary'   => '#0055ff',
-		'secondary' => '#111111',
-		'accent'    => '#ffcc00',
-	],
-	'args'        => [
-		// You can pass items as associative array or as a list with `key`/`label`.
-		'items' => [
-			'primary'   => 'Primary',
-			'secondary' => 'Secondary',
-			'accent'    => 'Accent',
-		],
-	],
-]);
-
-// In your settings/metabox renderer:
-echo $field->render('settings[theme_colors]', $saved_values['theme_colors'] ?? null);
-
-// On save:
-$sanitized = $field->sanitize($_POST['settings']['theme_colors'] ?? []);
+Builder::create('book')
+    ->labels('Book', 'Books')
+    ->icon('book')
+    ->supports(['title', 'editor', 'thumbnail'])
+    ->hierarchical()
+    ->hasArchive()
+    ->menuPosition(5)
+    ->public()
+    ->showInMenu()
+    ->register();
 ```
 
-## Roadmap
+### Taxonomies with Builder
 
-- [ ] Options builder
-  - [x] Register pages via [`WPMoo\Options\Options::register`](src/Options/Options.php)
-  - [ ] JSON-driven page definitions
-  - [ ] Import/export helpers
-- [ ] Field library
-  - [x] Core inputs (`text`, `textarea`, `checkbox`, `color`)
-  - [ ] Repeatable/complex field groups
-  - [ ] Async field asset loader
-- [ ] Metabox engine
-  - [x] Declarative metabox registration with [`WPMoo\Metabox\Metabox::register`](src/Metabox/Metabox.php)
-  - [ ] Context-aware autosave safeguards
-  - [ ] Gutenberg block bindings
-- [ ] Post type & taxonomy DSL
-  - [ ] Fluent `PostType::register()` API
-  - [ ] Taxonomy registration with relationship mapping
-  - [ ] Relationship resolver between post types
-- [ ] CLI tooling
-  - [x] Bootstrap command router in [`WPMoo\Core\CLI`](src/Core/CLI.php)
-  - [ ] Scaffold generators for providers, fields, post types
-  - [ ] Task runner integration (cache flush, translations)
-- [ ] Developer experience
-  - [ ] Configuration caching
-  - [ ] Type-safe config schema
-  - [ ] Comprehensive unit test suite
+```php
+use WPMoo\Taxonomy\Builder;
+
+Builder::create('genre', 'book')
+    ->labels('Genre', 'Genres')
+    ->hierarchical()
+    ->showInMenu()
+    ->showInRest()
+    ->register();
+```
+
+### Options Pages with Builder
+
+```php
+use WPMoo\Options\Builder;
+
+Builder::create('my_settings')
+    ->pageTitle('My Settings')
+    ->menuTitle('Settings')
+    ->capability('manage_options')
+    ->icon('dashicons-admin-generic')
+    ->section('general', 'General Settings')
+        ->field('site_title', 'text')
+            ->label('Site Title')
+            ->description('Your website title')
+            ->default('My Awesome Site')
+            ->end()
+        ->field('enabled', 'checkbox')
+            ->label('Enable Feature')
+            ->default(true)
+            ->end()
+        ->endSection()
+    ->register();
+```
+
+### Metaboxes with Builder
+
+```php
+use WPMoo\Metabox\Builder;
+
+Builder::create('product_details')
+    ->title('Product Details')
+    ->postType('product')
+    ->normal()
+    ->high()
+    ->field('price', 'text')
+        ->label('Price')
+        ->description('Product price in USD')
+        ->default('0.00')
+        ->end()
+    ->field('sku', 'text')
+        ->label('SKU')
+        ->end()
+    ->register();
+```
+
+## Documentation
+
+📚 **Full documentation available at:** [wpmoo-docs](https://github.com/wpmoo-org/wpmoo-docs)
+
+- [Getting Started](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/getting-started.md)
+- [PostType Features & Builder](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/post-types/features.md)
+- [Options Builder API](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/options/builder.md)
+- [Metabox Builder API](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/metabox/builder.md)
+
+## Requirements
+
+- PHP 7.4 or higher
+- WordPress 5.9 or higher
+
+## License
+
+MIT License

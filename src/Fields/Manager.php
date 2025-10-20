@@ -104,17 +104,22 @@ class Manager {
 	 */
 	protected function validate_type_class_pair( $type, $class ) {
 		if ( ! is_string( $type ) || '' === $type ) {
-			throw new InvalidArgumentException( 'Field type must be a non-empty string.' );
+			throw new InvalidArgumentException( $this->translate( 'Field type must be a non-empty string.' ) );
 		}
 
 		if ( ! class_exists( $class ) ) {
-			throw new InvalidArgumentException( sprintf( 'Field class "%s" does not exist.', $class ) );
+			throw new InvalidArgumentException(
+				sprintf(
+					$this->translate( 'Field class "%s" does not exist.' ),
+					$class
+				)
+			);
 		}
 
 		if ( ! is_subclass_of( $class, Field::class ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
-					'Field class "%1$s" must extend %2$s.',
+					$this->translate( 'Field class "%1$s" must extend %2$s.' ),
 					$class,
 					Field::class
 				)
@@ -181,20 +186,29 @@ class Manager {
 			return;
 		}
 
+		$admin_notice = sprintf(
+			$this->translate( 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.' ),
+			$type
+		);
+
 		if ( function_exists( 'add_action' ) ) {
 			add_action(
 				'admin_notices',
-				static function () use ( $type ) {
+				static function () use ( $admin_notice ) {
 					printf(
 						'<div class="notice notice-error"><p>%s</p></div>',
-						esc_html( sprintf( 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.', $type ) )
+						esc_html( $admin_notice )
 					);
 				}
 			);
 		}
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( sprintf( 'WPMoo: Field type "%s" is not registered.', $type ) );
+			$log_message = sprintf(
+				$this->translate( 'WPMoo: Field type "%s" is not registered.' ),
+				$type
+			);
+			error_log( $log_message );
 		}
 
 		$this->missing_notices[ $type ] = true;
@@ -224,14 +238,27 @@ class Manager {
 			}
 
 			public function render( $name, $value ) {
-				$message = sprintf( 'Missing WPMoo field type "%s". Please register or include the field class.', $this->missing_type );
-				if ( function_exists( 'esc_html' ) ) {
-					$message = esc_html( $message );
-				}
+				$raw_message = sprintf(
+					function_exists( '__' )
+						? \__( 'Missing WPMoo field type "%s". Please register or include the field class.', 'wpmoo' )
+						: 'Missing WPMoo field type "%s". Please register or include the field class.',
+					$this->missing_type
+				);
+				$message = function_exists( 'esc_html' ) ? esc_html( $raw_message ) : $raw_message;
 
 				return sprintf( '<div class="notice notice-error inline"><p>%s</p></div>', $message );
 			}
 
 		};
+	}
+
+	/**
+	 * Translate strings while remaining compatible with non-WordPress contexts.
+	 *
+	 * @param string $text Text to translate.
+	 * @return string
+	 */
+	protected function translate( string $text ): string {
+		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
 }

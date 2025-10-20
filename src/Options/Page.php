@@ -5,13 +5,17 @@
  * @package WPMoo\Options
  * @since 0.1.0
  * @version 0.1.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
 namespace WPMoo\Options;
 
+use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
+use WPMoo\Support\Assets;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -79,7 +83,91 @@ class Page {
 		if ( function_exists( 'add_action' ) ) {
 			add_action( 'admin_menu', array( $this, 'register_page' ) );
 			add_action( 'admin_init', array( $this, 'handle_submission' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+			add_action( 'wp_ajax_wpmoo_save_options', array( $this, 'ajax_save' ) );
 		}
+	}
+
+	/**
+	 * Enqueue framework assets.
+	 *
+	 * @param string $hook Current admin page hook.
+	 * @return void
+	 */
+	public function enqueue_assets( $hook ) {
+		// Only load on our options page.
+		$menu_slug = $this->config['menu_slug'];
+		
+		if ( ! empty( $this->config['parent_slug'] ) ) {
+			$page_hook = get_plugin_page_hookname( $menu_slug, $this->config['parent_slug'] );
+		} else {
+			$page_hook = 'toplevel_page_' . $menu_slug;
+		}
+		
+		if ( $hook !== $page_hook ) {
+			return;
+		}
+
+		$assets_url = Assets::url();
+		$version    = '0.3.0';
+
+		if ( empty( $assets_url ) ) {
+			return;
+		}
+
+		if ( function_exists( 'wp_enqueue_style' ) ) {
+			wp_enqueue_style( 'dashicons' );
+		}
+
+		// Enqueue CSS.
+		if ( function_exists( 'wp_enqueue_style' ) ) {
+			wp_enqueue_style(
+				'wpmoo-framework',
+				$assets_url . 'css/wpmoo-framework.css',
+				array(),
+				$version
+			);
+		}
+
+		// Enqueue JS.
+		if ( function_exists( 'wp_enqueue_script' ) ) {
+			$persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] );
+			wp_enqueue_script( 'postbox' );
+			wp_enqueue_script(
+				'wpmoo-framework',
+				$assets_url . 'js/wpmoo-framework.js',
+				array( 'jquery' ),
+				$version,
+				true
+			);
+
+			if ( function_exists( 'wp_localize_script' ) ) {
+				wp_localize_script(
+					'wpmoo-framework',
+					'wpmooAdminOptions',
+					array(
+						'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+						'nonce'    => wp_create_nonce( 'wpmoo_options_save' ),
+						'menuSlug' => $this->config['menu_slug'],
+						'persistTabs' => (bool) $persist_tabs,
+						'strings'  => array(
+							'saving' => function_exists( '__' ) ? __( 'Saving…', 'wpmoo' ) : 'Saving…',
+							'saved'  => function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.',
+							'error'  => function_exists( '__' ) ? __( 'Unable to save settings.', 'wpmoo' ) : 'Unable to save settings.',
+						),
+					)
+				);
+			}
+		}
+	}
+
+	/**
+	 * Get the URL to the assets directory.
+	 *
+	 * @return string
+	 */
+	protected function get_assets_url() {
+		return Assets::url();
 	}
 
 	/**
@@ -123,6 +211,12 @@ class Page {
 	public function handle_submission() {
 		if ( ! function_exists( 'current_user_can' ) ) {
 			return;
+		}
+
+		if ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) {
+			if ( isset( $_POST['action'] ) && 'wpmoo_save_options' === $_POST['action'] ) {
+				return;
+			}
 		}
 
 		$slug = $this->config['menu_slug'];
@@ -171,6 +265,62 @@ class Page {
 	}
 
 	/**
+	 * Handle AJAX submissions for the options page.
+	 *
+	 * @return void
+	 */
+	public function ajax_save() {
+		$slug         = $this->config['menu_slug'];
+		$request_slug = isset( $_POST['menu_slug'] ) ? $this->sanitize_panel_target( wp_unslash( $_POST['menu_slug'] ) ) : '';
+
+		if ( $slug !== $request_slug ) {
+			return;
+		}
+
+		if ( ! function_exists( 'check_ajax_referer' ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid request.' ) );
+		}
+
+		check_ajax_referer( 'wpmoo_options_save', 'nonce' );
+
+		if ( function_exists( 'current_user_can' ) && ! current_user_can( $this->config['capability'] ) ) {
+			wp_send_json_error( array( 'message' => function_exists( '__' ) ? __( 'You are not allowed to save these settings.', 'wpmoo' ) : 'You are not allowed to save these settings.' ) );
+		}
+
+		$option_key = $this->repository->option_key();
+		$submitted  = array();
+
+		if ( isset( $_POST[ $option_key ] ) && is_array( $_POST[ $option_key ] ) ) {
+			$submitted = function_exists( 'wp_unslash' ) ? wp_unslash( $_POST[ $option_key ] ) : $_POST[ $option_key ];
+		}
+
+		$clean = array();
+
+		foreach ( $this->fields as $id => $field ) {
+			$value        = array_key_exists( $id, $submitted ) ? $submitted[ $id ] : null;
+			$clean[ $id ] = $field->sanitize( $value );
+		}
+
+		$this->repository->save( $clean );
+
+		$panel_id     = 'wpmoo-options-panel-' . $slug;
+		$active_panel = '';
+
+		if ( isset( $_POST['_wpmoo_active_panel'] ) && is_array( $_POST['_wpmoo_active_panel'] ) && isset( $_POST['_wpmoo_active_panel'][ $panel_id ] ) ) {
+			$active_panel = $this->sanitize_panel_target( wp_unslash( $_POST['_wpmoo_active_panel'][ $panel_id ] ) );
+		}
+
+		$message = function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.';
+
+		wp_send_json_success(
+			array(
+				'message'     => $message,
+				'activePanel' => $active_panel,
+			)
+		);
+	}
+
+	/**
 	 * Render the admin page output.
 	 *
 	 * @return void
@@ -182,14 +332,83 @@ class Page {
 
 		$values = $this->repository->all();
 
-		echo '<div class="wrap">';
-		echo '<h1>' . $this->esc_html( $this->config['page_title'] ) . '</h1>';
+		// Check if custom renderer is configured.
+		if ( isset( $this->config['render'] ) && is_callable( $this->config['render'] ) ) {
+			call_user_func( $this->config['render'], $this, $values );
+			return;
+		}
+
+		// Default container.
+		$this->render_container( $values );
+	}
+
+	/**
+	 * Render the default admin container.
+	 *
+	 * @param array<string, mixed> $values Current option values.
+	 * @return void
+	 */
+	protected function render_container( array $values ) {
+		$sections = array_values( $this->sections );
+
+		if ( empty( $sections ) && ! empty( $this->fields ) ) {
+			$sections[] = array(
+				'id'          => 'general',
+				'title'       => $this->translate( 'General', 'wpmoo' ),
+				'description' => '',
+				'icon'        => '',
+				'fields'      => array_values( $this->fields ),
+			);
+		}
+
+		$panel_sections = array();
+
+		foreach ( $sections as $section ) {
+			$section_id    = $section['id'];
+			$section_title = ! empty( $section['title'] ) ? $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
+			$section_desc  = ! empty( $section['description'] ) ? $section['description'] : '';
+			$section_icon  = ! empty( $section['icon'] ) ? $section['icon'] : '';
+
+			ob_start();
+
+			foreach ( $section['fields'] as $field ) {
+				$this->render_field( $field, $values );
+			}
+
+			$content = ob_get_clean();
+
+			$panel_sections[] = array(
+				'id'          => $section_id,
+				'label'       => $section_title,
+				'description' => $section_desc,
+				'icon'        => $section_icon,
+				'content'     => $content,
+			);
+		}
+
+		$panel_id       = 'wpmoo-options-panel-' . $this->config['menu_slug'];
+		$active_section = $this->determine_active_section( $panel_id, $panel_sections );
+		$persist_tabs   = ! empty( $_REQUEST['_wpmoo_active_panel'] );
+		$panel          = Panel::make(
+			array(
+				'id'          => $panel_id,
+				'title'       => $this->config['page_title'],
+				'sections'    => $panel_sections,
+				'collapsible' => false,
+				'accordion_multi' => true,
+				'persist'     => $persist_tabs,
+				'active'      => $active_section,
+			)
+		);
+
+		echo '<div class="wrap wpmoo-options">';
+		echo '<h1 class="wp-heading-inline">' . $this->esc_html( $this->config['page_title'] ) . '</h1>';
 
 		if ( function_exists( 'settings_errors' ) ) {
 			settings_errors( $this->repository->option_key() );
 		}
 
-		echo '<form method="post">';
+		echo '<form method="post" id="wpmoo-options-form" action="" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">';
 
 		if ( function_exists( 'wp_nonce_field' ) ) {
 			wp_nonce_field( $this->nonce_action(), $this->nonce_name() );
@@ -197,31 +416,100 @@ class Page {
 
 		echo '<input type="hidden" name="_wpmoo_options_page" value="' . $this->esc_attr( $this->config['menu_slug'] ) . '" />';
 
-		foreach ( $this->sections as $section ) {
-			if ( ! empty( $section['title'] ) ) {
-				echo '<h2>' . $this->esc_html( $section['title'] ) . '</h2>';
-			}
+		echo '<input type="hidden" class="wpmoo-active-panel" data-panel-id="' . $this->esc_attr( $panel_id ) . '" name="_wpmoo_active_panel[' . $this->esc_attr( $panel_id ) . ']" value="' . $this->esc_attr( $active_section ) . '" />';
+		echo $panel->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-			if ( ! empty( $section['description'] ) ) {
-				echo '<p class="description">' . $this->esc_html( $section['description'] ) . '</p>';
-			}
+		echo '<div class="wpmoo-options-actions">';
 
-			echo '<table class="form-table" role="presentation">';
-
-			foreach ( $section['fields'] as $field ) {
-				$this->render_field_row( $field, $values );
-			}
-
-			echo '</table>';
+		if ( function_exists( 'submit_button' ) ) {
+			submit_button( __( 'Save Changes', 'wpmoo' ) );
+		} else {
+			echo '<p class="submit"><button type="submit" class="button button-primary">' . $this->esc_html( $this->translate( 'Save Changes', 'wpmoo' ) ) . '</button></p>';
 		}
 
-		echo '<p class="submit">';
+		echo '</div>';
 
-		$label = function_exists( '__' ) ? __( 'Save Changes', 'wpmoo' ) : 'Save Changes';
-
-		echo '<button type="submit" class="button button-primary">' . $this->esc_html( $label ) . '</button>';
-		echo '</p>';
 		echo '</form>';
+		echo '</div>';
+	}
+
+	/**
+	 * Determine which section should be active on render.
+	 *
+	 * @param string                                 $panel_id Panel identifier.
+	 * @param array<int, array<string, mixed>> $sections Available sections.
+	 * @return string
+	 */
+	protected function determine_active_section( string $panel_id, array $sections ): string {
+		if ( empty( $sections ) ) {
+			return '';
+		}
+
+		$default   = $sections[0]['id'];
+		$requested = '';
+
+		if ( isset( $_REQUEST['_wpmoo_active_panel'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Maintains UI state only.
+			$data = $_REQUEST['_wpmoo_active_panel'];
+
+			if ( is_array( $data ) && isset( $data[ $panel_id ] ) ) {
+				$requested = $this->sanitize_panel_target( $data[ $panel_id ] );
+			} elseif ( is_string( $data ) ) {
+				$requested = $this->sanitize_panel_target( $data );
+			}
+		}
+
+		if ( '' === $requested ) {
+			return $default;
+		}
+
+		foreach ( $sections as $section ) {
+			if ( $section['id'] === $requested ) {
+				return $requested;
+			}
+		}
+
+		return $default;
+	}
+
+	/**
+	 * Sanitize a requested panel target value.
+	 *
+	 * @param string $value Raw value.
+	 * @return string
+	 */
+	protected function sanitize_panel_target( string $value ): string {
+		$value = strtolower( $value );
+
+		return preg_replace( '/[^a-z0-9_\-]/', '', $value );
+	}
+
+	/**
+	 * Render a single field in the layout.
+	 *
+	 * @param Field                $field  Field instance.
+	 * @param array<string, mixed> $values Current option values.
+	 * @return void
+	 */
+	protected function render_field( Field $field, array $values ) {
+		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
+		$name  = $this->field_input_name( $field );
+
+		echo '<div class="wpmoo-field wpmoo-field-' . $this->esc_attr( $field->type() ) . '">';
+
+		if ( $field->label() ) {
+			echo '<div class="wpmoo-title">';
+			echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+			if ( $field->description() ) {
+				echo '<div class="wpmoo-subtitle-text">' . $this->esc_html( $field->description() ) . '</div>';
+			}
+			echo '</div>';
+		}
+
+		echo '<div class="wpmoo-fieldset">';
+		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '</div>';
+
+		echo '<div class="clear"></div>';
 		echo '</div>';
 	}
 
@@ -256,16 +544,6 @@ class Page {
 
 		echo '</td>';
 		echo '</tr>';
-	}
-
-	/**
-	 * Build the HTML input name for a field.
-	 *
-	 * @param Field $field Field instance.
-	 * @return string
-	 */
-	protected function field_input_name( Field $field ) {
-		return $this->repository->option_key() . '[' . $field->id() . ']';
 	}
 
 	/**
@@ -341,6 +619,7 @@ class Page {
 				'id'          => '',
 				'title'       => '',
 				'description' => '',
+				'icon'        => '',
 				'fields'      => array(),
 			);
 
@@ -387,6 +666,17 @@ class Page {
 	}
 
 	/**
+	 * Translate strings safely.
+	 *
+	 * @param string $text   Text to translate.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	protected function translate( string $text, string $domain ): string {
+		return function_exists( '__' ) ? \__( $text, $domain ) : $text;
+	}
+
+	/**
 	 * Build the nonce action name.
 	 *
 	 * @return string
@@ -414,6 +704,23 @@ class Page {
 			'page'             => $this->config['menu_slug'],
 			'settings-updated' => 'true',
 		);
+
+		if ( isset( $_POST['_wpmoo_active_panel'] ) && is_array( $_POST['_wpmoo_active_panel'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified earlier in submission handler.
+			$panels = array();
+
+			foreach ( $_POST['_wpmoo_active_panel'] as $panel_id => $target ) {
+				$panel_id = $this->sanitize_panel_target( (string) $panel_id );
+				$target   = $this->sanitize_panel_target( (string) $target );
+
+				if ( '' !== $panel_id && '' !== $target ) {
+					$panels[ $panel_id ] = $target;
+				}
+			}
+
+			if ( ! empty( $panels ) ) {
+				$query['_wpmoo_active_panel'] = $panels;
+			}
+		}
 
 		if ( function_exists( 'wp_get_referer' ) ) {
 			$referer = wp_get_referer();
@@ -469,5 +776,61 @@ class Page {
 	 */
 	public function repository() {
 		return $this->repository;
+	}
+
+	/**
+	 * Get the option key.
+	 *
+	 * @return string
+	 */
+	public function option_key() {
+		return $this->repository->option_key();
+	}
+
+	/**
+	 * Get all sections.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function sections() {
+		return $this->sections;
+	}
+
+	/**
+	 * Get configuration value.
+	 *
+	 * @param string $key Configuration key.
+	 * @return mixed
+	 */
+	public function config( $key ) {
+		return isset( $this->config[ $key ] ) ? $this->config[ $key ] : null;
+	}
+
+	/**
+	 * Get nonce action name.
+	 *
+	 * @return string
+	 */
+	public function nonce_action_name() {
+		return $this->nonce_action();
+	}
+
+	/**
+	 * Get nonce field name.
+	 *
+	 * @return string
+	 */
+	public function nonce_field_name() {
+		return $this->nonce_name();
+	}
+
+	/**
+	 * Build field input name for custom renderers.
+	 *
+	 * @param Field $field Field instance.
+	 * @return string
+	 */
+	public function field_input_name( Field $field ) {
+		return $this->repository->option_key() . '[' . $field->id() . ']';
 	}
 }

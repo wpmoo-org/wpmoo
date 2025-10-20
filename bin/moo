@@ -11,7 +11,39 @@
  * @since 0.1.0
  */
 
-require __DIR__ . '/../vendor/autoload.php';
+/**
+ * Attempt to locate Composer's autoloader in common locations.
+ *
+ * @return void
+ */
+$autoload_loaded = false;
+$autoload_candidates = array_unique(
+	array(
+		__DIR__ . '/vendor/autoload.php',
+		__DIR__ . '/../vendor/autoload.php',
+		__DIR__ . '/../../vendor/autoload.php',
+		__DIR__ . '/../../../vendor/autoload.php',
+		dirname( __DIR__, 2 ) . '/vendor/autoload.php',
+		dirname( __DIR__, 3 ) . '/vendor/autoload.php',
+		dirname( __DIR__, 4 ) . '/vendor/autoload.php',
+	)
+);
+
+foreach ( $autoload_candidates as $autoload ) {
+	if ( file_exists( $autoload ) ) {
+		require $autoload;
+		$autoload_loaded = true;
+		break;
+	}
+}
+
+if ( ! $autoload_loaded ) {
+	fwrite(
+		STDERR,
+		"Could not locate Composer autoload file. Run 'composer install' for WPMoo or provide a custom autoload path.\n"
+	);
+	exit( 1 );
+}
 
 use WPMoo\Core\App;
 use WPMoo\Core\CLI;
