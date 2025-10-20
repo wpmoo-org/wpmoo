@@ -120,10 +120,27 @@
         initialTarget = stored;
       }
 
-      // Safari submits forms before DOM paint; defer activation to next frame.
-      setTimeout(function () {
-        activate(initialTarget, true);
-      }, 0);
+      var currentTarget = $tabs.filter('.is-active').first().data('panel-tab');
+      if (!currentTarget) {
+        currentTarget = $sections
+          .filter('.is-active')
+          .first()
+          .data('panel-section');
+      }
+
+      if (!initialTarget && currentTarget) {
+        initialTarget = currentTarget;
+      }
+
+      if ($hidden && currentTarget) {
+        $hidden.val(currentTarget);
+      }
+
+      if (initialTarget && initialTarget !== currentTarget) {
+        setTimeout(function () {
+          activate(initialTarget, true);
+        }, 0);
+      }
 
       $tabs.on("click", function (event) {
         event.preventDefault();
@@ -138,4 +155,144 @@
       });
     });
   });
+
+  var optionsConfig = window.wpmooAdminOptions || null;
+
+  if (optionsConfig && optionsConfig.menuSlug) {
+    var $optionsForm = $("#wpmoo-options-form");
+
+    if ($optionsForm.length) {
+      var $submitButtons = $optionsForm.find(
+        'button[type="submit"], input[type="submit"]'
+      );
+
+      var toastContainer = $(".wpmoo-toast-container");
+
+      if (!toastContainer.length) {
+        toastContainer = $("<div>", { class: "wpmoo-toast-container" });
+        $("body").append(toastContainer);
+      }
+
+      function getString(key, fallback) {
+        if (
+          optionsConfig.strings &&
+          Object.prototype.hasOwnProperty.call(optionsConfig.strings, key)
+        ) {
+          return optionsConfig.strings[key];
+        }
+
+        return fallback;
+      }
+
+      function showToast(type, message) {
+        var toastClass = "wpmoo-toast";
+
+        if (type === "success") {
+          toastClass += " wpmoo-toast--success";
+        } else if (type === "error") {
+          toastClass += " wpmoo-toast--error";
+        } else {
+          toastClass += " wpmoo-toast--info";
+        }
+
+        var $toast = $("<div>", {
+          class: toastClass,
+          text: message,
+        });
+
+        toastContainer.append($toast);
+
+        requestAnimationFrame(function () {
+          $toast.addClass("is-visible");
+        });
+
+        setTimeout(function () {
+          $toast.removeClass("is-visible");
+          setTimeout(function () {
+            $toast.remove();
+          }, 200);
+        }, 4000);
+      }
+
+      $optionsForm.on("submit", function (event) {
+        event.preventDefault();
+
+        var payload = $optionsForm.serializeArray();
+        payload.push({ name: "action", value: "wpmoo_save_options" });
+        payload.push({ name: "menu_slug", value: optionsConfig.menuSlug });
+        payload.push({ name: "nonce", value: optionsConfig.nonce });
+
+        var originalLabels = [];
+
+        $submitButtons.each(function (index, button) {
+          var $button = $(button);
+          if ($button.is("button")) {
+            originalLabels[index] = $button.text();
+            $button.text(getString("saving", "Saving…"));
+          } else {
+            originalLabels[index] = $button.val();
+            $button.val(getString("saving", "Saving…"));
+          }
+        });
+
+        $submitButtons.prop("disabled", true).addClass("disabled");
+
+        $.ajax({
+          url: optionsConfig.ajaxUrl || window.ajaxurl,
+          method: "POST",
+          dataType: "json",
+          data: payload,
+        })
+          .done(function (response) {
+            if (response && response.success) {
+              var message =
+                (response.data && response.data.message) ||
+                getString("saved", "Settings saved.");
+
+              showToast("success", message);
+
+              if (response.data && response.data.activePanel) {
+                $optionsForm
+                  .find('.wpmoo-active-panel')
+                  .val(response.data.activePanel);
+
+                if (optionsConfig.menuSlug && response.data.activePanel) {
+                  var storageKey =
+                    "wpmoo_panel_active_" +
+                    "wpmoo-options-panel-" +
+                    optionsConfig.menuSlug;
+                  try {
+                    window.localStorage.setItem(
+                      storageKey,
+                      response.data.activePanel
+                    );
+                  } catch (error) {}
+                }
+              }
+            } else {
+              var errorMessage =
+                (response && response.data && response.data.message) ||
+                getString("error", "Unable to save settings.");
+
+              showToast("error", errorMessage);
+            }
+          })
+          .fail(function () {
+            showToast("error", getString("error", "Unable to save settings."));
+          })
+          .always(function () {
+            $submitButtons.prop("disabled", false).removeClass("disabled");
+
+            $submitButtons.each(function (index, button) {
+              var $button = $(button);
+              if ($button.is("button")) {
+                $button.text(originalLabels[index]);
+              } else {
+                $button.val(originalLabels[index]);
+              }
+            });
+          });
+      });
+    }
+  }
 })(jQuery);

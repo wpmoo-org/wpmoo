@@ -84,6 +84,7 @@ class Page {
 			add_action( 'admin_menu', array( $this, 'register_page' ) );
 			add_action( 'admin_init', array( $this, 'handle_submission' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+			add_action( 'wp_ajax_wpmoo_save_options', array( $this, 'ajax_save' ) );
 		}
 	}
 
@@ -138,6 +139,23 @@ class Page {
 				$version,
 				true
 			);
+
+			if ( function_exists( 'wp_localize_script' ) ) {
+				wp_localize_script(
+					'wpmoo-framework',
+					'wpmooAdminOptions',
+					array(
+						'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+						'nonce'    => wp_create_nonce( 'wpmoo_options_save' ),
+						'menuSlug' => $this->config['menu_slug'],
+						'strings'  => array(
+							'saving' => function_exists( '__' ) ? __( 'Saving…', 'wpmoo' ) : 'Saving…',
+							'saved'  => function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.',
+							'error'  => function_exists( '__' ) ? __( 'Unable to save settings.', 'wpmoo' ) : 'Unable to save settings.',
+						),
+					)
+				);
+			}
 		}
 	}
 
@@ -193,6 +211,12 @@ class Page {
 			return;
 		}
 
+		if ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) {
+			if ( isset( $_POST['action'] ) && 'wpmoo_save_options' === $_POST['action'] ) {
+				return;
+			}
+		}
+
 		$slug = $this->config['menu_slug'];
 
 		if ( ! isset( $_POST['_wpmoo_options_page'] ) || $slug !== $_POST['_wpmoo_options_page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified below.
@@ -236,6 +260,62 @@ class Page {
 			wp_safe_redirect( $redirect );
 			exit;
 		}
+	}
+
+	/**
+	 * Handle AJAX submissions for the options page.
+	 *
+	 * @return void
+	 */
+	public function ajax_save() {
+		$slug         = $this->config['menu_slug'];
+		$request_slug = isset( $_POST['menu_slug'] ) ? $this->sanitize_panel_target( wp_unslash( $_POST['menu_slug'] ) ) : '';
+
+		if ( $slug !== $request_slug ) {
+			return;
+		}
+
+		if ( ! function_exists( 'check_ajax_referer' ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid request.' ) );
+		}
+
+		check_ajax_referer( 'wpmoo_options_save', 'nonce' );
+
+		if ( function_exists( 'current_user_can' ) && ! current_user_can( $this->config['capability'] ) ) {
+			wp_send_json_error( array( 'message' => function_exists( '__' ) ? __( 'You are not allowed to save these settings.', 'wpmoo' ) : 'You are not allowed to save these settings.' ) );
+		}
+
+		$option_key = $this->repository->option_key();
+		$submitted  = array();
+
+		if ( isset( $_POST[ $option_key ] ) && is_array( $_POST[ $option_key ] ) ) {
+			$submitted = function_exists( 'wp_unslash' ) ? wp_unslash( $_POST[ $option_key ] ) : $_POST[ $option_key ];
+		}
+
+		$clean = array();
+
+		foreach ( $this->fields as $id => $field ) {
+			$value        = array_key_exists( $id, $submitted ) ? $submitted[ $id ] : null;
+			$clean[ $id ] = $field->sanitize( $value );
+		}
+
+		$this->repository->save( $clean );
+
+		$panel_id     = 'wpmoo-options-panel-' . $slug;
+		$active_panel = '';
+
+		if ( isset( $_POST['_wpmoo_active_panel'] ) && is_array( $_POST['_wpmoo_active_panel'] ) && isset( $_POST['_wpmoo_active_panel'][ $panel_id ] ) ) {
+			$active_panel = $this->sanitize_panel_target( wp_unslash( $_POST['_wpmoo_active_panel'][ $panel_id ] ) );
+		}
+
+		$message = function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.';
+
+		wp_send_json_success(
+			array(
+				'message'     => $message,
+				'activePanel' => $active_panel,
+			)
+		);
 	}
 
 	/**
@@ -331,7 +411,7 @@ class Page {
 
 		echo '<input type="hidden" name="_wpmoo_options_page" value="' . $this->esc_attr( $this->config['menu_slug'] ) . '" />';
 
-		echo '<input type="hidden" name="_wpmoo_active_panel[' . $this->esc_attr( $panel_id ) . ']" value="' . $this->esc_attr( $active_section ) . '" />';
+		echo '<input type="hidden" class="wpmoo-active-panel" data-panel-id="' . $this->esc_attr( $panel_id ) . '" name="_wpmoo_active_panel[' . $this->esc_attr( $panel_id ) . ']" value="' . $this->esc_attr( $active_section ) . '" />';
 		echo $panel->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		echo '<div class="wpmoo-options-actions">';
@@ -393,11 +473,9 @@ class Page {
 	 * @return string
 	 */
 	protected function sanitize_panel_target( string $value ): string {
-		if ( function_exists( 'sanitize_key' ) ) {
-			return sanitize_key( $value );
-		}
+		$value = strtolower( $value );
 
-		return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( $value ) );
+		return preg_replace( '/[^a-z0-9_\-]/', '', $value );
 	}
 
 	/**
@@ -621,6 +699,23 @@ class Page {
 			'page'             => $this->config['menu_slug'],
 			'settings-updated' => 'true',
 		);
+
+		if ( isset( $_POST['_wpmoo_active_panel'] ) && is_array( $_POST['_wpmoo_active_panel'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified earlier in submission handler.
+			$panels = array();
+
+			foreach ( $_POST['_wpmoo_active_panel'] as $panel_id => $target ) {
+				$panel_id = $this->sanitize_panel_target( (string) $panel_id );
+				$target   = $this->sanitize_panel_target( (string) $target );
+
+				if ( '' !== $panel_id && '' !== $target ) {
+					$panels[ $panel_id ] = $target;
+				}
+			}
+
+			if ( ! empty( $panels ) ) {
+				$query['_wpmoo_active_panel'] = $panels;
+			}
+		}
 
 		if ( function_exists( 'wp_get_referer' ) ) {
 			$referer = wp_get_referer();
