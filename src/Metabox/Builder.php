@@ -44,6 +44,13 @@ class Builder {
 	protected $fields = array();
 
 	/**
+	 * Section configuration for panel layout.
+	 *
+	 * @var array<int, SectionBuilder|array<string, mixed>>
+	 */
+	protected $sections = array();
+
+	/**
 	 * Field manager instance.
 	 *
 	 * @var Manager
@@ -217,6 +224,42 @@ class Builder {
 	}
 
 	/**
+	 * Set the layout type (e.g. panel).
+	 *
+	 * @param string $layout Layout identifier.
+	 * @return $this
+	 */
+	public function layout( string $layout ): self {
+		$this->config['layout'] = $layout;
+
+		return $this;
+	}
+
+	/**
+	 * Enable the panel (tabbed) layout for the metabox.
+	 *
+	 * @return $this
+	 */
+	public function panel(): self {
+		return $this->layout( 'panel' );
+	}
+
+	/**
+	 * Define a section for the panel layout.
+	 *
+	 * @param string $id          Section identifier.
+	 * @param string $title       Section title.
+	 * @param string $description Optional description.
+	 * @return SectionBuilder
+	 */
+	public function section( string $id, string $title = '', string $description = '' ): SectionBuilder {
+		$section = new SectionBuilder( $id, $title, $description );
+		$this->sections[] = $section;
+
+		return $section;
+	}
+
+	/**
 	 * Register the metabox.
 	 *
 	 * @return Metabox
@@ -224,12 +267,37 @@ class Builder {
 	public function register(): Metabox {
 		// Build fields from FieldBuilder instances.
 		$built_fields = array();
-		
+
 		foreach ( $this->fields as $field ) {
 			if ( $field instanceof FieldBuilder ) {
 				$built_fields[] = $field->build();
 			} else {
 				$built_fields[] = $field;
+			}
+		}
+
+		// Build sections when defined.
+		$built_sections = array();
+
+		foreach ( $this->sections as $section ) {
+			if ( $section instanceof SectionBuilder ) {
+				$built_sections[] = $section->build();
+			} else {
+				$built_sections[] = $section;
+			}
+		}
+
+		if ( ! empty( $built_sections ) ) {
+			$this->config['sections'] = $built_sections;
+
+			foreach ( $built_sections as $section ) {
+				foreach ( $section['fields'] as $section_field ) {
+					$built_fields[] = $section_field;
+				}
+			}
+
+			if ( empty( $this->config['layout'] ) ) {
+				$this->config['layout'] = 'panel';
 			}
 		}
 

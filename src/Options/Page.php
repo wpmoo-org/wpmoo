@@ -12,6 +12,7 @@
 
 namespace WPMoo\Options;
 
+use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 
@@ -107,12 +108,11 @@ class Page {
 
 		$assets_url = $this->get_assets_url();
 		
-		// Debug: Log the assets URL
-		if ( function_exists( 'error_log' ) ) {
-			error_log( '🎨 WPMoo Framework Assets URL: ' . $assets_url );
-		}
-		
 		$version = '0.2.0';
+
+		if ( function_exists( 'wp_enqueue_style' ) ) {
+			wp_enqueue_style( 'dashicons' );
+		}
 
 		// Enqueue CSS.
 		if ( function_exists( 'wp_enqueue_style' ) ) {
@@ -126,6 +126,7 @@ class Page {
 
 		// Enqueue JS.
 		if ( function_exists( 'wp_enqueue_script' ) ) {
+			wp_enqueue_script( 'postbox' );
 			wp_enqueue_script(
 				'wpmoo-framework',
 				$assets_url . 'js/wpmoo-framework.js',
@@ -270,66 +271,59 @@ class Page {
 	 * @return void
 	 */
 	protected function render_container( array $values ) {
-		$sections        = array_values( $this->sections );
-		$default_section = ! empty( $sections ) ? $sections[0]['id'] : '';
-		$framework_title = $this->config['page_title'];
+		$sections = array_values( $this->sections );
 
-		echo '<div class="wpmoo-framework wpmoo-option-framework">';
-		
-		// Header.
-		echo '<div class="wpmoo-header">';
-		echo '<div class="wpmoo-header-inner">';
-		echo '<div class="wpmoo-header-left">';
-		echo '<h1>' . $this->esc_html( $framework_title ) . '</h1>';
-		echo '</div>';
-		echo '<div class="wpmoo-header-right">';
-		echo '<div class="wpmoo-search">';
-		echo '<input type="text" class="wpmoo-search-input" placeholder="' . $this->esc_attr( function_exists( '__' ) ? __( 'Search...', 'wpmoo' ) : 'Search...' ) . '" autocomplete="off" />';
-		echo '</div>';
-		echo '<div class="wpmoo-buttons">';
-		echo '<button type="submit" form="wpmoo-options-form" class="button button-primary wpmoo-save">' . $this->esc_html( function_exists( '__' ) ? __( 'Save', 'wpmoo' ) : 'Save' ) . '</button>';
-		echo '</div>';
-		echo '</div>';
-		echo '</div>';
-		echo '</div>';
-
-		// Notices.
-		if ( function_exists( 'settings_errors' ) ) {
-			ob_start();
-			settings_errors( $this->repository->option_key() );
-			$notices = ob_get_clean();
-			if ( $notices ) {
-				echo '<div class="wpmoo-wrapper wpmoo-show">';
-				echo '<div class="wpmoo-content">';
-				echo '<div class="wpmoo-sections">';
-				echo $notices; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo '</div>';
-				echo '</div>';
-				echo '</div>';
-			}
+		if ( empty( $sections ) && ! empty( $this->fields ) ) {
+			$sections[] = array(
+				'id'          => 'general',
+				'title'       => $this->translate( 'General', 'wpmoo' ),
+				'description' => '',
+				'icon'        => '',
+				'fields'      => array_values( $this->fields ),
+			);
 		}
 
-		echo '<div class="wpmoo-wrapper wpmoo-show">';
+		$panel_sections = array();
 
-		// Navigation.
-		echo '<div class="wpmoo-nav wpmoo-nav-options">';
-		echo '<ul>';
 		foreach ( $sections as $section ) {
 			$section_id    = $section['id'];
 			$section_title = ! empty( $section['title'] ) ? $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
-			$is_active     = $section_id === $default_section ? ' class="wpmoo-section-active"' : '';
+			$section_desc  = ! empty( $section['description'] ) ? $section['description'] : '';
+			$section_icon  = ! empty( $section['icon'] ) ? $section['icon'] : '';
 
-			echo '<li' . $is_active . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '<a href="#" data-section="' . $this->esc_attr( $section_id ) . '">';
-			echo $this->esc_html( $section_title );
-			echo '</a>';
-			echo '</li>';
+			ob_start();
+
+			foreach ( $section['fields'] as $field ) {
+				$this->render_field( $field, $values );
+			}
+
+			$content = ob_get_clean();
+
+			$panel_sections[] = array(
+				'id'          => $section_id,
+				'label'       => $section_title,
+				'description' => $section_desc,
+				'icon'        => $section_icon,
+				'content'     => $content,
+			);
 		}
-		echo '</ul>';
-		echo '</div>';
 
-		// Content.
-		echo '<div class="wpmoo-content">';
+		$panel = Panel::make(
+			array(
+				'id'          => 'wpmoo-options-panel-' . $this->config['menu_slug'],
+				'title'       => $this->config['page_title'],
+				'sections'    => $panel_sections,
+				'collapsible' => false,
+			)
+		);
+
+		echo '<div class="wrap wpmoo-options">';
+		echo '<h1 class="wp-heading-inline">' . $this->esc_html( $this->config['page_title'] ) . '</h1>';
+
+		if ( function_exists( 'settings_errors' ) ) {
+			settings_errors( $this->repository->option_key() );
+		}
+
 		echo '<form method="post" id="wpmoo-options-form" action="" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">';
 
 		if ( function_exists( 'wp_nonce_field' ) ) {
@@ -338,47 +332,19 @@ class Page {
 
 		echo '<input type="hidden" name="_wpmoo_options_page" value="' . $this->esc_attr( $this->config['menu_slug'] ) . '" />';
 
-		echo '<div class="wpmoo-sections">';
+		echo $panel->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		foreach ( $sections as $section ) {
-			$section_id    = $section['id'];
-			$section_title = ! empty( $section['title'] ) ? $section['title'] : '';
-			$section_desc  = ! empty( $section['description'] ) ? $section['description'] : '';
-			$is_active     = $section_id === $default_section ? ' wpmoo-section-active' : '';
+		echo '<div class="wpmoo-options-actions">';
 
-			echo '<div class="wpmoo-section' . $is_active . '" data-section="' . $this->esc_attr( $section_id ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-			if ( $section_title ) {
-				echo '<div class="wpmoo-section-title">';
-				echo '<h3>' . $this->esc_html( $section_title ) . '</h3>';
-				if ( $section_desc ) {
-					echo '<div class="wpmoo-section-description">' . $this->esc_html( $section_desc ) . '</div>';
-				}
-				echo '</div>';
-			}
-
-			foreach ( $section['fields'] as $field ) {
-				$this->render_field( $field, $values );
-			}
-
-			echo '</div>';
+		if ( function_exists( 'submit_button' ) ) {
+			submit_button( __( 'Save Changes', 'wpmoo' ) );
+		} else {
+			echo '<p class="submit"><button type="submit" class="button button-primary">' . $this->esc_html( $this->translate( 'Save Changes', 'wpmoo' ) ) . '</button></p>';
 		}
 
 		echo '</div>';
+
 		echo '</form>';
-
-		// Footer.
-		echo '<div class="wpmoo-footer">';
-		echo '<div class="wpmoo-footer-left">';
-		echo 'Thank you for creating with WPMoo Framework';
-		echo '</div>';
-		echo '<div class="wpmoo-footer-right">';
-		echo '<button type="submit" form="wpmoo-options-form" class="button button-primary wpmoo-save">' . $this->esc_html( function_exists( '__' ) ? __( 'Save', 'wpmoo' ) : 'Save' ) . '</button>';
-		echo '</div>';
-		echo '</div>';
-
-		echo '</div>';
-		echo '</div>';
 		echo '</div>';
 	}
 
@@ -518,6 +484,7 @@ class Page {
 				'id'          => '',
 				'title'       => '',
 				'description' => '',
+				'icon'        => '',
 				'fields'      => array(),
 			);
 
@@ -561,6 +528,17 @@ class Page {
 		$value = strtolower( preg_replace( '/[^a-zA-Z0-9]+/', '-', $value ) );
 
 		return trim( $value, '-' );
+	}
+
+	/**
+	 * Translate strings safely.
+	 *
+	 * @param string $text   Text to translate.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	protected function translate( string $text, string $domain ): string {
+		return function_exists( '__' ) ? \__( $text, $domain ) : $text;
 	}
 
 	/**

@@ -12,6 +12,7 @@
 namespace WPMoo\Metabox;
 
 use WP_Post;
+use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 
@@ -60,6 +61,13 @@ class Metabox {
 	protected $fields = array();
 
 	/**
+	 * Structured sections for panel layout.
+	 *
+	 * @var array<int, array<string, mixed>>
+	 */
+	protected $sections = array();
+
+	/**
 	 * Field manager dependency.
 	 *
 	 * @var Manager
@@ -81,6 +89,7 @@ class Metabox {
 		$this->field_manager = $field_manager;
 		$this->config        = $this->normalize_config( $config );
 		$this->fields        = $this->instantiate_fields( $this->config['fields'] );
+		$this->sections      = $this->prepare_sections( $this->config['sections'] );
 	}
 
 	/**
@@ -207,6 +216,11 @@ class Metabox {
 			wp_nonce_field( $this->nonce_action(), $this->nonce_name() );
 		}
 
+		if ( 'panel' === $this->config['layout'] || ! empty( $this->sections ) ) {
+			$this->render_panel( $post );
+			return;
+		}
+
 		echo '<div class="wpmoo-metabox-fields">';
 
 		foreach ( $this->fields as $field ) {
@@ -214,6 +228,83 @@ class Metabox {
 		}
 
 		echo '</div>';
+	}
+
+	/**
+	 * Render the panel layout inside the metabox.
+	 *
+	 * @param WP_Post $post Current post object.
+	 * @return void
+	 */
+	protected function render_panel( $post ) {
+		$sections = $this->sections;
+		$used_ids = array();
+
+		foreach ( $sections as $section ) {
+			foreach ( $section['fields'] as $field ) {
+				$used_ids[] = $field->id();
+			}
+		}
+
+		$remaining_fields = array();
+
+		foreach ( $this->fields as $field ) {
+			if ( ! in_array( $field->id(), $used_ids, true ) ) {
+				$remaining_fields[] = $field;
+			}
+		}
+
+		if ( empty( $sections ) ) {
+			$sections = array(
+				array(
+					'id'          => $this->config['id'] . '-section',
+					'title'       => $this->config['title'],
+					'description' => '',
+					'icon'        => '',
+					'fields'      => array_values( $this->fields ),
+				),
+			);
+		} elseif ( ! empty( $remaining_fields ) ) {
+			$sections[] = array(
+				'id'          => $this->config['id'] . '-general',
+				'title'       => $this->config['title'],
+				'description' => '',
+				'icon'        => '',
+				'fields'      => $remaining_fields,
+			);
+		}
+
+		$panel_sections = array();
+
+		foreach ( $sections as $section ) {
+			ob_start();
+
+			foreach ( $section['fields'] as $field ) {
+				$this->render_field( $field, $post );
+			}
+
+			$content = ob_get_clean();
+
+			$panel_sections[] = array(
+				'id'          => $section['id'],
+				'label'       => $section['title'],
+				'description' => $section['description'],
+				'icon'        => $section['icon'],
+				'content'     => $content,
+			);
+		}
+
+		$panel = Panel::make(
+			array(
+				'id'          => 'wpmoo-metabox-panel-' . $this->config['id'],
+				'title'       => $this->config['title'],
+				'sections'    => $panel_sections,
+				'collapsible' => false,
+				'frame'       => false,
+			)
+		);
+
+		echo $panel->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -294,16 +385,22 @@ class Metabox {
 		$value   = '' !== $current ? $current : $field->default();
 		$name    = sprintf( 'wpmoo_metabox[%s][%s]', $this->config['id'], $field->id() );
 
-		echo '<div class="wpmoo-metabox-field">';
-		echo '<label for="' . $this->esc_attr( $field->id() ) . '"><strong>' . $this->esc_html( $field->label() ) . '</strong></label>';
-		echo '<div class="wpmoo-metabox-control">';
-		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Field render method handles escaping.
+		echo '<div class="wpmoo-field wpmoo-field-' . $this->esc_attr( $field->type() ) . '">';
+		echo '<div class="wpmoo-title">';
+
+		if ( $field->label() ) {
+			echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+		}
 
 		if ( $field->description() ) {
-			echo '<p class="description">' . $this->esc_html( $field->description() ) . '</p>';
+			echo '<div class="wpmoo-subtitle-text">' . $this->esc_html( $field->description() ) . '</div>';
 		}
 
 		echo '</div>';
+		echo '<div class="wpmoo-fieldset">';
+		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Field render method handles escaping.
+		echo '</div>';
+		echo '<div class="clear"></div>';
 		echo '</div>';
 	}
 
@@ -323,6 +420,8 @@ class Metabox {
 			'callback_args' => array(),
 			'capability'    => 'edit_post',
 			'fields'        => array(),
+			'layout'        => 'default',
+			'sections'      => array(),
 		);
 
 		$config = array_merge( $defaults, $config );
@@ -369,6 +468,67 @@ class Metabox {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * Generate a slug from the provided value.
+	 *
+	 * @param string $value Raw string.
+	 * @return string
+	 */
+	protected function slugify( $value ) {
+		if ( function_exists( 'sanitize_title' ) ) {
+			return sanitize_title( $value );
+		}
+
+		$value = strtolower( preg_replace( '/[^a-zA-Z0-9]+/', '-', $value ) );
+
+		return trim( $value, '-' );
+	}
+
+	/**
+	 * Normalize panel sections using instantiated fields.
+	 *
+	 * @param array<int, array<string, mixed>> $sections Raw section configuration.
+	 * @return array<int, array<string, mixed>>
+	 */
+	protected function prepare_sections( array $sections ) {
+		$normalized = array();
+
+		foreach ( $sections as $section ) {
+			$defaults = array(
+				'id'          => '',
+				'title'       => '',
+				'description' => '',
+				'icon'        => '',
+				'fields'      => array(),
+			);
+
+			$section = array_merge( $defaults, is_array( $section ) ? $section : array() );
+
+			if ( '' === $section['id'] ) {
+				$section['id'] = $this->slugify( $section['title'] ? $section['title'] : uniqid( 'section_', true ) );
+			}
+
+			$field_objects = array();
+
+			foreach ( $section['fields'] as $field_config ) {
+				if ( empty( $field_config['id'] ) ) {
+					continue;
+				}
+
+				$identifier = $field_config['id'];
+
+				if ( isset( $this->fields[ $identifier ] ) ) {
+					$field_objects[] = $this->fields[ $identifier ];
+				}
+			}
+
+			$section['fields'] = $field_objects;
+			$normalized[]     = $section;
+		}
+
+		return $normalized;
 	}
 
 	/**

@@ -1,26 +1,27 @@
 <?php
 /**
- * Fluent section builder for options pages.
+ * Fluent section builder for metabox panels.
  *
- * @package WPMoo\Options
- * @since 0.2.0
+ * @package WPMoo\Metabox
+ * @since 0.3.0
  * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
  * @link https://github.com/wpmoo/wpmoo GitHub Repository.
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
-namespace WPMoo\Options;
+namespace WPMoo\Metabox;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Fluent builder for option sections.
+ * Defines a metabox section and its fields.
  */
 class SectionBuilder {
+
 	/**
-	 * Section ID.
+	 * Section identifier.
 	 *
 	 * @var string
 	 */
@@ -41,14 +42,14 @@ class SectionBuilder {
 	protected $description;
 
 	/**
-	 * Section icon (dashicons class).
+	 * Section icon (dashicons).
 	 *
 	 * @var string
 	 */
 	protected $icon = '';
 
 	/**
-	 * Fields in this section.
+	 * Fields included in the section.
 	 *
 	 * @var array<int, array<string, mixed>>
 	 */
@@ -57,7 +58,7 @@ class SectionBuilder {
 	/**
 	 * Constructor.
 	 *
-	 * @param string $id          Section ID.
+	 * @param string $id          Section identifier.
 	 * @param string $title       Section title.
 	 * @param string $description Section description.
 	 */
@@ -68,9 +69,9 @@ class SectionBuilder {
 	}
 
 	/**
-	 * Set section title.
+	 * Set the section title.
 	 *
-	 * @param string $title Title.
+	 * @param string $title Section title.
 	 * @return $this
 	 */
 	public function title( string $title ): self {
@@ -80,9 +81,9 @@ class SectionBuilder {
 	}
 
 	/**
-	 * Set section description.
+	 * Set the section description.
 	 *
-	 * @param string $description Description.
+	 * @param string $description Section description.
 	 * @return $this
 	 */
 	public function description( string $description ): self {
@@ -92,9 +93,9 @@ class SectionBuilder {
 	}
 
 	/**
-	 * Set section icon (dashicons class name).
+	 * Set the section icon (dashicons class).
 	 *
-	 * @param string $icon Dashicons class (e.g. dashicons-admin-generic).
+	 * @param string $icon Icon class name.
 	 * @return $this
 	 */
 	public function icon( string $icon ): self {
@@ -106,34 +107,34 @@ class SectionBuilder {
 	/**
 	 * Add a field to the section.
 	 *
-	 * @param string $id   Field ID.
+	 * @param string $id   Field identifier.
 	 * @param string $type Field type.
 	 * @return FieldBuilder
 	 */
 	public function field( string $id, string $type ): FieldBuilder {
 		$field = new FieldBuilder( $id, $type );
-		
+
 		$this->fields[] = $field;
 
 		return $field;
 	}
 
 	/**
-	 * Add fields from array (backward compatibility).
+	 * Append multiple fields at once.
 	 *
-	 * @param array<int, array<string, mixed>> $fields Fields array.
+	 * @param array<int, array<string, mixed>> $fields Field definitions.
 	 * @return $this
 	 */
 	public function fields( array $fields ): self {
-		foreach ( $fields as $field_config ) {
-			$this->fields[] = $field_config;
+		foreach ( $fields as $field ) {
+			$this->fields[] = $field;
 		}
 
 		return $this;
 	}
 
 	/**
-	 * Build the section configuration.
+	 * Build the section configuration array.
 	 *
 	 * @return array<string, mixed>
 	 */
