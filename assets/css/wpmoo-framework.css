@@ -211,7 +211,7 @@
 
 .wpmoo-panel__section {
   display: none;
-  padding-top: 26px;
+  padding: 25px 0 0 25px;
 }
 
 .wpmoo-panel__section.is-active {
@@ -226,7 +226,7 @@
 }
 
 .wpmoo-panel--embedded {
-  border: none;
+  border-tops: 1px solid #dcdcde;
   border-radius: 0;
   box-shadow: none;
   margin: -12px -12px -12px -12px;
@@ -254,7 +254,6 @@
   background: transparent;
   border-left: 1px solid #dcdcde;
   margin-left: -1px;
-  padding-left: 24px;
 }
 
 .wpmoo-options-actions {

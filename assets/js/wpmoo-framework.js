@@ -116,6 +116,24 @@
           if ($targetSection.length) {
             $targetSection.addClass("is-active").attr("aria-hidden", "false");
           }
+
+          if (!isAccordionMode) {
+            // Ensure hidden inline styles from accordion mode don't stop tab content from showing.
+            $sections.each(function () {
+              var $section = $(this);
+              var $body = $section.find(".wpmoo-panel__section-body");
+
+              if (!$body.length) {
+                return;
+              }
+
+              if ($section.is($targetSection)) {
+                $body.stop(true, true).show();
+              } else {
+                $body.stop(true, true).hide();
+              }
+            });
+          }
         }
 
         if ($hidden) {
