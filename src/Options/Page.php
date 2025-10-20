@@ -304,14 +304,15 @@ class Page {
 			);
 		}
 
-		$panel_id = 'wpmoo-options-panel-' . $this->config['menu_slug'];
-		$panel    = Panel::make(
+		$panel_id       = 'wpmoo-options-panel-' . $this->config['menu_slug'];
+		$active_section = $this->determine_active_section( $panel_id, $panel_sections );
+		$panel          = Panel::make(
 			array(
 				'id'          => $panel_id,
 				'title'       => $this->config['page_title'],
 				'sections'    => $panel_sections,
 				'collapsible' => false,
-				'active'      => $this->determine_active_section( $panel_id, $panel_sections ),
+				'active'      => $active_section,
 			)
 		);
 
@@ -330,6 +331,7 @@ class Page {
 
 		echo '<input type="hidden" name="_wpmoo_options_page" value="' . $this->esc_attr( $this->config['menu_slug'] ) . '" />';
 
+		echo '<input type="hidden" name="_wpmoo_active_panel[' . $this->esc_attr( $panel_id ) . ']" value="' . $this->esc_attr( $active_section ) . '" />';
 		echo $panel->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		echo '<div class="wpmoo-options-actions">';

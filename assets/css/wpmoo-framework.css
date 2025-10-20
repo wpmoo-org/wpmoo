@@ -84,18 +84,30 @@
   border: 1px solid #dcdcde;
 }
 
+.wpmoo-panel {
+  border: 1px solid #dcdcde;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+}
 
-.wpmoo-panel .inside {
-  padding: 0;
+.wpmoo-panel .postbox-header {
+  background: linear-gradient(180deg, #f9f9fb 0%, #f3f4f6 100%);
+  border-bottom: 1px solid #dcdcde;
+  border-radius: 8px 8px 0 0;
+  padding: 16px 20px;
   margin: 0;
 }
 
 .wpmoo-panel .postbox-header .hndle {
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: #1d2327;
 }
+
+
 
 .wpmoo-panel__layout {
   display: flex;
@@ -187,7 +199,7 @@
   border-bottom: 1px solid #dcdcde;
   border-radius: 0;
   background: none;
-  padding: 14px 0;
+  padding: 12px 0;
 }
 
 .wpmoo-panel--embedded .wpmoo-panel__layout {
@@ -245,4 +257,8 @@
   .wpmoo-panel__content {
     padding: 16px;
   }
+}
+.wpmoo-options .postbox .inside {
+  padding: 0;
+  margin: 0;
 }

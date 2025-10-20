@@ -28,22 +28,24 @@
       var initialTarget = $panel.data("panel-active") || "";
       var $form = $panel.closest("form");
       var $hidden = null;
+      var activeInputName = panelId
+        ? "_wpmoo_active_panel[" + panelId + "]"
+        : "_wpmoo_active_panel";
 
-      if ($form.length && panelId) {
+      if ($form.length) {
         $hidden = $form
-          .find('input[type="hidden"][name^="_wpmoo_active_panel"]')
-          .filter(function () {
-            return $(this).data("panel-id") === panelId;
-          })
+          .find('input[type="hidden"][name="' + activeInputName + '"]')
           .first();
 
         if (!$hidden.length) {
           $hidden = $("<input>", {
             type: "hidden",
-            name: "_wpmoo_active_panel[" + panelId + "]",
-          })
-            .appendTo($form)
-            .data("panel-id", panelId);
+            name: activeInputName,
+          }).appendTo($form);
+        }
+
+        if (panelId) {
+          $hidden.data("panel-id", panelId);
         }
       }
 
