@@ -56,6 +56,13 @@ class Panel {
 	protected $frame = true;
 
 	/**
+	 * Whether multiple accordion sections can stay open simultaneously.
+	 *
+	 * @var bool
+	 */
+	protected $accordion_multi = false;
+
+	/**
 	 * Whether the panel should persist active section state.
 	 *
 	 * @var bool
@@ -76,24 +83,26 @@ class Panel {
 	 */
 	public function __construct( array $config = array() ) {
 		$defaults = array(
-			'id'          => 'wpmoo-panel-' . uniqid(),
-			'title'       => '',
-			'sections'    => array(),
-			'collapsible' => true,
-			'frame'       => true,
-			'persist'     => true,
-			'active'      => '',
+			'id'              => 'wpmoo-panel-' . uniqid(),
+			'title'           => '',
+			'sections'        => array(),
+			'collapsible'     => true,
+			'frame'           => true,
+			'persist'         => true,
+			'accordion_multi' => false,
+			'active'          => '',
 		);
 
 		$config = array_merge( $defaults, $config );
 
-		$this->id          = $config['id'];
-		$this->title       = $config['title'];
-		$this->collapsible = (bool) $config['collapsible'];
-		$this->frame       = (bool) $config['frame'];
-		$this->persist     = (bool) $config['persist'];
-		$this->active      = is_string( $config['active'] ) ? $config['active'] : '';
-		$this->sections    = $this->normalize_sections( $config['sections'] );
+		$this->id              = $config['id'];
+		$this->title           = $config['title'];
+		$this->collapsible     = (bool) $config['collapsible'];
+		$this->frame           = (bool) $config['frame'];
+		$this->persist         = (bool) $config['persist'] ;
+		$this->accordion_multi = (bool) $config['accordion_multi'];
+		$this->active          = is_string( $config['active'] ) ? $config['active'] : '';
+		$this->sections        = $this->normalize_sections( $config['sections'] );
 	}
 
 	/**
@@ -125,7 +134,7 @@ class Panel {
 			$classes[] = 'wpmoo-panel--embedded';
 		}
 
-		echo '<div id="' . $this->esc_attr( $panel_id_attr ) . '" class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" data-wpmoo-panel data-panel-id="' . $this->esc_attr( $panel_id_attr ) . '" data-panel-active="' . $this->esc_attr( $active_section ) . '" data-panel-persist="' . ( $this->persist ? '1' : '0' ) . '">';
+		echo '<div id="' . $this->esc_attr( $panel_id_attr ) . '" class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" data-wpmoo-panel data-panel-id="' . $this->esc_attr( $panel_id_attr ) . '" data-panel-active="' . $this->esc_attr( $active_section ) . '" data-panel-persist="' . ( $this->persist ? '1' : '0' ) . '" data-panel-multi="' . ( $this->accordion_multi ? '1' : '0' ) . '">';
 
 		if ( $this->frame ) {
 			echo '<div class="postbox-header">';
@@ -175,14 +184,29 @@ class Panel {
 			$is_active  = $section_id === $active_section || ( '' === $active_section && 0 === $index );
 			$hidden     = $is_active ? 'false' : 'true';
 			$classes    = 'wpmoo-panel__section' . ( $is_active ? ' is-active' : '' );
+			$expanded   = $is_active ? 'true' : 'false';
 
 			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( $classes ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '">';
+
+			echo '<button type="button" class="wpmoo-panel__section-toggle' . ( $is_active ? ' is-active' : '' ) . '" data-panel-switch="' . $this->esc_attr( $section_id ) . '" aria-expanded="' . $expanded . '">';
+
+			if ( $section['icon'] ) {
+				echo '<span class="wpmoo-panel__section-toggle-icon dashicons ' . $this->esc_attr( $section['icon'] ) . '" aria-hidden="true"></span>';
+			}
+
+			echo '<span class="wpmoo-panel__section-toggle-label">' . $this->esc_html( $section['label'] ) . '</span>';
+			echo '<span class="wpmoo-panel__section-toggle-indicator" aria-hidden="true"></span>';
+			echo '</button>';
+
+			echo '<div class="wpmoo-panel__section-body">';
 
 			if ( $section['description'] ) {
 				echo '<p class="wpmoo-panel__section-description">' . $this->esc_html( $section['description'] ) . '</p>';
 			}
 
 			echo $section['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Content is pre-escaped by the caller.
+
+            echo '</div>'; // .wpmoo-panel__section-body
 
 			echo '</section>';
 		}

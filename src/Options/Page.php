@@ -395,6 +395,7 @@ class Page {
 				'title'       => $this->config['page_title'],
 				'sections'    => $panel_sections,
 				'collapsible' => false,
+				'accordion_multi' => true,
 				'persist'     => $persist_tabs,
 				'active'      => $active_section,
 			)

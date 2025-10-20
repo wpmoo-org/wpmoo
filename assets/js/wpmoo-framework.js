@@ -60,6 +60,12 @@
           }
         }
 
+        var isAccordionMode = $panel.find(".wpmoo-panel__tabs").is(":hidden");
+        var allowMulti =
+          $panel.data("panel-multi") === 1 ||
+          $panel.data("panel-multi") === "1" ||
+          $panel.data("panel-multi") === true;
+
         var $targetTab = $tabs.filter('[data-panel-tab="' + target + '"]');
         if (!$targetTab.length && $tabs.length) {
           $targetTab = $tabs.first();
@@ -81,9 +87,35 @@
           }
         }
 
-        $sections.removeClass("is-active").attr("aria-hidden", "true");
-        if ($targetSection.length) {
-          $targetSection.addClass("is-active").attr("aria-hidden", "false");
+        var $switches = $panel.find('[data-panel-switch]');
+
+        if (isAccordionMode && allowMulti) {
+          if ($targetSection.length) {
+            $targetSection.addClass("is-active").attr("aria-hidden", "false");
+          }
+
+          $switches.each(function () {
+            var $btn = $(this);
+            var sectionId = $btn.data("panel-switch");
+            var $section = $sections.filter(
+              '[data-panel-section="' + sectionId + '"]'
+            );
+            var isOpen = $section.hasClass("is-active");
+            $btn.toggleClass("is-active", isOpen);
+            $btn.attr("aria-expanded", isOpen ? "true" : "false");
+          });
+        } else {
+          $switches.each(function () {
+            var $btn = $(this);
+            var isTarget = $btn.data("panel-switch") === target;
+            $btn.toggleClass("is-active", isTarget);
+            $btn.attr("aria-expanded", isTarget ? "true" : "false");
+          });
+
+          $sections.removeClass("is-active").attr("aria-hidden", "true");
+          if ($targetSection.length) {
+            $targetSection.addClass("is-active").attr("aria-hidden", "false");
+          }
         }
 
         if ($hidden) {
@@ -162,6 +194,124 @@
         if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
           event.preventDefault();
           activate($(this).data("panel-tab"));
+        }
+      });
+
+      function handleAccordionState() {
+        var isAccordion = $panel.find(".wpmoo-panel__tabs").is(":hidden");
+        $panel.data("wpmoo-accordion", isAccordion);
+
+        var allowMulti =
+          $panel.data("panel-multi") === 1 ||
+          $panel.data("panel-multi") === "1" ||
+          $panel.data("panel-multi") === true;
+
+        if (isAccordion) {
+          if (!allowMulti) {
+            var target = $hidden ? $hidden.val() : "";
+
+            if (!target) {
+              var $activeDesktop = $sections.filter(".is-active").first();
+              if ($activeDesktop.length) {
+                target = $activeDesktop.data("panel-section");
+              }
+            }
+
+            if (!target && $sections.length) {
+              target = $sections.first().data("panel-section");
+            }
+
+            activate(target, true);
+          }
+
+          $sections.each(function () {
+            var $section = $(this);
+            var $body = $section.find(".wpmoo-panel__section-body");
+
+            if ($section.hasClass("is-active")) {
+              $body.show();
+            } else {
+              $body.hide();
+            }
+          });
+
+          $panel.find("[data-panel-switch]").each(function () {
+            var $btn = $(this);
+            var sectionId = $btn.data("panel-switch");
+            var $section = $sections.filter(
+              '[data-panel-section="' + sectionId + '"]'
+            );
+            var isOpen = $section.hasClass("is-active");
+            $btn.toggleClass("is-active", isOpen);
+            $btn.attr("aria-expanded", isOpen ? "true" : "false");
+          });
+        } else {
+          var target = $hidden ? $hidden.val() : "";
+
+          if (!target) {
+            var $activeSection = $sections.filter(".is-active").last();
+            if ($activeSection.length) {
+              target = $activeSection.data("panel-section");
+            }
+          }
+
+          if (!target && $sections.length) {
+            target = $sections.first().data("panel-section");
+          }
+
+          activate(target, true);
+          $sections.find(".wpmoo-panel__section-body").show();
+        }
+      }
+
+      handleAccordionState();
+
+      $(window).on("resize", function () {
+        handleAccordionState();
+      });
+
+      $panel.on("click", "[data-panel-switch]", function (event) {
+        event.preventDefault();
+        var target = $(this).data("panel-switch");
+        var isAccordion = $panel.find(".wpmoo-panel__tabs").is(":hidden");
+        var allowMulti =
+          $panel.data("panel-multi") === 1 ||
+          $panel.data("panel-multi") === "1" ||
+          $panel.data("panel-multi") === true;
+        var $section = $panel.find('[data-panel-section="' + target + '"]');
+
+        if (isAccordion && allowMulti && $section.hasClass("is-active")) {
+          $section.removeClass("is-active").attr("aria-hidden", "true");
+          $(this).removeClass("is-active").attr("aria-expanded", "false");
+
+          var $body = $section.find(".wpmoo-panel__section-body");
+          if ($body.length) {
+            $body.stop(true, true).slideUp(180);
+          }
+
+          if ($hidden && $hidden.val() === target) {
+            var $remaining = $sections
+              .filter(".is-active")
+              .not($section);
+
+            if ($remaining.length) {
+              $hidden.val($remaining.last().data("panel-section"));
+            } else {
+              $hidden.val("");
+            }
+          }
+
+          return;
+        }
+
+        activate(target);
+
+        if (isAccordion && $section.length) {
+          var $body = $section.find(".wpmoo-panel__section-body");
+
+          if ($body.length) {
+            $body.stop(true, true).slideDown(180);
+          }
         }
       });
     });

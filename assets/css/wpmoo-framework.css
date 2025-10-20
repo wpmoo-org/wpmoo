@@ -74,7 +74,6 @@
 }
 
 .wpmoo-fieldset input[type="checkbox"] {
-  width: auto;
   margin-right: 8px;
 }
 
@@ -108,9 +107,6 @@
   font-weight: 600;
   color: #1d2327;
 }
-
-
-
 
 .wpmoo-panel__layout {
   display: flex;
@@ -163,6 +159,44 @@
 .wpmoo-panel__tab-icon {
   font-size: 16px;
   line-height: 1;
+}
+
+.wpmoo-panel__section-toggle {
+  display: none;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: #f6f7f7;
+  color: #1d2327;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wpmoo-panel__section-toggle-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.wpmoo-panel__section-toggle-indicator {
+  margin-left: auto;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #6d6d6d;
+  transition: transform 0.2s ease;
+}
+
+.wpmoo-panel__section-toggle.is-active .wpmoo-panel__section-toggle-indicator {
+  transform: rotate(180deg);
+}
+
+.wpmoo-panel__section-body {
+  padding: 0;
 }
 
 .wpmoo-panel__content {
@@ -287,19 +321,41 @@
   }
 
   .wpmoo-panel__tabs {
-    flex-direction: row;
-    border-right: none;
-    border-bottom: 1px solid #dcdcde;
-    overflow-x: auto;
-  }
-
-  .wpmoo-panel__tab {
-    flex: 1 0 auto;
-    justify-content: center;
+    display: none;
   }
 
   .wpmoo-panel__content {
+    padding: 0;
+    border-left: none;
+    margin-left: 0;
+  }
+
+  .wpmoo-panel__section {
+    display: block;
+    border-top: 1px solid #dcdcde;
+    margin: 0;
+    background: #fff;
+    padding: 0;
+  }
+
+  .wpmoo-panel__section:first-of-type {
+    border-top: none;
+  }
+
+  .wpmoo-panel__section-toggle {
+    display: flex;
+    border-bottom: 1px solid #e2e2e2;
+  }
+
+  .wpmoo-panel__section-body {
+    display: none;
     padding: 16px;
+    background: #fff;
+    border-bottom: 1px solid #e2e2e2;
+  }
+
+  .wpmoo-panel__section.is-active .wpmoo-panel__section-body {
+    display: block;
   }
 }
 .wpmoo-options .postbox .inside {
