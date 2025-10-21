@@ -57,6 +57,22 @@ Builder::create('genre', 'book')
     ->register();
 ```
 
+### Options Pages with Container
+
+```php
+use WPMoo\Options\Container;
+use WPMoo\Options\Field;
+
+Container::make('theme_options', 'Theme Options')
+    ->set_page_parent('themes.php')
+    ->add_fields(array(
+        Field::text('crb_facebook_url', 'Facebook URL')
+            ->placeholder('https://facebook.com/your-page'),
+        Field::textarea('crb_footer_text', 'Footer Text')
+            ->set_help_text('Displayed in the footer.')
+    ));
+```
+
 ### Options Pages with Builder
 
 ```php
