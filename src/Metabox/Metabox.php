@@ -16,6 +16,7 @@ use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
+use WPMoo\Support\Concerns\EscapesOutput;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Represents a single metabox instance.
  */
 class Metabox {
+	use EscapesOutput;
 
 	/**
 	 * Indicates whether the subsystem has been booted.
@@ -615,31 +617,4 @@ class Metabox {
 		return 'wpmoo_metabox_' . $this->config['id'] . '_save';
 	}
 
-	/**
-	 * Escape a value for HTML output.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_html( $value ) {
-		if ( function_exists( 'esc_html' ) ) {
-			return esc_html( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escape a value for attribute usage.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_attr( $value ) {
-		if ( function_exists( 'esc_attr' ) ) {
-			return esc_attr( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
 }

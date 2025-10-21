@@ -16,6 +16,7 @@ use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
+use WPMoo\Support\Concerns\EscapesOutput;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Builds a WordPress admin options page from configuration.
  */
 class Page {
+	use EscapesOutput;
 
 	/**
 	 * Normalized page configuration.
@@ -739,34 +741,6 @@ class Page {
 		}
 
 		return '';
-	}
-
-	/**
-	 * Escape HTML output.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_html( $value ) {
-		if ( function_exists( 'esc_html' ) ) {
-			return esc_html( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escape an attribute value.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_attr( $value ) {
-		if ( function_exists( 'esc_attr' ) ) {
-			return esc_attr( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 	}
 
 	/**

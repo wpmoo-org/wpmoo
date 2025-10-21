@@ -11,6 +11,8 @@
 
 namespace WPMoo\Fields;
 
+use WPMoo\Support\Concerns\EscapesOutput;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -19,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Provides shared functionality for field types.
  */
 abstract class Field {
+	use EscapesOutput;
 
 	/**
 	 * Field identifier.
@@ -178,31 +181,4 @@ abstract class Field {
 		return trim( strip_tags( $value ) );
 	}
 
-	/**
-	 * Escapes a value for usage in HTML attribute context.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_attr( $value ) {
-		if ( function_exists( 'esc_attr' ) ) {
-			return esc_attr( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escapes a value for usage in HTML text context.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_html( $value ) {
-		if ( function_exists( 'esc_html' ) ) {
-			return esc_html( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
 }

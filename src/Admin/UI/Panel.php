@@ -11,6 +11,8 @@
 
 namespace WPMoo\Admin\UI;
 
+use WPMoo\Support\Concerns\EscapesOutput;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -19,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Renders a panel component that wraps sections inside a WordPress postbox.
  */
 class Panel {
+	use EscapesOutput;
 
 	/**
 	 * Panel identifier.
@@ -312,46 +315,4 @@ class Panel {
 		return 'Toggle panel: ' . $this->title;
 	}
 
-	/**
-	 * Escape HTML output.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_html( $value ) {
-		if ( function_exists( 'esc_html' ) ) {
-			return esc_html( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escape attribute output.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_attr( $value ) {
-		if ( function_exists( 'esc_attr' ) ) {
-			return esc_attr( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escape attribute output with translation.
-	 *
-	 * @param string $text Text to translate.
-	 * @param string $domain Text domain.
-	 * @return string
-	 */
-	protected function esc_attr__( $text, $domain ) {
-		if ( function_exists( 'esc_attr__' ) ) {
-			return esc_attr__( $text, $domain );
-		}
-
-		return $this->esc_attr( $text );
-	}
 }
