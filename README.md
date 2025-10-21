@@ -120,10 +120,12 @@ The framework ships with a small CLI at `bin/moo` to automate common tasks:
 - `php bin/moo deploy [destination] [--pm=<manager>] [--no-build] [--zip[=<path>]] [--script=<name>]`  
   Creates a production-ready copy under `destination` (defaults to `dist/<plugin-slug>`), optionally archives it as a `.zip`, and rebuilds assets unless `--no-build` is supplied. Use `--zip` to generate `dist/<plugin-slug>.zip` or pass a custom archive path with `--zip=out.zip`.
 - The deploy task automatically strips the local CLI shim (`moo`), runs `composer install --no-dev` when Composer is available, and removes Node/Composer manifests from the package unless filters opt back in.
+- `php bin/moo dist [--label=<slug>] [--output=<dir>] [--source=<path>] [--version=<x.y.z>] [--keep]`  
+  Builds a reusable distribution archive. When executed from a plugin project it auto-detects the plugin slug/version (falling back to the provided overrides) and removes development artefacts such as nested vendor symlinks, Composer manifests, and CLI tooling.
 - `php bin/moo version [--patch|--minor|--major|<version>] [--dry-run]`  
   Bumps the framework version across manifests and queued asset loaders. Defaults to patch increments (e.g., `0.2.0 → 0.2.1`).
 
-Both commands respect `--pm=<npm|yarn|pnpm|bun>` to force a package manager choice and will fall back to lockfile detection otherwise.
+These commands respect `--pm=<npm|yarn|pnpm|bun>` to force a package manager choice and will fall back to lockfile detection otherwise.
 
 When WPMoo is installed as a Composer dependency (e.g., inside a plugin like `wpmoo-starter`), run the same commands via `php vendor/wpmoo-org/wpmoo/bin/moo …` from your project root.
 

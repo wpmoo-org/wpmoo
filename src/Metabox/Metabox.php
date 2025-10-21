@@ -163,7 +163,7 @@ class Metabox {
 		}
 
 		$assets_url = Assets::url();
-		$version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.4.1';
+		$version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.4.3';
 
 		if ( empty( $assets_url ) ) {
 			return;

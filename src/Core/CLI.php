@@ -41,6 +41,9 @@ class CLI {
 			case 'version':
 				self::cmd_version( array_slice( $argv, 2 ) );
 				break;
+			case 'dist':
+				self::cmd_dist( array_slice( $argv, 2 ) );
+				break;
 			case 'build':
 				self::cmd_build( array_slice( $argv, 2 ) );
 				break;
@@ -69,8 +72,195 @@ class CLI {
 		Console::line( '  php bin/moo build [--pm=<manager>] [--install|--no-install] [--script=<name>]' );
 		Console::line( '                       Build front-end assets using the detected package manager' );
 		Console::line( '  php bin/moo deploy [<path>] [--pm=<manager>] [--no-build] [--zip] [--script=<name>]' );
-		Console::line( '                       Create a deployable copy (optionally zipped) with cleaned assets' );
+	Console::line( '                       Create a deployable copy (optionally zipped) with cleaned assets' );
+	Console::line( '  php bin/moo dist [--label=<slug>] [--output=<dir>] [--source=<path>] [--version=<x.y.z>] [--keep]' );
+	Console::line( '                       Produce a reusable framework or project distribution archive' );
 		Console::line( '  php bin/moo help        Show this help' );
+		Console::line();
+	}
+
+	/**
+	 * Produce a reusable distribution archive of the framework.
+	 *
+	 * @param array<int, mixed> $args CLI arguments.
+	 * @return void
+	 * @since 0.4.2
+	 */
+	protected static function cmd_dist( array $args = array() ) {
+		$options = self::parse_dist_options( $args );
+
+		$source_root = $options['source']
+			? self::normalize_absolute_path( $options['source'] )
+			: self::default_dist_source();
+
+		if ( ! $source_root || ! is_dir( $source_root ) ) {
+			Console::error( 'Unable to resolve source directory for distribution.' );
+			return;
+		}
+
+	$base_path    = self::framework_base_path();
+	$is_framework = self::paths_equal( $source_root, rtrim( $base_path, '/\\' ) );
+
+	$metadata = $is_framework ? array() : self::detect_project_metadata( $source_root );
+
+		$version = $options['version']
+			? self::sanitize_version_input( $options['version'] )
+			: ( $is_framework
+				? self::detect_current_version( $base_path )
+				: ( $metadata['version'] ?? self::detect_current_version( $source_root ) ) );
+
+		if ( ! $version ) {
+			$version = '0.0.0';
+		}
+
+		if ( $options['label'] ) {
+			$slug = self::sanitize_slug( $options['label'] );
+		} elseif ( $is_framework ) {
+			$slug = self::plugin_slug();
+		} elseif ( ! empty( $metadata['slug'] ) ) {
+			$slug = $metadata['slug'];
+		} else {
+			$slug = self::sanitize_slug( basename( $source_root ) );
+		}
+
+		if ( '' === $slug ) {
+			$slug = 'package';
+		}
+
+		$label = $slug . '-' . $version;
+
+		$dist_root = $options['output']
+			? self::normalize_absolute_path( $options['output'] )
+			: dirname( $source_root ) . DIRECTORY_SEPARATOR . 'dist';
+
+		if ( ! $dist_root ) {
+			Console::error( 'Failed to resolve distribution output directory.' );
+			return;
+		}
+
+		if ( ! self::ensure_directory( rtrim( $dist_root, '/\\' ) . DIRECTORY_SEPARATOR ) ) {
+			Console::error( 'Unable to create distribution output directory.' );
+			return;
+		}
+
+		$temp_dir = self::create_temp_directory( $slug . '-dist-' );
+
+		if ( ! $temp_dir ) {
+			Console::error( 'Unable to create temporary directory for distribution build.' );
+			return;
+		}
+
+		$target_root = $temp_dir . DIRECTORY_SEPARATOR . $label;
+
+		if ( ! @mkdir( $target_root, 0755, true ) ) {
+			Console::error( 'Unable to prepare working directory for distribution.' );
+			self::delete_directory( $temp_dir );
+			return;
+		}
+
+		Console::line();
+		Console::comment( 'Preparing distribution: ' . $label );
+
+	if ( $is_framework ) {
+		foreach ( self::default_dist_includes( $source_root ) as $entry ) {
+			$source = $source_root . DIRECTORY_SEPARATOR . $entry;
+			$target = $target_root . DIRECTORY_SEPARATOR . $entry;
+
+			if ( self::copy_within_dist( $source, $target ) && 'vendor' === $entry ) {
+				self::prune_vendor_tree( $target );
+			}
+
+			if ( ! file_exists( $target ) ) {
+				Console::warning( 'Failed to include ' . $entry . ' in distribution.' );
+			}
+		}
+
+		self::ensure_minified_assets( $target_root . DIRECTORY_SEPARATOR . 'assets' );
+		self::prune_assets_tree( $target_root . DIRECTORY_SEPARATOR . 'assets' );
+
+		$composer_binary = self::locate_composer_binary( $target_root );
+			$composer_status = false;
+
+			if ( $composer_binary ) {
+				Console::comment( '→ Installing production dependencies (--no-dev)' );
+				self::delete_directory( $target_root . DIRECTORY_SEPARATOR . 'vendor' );
+				list( $status, $output ) = self::execute_command(
+					$composer_binary,
+					array(
+						'install',
+						'--no-dev',
+						'--prefer-dist',
+						'--no-interaction',
+						'--no-progress',
+						'--optimize-autoloader',
+					),
+					$target_root
+				);
+				self::output_command_lines( $output );
+
+				if ( 0 === $status ) {
+					$composer_status = true;
+				} else {
+					Console::warning( 'Composer install failed (exit code ' . $status . '). Reinstating bundled vendor directory.' );
+					self::copy_within_dist(
+						$source_root . DIRECTORY_SEPARATOR . 'vendor',
+						$target_root . DIRECTORY_SEPARATOR . 'vendor'
+					);
+				}
+			} else {
+				Console::comment( '→ Composer binary not found; reusing existing vendor directory.' );
+			}
+
+			self::remove_if_exists( $target_root . DIRECTORY_SEPARATOR . 'composer.json' );
+			self::remove_if_exists( $target_root . DIRECTORY_SEPARATOR . 'composer.lock' );
+			self::remove_if_exists( $target_root . DIRECTORY_SEPARATOR . 'package.json' );
+			self::remove_if_exists( $target_root . DIRECTORY_SEPARATOR . 'package-lock.json' );
+			self::remove_if_exists( $target_root . DIRECTORY_SEPARATOR . 'pnpm-lock.yaml' );
+			self::remove_if_exists( $target_root . DIRECTORY_SEPARATOR . 'yarn.lock' );
+			self::delete_directory( $target_root . DIRECTORY_SEPARATOR . 'bin' );
+			self::delete_directory( $target_root . DIRECTORY_SEPARATOR . 'node_modules' );
+			self::prune_vendor_tree( $target_root . DIRECTORY_SEPARATOR . 'vendor' );
+		} else {
+			$exclusions = self::default_deploy_exclusions();
+
+			if ( ! self::copy_tree( $source_root, $target_root, $exclusions ) ) {
+				Console::error( 'Failed to copy project files into working directory.' );
+				self::delete_directory( $temp_dir );
+				return;
+			}
+
+			self::post_process_deploy( $target_root, array() );
+			self::prune_vendor_tree( $target_root . DIRECTORY_SEPARATOR . 'vendor' );
+		}
+
+		$archive_path = rtrim( $dist_root, '/\\' ) . DIRECTORY_SEPARATOR . $label . '.zip';
+
+		if ( ! self::create_zip_archive( $target_root, $archive_path ) ) {
+			Console::error( 'Failed to create distribution archive.' );
+			self::delete_directory( $temp_dir );
+			return;
+		}
+
+		Console::info( 'Distribution archive created: ' . self::relative_path( $archive_path ) );
+
+		self::do_action_safe(
+			'wpmoo_cli_dist_completed',
+			array(
+				'label'   => $label,
+				'version' => $version,
+				'archive' => $archive_path,
+				'path'    => $target_root,
+				'source'  => $source_root,
+				'options' => $options,
+			)
+		);
+
+		if ( ! $options['keep'] ) {
+			self::delete_directory( $temp_dir );
+		} else {
+			Console::comment( 'Working directory preserved at ' . self::relative_path( $temp_dir ) );
+		}
+
 		Console::line();
 	}
 
@@ -334,6 +524,86 @@ class CLI {
 	}
 
 	/**
+	 * Parse CLI arguments for the dist command.
+	 *
+	 * @param array<int, mixed> $args Raw CLI args.
+	 * @return array<string, mixed>
+	 * @since 0.4.2
+	 */
+	protected static function parse_dist_options( array $args ) {
+		$options = array(
+			'label'   => null,
+			'output'  => null,
+			'source'  => null,
+			'version' => null,
+			'keep'    => false,
+		);
+
+		$count = count( $args );
+
+		for ( $index = 0; $index < $count; $index++ ) {
+			$raw = $args[ $index ];
+
+			if ( ! is_string( $raw ) ) {
+				continue;
+			}
+
+			$arg = trim( $raw );
+
+			if ( '' === $arg ) {
+				continue;
+			}
+
+			if ( 0 === strpos( $arg, '--label=' ) ) {
+				$options['label'] = substr( $arg, 8 );
+				continue;
+			}
+
+			if ( '--label' === $arg && isset( $args[ $index + 1 ] ) ) {
+				$options['label'] = trim( (string) $args[ ++$index ] );
+				continue;
+			}
+
+			if ( 0 === strpos( $arg, '--output=' ) ) {
+				$options['output'] = substr( $arg, 9 );
+				continue;
+			}
+
+			if ( '--output' === $arg && isset( $args[ $index + 1 ] ) ) {
+				$options['output'] = trim( (string) $args[ ++$index ] );
+				continue;
+			}
+
+		if ( '--keep' === $arg ) {
+			$options['keep'] = true;
+			continue;
+		}
+
+		if ( 0 === strpos( $arg, '--source=' ) ) {
+			$options['source'] = substr( $arg, 9 );
+			continue;
+		}
+
+		if ( '--source' === $arg && isset( $args[ $index + 1 ] ) ) {
+			$options['source'] = trim( (string) $args[ ++$index ] );
+			continue;
+		}
+
+		if ( 0 === strpos( $arg, '--version=' ) ) {
+			$options['version'] = substr( $arg, 10 );
+			continue;
+		}
+
+		if ( '--version' === $arg && isset( $args[ $index + 1 ] ) ) {
+			$options['version'] = trim( (string) $args[ ++$index ] );
+			continue;
+		}
+	}
+
+	return $options;
+}
+
+	/**
 	 * Normalize a version string input.
 	 *
 	 * @param string $value Raw version value.
@@ -501,49 +771,101 @@ class CLI {
 
 		$composer_success = self::optimise_composer_dependencies( $working_dir );
 
-		if ( $composer_success ) {
-			$keep_composer_json = self::apply_filters_safe(
-				'wpmoo_cli_deploy_keep_composer_json',
-				false,
-				$working_dir,
-				$options,
-				$composer_success
-			);
-
-			if ( ! $keep_composer_json ) {
-				self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'composer.json' );
-			}
-
-			$keep_composer_lock = self::apply_filters_safe(
-				'wpmoo_cli_deploy_keep_composer_lock',
-				false,
-				$working_dir,
-				$options,
-				$composer_success
-			);
-
-			if ( ! $keep_composer_lock ) {
-				self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'composer.lock' );
-			}
-		} else {
-			Console::comment( '→ Retaining composer manifests (optimisation skipped or failed).' );
+		if ( ! $composer_success ) {
+			Console::comment( '→ Retaining vendor directory (composer optimisation skipped).' );
 		}
 
-		$keep_package_manifest = self::apply_filters_safe(
-			'wpmoo_cli_deploy_keep_package_json',
+		$keep_composer_json = self::apply_filters_safe(
+			'wpmoo_cli_deploy_keep_composer_json',
 			false,
 			$working_dir,
 			$options,
 			$composer_success
 		);
 
-		if ( ! $keep_package_manifest ) {
-			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'package.json' );
-			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'package-lock.json' );
-			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'pnpm-lock.yaml' );
-			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'yarn.lock' );
+		if ( ! $keep_composer_json ) {
+			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'composer.json' );
 		}
+
+	$keep_composer_lock = self::apply_filters_safe(
+		'wpmoo_cli_deploy_keep_composer_lock',
+		false,
+		$working_dir,
+		$options,
+		$composer_success
+	);
+
+	if ( ! $keep_composer_lock ) {
+		self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'composer.lock' );
 	}
+
+	$keep_package_manifest = self::apply_filters_safe(
+		'wpmoo_cli_deploy_keep_package_json',
+		false,
+		$working_dir,
+		$options,
+		$composer_success
+	);
+
+	if ( ! $keep_package_manifest ) {
+		self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'package.json' );
+		self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'package-lock.json' );
+		self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'pnpm-lock.yaml' );
+		self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'yarn.lock' );
+	}
+
+	self::delete_directory( $working_dir . DIRECTORY_SEPARATOR . 'bin' );
+
+	self::refresh_embedded_framework( $working_dir );
+	self::prune_vendor_tree( $working_dir . DIRECTORY_SEPARATOR . 'vendor' );
+}
+
+	/**
+	 * Replace embedded framework copy with a runtime-optimised version.
+	 *
+	 * @param string $working_dir Deployment directory.
+	 * @return void
+	 * @since 0.4.2
+	 */
+	protected static function refresh_embedded_framework( $working_dir ) {
+		$framework_path = $working_dir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'wpmoo-org';
+
+		if ( ! is_dir( $framework_path ) ) {
+			return;
+		}
+
+		$framework_path .= DIRECTORY_SEPARATOR . 'wpmoo';
+
+		if ( is_link( $framework_path ) || is_file( $framework_path ) ) {
+			@unlink( $framework_path );
+		} else {
+			self::delete_directory( $framework_path );
+		}
+
+		if ( ! is_dir( $framework_path ) && ! @mkdir( $framework_path, 0755, true ) ) {
+			Console::warning( 'Unable to rebuild embedded WPMoo runtime directory.' );
+			return;
+		}
+
+	$source_root = rtrim( self::framework_base_path(), '/\\' );
+
+	self::copy_within_dist( $source_root . DIRECTORY_SEPARATOR . 'wpmoo.php', $framework_path . DIRECTORY_SEPARATOR . 'wpmoo.php' );
+	self::copy_within_dist( $source_root . DIRECTORY_SEPARATOR . 'src', $framework_path . DIRECTORY_SEPARATOR . 'src' );
+	self::copy_within_dist( $source_root . DIRECTORY_SEPARATOR . 'languages', $framework_path . DIRECTORY_SEPARATOR . 'languages' );
+	self::copy_within_dist( $source_root . DIRECTORY_SEPARATOR . 'assets', $framework_path . DIRECTORY_SEPARATOR . 'assets' );
+	self::ensure_minified_assets( $framework_path . DIRECTORY_SEPARATOR . 'assets' );
+	self::prune_assets_tree( $framework_path . DIRECTORY_SEPARATOR . 'assets' );
+
+	self::remove_if_exists( $framework_path . DIRECTORY_SEPARATOR . 'composer.json' );
+	self::remove_if_exists( $framework_path . DIRECTORY_SEPARATOR . 'composer.lock' );
+	self::remove_if_exists( $framework_path . DIRECTORY_SEPARATOR . 'package.json' );
+	self::remove_if_exists( $framework_path . DIRECTORY_SEPARATOR . 'package-lock.json' );
+	self::remove_if_exists( $framework_path . DIRECTORY_SEPARATOR . 'pnpm-lock.yaml' );
+	self::remove_if_exists( $framework_path . DIRECTORY_SEPARATOR . 'yarn.lock' );
+	self::delete_directory( $framework_path . DIRECTORY_SEPARATOR . 'bin' );
+	self::delete_directory( $framework_path . DIRECTORY_SEPARATOR . 'node_modules' );
+	self::delete_directory( $framework_path . DIRECTORY_SEPARATOR . 'vendor' );
+}
 
 	/**
 	 * Write JSON data with formatting.
@@ -967,9 +1289,403 @@ class CLI {
 			'.editorconfig',
 			'assets/scss',
 			'assets/js/src',
+			'dist',
 			'bin/cache',
 		);
 	}
+
+	/**
+	 * List default paths to include in distribution builds.
+	 *
+	 * @param string $source_root Base source directory.
+	 * @return array<int, string>
+	 * @since 0.4.2
+	 */
+protected static function default_dist_includes( $source_root ) {
+	$candidates = array(
+		'wpmoo.php',
+		'src',
+		'assets',
+		'languages',
+		'vendor',
+		'composer.json',
+		'composer.lock',
+	);
+
+		$includes = array();
+
+		foreach ( $candidates as $candidate ) {
+			if ( file_exists( $source_root . DIRECTORY_SEPARATOR . $candidate ) ) {
+				$includes[] = $candidate;
+			}
+		}
+
+	return $includes;
+}
+
+/**
+ * Determine the default source directory for dist builds.
+ *
+ * @return string
+ * @since 0.4.2
+ */
+protected static function default_dist_source() {
+	$cwd = getcwd();
+
+	if ( $cwd ) {
+		$normalized = rtrim( $cwd, '/\\' );
+
+		if ( self::looks_like_plugin_project( $normalized ) ) {
+			return $normalized;
+		}
+	}
+
+	return rtrim( self::framework_base_path(), '/\\' );
+}
+
+/**
+ * Determine whether two filesystem paths refer to the same location.
+ *
+ * @param string $a First path.
+ * @param string $b Second path.
+ * @return bool
+ * @since 0.4.2
+ */
+protected static function paths_equal( $a, $b ) {
+	$ra = realpath( $a );
+	$rb = realpath( $b );
+
+	if ( false !== $ra && false !== $rb ) {
+		return $ra === $rb;
+	}
+
+	$na = rtrim( str_replace( '\\', '/', $a ), '/' );
+	$nb = rtrim( str_replace( '\\', '/', $b ), '/' );
+
+	return $na === $nb;
+}
+
+/**
+ * Determine if a string ends with a given suffix.
+ *
+ * @param string $haystack The string to inspect.
+ * @param string $needle   The suffix to check.
+ * @return bool
+ * @since 0.4.3
+ */
+protected static function ends_with( $haystack, $needle ) {
+	if ( '' === $needle ) {
+		return true;
+	}
+
+	$length = strlen( $needle );
+
+	if ( $length > strlen( $haystack ) ) {
+		return false;
+	}
+
+	return substr( $haystack, -$length ) === $needle;
+}
+
+/**
+ * Detect plugin or project metadata used for distribution labelling.
+ *
+ * @param string $path Project root path.
+ * @return array<string, mixed>
+ * @since 0.4.2
+ */
+protected static function detect_project_metadata( $path ) {
+	$metadata = array(
+		'name'    => null,
+		'version' => null,
+		'slug'    => null,
+		'type'    => null,
+		'main'    => null,
+	);
+
+	if ( ! is_dir( $path ) ) {
+		return $metadata;
+	}
+
+	$composer_path = $path . DIRECTORY_SEPARATOR . 'composer.json';
+
+	if ( file_exists( $composer_path ) ) {
+		$contents = file_get_contents( $composer_path );
+
+		if ( false !== $contents ) {
+			$data = json_decode( $contents, true );
+
+			if ( is_array( $data ) ) {
+				if ( ! empty( $data['version'] ) ) {
+					$metadata['version'] = $data['version'];
+				}
+
+				if ( ! empty( $data['type'] ) ) {
+					$metadata['type'] = $data['type'];
+				}
+
+				if ( empty( $metadata['slug'] ) && ! empty( $data['name'] ) ) {
+					$metadata['slug'] = self::sanitize_slug( basename( $data['name'] ) );
+				}
+			}
+		}
+	}
+
+	foreach ( new \DirectoryIterator( $path ) as $file ) {
+		if ( $file->isDot() || ! $file->isFile() ) {
+			continue;
+		}
+
+		if ( strtolower( $file->getExtension() ) !== 'php' ) {
+			continue;
+		}
+
+		$header = self::extract_plugin_header( $file->getPathname() );
+
+		if ( empty( $header ) ) {
+			continue;
+		}
+
+		$metadata['main'] = $file->getPathname();
+
+		if ( ! empty( $header['name'] ) ) {
+			$metadata['name'] = $header['name'];
+
+			if ( empty( $metadata['slug'] ) ) {
+				$metadata['slug'] = self::sanitize_slug( $header['name'] );
+			}
+		}
+
+		if ( ! empty( $header['version'] ) ) {
+			$metadata['version'] = $header['version'];
+		}
+
+		break;
+	}
+
+	if ( empty( $metadata['slug'] ) ) {
+		$metadata['slug'] = self::sanitize_slug( basename( $path ) );
+	}
+
+	return $metadata;
+}
+
+/**
+ * Determine whether a path appears to be a plugin project root.
+ *
+ * @param string $path Directory path.
+ * @return bool
+ * @since 0.4.2
+ */
+protected static function looks_like_plugin_project( $path ) {
+	$meta = self::detect_project_metadata( $path );
+
+	if ( ! empty( $meta['name'] ) && ! empty( $meta['main'] ) ) {
+		return true;
+	}
+
+	if ( ! empty( $meta['type'] ) && false !== stripos( (string) $meta['type'], 'plugin' ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Extract plugin header information from a PHP file.
+ *
+ * @param string $file_path Absolute path to PHP file.
+ * @return array<string, string>
+ * @since 0.4.2
+ */
+protected static function extract_plugin_header( $file_path ) {
+	$header = array();
+	$handle = @fopen( $file_path, 'r' );
+
+	if ( ! $handle ) {
+		return $header;
+	}
+
+	$first_chunk = fread( $handle, 8192 );
+	fclose( $handle );
+
+	if ( false === $first_chunk ) {
+		return $header;
+	}
+
+	if ( preg_match( '/^[ \t\/*#@]*Plugin Name:\s*(.*)$/mi', $first_chunk, $matches ) ) {
+		$header['name'] = trim( $matches[1] );
+	}
+
+	if ( preg_match( '/^[ \t\/*#@]*Version:\s*(.*)$/mi', $first_chunk, $matches ) ) {
+		$header['version'] = trim( $matches[1] );
+	}
+
+	return $header;
+}
+
+/**
+ * Sanitize a string into a filesystem-safe slug.
+ *
+ * @param string $value Raw string.
+ * @return string
+ * @since 0.4.2
+ */
+protected static function sanitize_slug( $value ) {
+	$value = strtolower( trim( (string) $value ) );
+	$value = preg_replace( '/[^a-z0-9]+/', '-', $value );
+	$value = trim( (string) $value, '-' );
+
+	return $value ?: 'package';
+}
+
+/**
+ * Remove non-runtime directories from the vendor tree.
+ *
+ * @param string $vendor_path Vendor directory.
+ * @return void
+ * @since 0.4.2
+ */
+protected static function prune_vendor_tree( $vendor_path ) {
+	if ( ! is_dir( $vendor_path ) ) {
+		return;
+	}
+
+	self::delete_directory( $vendor_path . DIRECTORY_SEPARATOR . 'bin' );
+
+	$runtime_root = $vendor_path . DIRECTORY_SEPARATOR . 'wpmoo-org';
+
+	if ( ! is_dir( $runtime_root ) ) {
+		return;
+	}
+
+	$runtime_framework = $runtime_root . DIRECTORY_SEPARATOR . 'wpmoo';
+
+	if ( is_link( $runtime_framework ) ) {
+		@unlink( $runtime_framework );
+		return;
+	}
+
+	if ( ! is_dir( $runtime_framework ) ) {
+		return;
+	}
+
+	$nested_vendor = $runtime_framework . DIRECTORY_SEPARATOR . 'vendor';
+
+	if ( is_dir( $nested_vendor ) ) {
+		$nested_self = $nested_vendor . DIRECTORY_SEPARATOR . 'wpmoo-org' . DIRECTORY_SEPARATOR . 'wpmoo';
+
+		if ( is_link( $nested_self ) ) {
+			@unlink( $nested_self );
+		} elseif ( is_dir( $nested_self ) ) {
+			self::delete_directory( $nested_self );
+		}
+
+		self::delete_directory( $nested_vendor . DIRECTORY_SEPARATOR . 'bin' );
+	}
+
+	self::ensure_minified_assets( $runtime_framework . DIRECTORY_SEPARATOR . 'assets' );
+	self::prune_assets_tree( $runtime_framework . DIRECTORY_SEPARATOR . 'assets' );
+}
+
+/**
+ * Ensure minified variants exist for core assets.
+ *
+ * @param string $assets_dir Assets directory path.
+ * @return void
+ * @since 0.4.3
+ */
+protected static function ensure_minified_assets( $assets_dir ) {
+	if ( ! is_dir( $assets_dir ) ) {
+		return;
+	}
+
+	$map = array(
+		'css' => '.css',
+		'js'  => '.js',
+	);
+
+	foreach ( $map as $subdir => $suffix ) {
+		$dir = $assets_dir . DIRECTORY_SEPARATOR . $subdir;
+
+		if ( ! is_dir( $dir ) ) {
+			continue;
+		}
+
+		$iterator = new \DirectoryIterator( $dir );
+
+		foreach ( $iterator as $file ) {
+			if ( $file->isDot() || ! $file->isFile() ) {
+				continue;
+			}
+
+			$basename = $file->getBasename();
+			$extension = strtolower( $file->getExtension() );
+
+			if ( 'map' === $extension ) {
+				continue;
+			}
+
+			if ( self::ends_with( $basename, '.min' . $suffix ) ) {
+				continue;
+			}
+
+			if ( ! self::ends_with( $basename, $suffix ) ) {
+				continue;
+			}
+
+			$min_path = substr( $file->getPathname(), 0, -strlen( $suffix ) ) . '.min' . $suffix;
+
+			if ( ! file_exists( $min_path ) ) {
+				@copy( $file->getPathname(), $min_path );
+			}
+		}
+	}
+}
+
+/**
+ * Remove non-minified and development assets from a directory tree.
+ *
+ * @param string $assets_dir Assets directory path.
+ * @return void
+ * @since 0.4.3
+ */
+protected static function prune_assets_tree( $assets_dir ) {
+	if ( ! is_dir( $assets_dir ) ) {
+		return;
+	}
+
+	$iterator = new \RecursiveIteratorIterator(
+		new \RecursiveDirectoryIterator(
+			$assets_dir,
+			\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
+		),
+		\RecursiveIteratorIterator::CHILD_FIRST
+	);
+
+	foreach ( $iterator as $item ) {
+		$path = $item->getPathname();
+
+		if ( $item->isDir() ) {
+			if ( 'scss' === strtolower( $item->getBasename() ) ) {
+				self::delete_directory( $path );
+				continue;
+			}
+
+			@rmdir( $path );
+			continue;
+		}
+
+		$basename = $item->getBasename();
+
+		if ( self::ends_with( $basename, '.min.css' ) || self::ends_with( $basename, '.min.js' ) ) {
+			continue;
+		}
+
+		@unlink( $path );
+	}
+}
+
 
 	/**
 	 * Normalize an absolute path (resolving relative input).
@@ -1115,6 +1831,98 @@ class CLI {
 
 			if ( ! @copy( $source_path, $destination_path ) ) {
 				Console::warning( 'Failed to copy file: ' . self::relative_path( $source_path ) );
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Copy a file or directory into the distribution workspace.
+	 *
+	 * @param string $source      Absolute source path.
+	 * @param string $destination Absolute destination path.
+	 * @return bool
+	 * @since 0.4.2
+	 */
+	protected static function copy_within_dist( $source, $destination ) {
+		if ( ! file_exists( $source ) ) {
+			return false;
+		}
+
+		if ( is_link( $source ) ) {
+			$target = readlink( $source );
+
+			return false !== $target ? @symlink( $target, $destination ) : false;
+		}
+
+		if ( is_dir( $source ) ) {
+			return self::copy_directory_for_dist( $source, $destination );
+		}
+
+		$directory = dirname( $destination );
+
+		if ( ! is_dir( $directory ) && ! @mkdir( $directory, 0755, true ) ) {
+			return false;
+		}
+
+		return @copy( $source, $destination );
+	}
+
+	/**
+	 * Recursively copy a directory for distribution purposes.
+	 *
+	 * @param string $source      Source directory.
+	 * @param string $destination Destination directory.
+	 * @return bool
+	 * @since 0.4.2
+	 */
+	protected static function copy_directory_for_dist( $source, $destination ) {
+		if ( ! is_dir( $destination ) && ! @mkdir( $destination, 0755, true ) ) {
+			return false;
+		}
+
+		$items = scandir( $source );
+
+		if ( false === $items ) {
+			return false;
+		}
+
+		foreach ( $items as $item ) {
+			if ( '.' === $item || '..' === $item ) {
+				continue;
+			}
+
+			$source_path      = $source . DIRECTORY_SEPARATOR . $item;
+			$destination_path = $destination . DIRECTORY_SEPARATOR . $item;
+
+			if ( is_link( $source_path ) ) {
+				$target = readlink( $source_path );
+
+				if ( false === $target ) {
+					continue;
+				}
+
+				@symlink( $target, $destination_path );
+				continue;
+			}
+
+			if ( is_dir( $source_path ) ) {
+				if ( ! self::copy_directory_for_dist( $source_path, $destination_path ) ) {
+					return false;
+				}
+
+				continue;
+			}
+
+			$directory = dirname( $destination_path );
+
+			if ( ! is_dir( $directory ) && ! @mkdir( $directory, 0755, true ) ) {
+				return false;
+			}
+
+			if ( ! @copy( $source_path, $destination_path ) ) {
 				return false;
 			}
 		}
@@ -1951,10 +2759,10 @@ class CLI {
 	 *
 	 * @return string Base path with trailing directory separator.
 	 */
-	protected static function base_path() {
-		$app      = App::instance();
-		$candidates = array(
-			$app->path( '' ),
+protected static function base_path() {
+	$app      = App::instance();
+	$candidates = array(
+		$app->path( '' ),
 			$app->path( '../' ),
 			$app->path( '../../' ),
 			$app->path( '../../../' ),
@@ -1976,8 +2784,22 @@ class CLI {
 		$real = realpath( $raw );
 		$base = $real ? $real : $raw;
 
-		return rtrim( $base, '/\\' ) . DIRECTORY_SEPARATOR;
+	return rtrim( $base, '/\\' ) . DIRECTORY_SEPARATOR;
+}
+
+/**
+ * Resolve the framework base path regardless of plugin context.
+ *
+ * @return string Base path with trailing separator.
+ * @since 0.4.3
+ */
+protected static function framework_base_path() {
+	if ( defined( 'WPMOO_PATH' ) ) {
+		return rtrim( WPMOO_PATH, '/\\' ) . DIRECTORY_SEPARATOR;
 	}
+
+	return self::base_path();
+}
 
 	/**
 	 * Generate candidate paths for wp-cli binaries.
@@ -2134,6 +2956,12 @@ class CLI {
 			return false;
 		}
 
+		if ( self::composer_uses_path_repositories( $composer_json ) ) {
+			Console::comment( '→ Composer path repositories detected; skipping dependency optimisation.' );
+
+			return false;
+		}
+
 		$composer_binary = self::locate_composer_binary( $working_dir );
 
 		if ( ! $composer_binary ) {
@@ -2211,6 +3039,43 @@ class CLI {
 		if ( file_exists( $path ) && ! is_dir( $path ) ) {
 			@unlink( $path );
 		}
+	}
+
+	/**
+	 * Determine whether composer.json uses path repositories.
+	 *
+	 * @param string $composer_json Path to composer.json.
+	 * @return bool
+	 * @since 0.4.2
+	 */
+	protected static function composer_uses_path_repositories( $composer_json ) {
+		if ( ! $composer_json || ! file_exists( $composer_json ) ) {
+			return false;
+		}
+
+		$contents = file_get_contents( $composer_json );
+
+		if ( false === $contents ) {
+			return false;
+		}
+
+		$data = json_decode( $contents, true );
+
+		if ( ! is_array( $data ) || empty( $data['repositories'] ) || ! is_array( $data['repositories'] ) ) {
+			return false;
+		}
+
+		foreach ( $data['repositories'] as $repository ) {
+			if ( ! is_array( $repository ) ) {
+				continue;
+			}
+
+			if ( isset( $repository['type'] ) && 'path' === $repository['type'] ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

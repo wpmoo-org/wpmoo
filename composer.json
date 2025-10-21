@@ -2,7 +2,7 @@
     "name": "wpmoo-org/wpmoo",
     "description": "WPMoo \u2014 WordPress Micro Object-Oriented Framework (PHP 7.4+)",
     "license": "GPL-3.0",
-    "version": "0.4.1",
+    "version": "0.4.3",
     "homepage": "https://wpmoo.org",
     "authors": [
         {
