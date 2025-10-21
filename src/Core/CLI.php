@@ -62,21 +62,228 @@ class CLI {
 	 * @return void
 	 */
 	protected static function help() {
+		self::render_welcome();
+		self::render_usage();
+		self::render_command_overview( self::command_definitions() );
+	}
+
+	/**
+	 * Render the welcome header when no command is provided.
+	 *
+	 * @return void
+	 */
+	protected static function render_welcome() {
+		$summary = self::environment_summary();
+
 		Console::line();
-		Console::comment( '🐮  WPMoo CLI' );
+
+		foreach ( self::logo_lines() as $line ) {
+			Console::banner( $line );
+		}
+
+		$version = $summary['version'] ? $summary['version'] : 'dev';
+
+		Console::comment( 'WPMoo Version ' . $version );
+		Console::line();
+
+		$wp_cli = $summary['wp_cli_version'] ? $summary['wp_cli_version'] : 'not detected';
+
+		Console::comment( '→ WP-CLI version: ' . $wp_cli );
+		Console::comment(
+			sprintf(
+				'→ Current Plugin File, Name, Namespace: \'%s\', \'%s\', \'%s\'',
+				$summary['plugin_file'] ? $summary['plugin_file'] : 'n/a',
+				$summary['plugin_name'] ? $summary['plugin_name'] : 'n/a',
+				$summary['plugin_namespace'] ? $summary['plugin_namespace'] : 'n/a'
+			)
+		);
+
+		if ( $summary['plugin_version'] ) {
+			Console::comment( '→ Plugin version: ' . $summary['plugin_version'] );
+		}
+
+		Console::line();
+	}
+
+	/**
+	 * Emit usage guidance for the CLI entrypoint.
+	 *
+	 * @return void
+	 */
+	protected static function render_usage() {
 		Console::line( 'Usage:' );
-		Console::line( '  php bin/moo info        Show framework info' );
-		Console::line( '  php bin/moo update [--wp-path=<path>]   Run maintenance tasks (translations, etc.)' );
-		Console::line( '  php bin/moo version [--patch|--minor|--major|<version>] [--dry-run] [--yes]' );
-		Console::line( '                       Bump framework version across manifests' );
-		Console::line( '  php bin/moo build [--pm=<manager>] [--install|--no-install] [--script=<name>]' );
-		Console::line( '                       Build front-end assets using the detected package manager' );
-		Console::line( '  php bin/moo deploy [<path>] [--pm=<manager>] [--no-build] [--zip] [--script=<name>]' );
-	Console::line( '                       Create a deployable copy (optionally zipped) with cleaned assets' );
-	Console::line( '  php bin/moo dist [--label=<slug>] [--output=<dir>] [--source=<path>] [--version=<x.y.z>] [--keep]' );
-	Console::line( '                       Produce a reusable framework or project distribution archive' );
-		Console::line( '  php bin/moo help        Show this help' );
+		Console::line( '  command [options] [arguments]' );
 		Console::line();
+	}
+
+	/**
+	 * Output the available commands with descriptions.
+	 *
+	 * @param array<string, string> $commands Command map.
+	 * @return void
+	 */
+	protected static function render_command_overview( array $commands ) {
+		Console::comment( 'Available commands:' );
+
+		$width = 0;
+
+		foreach ( array_keys( $commands ) as $command ) {
+			$width = max( $width, strlen( $command ) );
+		}
+
+		foreach ( $commands as $command => $description ) {
+			$label    = self::colorize( $command, '95' );
+			$details  = self::colorize( $description, '92' );
+			$padding  = str_repeat( ' ', $width - strlen( $command ) + 2 );
+			Console::line( '  ' . $label . $padding . $details );
+		}
+
+		Console::line();
+	}
+
+	/**
+	 * Describe the available CLI commands.
+	 *
+	 * @return array<string, string>
+	 */
+	protected static function command_definitions(): array {
+		return array(
+			'info'    => 'Show framework info',
+			'update'  => 'Run maintenance tasks (translations, etc.)',
+			'version' => 'Bump framework version across manifests',
+			'build'   => 'Build front-end assets',
+			'deploy'  => 'Create a deployable copy (optionally zipped)',
+			'dist'    => 'Produce a distributable archive',
+			'help'    => 'Show this help',
+		);
+	}
+
+	/**
+	 * Collect environment metadata for the splash screen.
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected static function environment_summary(): array {
+		$base_path   = self::framework_base_path();
+		$metadata    = self::detect_project_metadata( rtrim( $base_path, '/\\' ) );
+		$namespace   = self::detect_primary_namespace( $base_path );
+		$version     = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : self::detect_current_version( $base_path );
+		$wp_cli_ver  = self::detect_wp_cli_version();
+
+		if ( ! $version && ! empty( $metadata['version'] ) ) {
+			$version = $metadata['version'];
+		}
+
+		return array(
+			'version'          => $version,
+			'wp_cli_version'   => $wp_cli_ver,
+			'plugin_file'      => ! empty( $metadata['main'] ) ? basename( $metadata['main'] ) : null,
+			'plugin_name'      => ! empty( $metadata['name'] ) ? $metadata['name'] : null,
+			'plugin_version'   => ! empty( $metadata['version'] ) ? $metadata['version'] : null,
+			'plugin_namespace' => $namespace,
+		);
+	}
+
+	/**
+	 * Provide ASCII art logo lines.
+	 *
+	 * @return array<int, string>
+	 */
+	protected static function logo_lines(): array {
+		return array(
+			'░██       ░██ ░█████████  ░███     ░███                       ',
+			'░██       ░██ ░██     ░██ ░████   ░████                       ',
+			'░██  ░██  ░██ ░██     ░██ ░██░██ ░██░██  ░███████   ░███████  ',
+			'░██ ░████ ░██ ░█████████  ░██ ░████ ░██ ░██    ░██ ░██    ░██ ',
+			'░██░██ ░██░██ ░██         ░██  ░██  ░██ ░██    ░██ ░██    ░██ ',
+			'░████   ░████ ░██         ░██       ░██ ░██    ░██ ░██    ░██ ',
+			'░███     ░███ ░██         ░██       ░██  ░███████   ░███████  ',
+		);
+	}
+
+	/**
+	 * Attempt to determine the primary namespace from composer.json.
+	 *
+	 * @param string $base_path Base path with trailing separator.
+	 * @return string|null
+	 */
+	protected static function detect_primary_namespace( $base_path ) {
+		$composer = rtrim( $base_path, '/\\' ) . DIRECTORY_SEPARATOR . 'composer.json';
+
+		if ( ! file_exists( $composer ) ) {
+			return null;
+		}
+
+		$contents = file_get_contents( $composer );
+
+		if ( false === $contents ) {
+			return null;
+		}
+
+		$data = json_decode( $contents, true );
+
+		if ( ! is_array( $data ) ) {
+			return null;
+		}
+
+		$namespaces = array();
+
+		if ( ! empty( $data['autoload']['psr-4'] ) && is_array( $data['autoload']['psr-4'] ) ) {
+			$namespaces = array_keys( $data['autoload']['psr-4'] );
+		} elseif ( ! empty( $data['autoload-dev']['psr-4'] ) && is_array( $data['autoload-dev']['psr-4'] ) ) {
+			$namespaces = array_keys( $data['autoload-dev']['psr-4'] );
+		}
+
+		if ( empty( $namespaces ) ) {
+			return null;
+		}
+
+		return rtrim( (string) $namespaces[0], '\\' );
+	}
+
+	/**
+	 * Detect the installed WP-CLI version, if available.
+	 *
+	 * @return string|null
+	 */
+	protected static function detect_wp_cli_version() {
+		if ( ! function_exists( 'exec' ) ) {
+			return null;
+		}
+
+		$binary = self::locate_binary(
+			self::wp_binary_candidates(),
+			array( 'wp', 'wp.bat' )
+		);
+
+		if ( ! $binary ) {
+			return null;
+		}
+
+		list( $status, $output ) = self::execute_command( $binary, array( '--version' ) );
+
+		if ( 0 !== $status || empty( $output ) ) {
+			return null;
+		}
+
+		$line = trim( $output[0] );
+
+		if ( preg_match( '/([0-9]+\.[0-9.]+)/', $line, $matches ) ) {
+			return $matches[1];
+		}
+
+		return $line;
+	}
+
+	/**
+	 * Apply ANSI color to a string.
+	 *
+	 * @param string $text  Text to colorize.
+	 * @param string $code  ANSI color code.
+	 * @return string
+	 */
+	protected static function colorize( $text, $code ) {
+		return "\033[" . $code . 'm' . $text . "\033[0m";
 	}
 
 	/**
