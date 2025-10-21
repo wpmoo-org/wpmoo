@@ -168,14 +168,8 @@ class Field {
 			'set_help'          => array( 'help', $arguments ),
 			'set_options'       => array( 'options', $arguments ),
 			'set_attributes'    => array( 'attributes', $arguments ),
-			'add_attributes'    => array( 'attributes', $arguments ),
-			'add_attribute'     => array(
-				'attributes',
-				array( array(
-					isset( $arguments[0] ) ? (string) $arguments[0] : '' =>
-						isset( $arguments[1] ) ? $arguments[1] : null,
-				) ),
-			),
+			'add_attributes'    => $this->normalize_attribute_arguments( $arguments ),
+			'add_attribute'     => $this->normalize_attribute_arguments( $arguments ),
 			'set_before'        => array( 'before', $arguments ),
 			'set_after'         => array( 'after', $arguments ),
 			'set_help_html'     => array( 'help', $arguments ),
@@ -191,5 +185,29 @@ class Field {
 
 		return null;
 	}
-}
 
+	/**
+	 * Normalise attribute helper arguments to avoid array-to-string warnings.
+	 *
+	 * @param array<int, mixed> $arguments Raw arguments passed to the proxy.
+	 * @return array<string, mixed>
+	 */
+	protected function normalize_attribute_arguments( array $arguments ): array {
+		// Allow passing an associative array directly.
+		if ( isset( $arguments[0] ) && is_array( $arguments[0] ) && ! isset( $arguments[1] ) ) {
+			return array( 'attributes', array( $arguments[0] ) );
+		}
+
+		$key   = isset( $arguments[0] ) ? (string) $arguments[0] : '';
+		$value = isset( $arguments[1] ) ? $arguments[1] : null;
+
+		return array(
+			'attributes',
+			array(
+				array(
+					$key => $value,
+				),
+			),
+		);
+	}
+}
