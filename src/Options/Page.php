@@ -17,6 +17,8 @@ use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
 use WPMoo\Support\Concerns\EscapesOutput;
+use WPMoo\Support\Concerns\TranslatesStrings;
+use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Builds a WordPress admin options page from configuration.
  */
 class Page {
-	use EscapesOutput;
+	use EscapesOutput, TranslatesStrings;
 
 	/**
 	 * Normalized page configuration.
@@ -593,7 +595,7 @@ class Page {
 		}
 
 		if ( '' === $config['menu_slug'] ) {
-			$config['menu_slug'] = $this->slugify( $config['menu_title'] );
+			$config['menu_slug'] = Str::slug( $config['menu_title'] );
 		}
 
 		if ( '' === $config['option_key'] ) {
@@ -629,7 +631,7 @@ class Page {
 
 			if ( '' === $section['id'] ) {
 				$base          = '' !== $section['title'] ? $section['title'] : uniqid( 'section_', true );
-				$section['id'] = $this->slugify( $base );
+				$section['id'] = Str::slug( $base );
 			}
 
 			$fields = array();
@@ -649,33 +651,6 @@ class Page {
 		}
 
 		return $normalized;
-	}
-
-	/**
-	 * Generate a slug from the given value.
-	 *
-	 * @param string $value Raw string.
-	 * @return string
-	 */
-	protected function slugify( $value ) {
-		if ( function_exists( 'sanitize_title' ) ) {
-			return sanitize_title( $value );
-		}
-
-		$value = strtolower( preg_replace( '/[^a-zA-Z0-9]+/', '-', $value ) );
-
-		return trim( $value, '-' );
-	}
-
-	/**
-	 * Translate strings safely.
-	 *
-	 * @param string $text   Text to translate.
-	 * @param string $domain Text domain.
-	 * @return string
-	 */
-	protected function translate( string $text, string $domain ): string {
-		return function_exists( '__' ) ? \__( $text, $domain ) : $text;
 	}
 
 	/**

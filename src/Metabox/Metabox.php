@@ -17,6 +17,7 @@ use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
 use WPMoo\Support\Concerns\EscapesOutput;
+use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -535,22 +536,6 @@ class Metabox {
 	}
 
 	/**
-	 * Generate a slug from the provided value.
-	 *
-	 * @param string $value Raw string.
-	 * @return string
-	 */
-	protected function slugify( $value ) {
-		if ( function_exists( 'sanitize_title' ) ) {
-			return sanitize_title( $value );
-		}
-
-		$value = strtolower( preg_replace( '/[^a-zA-Z0-9]+/', '-', $value ) );
-
-		return trim( $value, '-' );
-	}
-
-	/**
 	 * Normalize panel sections using instantiated fields.
 	 *
 	 * @param array<int, array<string, mixed>> $sections Raw section configuration.
@@ -571,7 +556,7 @@ class Metabox {
 			$section = array_merge( $defaults, is_array( $section ) ? $section : array() );
 
 			if ( '' === $section['id'] ) {
-				$section['id'] = $this->slugify( $section['title'] ? $section['title'] : uniqid( 'section_', true ) );
+				$section['id'] = Str::slug( $section['title'] ? $section['title'] : uniqid( 'section_', true ) );
 			}
 
 			if ( '' === $section['title'] ) {

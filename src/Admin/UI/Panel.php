@@ -12,6 +12,7 @@
 namespace WPMoo\Admin\UI;
 
 use WPMoo\Support\Concerns\EscapesOutput;
+use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -248,7 +249,7 @@ class Panel {
 			$section = array_merge( $defaults, is_array( $section ) ? $section : array() );
 
 			if ( '' === $section['id'] ) {
-				$section['id'] = $this->slugify( $section['label'] ? $section['label'] : uniqid( 'section_', true ) );
+				$section['id'] = Str::slug( $section['label'] ? $section['label'] : uniqid( 'section_', true ) );
 			}
 
 			if ( '' === $section['label'] && ! empty( $section['title'] ) ) {
@@ -288,16 +289,6 @@ class Panel {
 	 * @param string $value Raw input.
 	 * @return string
 	 */
-	protected function slugify( $value ) {
-		if ( function_exists( 'sanitize_title' ) ) {
-			return sanitize_title( $value );
-		}
-
-		$value = strtolower( preg_replace( '/[^a-zA-Z0-9]+/', '-', $value ) );
-
-		return trim( $value, '-' );
-	}
-
 	/**
 	 * Build the toggle button text.
 	 *

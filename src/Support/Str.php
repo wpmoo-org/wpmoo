@@ -62,4 +62,27 @@ class Str {
 
 		return false !== strpos( $haystack, $needle, $length );
 	}
+
+	/**
+	 * Generate a slug using WordPress helpers when available.
+	 *
+	 * @param string $value Raw input value.
+	 * @return string
+	 */
+	public static function slug( $value ) {
+		$value = (string) $value;
+
+		if ( '' === $value ) {
+			return '';
+		}
+
+		if ( function_exists( 'sanitize_title' ) ) {
+			return sanitize_title( $value );
+		}
+
+		$value = strtolower( trim( $value ) );
+		$value = preg_replace( '/[^a-z0-9]+/', '-', $value );
+
+		return trim( (string) $value, '-' );
+	}
 }

@@ -13,6 +13,7 @@ namespace WPMoo\Options;
 
 use InvalidArgumentException;
 use WPMoo\Fields\Manager;
+use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,6 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Fluent builder for options pages.
  */
 class Builder {
+	use TranslatesStrings;
+
 	/**
 	 * Option key.
 	 *
@@ -218,13 +221,4 @@ class Builder {
 		return $page;
 	}
 
-	/**
-	 * Translate strings while remaining compatible with non-WordPress contexts.
-	 *
-	 * @param string $text Text to translate.
-	 * @return string
-	 */
-	protected function translate( string $text ): string {
-		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
-	}
 }
