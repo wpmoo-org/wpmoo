@@ -52,9 +52,21 @@ class Options {
 	protected static $repositories = array();
 
 	/**
-	 * Register a new options page.
+	 * Start a new options page builder.
 	 *
-	 * @param string|array<string, mixed> $option_key_or_config Option key or full config array (backward compatibility).
+	 * @param string $option_key Option key.
+	 * @return Builder
+	 */
+	public static function create( string $option_key ): Builder {
+		self::boot();
+
+		return new Builder( $option_key, self::$field_manager );
+	}
+
+	/**
+	 * Register a new options page (backward compatibility).
+	 *
+	 * @param string|array<string, mixed> $option_key_or_config Option key or full config array.
 	 * @return Builder|Page
 	 */
 	public static function register( $option_key_or_config ) {
@@ -66,7 +78,7 @@ class Options {
 		}
 
 		// New fluent API: return Builder.
-		return new Builder( $option_key_or_config, self::$field_manager );
+		return self::create( (string) $option_key_or_config );
 	}
 
 	/**

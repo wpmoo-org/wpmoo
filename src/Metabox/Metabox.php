@@ -104,9 +104,21 @@ class Metabox {
 	}
 
 	/**
-	 * Register a new metabox.
+	 * Start building a new metabox.
 	 *
-	 * @param string|array<string, mixed> $id_or_config Metabox ID or full config array (backward compatibility).
+	 * @param string $id Metabox identifier.
+	 * @return Builder
+	 */
+	public static function create( string $id ): Builder {
+		self::ensure_booted();
+
+		return new Builder( $id, self::$shared_manager );
+	}
+
+	/**
+	 * Register a new metabox (backward compatibility).
+	 *
+	 * @param string|array<string, mixed> $id_or_config Metabox ID or full config array.
 	 * @return Builder|Metabox
 	 */
 	public static function register( $id_or_config ) {
@@ -118,7 +130,7 @@ class Metabox {
 		}
 
 		// New fluent API: return Builder.
-		return new Builder( $id_or_config, self::$shared_manager );
+		return self::create( (string) $id_or_config );
 	}
 
 	/**

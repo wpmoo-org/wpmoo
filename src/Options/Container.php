@@ -168,14 +168,14 @@ class Container {
 	}
 
 	/**
-	 * Factory mirroring Carbon Fields Container::make().
+	 * Factory for building a container instance.
 	 *
 	 * @param string      $type       Container type.
 	 * @param string      $id_or_name Identifier or human title.
 	 * @param string|null $name       Optional explicit title.
 	 * @return static
 	 */
-	public static function make( string $type, string $id_or_name, ?string $name = null ): self {
+	public static function create( string $type, string $id_or_name, ?string $name = null ): self {
 		$type = static::normalize_type( $type );
 
 		if ( null === $name || '' === $name ) {
@@ -200,6 +200,18 @@ class Container {
 		static::queue( $container );
 
 		return $container;
+	}
+
+	/**
+	 * Backwards compatible alias of create().
+	 *
+	 * @param string      $type       Container type.
+	 * @param string      $id_or_name Identifier or human title.
+	 * @param string|null $name       Optional explicit title.
+	 * @return static
+	 */
+	public static function make( string $type, string $id_or_name, ?string $name = null ): self {
+		return static::create( $type, $id_or_name, $name );
 	}
 
 	/**
@@ -672,4 +684,3 @@ class Container {
 		return $value;
 	}
 }
-
