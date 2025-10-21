@@ -30,46 +30,16 @@ class Textarea extends Field {
 	 * @return string
 	 */
 	public function render( $name, $value ) {
-		$attributes = $this->build_attributes();
+		$attributes = $this->attributes();
 		$value      = null !== $value ? $value : $this->default();
 		$value      = null !== $value ? $this->esc_html( $value ) : '';
 
 		return sprintf(
-			'<textarea name="%s" id="%s"%s>%s</textarea>',
+			'<textarea name="%1$s" id="%2$s"%3$s>%4$s</textarea>',
 			$this->esc_attr( $name ),
 			$this->esc_attr( $this->id() ),
-			$attributes,
+			$this->compile_attributes( $attributes ),
 			$value
 		);
-	}
-
-	/**
-	 * Compile additional HTML attributes.
-	 *
-	 * @return string
-	 */
-	protected function build_attributes() {
-		if ( empty( $this->args() ) ) {
-			return '';
-		}
-
-		$output = '';
-
-		foreach ( $this->args() as $attribute => $value ) {
-			if ( is_bool( $value ) ) {
-				if ( $value ) {
-					$output .= ' ' . $this->esc_attr( $attribute );
-				}
-				continue;
-			}
-
-			$output .= sprintf(
-				' %s="%s"',
-				$this->esc_attr( $attribute ),
-				$this->esc_attr( $value )
-			);
-		}
-
-		return $output;
 	}
 }

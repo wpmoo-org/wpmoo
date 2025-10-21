@@ -459,7 +459,21 @@ class Metabox {
 
 		echo '</div>';
 		echo '<div class="wpmoo-fieldset">';
+
+		if ( $field->before() ) {
+			echo '<div class="wpmoo-field-before">' . $field->before_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
 		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Field render method handles escaping.
+
+		if ( $field->after() ) {
+			echo '<div class="wpmoo-field-after">' . $field->after_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		if ( $field->help() ) {
+			echo '<p class="wpmoo-field-help">' . $field->help_html() . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
 		echo '</div>';
 		echo '<div class="clear"></div>';
 		echo '</div>';

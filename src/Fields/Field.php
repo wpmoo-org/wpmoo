@@ -59,11 +59,39 @@ abstract class Field {
 	protected $default;
 
 	/**
+	 * Markup displayed before the field control.
+	 *
+	 * @var string
+	 */
+	protected $before = '';
+
+	/**
+	 * Markup displayed after the field control.
+	 *
+	 * @var string
+	 */
+	protected $after = '';
+
+	/**
+	 * Helper text displayed beneath the control.
+	 *
+	 * @var string
+	 */
+	protected $help = '';
+
+	/**
 	 * Additional HTML attributes.
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected $args;
+	protected $attributes = array();
+
+	/**
+	 * Backwards compatible array of attributes.
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $args = array();
 
 	/**
 	 * Constructor.
@@ -78,6 +106,11 @@ abstract class Field {
 			'description' => '',
 			'default'     => null,
 			'args'        => array(),
+			'attributes'  => array(),
+			'before'      => '',
+			'after'       => '',
+			'help'        => '',
+			'placeholder' => null,
 		);
 
 		$config = array_merge( $defaults, $config );
@@ -87,7 +120,26 @@ abstract class Field {
 		$this->label       = $config['label'];
 		$this->description = $config['description'];
 		$this->default     = $config['default'];
-		$this->args        = is_array( $config['args'] ) ? $config['args'] : array();
+		$this->before      = is_string( $config['before'] ) ? $config['before'] : '';
+		$this->after       = is_string( $config['after'] ) ? $config['after'] : '';
+		$this->help        = is_string( $config['help'] ) ? $config['help'] : '';
+
+		$attributes = array();
+
+		if ( is_array( $config['attributes'] ) ) {
+			$attributes = array_merge( $attributes, $config['attributes'] );
+		}
+
+		if ( is_array( $config['args'] ) ) {
+			$attributes = array_merge( $attributes, $config['args'] );
+		}
+
+		if ( null !== $config['placeholder'] ) {
+			$attributes['placeholder'] = $config['placeholder'];
+		}
+
+		$this->attributes = $attributes;
+		$this->args       = $attributes;
 	}
 
 	/**
@@ -141,7 +193,130 @@ abstract class Field {
 	 * @return array<string, mixed>
 	 */
 	public function args() {
-		return $this->args;
+		return $this->attributes;
+	}
+
+	/**
+	 * Retrieve attributes assigned to the control.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function attributes() {
+		return $this->attributes;
+	}
+
+	/**
+	 * Retrieve a specific attribute value.
+	 *
+	 * @param string     $key     Attribute key.
+	 * @param mixed|null $default Default value if missing.
+	 * @return mixed
+	 */
+	public function attribute( string $key, $default = null ) {
+		return isset( $this->attributes[ $key ] ) ? $this->attributes[ $key ] : $default;
+	}
+
+	/**
+	 * Retrieve markup rendered before the field control.
+	 *
+	 * @return string
+	 */
+	public function before() {
+		return $this->before;
+	}
+
+	/**
+	 * Retrieve markup rendered after the field control.
+	 *
+	 * @return string
+	 */
+	public function after() {
+		return $this->after;
+	}
+
+	/**
+	 * Retrieve helper text.
+	 *
+	 * @return string
+	 */
+	public function help() {
+		return $this->help;
+	}
+
+	/**
+	 * Render attributes into a string suitable for HTML output.
+	 *
+	 * @param array<string, mixed> $attributes Attribute map.
+	 * @return string
+	 */
+	protected function compile_attributes( array $attributes ) {
+		if ( empty( $attributes ) ) {
+			return '';
+		}
+
+		$output = '';
+
+		foreach ( $attributes as $attribute => $value ) {
+			if ( is_bool( $value ) ) {
+				if ( $value ) {
+					$output .= ' ' . $this->esc_attr( $attribute );
+				}
+				continue;
+			}
+
+			$output .= sprintf(
+				' %s="%s"',
+				$this->esc_attr( $attribute ),
+				$this->esc_attr( $value )
+			);
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Sanitize optional markup strings.
+	 *
+	 * @param string $value Raw markup.
+	 * @return string
+	 */
+	protected function sanitize_markup( $value ) {
+		if ( '' === $value || null === $value ) {
+			return '';
+		}
+
+		if ( function_exists( 'wp_kses_post' ) ) {
+			return wp_kses_post( $value );
+		}
+
+		return $this->esc_html( $value );
+	}
+
+	/**
+	 * Helper for sanitized before markup.
+	 *
+	 * @return string
+	 */
+	public function before_html() {
+		return $this->sanitize_markup( $this->before );
+	}
+
+	/**
+	 * Helper for sanitized after markup.
+	 *
+	 * @return string
+	 */
+	public function after_html() {
+		return $this->sanitize_markup( $this->after );
+	}
+
+	/**
+	 * Helper for sanitized help markup.
+	 *
+	 * @return string
+	 */
+	public function help_html() {
+		return $this->sanitize_markup( $this->help );
 	}
 
 	/**

@@ -94,11 +94,16 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function placeholder( string $placeholder ): self {
+		if ( ! isset( $this->config['attributes'] ) ) {
+			$this->config['attributes'] = array();
+		}
+
 		if ( ! isset( $this->config['args'] ) ) {
 			$this->config['args'] = array();
 		}
 
-		$this->config['args']['placeholder'] = $placeholder;
+		$this->config['attributes']['placeholder'] = $placeholder;
+		$this->config['args']['placeholder']        = $placeholder;
 
 		return $this;
 	}
@@ -112,6 +117,55 @@ class FieldBuilder {
 	public function options( array $options ): self {
 		$this->config['options'] = $options;
 
+		return $this;
+	}
+
+	/**
+	 * Merge additional HTML attributes.
+	 *
+	 * @param array<string, mixed> $attributes Attributes to merge.
+	 * @return $this
+	 */
+	public function attributes( array $attributes ): self {
+		if ( ! isset( $this->config['attributes'] ) ) {
+			$this->config['attributes'] = array();
+		}
+
+		$this->config['attributes'] = array_merge( $this->config['attributes'], $attributes );
+
+		return $this;
+	}
+
+	/**
+	 * Markup displayed before the field control.
+	 *
+	 * @param string $markup HTML markup.
+	 * @return $this
+	 */
+	public function before( string $markup ): self {
+		$this->config['before'] = $markup;
+		return $this;
+	}
+
+	/**
+	 * Markup displayed after the field control.
+	 *
+	 * @param string $markup HTML markup.
+	 * @return $this
+	 */
+	public function after( string $markup ): self {
+		$this->config['after'] = $markup;
+		return $this;
+	}
+
+	/**
+	 * Helper text rendered beneath the control.
+	 *
+	 * @param string $markup Helper text.
+	 * @return $this
+	 */
+	public function help( string $markup ): self {
+		$this->config['help'] = $markup;
 		return $this;
 	}
 

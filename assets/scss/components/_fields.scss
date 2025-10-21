@@ -82,3 +82,18 @@
     border: 1px solid wpmoo-color(border);
   }
 }
+
+.wpmoo-field-before,
+.wpmoo-field-after {
+  margin: 0 0 wpmoo-spacing(sm);
+  color: wpmoo-color(text);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.wpmoo-field-help {
+  margin: wpmoo-spacing(sm) 0 0;
+  color: wpmoo-color(text);
+  font-size: 12px;
+  line-height: 1.6;
+}
