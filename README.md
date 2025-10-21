@@ -111,6 +111,17 @@ Builder::create('product_details')
 - [Options Builder API](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/options/builder.md)
 - [Metabox Builder API](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/metabox/builder.md)
 
+## CLI Utilities
+
+The framework ships with a small CLI at `bin/moo` to automate common tasks:
+
+- `php bin/moo build [--pm=<manager>] [--install|--no-install] [--script=<name>]`  
+  Detects (or uses the provided) package manager, installs dependencies when needed, and runs the specified npm script (defaults to `build`).
+- `php bin/moo deploy [destination] [--pm=<manager>] [--no-build] [--zip[=<path>]] [--script=<name>]`  
+  Creates a production-ready copy under `destination` (defaults to `dist/<plugin-slug>`), optionally archives it as a `.zip`, and rebuilds assets unless `--no-build` is supplied. Use `--zip` to generate `dist/<plugin-slug>.zip` or pass a custom archive path with `--zip=out.zip`.
+
+Both commands respect `--pm=<npm|yarn|pnpm|bun>` to force a package manager choice and will fall back to lockfile detection otherwise.
+
 ## Requirements
 
 - PHP 7.4 or higher
