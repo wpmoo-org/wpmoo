@@ -11,6 +11,8 @@
 
 namespace WPMoo\Support;
 
+use WPMoo\Core\App;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -36,16 +38,39 @@ class Assets {
 			return self::$base_url;
 		}
 
+		$app         = App::instance();
+		$plugin_path = $app->path();
+		$plugin_url  = $app->url();
+		if ( ! empty( $plugin_path ) && ! empty( $plugin_url ) ) {
+			$plugin_path         = self::normalize_path( $plugin_path ) . '/';
+			$plugin_url          = self::trail( $plugin_url );
+			$vendor_assets_path  = $plugin_path . 'vendor/wpmoo-org/wpmoo/assets/';
+			$direct_assets_path  = $plugin_path . 'assets/';
+			if ( is_dir( $vendor_assets_path ) ) {
+				self::$base_url = self::trail( $plugin_url . 'vendor/wpmoo-org/wpmoo/assets/' );
+				return self::$base_url;
+			}
+			if ( is_dir( $direct_assets_path ) ) {
+				self::$base_url = self::trail( $plugin_url . 'assets/' );
+				return self::$base_url;
+			}
+		}
+
 		$library_dir = str_replace( '\\', '/', dirname( __DIR__, 2 ) );
 		$assets_path = $library_dir . '/assets/';
 
-		if ( defined( 'WPMOO_FILE' ) && function_exists( 'plugins_url' ) ) {
-			$plugin_dir = str_replace( '\\', '/', plugin_dir_path( WPMOO_FILE ) );
-			$vendor_path = $plugin_dir . 'vendor/wpmoo-org/wpmoo/assets/';
+		if ( defined( 'WPMOO_FILE' ) && function_exists( 'plugins_url' ) && self::is_within_plugin_directory( WPMOO_FILE ) ) {
+			$plugin_dir          = str_replace( '\\', '/', plugin_dir_path( WPMOO_FILE ) );
+			$direct_assets_path  = $plugin_dir . 'assets/';
+			$vendor_assets_path  = $plugin_dir . 'vendor/wpmoo-org/wpmoo/assets/';
 
-			if ( file_exists( $vendor_path ) ) {
+			if ( file_exists( $vendor_assets_path ) ) {
 				self::$base_url = self::trail( plugins_url( 'vendor/wpmoo-org/wpmoo/assets/', WPMOO_FILE ) );
+				return self::$base_url;
+			}
 
+			if ( file_exists( $direct_assets_path ) ) {
+				self::$base_url = self::trail( plugins_url( 'assets/', WPMOO_FILE ) );
 				return self::$base_url;
 			}
 
@@ -75,7 +100,13 @@ class Assets {
 	 * @return string
 	 */
 	public static function url( string $path = '' ): string {
-		return self::base_url() . ltrim( $path, '/' );
+		$asset_path = ltrim( $path, '/' );
+
+		if ( self::should_use_minified() ) {
+			$asset_path = self::maybe_minified( $asset_path );
+		}
+
+		return self::base_url() . $asset_path;
 	}
 
 	/**
@@ -86,5 +117,92 @@ class Assets {
 	 */
 	protected static function trail( string $value ): string {
 		return rtrim( $value, "\\/" ) . '/';
+	}
+
+	/**
+	 * Determine whether minified assets should be preferred.
+	 *
+	 * @return bool
+	 */
+	protected static function should_use_minified(): bool {
+		if ( defined( 'SCRIPT_DEBUG' ) ) {
+			return ! SCRIPT_DEBUG;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Convert an asset path to its minified counterpart if available.
+	 *
+	 * @param string $asset_path Relative asset path.
+	 * @return string
+	 */
+	protected static function maybe_minified( string $asset_path ): string {
+		if ( preg_match( '/\.(css|js)$/', $asset_path, $matches ) ) {
+			$extension = $matches[1];
+			$minified  = preg_replace( '/\.' . preg_quote( $extension, '/' ) . '$/', '.min.' . $extension, $asset_path );
+
+			if ( self::asset_exists( $minified ) ) {
+				return $minified;
+			}
+		}
+
+		return $asset_path;
+	}
+
+	/**
+	 * Check whether an asset exists within the framework bundle.
+	 *
+	 * @param string $asset_path Relative asset path.
+	 * @return bool
+	 */
+	protected static function asset_exists( string $asset_path ): bool {
+		return file_exists( App::instance()->path( 'assets/' . $asset_path ) );
+	}
+
+	/**
+	 * Normalize a filesystem path to use forward slashes without a trailing slash.
+	 *
+	 * @param string $path Filesystem path.
+	 * @return string
+	 */
+	protected static function normalize_path( string $path ): string {
+		if ( '' === $path ) {
+			return '';
+		}
+
+		return rtrim( str_replace( '\\', '/', $path ), '/' );
+	}
+
+	/**
+	 * Determine whether a file or directory path resides within a plugins directory.
+	 *
+	 * @param string $path Filesystem path to evaluate.
+	 * @return bool
+	 */
+	protected static function is_within_plugin_directory( string $path ): bool {
+		if ( '' === $path ) {
+			return false;
+		}
+
+		$normalized_path = self::normalize_path( $path );
+		$plugin_roots    = array();
+
+		if ( defined( 'WP_PLUGIN_DIR' ) ) {
+			$plugin_roots[] = self::normalize_path( WP_PLUGIN_DIR );
+		}
+
+		if ( defined( 'WPMU_PLUGIN_DIR' ) ) {
+			$plugin_roots[] = self::normalize_path( WPMU_PLUGIN_DIR );
+		}
+
+		foreach ( $plugin_roots as $root ) {
+			if ( '' !== $root && 0 === strpos( $normalized_path, $root ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
