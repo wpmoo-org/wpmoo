@@ -1,0 +1,16 @@
+{
+  "name": "wpmoo",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Build tooling for WPMoo admin assets.",
+  "scripts": {
+    "build": "gulp build",
+    "watch": "gulp watch"
+  },
+  "devDependencies": {
+    "gulp": "^5.0.1",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "sass": "^1.93.2"
+  }
+}

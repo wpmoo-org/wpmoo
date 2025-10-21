@@ -1,0 +1,84 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.wpmoo-field {
+  display: flex;
+  align-items: flex-start;
+  gap: wpmoo-spacing(xl);
+  padding: wpmoo-spacing(xl) 0;
+  border-bottom: 1px solid wpmoo-color(border-soft);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.wpmoo-title {
+  flex: 0 0 240px;
+  padding-top: wpmoo-spacing(xs);
+
+  h4 {
+    margin: 0 0 wpmoo-spacing(xs);
+    font-size: 13px;
+    font-weight: 600;
+    color: wpmoo-color(heading);
+    line-height: 1.5;
+  }
+}
+
+.wpmoo-subtitle-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: wpmoo-color(text);
+}
+
+.wpmoo-fieldset {
+  flex: 1;
+  min-width: 0;
+
+  input[type="text"],
+  input[type="email"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
+    width: 100%;
+    max-width: 360px;
+    padding: wpmoo-spacing(sm) wpmoo-spacing(md);
+    border: 1px solid wpmoo-color(border);
+    border-radius: wpmoo-radius(field);
+    font-size: 13px;
+    line-height: 1.5;
+    background: wpmoo-color(field-background);
+    @include transition(border-color, box-shadow);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @include focus-ring;
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+    width: 100%;
+    max-width: none;
+  }
+
+  input[type="checkbox"] {
+    margin-right: wpmoo-spacing(sm);
+  }
+
+  input[type="color"] {
+    width: 60px;
+    height: 34px;
+    padding: 2px;
+    border-radius: wpmoo-radius(field);
+    border: 1px solid wpmoo-color(border);
+  }
+}

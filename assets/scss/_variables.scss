@@ -1,0 +1,100 @@
+@use "sass:map";
+
+$colors: (
+  background: #fff,
+  panel-bg: #f8f9fa,
+  panel-gradient-start: #f9f9fb,
+  panel-gradient-end: #f3f4f6,
+  border: #dcdcde,
+  border-soft: #f0f0f1,
+  tab-divider: #e0e5ec,
+  border-muted: #e2e2e2,
+  heading: #1d2327,
+  text: #646970,
+  primary: #2271b1,
+  primary-soft: rgba(34, 113, 177, 0.15),
+  tab-hover: #e6f0f8,
+  toggle-indicator: #6d6d6d,
+  field-background: #fff,
+  section-background: #fff,
+  toast-success: #198754,
+  toast-error: #d63638,
+  toast-info: #2271b1,
+  toast-text: #fff
+);
+
+$radius: (
+  field: 4px,
+  panel: 8px,
+  toast: 8px
+);
+
+$spacing: (
+  xs: 4px,
+  sm: 8px,
+  md: 12px,
+  lg: 16px,
+  xl: 20px,
+  xxl: 26px
+);
+
+$transitions: (
+  duration: 0.2s,
+  timing: ease
+);
+
+$shadows: (
+  panel: 0 1px 0 rgba(0, 0, 0, 0.05),
+  toast: 0 8px 24px rgba(0, 0, 0, 0.15)
+);
+
+:root {
+  @each $name, $value in $colors {
+    --wpmoo-color-#{$name}: #{$value};
+  }
+
+  @each $name, $value in $radius {
+    --wpmoo-radius-#{$name}: #{$value};
+  }
+
+  @each $name, $value in $spacing {
+    --wpmoo-spacing-#{$name}: #{$value};
+  }
+
+  --wpmoo-transition-duration: #{map.get($transitions, duration)};
+  --wpmoo-transition-timing: #{map.get($transitions, timing)};
+
+  @each $name, $value in $shadows {
+    --wpmoo-shadow-#{$name}: #{$value};
+  }
+}
+
+@function wpmoo-color($name) {
+  @return var(--wpmoo-color-#{$name}, map.get($colors, $name));
+}
+
+@function wpmoo-radius($name) {
+  @return var(--wpmoo-radius-#{$name}, map.get($radius, $name));
+}
+
+@function wpmoo-spacing($name) {
+  @return var(--wpmoo-spacing-#{$name}, map.get($spacing, $name));
+}
+
+@function wpmoo-transition-duration() {
+  @return var(
+    --wpmoo-transition-duration,
+    map.get($transitions, duration)
+  );
+}
+
+@function wpmoo-transition-timing() {
+  @return var(
+    --wpmoo-transition-timing,
+    map.get($transitions, timing)
+  );
+}
+
+@function wpmoo-shadow($name) {
+  @return var(--wpmoo-shadow-#{$name}, map.get($shadows, $name));
+}

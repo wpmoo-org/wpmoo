@@ -122,8 +122,8 @@ class Page {
 		// Enqueue CSS.
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style(
-				'wpmoo-framework',
-				$assets_url . 'css/wpmoo-framework.css',
+				'wpmoo',
+				$assets_url . 'css/wpmoo.css',
 				array(),
 				$version
 			);
@@ -134,8 +134,8 @@ class Page {
 			$persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] );
 			wp_enqueue_script( 'postbox' );
 			wp_enqueue_script(
-				'wpmoo-framework',
-				$assets_url . 'js/wpmoo-framework.js',
+				'wpmoo',
+				$assets_url . 'js/wpmoo.js',
 				array( 'jquery' ),
 				$version,
 				true
@@ -143,7 +143,7 @@ class Page {
 
 			if ( function_exists( 'wp_localize_script' ) ) {
 				wp_localize_script(
-					'wpmoo-framework',
+					'wpmoo',
 					'wpmooAdminOptions',
 					array(
 						'ajaxUrl'  => admin_url( 'admin-ajax.php' ),

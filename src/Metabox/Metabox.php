@@ -171,12 +171,12 @@ class Metabox {
 
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style( 'dashicons' );
-			wp_enqueue_style( 'wpmoo-framework', $assets_url . 'css/wpmoo-framework.css', array(), $version );
+			wp_enqueue_style( 'wpmoo', $assets_url . 'css/wpmoo.css', array(), $version );
 		}
 
 		if ( function_exists( 'wp_enqueue_script' ) ) {
 			wp_enqueue_script( 'postbox' );
-			wp_enqueue_script( 'wpmoo-framework', $assets_url . 'js/wpmoo-framework.js', array( 'jquery' ), $version, true );
+			wp_enqueue_script( 'wpmoo', $assets_url . 'js/wpmoo.js', array( 'jquery' ), $version, true );
 		}
 	}
 

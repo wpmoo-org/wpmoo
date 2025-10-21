@@ -1,0 +1,191 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.wpmoo-panel {
+  border: 1px solid wpmoo-color(border);
+  border-radius: wpmoo-radius(panel);
+  background: wpmoo-color(background);
+  box-shadow: wpmoo-shadow(panel);
+  margin-top: wpmoo-spacing(xl);
+
+  .postbox-header {
+    background: linear-gradient(
+      180deg,
+      wpmoo-color(panel-gradient-start) 0%,
+      wpmoo-color(panel-gradient-end) 100%
+    );
+    border-bottom: 1px solid wpmoo-color(border);
+    border-radius: wpmoo-radius(panel) wpmoo-radius(panel) 0 0;
+    padding: wpmoo-spacing(lg) wpmoo-spacing(xl);
+    margin: 0;
+
+    .hndle {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: wpmoo-color(heading);
+    }
+  }
+}
+
+.wpmoo-panel__layout {
+  display: flex;
+  min-height: 260px;
+  align-items: stretch;
+}
+
+.wpmoo-panel__tabs {
+  display: flex;
+  flex-direction: column;
+  min-width: 210px;
+  max-width: 210px;
+  background: wpmoo-color(panel-bg);
+  border-right: 1px solid wpmoo-color(border);
+  padding: 0;
+  flex: 0 0 210px;
+  align-self: stretch;
+  height: 100%;
+}
+
+.wpmoo-panel__tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px;
+  border: none;
+  background: transparent;
+  color: wpmoo-color(text);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  border-bottom: 1px solid wpmoo-color(tab-divider);
+  @include transition(background, color);
+
+  &:hover,
+  &:focus {
+    background: wpmoo-color(tab-hover);
+    color: wpmoo-color(heading);
+    outline: none;
+  }
+
+  &.is-active {
+    background: wpmoo-color(background);
+    color: wpmoo-color(heading);
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 wpmoo-color(primary);
+  }
+}
+
+.wpmoo-panel__tab-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.wpmoo-panel__content {
+  flex: 1;
+  background: wpmoo-color(background);
+  padding: wpmoo-spacing(xxl);
+  border-radius: 0 0 wpmoo-radius(panel) wpmoo-radius(panel);
+  border-left: 1px solid wpmoo-color(border);
+  margin-left: -1px;
+  min-height: 100%;
+}
+
+.wpmoo-panel__section {
+  display: none;
+  padding-top: wpmoo-spacing(xxl);
+
+  &.is-active {
+    display: block;
+  }
+}
+
+.wpmoo-panel__section-toggle {
+  display: none;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: wpmoo-spacing(md);
+  padding: wpmoo-spacing(md) wpmoo-spacing(lg);
+  border: none;
+  background: wpmoo-color(panel-bg);
+  color: wpmoo-color(heading);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 1px solid wpmoo-color(border-muted);
+}
+
+.wpmoo-panel__section-toggle-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.wpmoo-panel__section-toggle-indicator {
+  margin-left: auto;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid wpmoo-color(toggle-indicator);
+  @include transition(transform);
+}
+
+.wpmoo-panel__section-toggle.is-active .wpmoo-panel__section-toggle-indicator {
+  transform: rotate(180deg);
+}
+
+.wpmoo-panel__section-body {
+  padding: 0;
+  background: wpmoo-color(section-background);
+}
+
+.wpmoo-panel__section-description {
+  margin: 0 0 wpmoo-spacing(lg);
+  color: wpmoo-color(text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.wpmoo-panel--embedded {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  margin: -wpmoo-spacing(md) -wpmoo-spacing(md) -wpmoo-spacing(md)
+    -wpmoo-spacing(md);
+
+  .postbox-header {
+    border-bottom: 1px solid wpmoo-color(border);
+    border-radius: 0;
+    background: none;
+    padding: wpmoo-spacing(md) 0;
+  }
+
+  .wpmoo-panel__layout {
+    min-height: 0;
+  }
+
+  .wpmoo-panel__tabs {
+    border-right: 1px solid wpmoo-color(border);
+    background: wpmoo-color(panel-bg);
+    margin-right: 0;
+  }
+
+  .wpmoo-panel__content {
+    padding: 0 0 wpmoo-spacing(lg);
+    background: transparent;
+    border-left: 1px solid wpmoo-color(border);
+    margin-left: -1px;
+    padding-left: 24px;
+  }
+}
+
+.wpmoo-options-actions {
+  margin-top: wpmoo-spacing(lg);
+}
+
+.wpmoo-options .postbox .inside,
+.wpmoo-panel .inside {
+  padding: 0;
+  margin: 0;
+}
