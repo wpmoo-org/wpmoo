@@ -38,6 +38,9 @@ class CLI {
 			case 'update':
 				self::cmd_update( array_slice( $argv, 2 ) );
 				break;
+			case 'version':
+				self::cmd_version( array_slice( $argv, 2 ) );
+				break;
 			case 'build':
 				self::cmd_build( array_slice( $argv, 2 ) );
 				break;
@@ -61,6 +64,8 @@ class CLI {
 		Console::line( 'Usage:' );
 		Console::line( '  php bin/moo info        Show framework info' );
 		Console::line( '  php bin/moo update [--wp-path=<path>]   Run maintenance tasks (translations, etc.)' );
+		Console::line( '  php bin/moo version [--patch|--minor|--major|<version>] [--dry-run] [--yes]' );
+		Console::line( '                       Bump framework version across manifests' );
 		Console::line( '  php bin/moo build [--pm=<manager>] [--install|--no-install] [--script=<name>]' );
 		Console::line( '                       Build front-end assets using the detected package manager' );
 		Console::line( '  php bin/moo deploy [<path>] [--pm=<manager>] [--no-build] [--zip] [--script=<name>]' );
@@ -74,6 +79,7 @@ class CLI {
 	 *
 	 * @param array<string, mixed> $options Build options.
 	 * @return bool True on success.
+	 * @since 0.4.0
 	 */
 	protected static function perform_build( array $options = array() ) {
 		$defaults = array(
@@ -168,6 +174,7 @@ class CLI {
 	 *
 	 * @param array<int, mixed> $args CLI arguments.
 	 * @return array<string, mixed>
+	 * @since 0.4.0
 	 */
 	protected static function parse_build_options( array $args ) {
 		$options = array(
@@ -207,6 +214,7 @@ class CLI {
 	 *
 	 * @param array<int, mixed> $args CLI arguments.
 	 * @return array<string, mixed>
+	 * @since 0.4.0
 	 */
 	protected static function parse_deploy_options( array $args ) {
 		$options = self::parse_build_options( $args );
@@ -251,11 +259,446 @@ class CLI {
 	}
 
 	/**
+	 * Parse CLI arguments for the version command.
+	 *
+	 * @param array<int, mixed> $args Raw CLI args.
+	 * @return array<string, mixed>
+	 * @since 0.4.1
+	 */
+	protected static function parse_version_arguments( array $args ) {
+		$options = array(
+			'bump'         => null,
+			'explicit'     => null,
+			'dry-run'      => false,
+			'assume-yes'   => false,
+			'pre-release'  => null,
+		);
+
+		$map = array(
+			'--major' => 'major',
+			'--minor' => 'minor',
+			'--patch' => 'patch',
+		);
+
+		$count = count( $args );
+
+		for ( $index = 0; $index < $count; $index++ ) {
+			$arg = $args[ $index ];
+
+			if ( ! is_string( $arg ) ) {
+				continue;
+			}
+
+			$arg = trim( $arg );
+
+			if ( '' === $arg ) {
+				continue;
+			}
+
+			if ( isset( $map[ $arg ] ) ) {
+				$options['bump'] = $map[ $arg ];
+				continue;
+			}
+
+			if ( '--dry-run' === $arg ) {
+				$options['dry-run'] = true;
+				continue;
+			}
+
+			if ( '--yes' === $arg || '--force' === $arg ) {
+				$options['assume-yes'] = true;
+				continue;
+			}
+
+			if ( 0 === strpos( $arg, '--pre=' ) ) {
+				$options['pre-release'] = substr( $arg, 6 );
+				continue;
+			}
+
+			if ( '--pre' === $arg ) {
+				if ( isset( $args[ $index + 1 ] ) ) {
+					$options['pre-release'] = (string) $args[ $index + 1 ];
+					++$index;
+				}
+				continue;
+			}
+
+			if ( 0 === strpos( $arg, '--' ) ) {
+				continue;
+			}
+
+			$options['explicit'] = $arg;
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Normalize a version string input.
+	 *
+	 * @param string $value Raw version value.
+	 * @return string
+	 * @since 0.4.1
+	 */
+	protected static function sanitize_version_input( $value ) {
+		$value = trim( (string) $value );
+		$value = preg_replace( '/^v/i', '', $value );
+
+		return $value;
+	}
+
+	/**
+	 * Validate semantic version format.
+	 *
+	 * @param string $value Version string.
+	 * @return bool
+	 * @since 0.4.1
+	 */
+	protected static function is_valid_semver( $value ) {
+		if ( '' === $value ) {
+			return false;
+		}
+
+		return (bool) preg_match(
+			'/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/',
+			$value
+		);
+	}
+
+	/**
+	 * Increment the current version according to semantic versioning rules.
+	 *
+	 * @param string      $current     Current semantic version.
+	 * @param string      $type        Increment type (major|minor|patch).
+	 * @param string|null $pre_release Optional pre-release label.
+	 * @return string|null
+	 * @since 0.4.1
+	 */
+	protected static function bump_semver( $current, $type, $pre_release = null ) {
+		if ( ! preg_match( '/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-.+)?$/', $current, $matches ) ) {
+			return null;
+		}
+
+		$major = (int) $matches[1];
+		$minor = (int) $matches[2];
+		$patch = (int) $matches[3];
+
+		switch ( $type ) {
+			case 'major':
+				++$major;
+				$minor = 0;
+				$patch = 0;
+				break;
+			case 'minor':
+				++$minor;
+				$patch = 0;
+				break;
+			case 'patch':
+			default:
+				++$patch;
+				break;
+		}
+
+		$new = $major . '.' . $minor . '.' . $patch;
+
+		if ( $pre_release ) {
+			$label = preg_replace( '/[^0-9A-Za-z\.-]/', '', $pre_release );
+
+			if ( '' !== $label ) {
+				$new .= '-' . $label;
+			}
+		}
+
+		return $new;
+	}
+
+	/**
+	 * Update version references across framework files.
+	 *
+	 * @param string $base_path       Framework base path.
+	 * @param string $current_version Current version to replace.
+	 * @param string $new_version     New version to set.
+	 * @param bool   $dry_run         If true, do not write changes.
+	 * @return array<int, string> List of files touched.
+	 * @since 0.4.1
+	 */
+	protected static function update_version_files( $base_path, $current_version, $new_version, $dry_run = false ) {
+		$updated = array();
+
+		$files = array(
+			$base_path . 'composer.json'            => 'json',
+			$base_path . 'package.json'             => 'json',
+			$base_path . 'wpmoo.php'                => 'bootstrap',
+			$base_path . 'src/Options/Page.php'     => 'php',
+			$base_path . 'src/Metabox/Metabox.php'  => 'php',
+		);
+
+		foreach ( $files as $path => $type ) {
+			if ( ! file_exists( $path ) ) {
+				continue;
+			}
+
+			$rel = $path;
+
+			if ( 'json' === $type ) {
+				if ( $dry_run ) {
+					$updated[] = $path;
+					continue;
+				}
+
+				$contents = file_get_contents( $path );
+
+				if ( false === $contents ) {
+					Console::warning( 'Failed to read ' . self::relative_path( $path ) );
+					continue;
+				}
+
+				$data = json_decode( $contents, true );
+
+				if ( ! is_array( $data ) ) {
+					Console::warning( 'Invalid JSON in ' . self::relative_path( $path ) );
+					continue;
+				}
+
+				$data['version'] = $new_version;
+
+				if ( ! self::write_json_file( $path, $data ) ) {
+					Console::warning( 'Could not write updated JSON to ' . self::relative_path( $path ) );
+					continue;
+				}
+
+				$updated[] = $path;
+			} elseif ( 'php' === $type ) {
+				if ( self::replace_version_literal( $path, $current_version, $new_version, $dry_run ) ) {
+					$updated[] = $path;
+				}
+			} elseif ( 'bootstrap' === $type ) {
+				if ( self::update_bootstrap_version( $path, $current_version, $new_version, $dry_run ) ) {
+					$updated[] = $path;
+				}
+			}
+		}
+
+		return $updated;
+	}
+
+	/**
+	 * Perform additional cleanup/optimisation on the deployed package.
+	 *
+	 * @param string               $working_dir Deployment directory.
+	 * @param array<string, mixed> $options     Deploy options.
+	 * @return void
+	 * @since 0.4.1
+	 */
+	protected static function post_process_deploy( $working_dir, array $options ) {
+		$moo_path = $working_dir . DIRECTORY_SEPARATOR . 'moo';
+
+		if ( file_exists( $moo_path ) ) {
+			if ( @unlink( $moo_path ) ) {
+				Console::comment( '→ Removed CLI alias (moo)' );
+			}
+		}
+
+		$composer_success = self::optimise_composer_dependencies( $working_dir );
+
+		if ( $composer_success ) {
+			$keep_composer_json = self::apply_filters_safe(
+				'wpmoo_cli_deploy_keep_composer_json',
+				false,
+				$working_dir,
+				$options,
+				$composer_success
+			);
+
+			if ( ! $keep_composer_json ) {
+				self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'composer.json' );
+			}
+
+			$keep_composer_lock = self::apply_filters_safe(
+				'wpmoo_cli_deploy_keep_composer_lock',
+				false,
+				$working_dir,
+				$options,
+				$composer_success
+			);
+
+			if ( ! $keep_composer_lock ) {
+				self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'composer.lock' );
+			}
+		} else {
+			Console::comment( '→ Retaining composer manifests (optimisation skipped or failed).' );
+		}
+
+		$keep_package_manifest = self::apply_filters_safe(
+			'wpmoo_cli_deploy_keep_package_json',
+			false,
+			$working_dir,
+			$options,
+			$composer_success
+		);
+
+		if ( ! $keep_package_manifest ) {
+			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'package.json' );
+			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'package-lock.json' );
+			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'pnpm-lock.yaml' );
+			self::remove_if_exists( $working_dir . DIRECTORY_SEPARATOR . 'yarn.lock' );
+		}
+	}
+
+	/**
+	 * Write JSON data with formatting.
+	 *
+	 * @param string               $path File path.
+	 * @param array<string, mixed> $data Data to write.
+	 * @return bool
+	 * @since 0.4.1
+	 */
+	protected static function write_json_file( $path, array $data ) {
+		$json = json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+
+		if ( false === $json ) {
+			return false;
+		}
+
+		$json .= PHP_EOL;
+
+		return false !== file_put_contents( $path, $json );
+	}
+
+	/**
+	 * Replace a quoted version literal in a PHP file.
+	 *
+	 * @param string $path             File path.
+	 * @param string $current_version  Version to replace.
+	 * @param string $new_version      New version string.
+	 * @param bool   $dry_run          If true, do not write changes.
+	 * @return bool True if replacement occurred.
+	 * @since 0.4.1
+	 */
+	protected static function replace_version_literal( $path, $current_version, $new_version, $dry_run = false ) {
+		$contents = file_get_contents( $path );
+
+		if ( false === $contents ) {
+			Console::warning( 'Failed to read ' . self::relative_path( $path ) );
+			return false;
+		}
+
+		$count   = 0;
+		$updated = str_replace( "'" . $current_version . "'", "'" . $new_version . "'", $contents, $count );
+
+		if ( 0 === $count ) {
+			$updated = str_replace( '"' . $current_version . '"', '"' . $new_version . '"', $contents, $count );
+		}
+
+		if ( 0 === $count ) {
+			$updated = preg_replace(
+				"/(['\"])(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[^'\"]+)?\\1/",
+				'$1' . $new_version . '$1',
+				$contents,
+				1,
+				$count
+			);
+		}
+
+		if ( 0 === $count || null === $updated ) {
+			Console::warning( 'No version literal updated in ' . self::relative_path( $path ) );
+			return false;
+		}
+
+		if ( $dry_run ) {
+			return true;
+		}
+
+		return false !== file_put_contents( $path, $updated );
+	}
+
+	/**
+	 * Update version information within the bootstrap file.
+	 *
+	 * @param string $path             Bootstrap file path.
+	 * @param string $current_version  Current version string.
+	 * @param string $new_version      Desired version string.
+	 * @param bool   $dry_run          Whether to skip writing changes.
+	 * @return bool True when a change was performed.
+	 * @since 0.4.1
+	 */
+	protected static function update_bootstrap_version( $path, $current_version, $new_version, $dry_run = false ) {
+		$contents = file_get_contents( $path );
+
+		if ( false === $contents ) {
+			Console::warning( 'Failed to read ' . self::relative_path( $path ) );
+			return false;
+		}
+
+		$updated = $contents;
+		$count   = 0;
+
+		$updated = preg_replace(
+			'/(Version:\s*)' . preg_quote( $current_version, '/' ) . '/',
+			'$1' . $new_version,
+			$updated,
+			1,
+			$count
+		);
+
+		$constant_count = 0;
+
+		$updated = preg_replace(
+			"/define\\(\\s*'WPMOO_VERSION'\\s*,\\s*'[^']+'\\s*\\)/",
+			"define( 'WPMOO_VERSION', '" . $new_version . "' )",
+			$updated,
+			1,
+			$constant_count
+		);
+
+		if ( 0 === $count && 0 === $constant_count ) {
+			Console::warning( 'No bootstrap version markers updated in ' . self::relative_path( $path ) );
+			return false;
+		}
+
+		if ( $dry_run ) {
+			return true;
+		}
+
+		return false !== file_put_contents( $path, $updated );
+	}
+
+	/**
+	 * Detect the current framework version from composer.json.
+	 *
+	 * @param string $base_path Base directory.
+	 * @return string|null
+	 * @since 0.4.1
+	 */
+	protected static function detect_current_version( $base_path ) {
+		$composer = $base_path . 'composer.json';
+
+		if ( ! file_exists( $composer ) ) {
+			return null;
+		}
+
+		$contents = file_get_contents( $composer );
+
+		if ( false === $contents ) {
+			return null;
+		}
+
+		$data = json_decode( $contents, true );
+
+		if ( ! is_array( $data ) || empty( $data['version'] ) ) {
+			return null;
+		}
+
+		return (string) $data['version'];
+	}
+
+	/**
 	 * Detect available package manager and resolve its binary.
 	 *
 	 * @param string      $base_path Base directory.
 	 * @param string|null $hint      Preferred manager.
 	 * @return array<string, string>|null
+	 * @since 0.4.0
 	 */
 	protected static function detect_package_manager( $base_path, $hint = null ) {
 		$candidates = self::package_manager_candidates( $base_path, $hint );
@@ -287,6 +730,7 @@ class CLI {
 	 * @param string      $base_path Base directory.
 	 * @param string|null $hint      Preferred manager.
 	 * @return array<int, array<string, string>>
+	 * @since 0.4.0
 	 */
 	protected static function package_manager_candidates( $base_path, $hint = null ) {
 		$base_path = rtrim( $base_path, '/\\' ) . DIRECTORY_SEPARATOR;
@@ -340,6 +784,7 @@ class CLI {
 	 *
 	 * @param string $manager Manager name.
 	 * @return array<int, string>
+	 * @since 0.4.0
 	 */
 	protected static function package_manager_binary_names( $manager ) {
 		$manager = strtolower( $manager );
@@ -356,6 +801,7 @@ class CLI {
 	 *
 	 * @param string $manager Manager name.
 	 * @return array<int, string>
+	 * @since 0.4.0
 	 */
 	protected static function install_arguments( $manager ) {
 		$manager = strtolower( $manager );
@@ -373,6 +819,7 @@ class CLI {
 	 * @param string $manager Manager name.
 	 * @param string $script  Script name.
 	 * @return array<int, string>
+	 * @since 0.4.0
 	 */
 	protected static function build_arguments( $manager, $script ) {
 		$manager = strtolower( $manager );
@@ -390,6 +837,7 @@ class CLI {
 	 * @param string $manager Manager name.
 	 * @param string $script  Script name.
 	 * @return string
+	 * @since 0.4.0
 	 */
 	protected static function format_run_command( $manager, $script ) {
 		$manager = strtolower( $manager );
@@ -405,6 +853,7 @@ class CLI {
 	 * Default deployment directory.
 	 *
 	 * @return string
+	 * @since 0.4.0
 	 */
 	protected static function default_deploy_directory() {
 		$base   = rtrim( self::base_path(), '/\\' );
@@ -422,6 +871,7 @@ class CLI {
 	 * @param string $target Target directory.
 	 * @param string $slug   Plugin slug.
 	 * @return string
+	 * @since 0.4.0
 	 */
 	protected static function default_deploy_zip_path( $target, $slug ) {
 		$target = rtrim( $target, '/\\' );
@@ -454,6 +904,7 @@ class CLI {
 	 * Determine the plugin slug based on the base path.
 	 *
 	 * @return string
+	 * @since 0.4.0
 	 */
 	protected static function plugin_slug() {
 		$base = rtrim( self::base_path(), '/\\' );
@@ -465,6 +916,7 @@ class CLI {
 	 * Default list of files/directories to exclude from deployment.
 	 *
 	 * @return array<int, string>
+	 * @since 0.4.0
 	 */
 	protected static function default_deploy_exclusions() {
 		return array(
@@ -487,8 +939,6 @@ class CLI {
 			'vite.config.ts',
 			'vite.config.mjs',
 			'gulpfile.js',
-			'package.json',
-			'package-lock.json',
 			'pnpm-lock.yaml',
 			'yarn.lock',
 			'pnpm-workspace.yaml',
@@ -526,6 +976,7 @@ class CLI {
 	 *
 	 * @param string $path Input path.
 	 * @return string|null
+	 * @since 0.4.0
 	 */
 	protected static function normalize_absolute_path( $path ) {
 		if ( '' === $path ) {
@@ -553,6 +1004,7 @@ class CLI {
 	 * @param string $path        Path to check.
 	 * @param string $container   Container path.
 	 * @return bool
+	 * @since 0.4.0
 	 */
 	protected static function path_is_within( $path, $container ) {
 		$normalized_path      = self::normalize_absolute_path( $path );
@@ -573,6 +1025,7 @@ class CLI {
 	 *
 	 * @param string $value Input value.
 	 * @return bool
+	 * @since 0.4.0
 	 */
 	protected static function ends_with_zip( $value ) {
 		return (bool) preg_match( '/\\.zip$/i', $value );
@@ -583,6 +1036,7 @@ class CLI {
 	 *
 	 * @param string $prefix Directory prefix.
 	 * @return string|null
+	 * @since 0.4.0
 	 */
 	protected static function create_temp_directory( $prefix = 'wpmoo-' ) {
 		$parent = sys_get_temp_dir();
@@ -605,6 +1059,7 @@ class CLI {
 	 * @param string              $destination_root Destination root path.
 	 * @param array<int, string>  $exclusions Paths to exclude (relative to source root).
 	 * @return bool
+	 * @since 0.4.0
 	 */
 	protected static function copy_tree( $source_root, $destination_root, array $exclusions ) {
 		$base_root = rtrim( self::base_path(), '/\\' );
@@ -672,6 +1127,7 @@ class CLI {
 	 *
 	 * @param string $path Path to delete.
 	 * @return bool
+	 * @since 0.4.0
 	 */
 	protected static function delete_directory( $path ) {
 		if ( ! file_exists( $path ) ) {
@@ -715,6 +1171,7 @@ class CLI {
 	 * @param string             $relative   Relative path.
 	 * @param array<int, string> $exclusions Exclusions.
 	 * @return bool
+	 * @since 0.4.0
 	 */
 	protected static function should_skip_path( $relative, array $exclusions ) {
 		$relative = ltrim( str_replace( '\\', '/', $relative ), '/' );
@@ -748,6 +1205,7 @@ class CLI {
 	 * @param string $source_dir Directory to archive.
 	 * @param string $zip_path   Destination zip path.
 	 * @return bool
+	 * @since 0.4.0
 	 */
 	protected static function create_zip_archive( $source_dir, $zip_path ) {
 		if ( ! class_exists( '\ZipArchive' ) ) {
@@ -797,6 +1255,7 @@ class CLI {
 	 * @param string $hook Hook name.
 	 * @param mixed  ...$args Arguments.
 	 * @return void
+	 * @since 0.4.0
 	 */
 	protected static function do_action_safe( $hook, ...$args ) {
 		if ( function_exists( 'do_action' ) ) {
@@ -811,6 +1270,7 @@ class CLI {
 	 * @param mixed  $value Initial value.
 	 * @param mixed  ...$args Arguments.
 	 * @return mixed
+	 * @since 0.4.0
 	 */
 	protected static function apply_filters_safe( $hook, $value, ...$args ) {
 		if ( function_exists( 'apply_filters' ) ) {
@@ -861,6 +1321,7 @@ class CLI {
 	 *
 	 * @param array<int, mixed> $args Optional CLI arguments.
 	 * @return void
+	 * @since 0.4.0
 	 */
 	protected static function cmd_build( array $args = array() ) {
 		$options = self::parse_build_options( $args );
@@ -889,6 +1350,7 @@ class CLI {
 	 *
 	 * @param array<int, mixed> $args Optional CLI arguments.
 	 * @return void
+	 * @since 0.4.0
 	 */
 	protected static function cmd_deploy( array $args = array() ) {
 		$options = self::parse_deploy_options( $args );
@@ -1041,6 +1503,8 @@ class CLI {
 			return;
 		}
 
+		self::post_process_deploy( $working_dir, $options );
+
 		if ( $is_zip && $zip_path ) {
 			Console::comment( '→ Creating archive ' . self::relative_path( $zip_path ) );
 
@@ -1072,6 +1536,91 @@ class CLI {
 		if ( $cleanup_dir ) {
 			self::delete_directory( $working_dir );
 		}
+
+		Console::line();
+	}
+
+	/**
+	 * Manage framework version increments and propagation.
+	 *
+	 * @param array<int, mixed> $args Optional CLI arguments.
+	 * @return void
+	 * @since 0.4.1
+	 */
+	protected static function cmd_version( array $args = array() ) {
+		$base = self::base_path();
+
+		$current_version = self::detect_current_version( $base );
+
+		if ( ! $current_version ) {
+			Console::error( 'Could not determine current version from composer.json.' );
+			return;
+		}
+
+		$options = self::parse_version_arguments( $args );
+
+		$requested_version = null;
+
+		if ( $options['explicit'] ) {
+			$requested_version = self::sanitize_version_input( $options['explicit'] );
+
+			if ( ! self::is_valid_semver( $requested_version ) ) {
+				Console::error( 'Explicit version "' . $options['explicit'] . '" is not a valid semantic version (expected format x.y.z).' );
+				return;
+			}
+		} else {
+			$bump_type        = $options['bump'] ? $options['bump'] : 'patch';
+			$requested_version = self::bump_semver( $current_version, $bump_type, $options['pre-release'] );
+
+			if ( ! $requested_version ) {
+				Console::error( 'Unable to compute new version from current value ' . $current_version );
+				return;
+			}
+		}
+
+		if ( $requested_version === $current_version ) {
+			Console::comment( 'Version remains unchanged (' . $current_version . '). Nothing to do.' );
+			return;
+		}
+
+		Console::line();
+		Console::comment( 'Updating WPMoo version: ' . $current_version . ' → ' . $requested_version );
+
+		$updated_files = self::update_version_files(
+			$base,
+			$current_version,
+			$requested_version,
+			$options['dry-run']
+		);
+
+		if ( empty( $updated_files ) ) {
+			Console::warning( 'No files required updating. Verify project structure.' );
+		} else {
+			foreach ( $updated_files as $file ) {
+				Console::line(
+					( $options['dry-run'] ? '[dry-run] ' : '' ) .
+					'   • ' . self::relative_path( $file )
+				);
+			}
+		}
+
+		if ( $options['dry-run'] ) {
+			Console::info( 'Dry run completed. No files were modified.' );
+			Console::line();
+			return;
+		}
+
+		Console::info( 'Version updated successfully to ' . $requested_version );
+
+		self::do_action_safe(
+			'wpmoo_cli_version_completed',
+			$current_version,
+			$requested_version,
+			array(
+				'files'   => $updated_files,
+				'options' => $options,
+			)
+		);
 
 		Console::line();
 	}
@@ -1521,7 +2070,7 @@ class CLI {
 
 			$path = rtrim( $parent, '/\\' ) . DIRECTORY_SEPARATOR;
 		}
-
+		
 		return null;
 	}
 
@@ -1570,4 +2119,98 @@ class CLI {
 
 		return $path;
 	}
+
+	/**
+	 * Install composer dependencies in deployment directory using --no-dev.
+	 *
+	 * @param string $working_dir Deployment directory.
+	 * @return bool True if optimisation completed successfully.
+	 * @since 0.4.1
+	 */
+	protected static function optimise_composer_dependencies( $working_dir ) {
+		$composer_json = $working_dir . DIRECTORY_SEPARATOR . 'composer.json';
+
+		if ( ! file_exists( $composer_json ) ) {
+			return false;
+		}
+
+		$composer_binary = self::locate_composer_binary( $working_dir );
+
+		if ( ! $composer_binary ) {
+			Console::comment( '→ Composer binary not found; skipping dependency optimisation.' );
+
+			return false;
+		}
+
+		Console::comment( '→ Optimising composer dependencies (--no-dev)' );
+
+		$args = array(
+			'install',
+			'--no-dev',
+			'--prefer-dist',
+			'--no-interaction',
+			'--no-progress',
+			'--optimize-autoloader',
+		);
+
+		list( $status, $output ) = self::execute_command( $composer_binary, $args, $working_dir );
+		self::output_command_lines( $output );
+
+		if ( 0 !== $status ) {
+			Console::warning( 'Composer install failed (exit code ' . $status . '). Existing vendor directory retained.' );
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Attempt to locate a composer executable.
+	 *
+	 * @param string $working_dir Deployment directory.
+	 * @return string|null Absolute path to composer binary.
+	 * @since 0.4.1
+	 */
+	protected static function locate_composer_binary( $working_dir ) {
+		$candidates = array(
+			$working_dir . DIRECTORY_SEPARATOR . 'composer.phar',
+			$working_dir . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'composer',
+			$working_dir . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'composer.phar',
+		);
+
+		foreach ( $candidates as $candidate ) {
+			if ( file_exists( $candidate ) ) {
+				return $candidate;
+			}
+		}
+
+		$composer = self::search_system_path( 'composer' );
+
+		if ( $composer ) {
+			return $composer;
+		}
+
+		$composer_phar = self::search_system_path( 'composer.phar' );
+
+		if ( $composer_phar ) {
+			return $composer_phar;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Remove a file if it exists.
+	 *
+	 * @param string $path File path.
+	 * @return void
+	 * @since 0.4.1
+	 */
+	protected static function remove_if_exists( $path ) {
+		if ( file_exists( $path ) && ! is_dir( $path ) ) {
+			@unlink( $path );
+		}
+	}
+
 }

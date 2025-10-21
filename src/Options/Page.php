@@ -109,7 +109,7 @@ class Page {
 		}
 
 		$assets_url = Assets::url();
-		$version    = '0.3.0';
+		$version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.4.1';
 
 		if ( empty( $assets_url ) ) {
 			return;
