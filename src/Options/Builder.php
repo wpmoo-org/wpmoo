@@ -54,6 +54,20 @@ class Builder {
 	protected $field_manager;
 
 	/**
+	 * Whether the builder has been registered.
+	 *
+	 * @var bool
+	 */
+	protected $registered = false;
+
+	/**
+	 * Cached page instance after registration.
+	 *
+	 * @var Page|null
+	 */
+	protected $page = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string  $option_key    Option key.
@@ -203,6 +217,10 @@ class Builder {
 	 * @return Page
 	 */
 	public function register(): Page {
+		if ( $this->registered && $this->page instanceof Page ) {
+			return $this->page;
+		}
+
 		// Build sections from SectionBuilder instances.
 		if ( ! empty( $this->sections ) && ! isset( $this->config['sections'] ) ) {
 			$this->config['sections'] = array();
@@ -212,13 +230,15 @@ class Builder {
 			}
 		}
 
-		$page = new Page( $this->config, $this->field_manager );
-		$page->boot();
+		$this->page = new Page( $this->config, $this->field_manager );
+		$this->page->boot();
 
 		// Register in Options static cache.
-		Options::registerPage( $page );
+		Options::registerPage( $this->page );
 
-		return $page;
+		$this->registered = true;
+
+		return $this->page;
 	}
 
 }

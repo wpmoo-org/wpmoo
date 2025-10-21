@@ -55,12 +55,29 @@ class Options {
 	 * Start a new options page builder.
 	 *
 	 * @param string $option_key Option key.
+	 * @param callable|null $callback Optional configurator executed with the builder.
 	 * @return Builder
 	 */
-	public static function create( string $option_key ): Builder {
+	public static function create( string $option_key, ?callable $callback = null ): Builder {
 		self::boot();
 
-		return new Builder( $option_key, self::$field_manager );
+		$builder = new Builder( $option_key, self::$field_manager );
+
+		$register_callback = static function () use ( $builder ) {
+			$builder->register();
+		};
+
+		if ( function_exists( 'did_action' ) && did_action( 'init' ) ) {
+			$register_callback();
+		} elseif ( function_exists( 'add_action' ) ) {
+			add_action( 'init', $register_callback, 15 );
+		}
+
+		if ( null !== $callback ) {
+			$callback( $builder );
+		}
+
+		return $builder;
 	}
 
 	/**
