@@ -641,6 +641,8 @@ class Page {
 					continue;
 				}
 
+				$field_config['field_manager'] = $this->field_manager;
+
 				$field     = $this->field_manager->make( $field_config );
 				$fields[]  = $field;
 				$this->fields[ $field->id() ] = $field;

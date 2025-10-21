@@ -528,6 +528,8 @@ class Metabox {
 				continue;
 			}
 
+			$field_config['field_manager'] = $this->field_manager;
+
 			$field = $this->field_manager->make( $field_config );
 			$fields[ $field->id() ] = $field;
 		}

@@ -1,0 +1,111 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.wpmoo-accordion {
+  margin-top: wpmoo-spacing(lg);
+
+  &__item {
+    margin-bottom: wpmoo-spacing(sm);
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  &__summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: wpmoo-spacing(md) wpmoo-spacing(lg);
+    font-size: 13px;
+    font-weight: 600;
+    color: wpmoo-color(heading);
+    background: #fafafa;
+    border: 1px solid wpmoo-color(border);
+    border-radius: wpmoo-radius(field);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    @include transition(border-color, background);
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      content: "+";
+      position: absolute;
+      top: 50%;
+      right: wpmoo-spacing(lg);
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      border: 1px solid wpmoo-color(border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: wpmoo-color(toggle-indicator);
+      background: wpmoo-color(background);
+      @include transition(background, color, border-color);
+    }
+
+    &:hover,
+    &:focus {
+      outline: 0;
+      border-color: #bcbfc2;
+    }
+  }
+
+  &__content {
+    display: none;
+    padding: 0;
+    border: 1px solid wpmoo-color(border);
+    border-top: none;
+    background: wpmoo-color(background);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    border-radius: 0 0 wpmoo-radius(field) wpmoo-radius(field);
+    margin-top: -1px;
+
+    > .wpmoo-field {
+      padding: wpmoo-spacing(lg);
+      border-bottom: 1px solid wpmoo-color(border-soft);
+
+      &:last-of-type {
+        border-bottom: none;
+      }
+    }
+  }
+
+  &__item[open] {
+    > .wpmoo-accordion__summary {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      background: wpmoo-color(background);
+
+      &::after {
+        content: "–";
+        color: wpmoo-color(primary);
+        border-color: wpmoo-color(primary);
+      }
+    }
+
+    > .wpmoo-accordion__content {
+      display: block;
+    }
+  }
+
+  &__empty {
+    margin: 0;
+    padding: wpmoo-spacing(md);
+    color: wpmoo-color(text);
+    font-size: 13px;
+    border: 1px solid wpmoo-color(border);
+    border-radius: wpmoo-radius(field);
+    background: wpmoo-color(background);
+  }
+}
