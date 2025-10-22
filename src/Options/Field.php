@@ -119,6 +119,8 @@ class Field {
 			$arguments = $alias['arguments'];
 		}
 
+		$arguments = $this->normalize_arguments( $name, $arguments );
+
 		if ( method_exists( $this->builder, $name ) ) {
 			$result = $this->builder->{$name}( ...$arguments );
 
@@ -209,5 +211,51 @@ class Field {
 				),
 			),
 		);
+	}
+
+	/**
+	 * Normalise arguments before forwarding them to the builder.
+	 *
+	 * @param string              $method    Method being invoked.
+	 * @param array<int, mixed> $arguments Original arguments.
+	 * @return array<int, mixed>
+	 */
+	protected function normalize_arguments( string $method, array $arguments ): array {
+		if ( 'set' === $method && isset( $arguments[1] ) ) {
+			$arguments[1] = $this->normalize_nested_value( $arguments[1] );
+			return $arguments;
+		}
+
+		if ( in_array( $method, array( 'attributes', 'options', 'args' ), true ) && isset( $arguments[0] ) ) {
+			$arguments[0] = $this->normalize_nested_value( $arguments[0] );
+			return $arguments;
+		}
+
+		return $arguments;
+	}
+
+	/**
+	 * Recursively convert Field/FieldBuilder instances within arrays.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return mixed
+	 */
+	protected function normalize_nested_value( $value ) {
+		if ( $value instanceof self ) {
+			return $value->toArray();
+		}
+
+		if ( $value instanceof FieldBuilder ) {
+			return $value->build();
+		}
+
+		if ( is_array( $value ) ) {
+			foreach ( $value as $key => $item ) {
+				$value[ $key ] = $this->normalize_nested_value( $item );
+			}
+			return $value;
+		}
+
+		return $value;
 	}
 }
