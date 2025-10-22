@@ -122,6 +122,25 @@ class Fieldset extends Field {
 			'wpmoo-field--nested',
 		);
 
+		$help_text   = $field->help_text();
+		$help_html   = $field->help_html();
+		$help_button = '';
+
+		if ( '' !== $help_text ) {
+			$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . $this->esc_attr( $help_text ) . '"';
+			$help_button .= ' data-tooltip="' . $this->esc_attr( $help_text ) . '"';
+			$help_button .= ' data-help-text="' . $this->esc_attr( $help_text ) . '"';
+
+			if ( '' !== $help_html ) {
+				$help_button .= ' data-help-html="' . $this->esc_attr( $help_html ) . '"';
+			}
+
+			$help_button .= '>';
+			$help_button .= '<span aria-hidden="true">?</span>';
+			$help_button .= '<span class="screen-reader-text">' . $this->esc_html( $help_text ) . '</span>';
+			$help_button .= '</button>';
+		}
+
 		$width = $field->width();
 		$style = '';
 
@@ -134,7 +153,9 @@ class Fieldset extends Field {
 
 			if ( $field->label() ) {
 				echo '<div class="wpmoo-title">';
+				echo '<div class="wpmoo-title__heading">';
 				echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+				echo '</div>';
 
 				if ( $field->description() ) {
 					echo '<div class="wpmoo-subtitle-text">' . $this->esc_html( $field->description() ) . '</div>';
@@ -150,15 +171,26 @@ class Fieldset extends Field {
 			}
 
 			echo '<div class="wpmoo-fieldset__control">';
+
+			if ( $help_button ) {
+				echo '<div class="wpmoo-fieldset__control-inner">';
+			}
+
 			echo $field->render( $field_name, $field_value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+			if ( $help_button ) {
+				echo $help_button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '</div>';
+			}
+
 			echo '</div>';
 
 			if ( $field->after() ) {
 				echo '<div class="wpmoo-field-after">' . $field->after_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 
-			if ( $field->help() ) {
-				echo '<p class="wpmoo-field-help">' . $field->help_html() . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			if ( '' === $field->label() && '' !== $help_html && '' === $help_button ) {
+				echo '<div class="wpmoo-field-help-text">' . $help_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 
 			echo '</div>'; // .wpmoo-fieldset__body

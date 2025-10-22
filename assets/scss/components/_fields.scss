@@ -40,8 +40,9 @@
   --wpmoo-field-width: 100%;
 
   display: flex;
-  flex-direction: column;
-  gap: wpmoo-spacing(sm);
+  flex-direction: row;
+  align-items: flex-start;
+  gap: wpmoo-spacing(lg);
   padding: 0;
   margin: 0;
   width: 100%;
@@ -58,25 +59,20 @@
 }
 
 .wpmoo-field--separated {
-  padding: wpmoo-spacing(lg) 0;
-  margin: 0 0 wpmoo-spacing(xl);
+  padding: wpmoo-spacing(lg);
+  margin: 0 0 wpmoo-spacing(md);
   border-top: 1px solid wpmoo-color(border-soft);
 }
 
-.wpmoo-field--separated:first-child {
-  border-top: none;
-  padding-top: 0;
-}
 
-.wpmoo-field--separated:last-child {
-  margin-bottom: 0;
-}
 
 .wpmoo-title {
   display: flex;
   flex-direction: column;
   gap: wpmoo-spacing(xs);
   padding: 0;
+  flex: 0 0 240px;
+  max-width: 260px;
 
   h4 {
     margin: 0;
@@ -85,6 +81,12 @@
     color: wpmoo-color(heading);
     line-height: 1.4;
   }
+}
+
+.wpmoo-title__heading {
+  display: flex;
+  align-items: center;
+  gap: wpmoo-spacing(xs);
 }
 
 .wpmoo-subtitle-text {
@@ -150,6 +152,8 @@
   padding: 0 0 wpmoo-spacing(md);
   margin: 0;
   border-bottom: 1px solid wpmoo-color(border-soft);
+  flex-direction: column;
+  gap: wpmoo-spacing(sm);
 }
 
 .wpmoo-field--nested:last-child {
@@ -173,6 +177,35 @@
 
 .wpmoo-fieldset__control > * {
   width: 100%;
+}
+
+.wpmoo-fieldset__control-inner {
+  display: flex;
+  align-items: center;
+  gap: wpmoo-spacing(xs);
+  width: 100%;
+
+  > :first-child {
+    min-width: 0;
+  }
+
+  .wpmoo-field-help {
+    flex: 0 0 auto;
+  }
+}
+
+.wpmoo-fieldset__control-inner textarea + .wpmoo-field-help,
+.wpmoo-fieldset__control-inner .wp-editor-area + .wpmoo-field-help {
+  align-self: flex-start;
+  margin-top: wpmoo-spacing(xs);
+}
+
+.wpmoo-fieldset__control-inner input[type="color"],
+.wpmoo-fieldset__control-inner .wp-color-picker,
+.wpmoo-fieldset__control-inner .wp-color-result {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
 }
 
 .wpmoo-field-fieldset {
@@ -202,10 +235,160 @@
 }
 
 .wpmoo-field-help {
+  --wpmoo-help-size: 1.125rem;
+  --wpmoo-help-gap: wpmoo-spacing(sm);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--wpmoo-help-size);
+  height: var(--wpmoo-help-size);
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(29, 35, 39, 0.08);
+  color: wpmoo-color(text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: background-color var(--wpmoo-transition-duration, 0.2s) var(--wpmoo-transition-timing, ease),
+    color var(--wpmoo-transition-duration, 0.2s) var(--wpmoo-transition-timing, ease),
+    box-shadow var(--wpmoo-transition-duration, 0.2s) var(--wpmoo-transition-timing, ease);
+
+  span[aria-hidden="true"] {
+    display: inline-block;
+    transform: translateY(-1px);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(29, 35, 39, 0.16);
+    color: wpmoo-color(heading);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.wpmoo-field-help.is-active {
+  background: rgba(29, 35, 39, 0.16);
+  color: wpmoo-color(heading);
+}
+
+.wpmoo-help-popover {
+  position: absolute;
+  z-index: 10000;
+  min-width: 200px;
+  max-width: min(320px, calc(100vw - 48px));
+  background: #fff;
+  color: wpmoo-color(heading);
+  border-radius: wpmoo-radius(field);
+  border: 1px solid wpmoo-color(border-soft);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--wpmoo-transition-duration, 0.2s) var(--wpmoo-transition-timing, ease),
+    visibility var(--wpmoo-transition-duration, 0.2s) var(--wpmoo-transition-timing, ease),
+    transform var(--wpmoo-transition-duration, 0.2s) var(--wpmoo-transition-timing, ease);
+
+  &.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  &[data-side="right"] {
+    transform-origin: left center;
+  }
+
+  &[data-side="left"] {
+    transform-origin: right center;
+  }
+}
+
+.wpmoo-help-popover__content {
+  padding: wpmoo-spacing(sm) wpmoo-spacing(md);
+  font-size: 13px;
+  line-height: 1.5;
+
+  p {
+    margin: 0 0 wpmoo-spacing(xs);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  a {
+    color: wpmoo-color(primary);
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+  }
+}
+
+.wpmoo-help-popover__arrow {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border: 1px solid wpmoo-color(border-soft);
+  transform: rotate(45deg);
+  z-index: 0;
+}
+
+.wpmoo-help-popover[data-side="right"] .wpmoo-help-popover__arrow {
+  left: -7px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  border-right: none;
+  border-top: none;
+}
+
+.wpmoo-help-popover[data-side="left"] .wpmoo-help-popover__arrow {
+  right: -7px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  border-left: none;
+  border-bottom: none;
+}
+
+.wpmoo-field-help-text {
   margin: wpmoo-spacing(xs) 0 0;
   color: wpmoo-color(text);
   font-size: 12px;
   line-height: 1.5;
+}
+
+@media (max-width: 960px) {
+  .wpmoo-field {
+    flex-direction: column;
+    gap: wpmoo-spacing(md);
+  }
+
+  .wpmoo-title {
+    flex: 0 0 auto;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .wpmoo-title__heading {
+    justify-content: space-between;
+  }
+
+  .wpmoo-help-popover[data-side="right"],
+  .wpmoo-help-popover[data-side="left"] {
+    transform: translateY(6px);
+  }
 }
 
 @media (max-width: 782px) {

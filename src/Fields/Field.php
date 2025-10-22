@@ -426,6 +426,29 @@ abstract class Field {
 	}
 
 	/**
+	 * Helper for plain-text help content.
+	 *
+	 * @return string
+	 */
+	public function help_text() {
+		$help = $this->help_html();
+
+		if ( '' === $help ) {
+			return '';
+		}
+
+		if ( function_exists( 'wp_strip_all_tags' ) ) {
+			$help = wp_strip_all_tags( $help );
+		} else {
+			$help = strip_tags( $help );
+		}
+
+		$help = preg_replace( '/\s+/u', ' ', $help );
+
+		return trim( (string) $help );
+	}
+
+	/**
 	 * Render the field HTML.
 	 *
 	 * @param string $name  Input name attribute.

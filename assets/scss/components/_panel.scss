@@ -84,7 +84,6 @@
 .wpmoo-panel__content {
   flex: 1;
   background: #fff;
-  padding: wpmoo-spacing(xl) wpmoo-spacing(xxl);
   border-radius: 0 0 wpmoo-radius(panel);
   border-left: 1px solid wpmoo-color(border);
   margin-left: -1px;
@@ -141,7 +140,7 @@
 }
 
 .wpmoo-panel__section-description {
-  margin: 0 0 wpmoo-spacing(lg);
+  margin: wpmoo-spacing(lg) wpmoo-spacing(lg);
   color: wpmoo-color(text);
   font-size: 13px;
   line-height: 1.6;
@@ -172,11 +171,9 @@
   }
 
   .wpmoo-panel__content {
-    padding: 0 0 wpmoo-spacing(lg);
     background: transparent;
     border-left: 1px solid wpmoo-color(border);
     margin-left: -1px;
-    padding-left: 24px;
   }
 }
 
@@ -212,7 +209,6 @@
     border-left: 1px solid wpmoo-color(border);
     margin-left: -1px;
     border-top: none;
-    padding: wpmoo-spacing(xl) wpmoo-spacing(xxl);
   }
 }
 
@@ -239,6 +235,5 @@
     border-left: none;
     margin-left: 0;
     border-top: none;
-    padding: wpmoo-spacing(xl);
   }
 }
