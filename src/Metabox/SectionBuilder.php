@@ -11,6 +11,8 @@
 
 namespace WPMoo\Metabox;
 
+use WPMoo\Options\Field as OptionsFieldDefinition;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -51,7 +53,7 @@ class SectionBuilder {
 	/**
 	 * Fields included in the section.
 	 *
-	 * @var array<int, array<string, mixed>>
+	 * @var array<int, mixed>
 	 */
 	protected $fields = array();
 
@@ -122,10 +124,16 @@ class SectionBuilder {
 	/**
 	 * Append multiple fields at once.
 	 *
-	 * @param array<int, array<string, mixed>> $fields Field definitions.
+	 * Accepts arrays, metabox field builders, or option field definitions.
+	 *
+	 * @param mixed ...$fields Field definitions.
 	 * @return $this
 	 */
-	public function fields( array $fields ): self {
+	public function fields( ...$fields ): self {
+		if ( 1 === count( $fields ) && is_array( $fields[0] ) && $this->is_list_array( $fields[0] ) ) {
+			$fields = $fields[0];
+		}
+
 		foreach ( $fields as $field ) {
 			$this->fields[] = $field;
 		}
@@ -144,9 +152,15 @@ class SectionBuilder {
 		foreach ( $this->fields as $field ) {
 			if ( $field instanceof FieldBuilder ) {
 				$fields[] = $field->build();
-			} else {
-				$fields[] = $field;
+				continue;
 			}
+
+			if ( $field instanceof OptionsFieldDefinition ) {
+				$fields[] = $field->toArray();
+				continue;
+			}
+
+			$fields[] = $field;
 		}
 
 		return array(
@@ -156,5 +170,29 @@ class SectionBuilder {
 			'icon'        => $this->icon,
 			'fields'      => $fields,
 		);
+	}
+
+	/**
+	 * Determine whether an array is a sequential list.
+	 *
+	 * @param array<int|string, mixed> $array Candidate array.
+	 * @return bool
+	 */
+	protected function is_list_array( array $array ): bool {
+		if ( function_exists( 'array_is_list' ) ) {
+			return array_is_list( $array );
+		}
+
+		$expected = 0;
+
+		foreach ( $array as $key => $_value ) {
+			if ( $key !== $expected ) {
+				return false;
+			}
+
+			$expected++;
+		}
+
+		return true;
 	}
 }

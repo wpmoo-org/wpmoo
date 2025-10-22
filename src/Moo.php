@@ -8,8 +8,10 @@
 namespace WPMoo;
 
 use InvalidArgumentException;
+use WPMoo\Moo\MetaboxHandle;
 use WPMoo\Moo\PageHandle;
 use WPMoo\Moo\SectionHandle;
+use WPMoo\Metabox\Metabox;
 use WPMoo\Options\Options;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Entry point for fluent definitions (pages, sections, containers).
+ * Entry point for fluent definitions (pages, sections, containers, metaboxes).
  */
 class Moo {
 
@@ -36,9 +38,16 @@ class Moo {
 	protected static $pending_sections = array();
 
 	/**
+	 * Registered metabox handles keyed by identifier.
+	 *
+	 * @var array<string, MetaboxHandle>
+	 */
+	protected static $metaboxes = array();
+
+	/**
 	 * Create a fluent definition.
 	 *
-	 * @param string $type        Definition type (page, container, section).
+	 * @param string $type        Definition type (page, container, section, metabox).
 	 * @param string $id          Identifier.
 	 * @param string $title       Optional title.
 	 * @param string $description Optional description.
@@ -54,6 +63,9 @@ class Moo {
 
 			case 'section':
 				return self::create_section( $id, $title, $description );
+
+			case 'metabox':
+				return self::metabox( $id, $title, $description );
 		}
 
 		throw new InvalidArgumentException(
@@ -69,6 +81,35 @@ class Moo {
 	 */
 	public static function page( string $id ): ?PageHandle {
 		return isset( self::$pages[ $id ] ) ? self::$pages[ $id ] : null;
+	}
+
+	/**
+	 * Create (or fetch existing) metabox handle.
+	 *
+	 * @param string $id          Metabox identifier.
+	 * @param string $title       Optional title.
+	 * @param string $description Optional description.
+	 * @return MetaboxHandle
+	 */
+	public static function metabox( string $id, string $title = '', string $description = '' ): MetaboxHandle {
+		if ( isset( self::$metaboxes[ $id ] ) ) {
+			return self::$metaboxes[ $id ];
+		}
+
+		$builder = Metabox::create( $id );
+		$handle  = new MetaboxHandle( $id, $builder );
+
+		if ( '' !== $title ) {
+			$handle->title( $title );
+		}
+
+		if ( '' !== $description ) {
+			$handle->description( $description );
+		}
+
+		self::$metaboxes[ $id ] = $handle;
+
+		return $handle;
 	}
 
 	/**
@@ -144,4 +185,3 @@ class Moo {
 		return new SectionHandle( $id, $title, $description );
 	}
 }
-
