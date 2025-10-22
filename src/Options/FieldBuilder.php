@@ -151,6 +151,33 @@ class FieldBuilder {
 
 		$this->config['layout'] = array_merge( $this->config['layout'], $layout );
 
+		if ( isset( $this->config['layout']['columns']['default'] ) ) {
+			$span = $this->clampColumnSpan( $this->config['layout']['columns']['default'] );
+
+			if ( null !== $span ) {
+				$this->config['width'] = (int) round( ( $span / 12 ) * 100 );
+			}
+		} elseif ( isset( $this->config['layout']['size'] ) ) {
+			$span = $this->clampColumnSpan( $this->config['layout']['size'] );
+
+			if ( null !== $span ) {
+				$this->config['width'] = (int) round( ( $span / 12 ) * 100 );
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Set explicit width percentage (0-100).
+	 *
+	 * @param int $percentage Width percentage.
+	 * @return $this
+	 */
+	public function width( int $percentage ): self {
+		$percentage = max( 0, min( 100, $percentage ) );
+		$this->config['width'] = $percentage;
+
 		return $this;
 	}
 
@@ -159,16 +186,20 @@ class FieldBuilder {
 	 *
 	 * @param mixed ...$columns Column definitions (int, string, array).
 	 * @return $this
-	 */
+	*/
 	public function size( ...$columns ): self {
 		$parsed = $this->parseColumnSpans( $columns );
 
-		return $this->layout(
+		$this->layout(
 			array(
 				'size'    => $parsed['default'],
 				'columns' => $parsed,
 			)
 		);
+
+		$width = (int) round( ( $parsed['default'] / 12 ) * 100 );
+
+		return $this->width( $width );
 	}
 
 	/**

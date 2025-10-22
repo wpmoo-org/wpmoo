@@ -190,8 +190,8 @@
   margin: 0;
 }
 
-.wpmoo-panel__section-body .wpmoo-grid--fields {
-  --wpmoo-grid-gap: wpmoo-spacing(xl);
+.wpmoo-panel__section-body .wpmoo-section-fields {
+  gap: wpmoo-spacing(xl);
 }
 
 @media (min-width: 783px) {

@@ -179,8 +179,12 @@ class Field {
 			case 'set_help_html':
 				return array( 'method' => 'help', 'arguments' => $arguments );
 
-			case 'set_options':
-				return array( 'method' => 'options', 'arguments' => $arguments );
+		case 'set_options':
+			return array( 'method' => 'options', 'arguments' => $arguments );
+
+		case 'set_width':
+		case 'width':
+			return array( 'method' => 'width', 'arguments' => $arguments );
 
 			case 'set_attributes':
 				return array( 'method' => 'attributes', 'arguments' => $arguments );

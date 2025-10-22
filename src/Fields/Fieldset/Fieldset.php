@@ -15,7 +15,6 @@ use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Options\Field as FieldDefinition;
 use WPMoo\Options\FieldBuilder as FieldDefinitionBuilder;
-use WPMoo\Support\Concerns\GeneratesGridClasses;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,7 +24,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Renders a fieldset containing nested inputs.
  */
 class Fieldset extends Field {
-    use GeneratesGridClasses;
 
 	/**
 	 * Nested field instances.
@@ -33,6 +31,13 @@ class Fieldset extends Field {
 	 * @var array<int, Field>
 	 */
 	protected $fields = array();
+
+	/**
+	 * Preferred gutter keyword.
+	 *
+	 * @var string
+	 */
+	protected $gutter = 'lg';
 
 	/**
 	 * Field manager for nested inputs.
@@ -59,9 +64,28 @@ class Fieldset extends Field {
 			$nested_fields = $config['fields'];
 		}
 
-		unset( $config['fields'], $config['field_manager'] );
+		$layout = array();
+
+		if ( isset( $config['layout'] ) && is_array( $config['layout'] ) ) {
+			$layout = $config['layout'];
+		}
+
+		if ( isset( $config['gutter'] ) && is_string( $config['gutter'] ) ) {
+			$layout['gutter'] = $config['gutter'];
+		}
+
+		unset( $config['fields'], $config['field_manager'], $config['gutter'] );
 
 		parent::__construct( $config );
+
+		if ( isset( $layout['gutter'] ) && is_string( $layout['gutter'] ) ) {
+			$gutter = strtolower( trim( $layout['gutter'] ) );
+			$gutter = preg_replace( '/[^a-z0-9]/', '', $gutter );
+
+			if ( '' !== $gutter ) {
+				$this->gutter = $gutter;
+			}
+		}
 
 		$this->fields = $this->prepare_fields( $nested_fields );
 	}
@@ -80,50 +104,33 @@ class Fieldset extends Field {
 			return '';
 		}
 
-		ob_start();
+	ob_start();
 
-		$gutter = $this->layout( 'gutter' );
-		$gutter = is_string( $gutter ) && '' !== trim( $gutter ) ? trim( strtolower( $gutter ) ) : 'lg';
-		$gutter = preg_replace( '/[^a-z0-9]/', '', $gutter );
-		if ( '' === $gutter ) {
-			$gutter = 'lg';
-		}
+	$gutter_class = 'wpmoo-fieldset--gutter-' . $this->esc_attr( $this->gutter );
 
-		$grid_classes = array(
-			'wpmoo-grid',
-			'wpmoo-grid--fields',
-			'wpmoo-grid--guttered',
-			'wpmoo-fieldset__grid',
-			'gutter-' . $gutter,
-		);
-
-		echo '<div class="wpmoo-fieldset-group" data-wpmoo-fieldset="' . $this->esc_attr( $this->id() ) . '">';
-		echo '<div class="' . $this->esc_attr( implode( ' ', $grid_classes ) ) . '">';
+	echo '<div class="wpmoo-fieldset-group ' . $gutter_class . '" data-wpmoo-fieldset="' . $this->esc_attr( $this->id() ) . '">';
+	echo '<div class="wpmoo-fieldset__fields">';
 
 		foreach ( $this->fields as $field ) {
 			$field_id    = $field->id();
 			$field_name  = $name . '[' . $field_id . ']';
 			$field_value = array_key_exists( $field_id, $values ) ? $values[ $field_id ] : $field->default();
 
-			$columns = $field->layout( 'columns' );
+		$classes = array(
+			'wpmoo-field',
+			'wpmoo-field-' . $field->type(),
+			'wpmoo-field--nested',
+		);
 
-			if ( ! is_array( $columns ) || empty( $columns ) ) {
-				$columns = array(
-					'default' => 12,
-				);
-			}
+		$width = $field->width();
+		$style = '';
 
-			$classes = array(
-				'wpmoo-field',
-				'wpmoo-field-' . $field->type(),
-				'wpmoo-field--nested',
-				'wpmoo-col',
-			);
+		if ( $width > 0 && $width < 100 ) {
+			$classes[] = 'wpmoo-field--has-width';
+			$style     = ' style="--wpmoo-field-width:' . $this->esc_attr( (string) $width ) . '%;"';
+		}
 
-			$classes = array_merge( $classes, $this->build_grid_classes( $columns ) );
-			$classes = array_unique( array_filter( $classes ) );
-
-			echo '<div class="' . $this->esc_attr( implode( ' ', $classes ) ) . '">';
+		echo '<div class="' . $this->esc_attr( implode( ' ', $classes ) ) . '"' . $style . '>';
 
 			if ( $field->label() ) {
 				echo '<div class="wpmoo-title">';
@@ -158,7 +165,7 @@ class Fieldset extends Field {
 			echo '</div>'; // .wpmoo-field
 		}
 
-		echo '</div>'; // .wpmoo-fieldset__grid
+		echo '</div>'; // .wpmoo-fieldset__fields
 		echo '</div>'; // .wpmoo-fieldset-group wrapper
 
 		return ob_get_clean();
@@ -221,4 +228,3 @@ class Fieldset extends Field {
 	}
 
 }
-

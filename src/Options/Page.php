@@ -16,7 +16,6 @@ use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
-use WPMoo\Support\Concerns\GeneratesGridClasses;
 use WPMoo\Support\Concerns\EscapesOutput;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
@@ -31,7 +30,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Page {
 	use EscapesOutput;
 	use TranslatesStrings;
-	use GeneratesGridClasses;
 
 	/**
 	 * Normalized page configuration.
@@ -365,12 +363,6 @@ class Page {
 				'description' => '',
 				'icon'        => '',
 				'fields'      => array_values( $this->fields ),
-				'layout'      => array(
-					'size'    => 12,
-					'columns' => array(
-						'default' => 12,
-					),
-				),
 			);
 		}
 
@@ -390,39 +382,17 @@ class Page {
 
 			$content = ob_get_clean();
 
-			if ( '' !== trim( $content ) ) {
-				$content = '<div class="wpmoo-grid wpmoo-grid--fields wpmoo-grid--guttered gutter-lg">' . $content . '</div>';
-			}
+		if ( '' !== trim( $content ) ) {
+			$content = '<div class="wpmoo-section-fields">' . $content . '</div>';
+		}
 
-			$section_layout = array(
-				'size'    => 12,
-				'columns' => array(
-					'default' => 12,
-				),
-			);
-
-			if ( isset( $section['layout'] ) && is_array( $section['layout'] ) ) {
-				$section_layout = array_merge( $section_layout, $section['layout'] );
-			}
-
-			if ( empty( $section_layout['columns'] ) || ! is_array( $section_layout['columns'] ) ) {
-				$section_layout['columns'] = array(
-					'default' => isset( $section_layout['size'] ) ? $this->normalise_grid_span( $section_layout['size'] ) : 12,
-				);
-			}
-
-			$section_layout['size'] = isset( $section_layout['columns']['default'] )
-				? $this->normalise_grid_span( $section_layout['columns']['default'] )
-				: 12;
-
-			$panel_sections[] = array(
-				'id'          => $section_id,
-				'label'       => $section_title,
-				'description' => $section_desc,
-				'icon'        => $section_icon,
-				'content'     => $content,
-				'layout'      => $section_layout,
-			);
+		$panel_sections[] = array(
+			'id'          => $section_id,
+			'label'       => $section_title,
+			'description' => $section_desc,
+			'icon'        => $section_icon,
+			'content'     => $content,
+		);
 		}
 
 		$panel_id       = 'wpmoo-options-panel-' . $this->config['menu_slug'];
@@ -530,36 +500,27 @@ class Page {
 	 * @return void
 	 */
 	protected function render_field( Field $field, array $values ) {
-		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
-		$name  = $this->field_input_name( $field );
+	$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
+	$name  = $this->field_input_name( $field );
 
-		$columns = $field->layout( 'columns' );
+	$width   = $field->width();
+	$classes = array(
+		'wpmoo-field',
+		'wpmoo-field-' . $field->type(),
+	);
 
-		if ( 'fieldset' !== $field->type() ) {
-			$columns = array( 'default' => 12 );
-		}
+	if ( 'fieldset' !== $field->type() ) {
+		$classes[] = 'wpmoo-field--separated';
+	}
 
-		if ( ! is_array( $columns ) || empty( $columns ) ) {
-			$columns = array(
-				'default' => $this->normalise_grid_span( $field->layout( 'size' ) ),
-			);
-		}
+	$style = '';
 
-		$default_span = isset( $columns['default'] ) ? $this->normalise_grid_span( $columns['default'] ) : 12;
+	if ( $width > 0 && $width < 100 && 'fieldset' !== $field->type() ) {
+		$classes[] = 'wpmoo-field--has-width';
+		$style     = ' style="--wpmoo-field-width:' . $this->esc_attr( (string) $width ) . '%;"';
+	}
 
-		$classes = array(
-			'wpmoo-field',
-			'wpmoo-field-' . $field->type(),
-			'wpmoo-col',
-		);
-
-		if ( 'fieldset' !== $field->type() ) {
-			$classes[] = 'wpmoo-field--separated';
-		}
-
-		$classes = array_merge( $classes, $this->build_grid_classes( $columns ) );
-
-		echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '">';
+	echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '"' . $style . '>';
 
 		if ( $field->label() ) {
 			echo '<div class="wpmoo-title">';

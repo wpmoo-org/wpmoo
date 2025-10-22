@@ -96,6 +96,13 @@ abstract class Field {
 	protected $args = array();
 
 	/**
+	 * Declared width percentage (0-100).
+	 *
+	 * @var int
+	 */
+	protected $width = 0;
+
+	/**
 	 * Layout configuration.
 	 *
 	 * @var array<string, mixed>
@@ -162,6 +169,15 @@ abstract class Field {
 
 		$this->normalise_layout();
 
+		$this->width = isset( $config['width'] ) ? (int) $config['width'] : 0;
+
+		if ( $this->width <= 0 ) {
+			$size = isset( $this->layout['size'] ) ? (int) $this->layout['size'] : 12;
+			$this->width = (int) round( ( $size / 12 ) * 100 );
+		}
+
+		$this->width = max( 0, min( 100, $this->width ) );
+
 		$this->attributes = $attributes;
 		$this->args       = $attributes;
 	}
@@ -209,6 +225,15 @@ abstract class Field {
 	 */
 	public function default() {
 		return $this->default;
+	}
+
+	/**
+	 * Returns the preferred width percentage.
+	 *
+	 * @return int
+	 */
+	public function width() {
+		return $this->width;
 	}
 
 	/**

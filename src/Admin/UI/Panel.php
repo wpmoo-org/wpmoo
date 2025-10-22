@@ -12,7 +12,6 @@
 namespace WPMoo\Admin\UI;
 
 use WPMoo\Support\Concerns\EscapesOutput;
-use WPMoo\Support\Concerns\GeneratesGridClasses;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -24,7 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Panel {
 	use EscapesOutput;
-	use GeneratesGridClasses;
 
 	/**
 	 * Panel identifier.
@@ -191,35 +189,11 @@ class Panel {
 			$hidden     = $is_active ? 'false' : 'true';
 			$expanded   = $is_active ? 'true' : 'false';
 
-			$layout = array(
-				'columns' => array(
-					'default' => 12,
-				),
-			);
-
-			if ( isset( $section['layout'] ) && is_array( $section['layout'] ) ) {
-				$layout = array_merge( $layout, $section['layout'] );
-			}
-
-			if ( empty( $layout['columns'] ) || ! is_array( $layout['columns'] ) ) {
-				$layout['columns'] = array(
-					'default' => isset( $layout['size'] ) ? $layout['size'] : 12,
-				);
-			}
-
-			$default_span = isset( $layout['columns']['default'] )
-				? $this->normalise_grid_span( $layout['columns']['default'] )
-				: 12;
-
 			$section_classes = array( 'wpmoo-panel__section' );
 
 			if ( $is_active ) {
 				$section_classes[] = 'is-active';
 			}
-
-			$section_classes[] = 'wpmoo-col';
-			$section_classes   = array_merge( $section_classes, $this->build_grid_classes( $layout['columns'] ) );
-			$section_classes   = array_unique( array_filter( $section_classes ) );
 			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '">';
 
 			echo '<button type="button" class="wpmoo-panel__section-toggle' . ( $is_active ? ' is-active' : '' ) . '" data-panel-switch="' . $this->esc_attr( $section_id ) . '" aria-expanded="' . $expanded . '">';
