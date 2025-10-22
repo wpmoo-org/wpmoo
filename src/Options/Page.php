@@ -362,6 +362,12 @@ class Page {
 				'description' => '',
 				'icon'        => '',
 				'fields'      => array_values( $this->fields ),
+				'layout'      => array(
+					'size'    => 12,
+					'columns' => array(
+						'default' => 12,
+					),
+				),
 			);
 		}
 
@@ -385,12 +391,34 @@ class Page {
 				$content = '<div class="wpmoo-grid wpmoo-grid--fields">' . $content . '</div>';
 			}
 
+			$section_layout = array(
+				'size'    => 12,
+				'columns' => array(
+					'default' => 12,
+				),
+			);
+
+			if ( isset( $section['layout'] ) && is_array( $section['layout'] ) ) {
+				$section_layout = array_merge( $section_layout, $section['layout'] );
+			}
+
+			if ( empty( $section_layout['columns'] ) || ! is_array( $section_layout['columns'] ) ) {
+				$section_layout['columns'] = array(
+					'default' => isset( $section_layout['size'] ) ? $this->normalise_grid_span( $section_layout['size'] ) : 12,
+				);
+			}
+
+			$section_layout['size'] = isset( $section_layout['columns']['default'] )
+				? $this->normalise_grid_span( $section_layout['columns']['default'] )
+				: 12;
+
 			$panel_sections[] = array(
 				'id'          => $section_id,
 				'label'       => $section_title,
 				'description' => $section_desc,
 				'icon'        => $section_icon,
 				'content'     => $content,
+				'layout'      => $section_layout,
 			);
 		}
 
@@ -502,18 +530,25 @@ class Page {
 		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name  = $this->field_input_name( $field );
 
-		$size = (int) $field->layout( 'size' );
-		if ( $size < 1 || $size > 12 ) {
-			$size = 12;
+		$columns = $field->layout( 'columns' );
+
+		if ( ! is_array( $columns ) || empty( $columns ) ) {
+			$columns = array(
+				'default' => $this->normalise_grid_span( $field->layout( 'size' ) ),
+			);
 		}
+
+		$default_span = isset( $columns['default'] ) ? $this->normalise_grid_span( $columns['default'] ) : 12;
 
 		$classes = array(
 			'wpmoo-field',
 			'wpmoo-field-' . $field->type(),
-			'wpmoo-col-span-' . $size,
+			'wpmoo-col',
 		);
 
-		echo '<div class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" style="--wpmoo-grid-span:' . $this->esc_attr( (string) $size ) . '">';
+		$classes = array_merge( $classes, $this->build_grid_classes( $columns ) );
+
+		echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '" style="--wpmoo-grid-span:' . $this->esc_attr( (string) $default_span ) . '">';
 
 		if ( $field->label() ) {
 			echo '<div class="wpmoo-title">';
@@ -811,5 +846,60 @@ class Page {
 	 */
 	public function field_input_name( Field $field ) {
 		return $this->repository->option_key() . '[' . $field->id() . ']';
+	}
+
+	/**
+	 * Build responsive grid classes for a column configuration.
+	 *
+	 * @param array<string, int|string> $columns Column configuration.
+	 * @return array<int, string>
+	 */
+	protected function build_grid_classes( array $columns ): array {
+		$classes = array();
+
+		foreach ( $columns as $breakpoint => $span ) {
+			$span = $this->normalise_grid_span( $span );
+
+			if ( 'default' === $breakpoint || '' === $breakpoint ) {
+				$classes[] = 'wpmoo-col-' . $span;
+				continue;
+			}
+
+			$breakpoint = strtolower( (string) $breakpoint );
+			$breakpoint = preg_replace( '/[^a-z0-9]/', '', $breakpoint );
+
+			if ( '' === $breakpoint ) {
+				$classes[] = 'wpmoo-col-' . $span;
+				continue;
+			}
+
+			$classes[] = 'wpmoo-col-' . $breakpoint . '-' . $span;
+		}
+
+		return $classes;
+	}
+
+	/**
+	 * Clamp a grid span to valid bounds.
+	 *
+	 * @param mixed $span Raw span value.
+	 * @return int
+	 */
+	protected function normalise_grid_span( $span ): int {
+		if ( is_string( $span ) && is_numeric( $span ) ) {
+			$span = (int) $span;
+		} elseif ( ! is_int( $span ) ) {
+			$span = (int) $span;
+		}
+
+		if ( $span < 1 ) {
+			return 1;
+		}
+
+		if ( $span > 12 ) {
+			return 12;
+		}
+
+		return $span;
 	}
 }

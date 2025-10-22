@@ -12,6 +12,7 @@
 namespace WPMoo\Fields;
 
 use WPMoo\Support\Concerns\EscapesOutput;
+use WPMoo\Support\Concerns\HasColumns;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 abstract class Field {
 	use EscapesOutput;
+	use HasColumns;
 
 	/**
 	 * Field identifier.
@@ -99,7 +101,10 @@ abstract class Field {
 	 * @var array<string, mixed>
 	 */
 	protected $layout = array(
-		'size' => 12,
+		'size'    => 12,
+		'columns' => array(
+			'default' => 12,
+		),
 	);
 
 	/**
@@ -154,6 +159,8 @@ abstract class Field {
 				$config['layout']
 			);
 		}
+
+		$this->normalise_layout();
 
 		$this->attributes = $attributes;
 		$this->args       = $attributes;
@@ -234,6 +241,49 @@ abstract class Field {
 	 */
 	public function attributes() {
 		return $this->attributes;
+	}
+
+	/**
+	 * Normalise layout configuration to ensure valid column spans.
+	 *
+	 * @return void
+	 */
+	protected function normalise_layout(): void {
+		if ( isset( $this->layout['columns'] ) && is_array( $this->layout['columns'] ) ) {
+			foreach ( $this->layout['columns'] as $breakpoint => $span ) {
+				$normalised = $this->clampColumnSpan( $span );
+
+				if ( null === $normalised ) {
+					unset( $this->layout['columns'][ $breakpoint ] );
+					continue;
+				}
+
+				$this->layout['columns'][ $breakpoint ] = $normalised;
+			}
+
+			if ( empty( $this->layout['columns'] ) ) {
+				$this->layout['columns'] = array(
+					'default' => 12,
+				);
+			}
+
+			if ( ! isset( $this->layout['columns']['default'] ) ) {
+				$first = reset( $this->layout['columns'] );
+				$this->layout['columns']['default'] = false !== $first ? (int) $first : 12;
+			}
+
+			$this->layout['size'] = $this->layout['columns']['default'];
+		} else {
+			$size = isset( $this->layout['size'] ) ? $this->clampColumnSpan( $this->layout['size'] ) : 12;
+			if ( null === $size ) {
+				$size = 12;
+			}
+
+			$this->layout['size']    = $size;
+			$this->layout['columns'] = array(
+				'default' => $size,
+			);
+		}
 	}
 
 	/**

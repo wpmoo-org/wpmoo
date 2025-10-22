@@ -11,6 +11,8 @@
 
 namespace WPMoo\Options;
 
+use WPMoo\Support\Concerns\HasColumns;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -19,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Fluent builder for option fields.
  */
 class FieldBuilder {
+	use HasColumns;
 	/**
 	 * Field configuration.
 	 *
@@ -147,25 +150,42 @@ class FieldBuilder {
 			$this->config['layout'] = array();
 		}
 
+		if ( isset( $layout['size'] ) && ! isset( $layout['columns'] ) ) {
+			$layout['columns'] = array(
+				'default' => $this->clampColumnSpan( $layout['size'] ),
+			);
+		}
+
 		$this->config['layout'] = array_merge( $this->config['layout'], $layout );
 
 		return $this;
 	}
 
 	/**
-	 * Set grid column span (1-12).
+	 * Set grid column span(s).
 	 *
-	 * @param int $columns Column span.
+	 * @param mixed ...$columns Column definitions (int, string, array).
 	 * @return $this
 	 */
-	public function size( int $columns ): self {
-		$columns = max( 1, min( 12, $columns ) );
+	public function size( ...$columns ): self {
+		$parsed = $this->parseColumnSpans( $columns );
 
 		return $this->layout(
 			array(
-				'size' => $columns,
+				'size'    => $parsed['default'],
+				'columns' => $parsed,
 			)
 		);
+	}
+
+	/**
+	 * Alias for size().
+	 *
+	 * @param mixed ...$columns Column definitions.
+	 * @return $this
+	 */
+	public function columns( ...$columns ): self {
+		return $this->size( ...$columns );
 	}
 
 	/**

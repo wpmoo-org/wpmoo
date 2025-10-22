@@ -3,6 +3,7 @@
 .wpmoo-grid {
   --wpmoo-grid-columns: 12;
   --wpmoo-grid-gap: wpmoo-spacing(xl);
+  --wpmoo-grid-gutter: 0;
 
   display: grid;
   gap: var(--wpmoo-grid-gap);
@@ -13,8 +14,45 @@
   align-items: stretch;
 }
 
-.wpmoo-grid--fields .wpmoo-field {
+.wpmoo-grid .wpmoo-col {
   grid-column: span var(--wpmoo-grid-span, 12);
+}
+
+.wpmoo-col {
+  --wpmoo-grid-span: 12;
+}
+
+.wpmoo-grid--guttered {
+  --wpmoo-grid-gutter: var(--wpmoo-grid-gap);
+  margin: calc(var(--wpmoo-grid-gutter) / -2);
+}
+
+.wpmoo-grid--guttered .wpmoo-col {
+  padding: calc(var(--wpmoo-grid-gutter) / 2);
+}
+
+@for $i from 1 through 12 {
+  .wpmoo-col-#{$i} {
+    --wpmoo-grid-span: #{$i};
+  }
+}
+
+$grid-breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1440px
+);
+
+@each $name, $width in $grid-breakpoints {
+  @media (min-width: $width) {
+    @for $i from 1 through 12 {
+      .wpmoo-col-#{$name}-#{$i} {
+        --wpmoo-grid-span: #{$i};
+      }
+    }
+  }
 }
 
 @media (max-width: 1024px) {
@@ -27,11 +65,9 @@
   .wpmoo-grid {
     --wpmoo-grid-columns: 1;
   }
-}
 
-@for $i from 1 through 12 {
-  .wpmoo-col-span-#{$i} {
-    --wpmoo-grid-span: #{$i};
+  .wpmoo-grid .wpmoo-col {
+    --wpmoo-grid-span: 12;
   }
 }
 
@@ -51,3 +87,22 @@
   --wpmoo-grid-gap: wpmoo-spacing(xl);
 }
 
+.wpmoo-grid.gutter-none {
+  --wpmoo-grid-gutter: 0;
+}
+
+.wpmoo-grid.gutter-sm {
+  --wpmoo-grid-gutter: wpmoo-spacing(sm);
+}
+
+.wpmoo-grid.gutter-md {
+  --wpmoo-grid-gutter: wpmoo-spacing(md);
+}
+
+.wpmoo-grid.gutter-lg {
+  --wpmoo-grid-gutter: wpmoo-spacing(lg);
+}
+
+.wpmoo-grid.gutter-xl {
+  --wpmoo-grid-gutter: wpmoo-spacing(xl);
+}

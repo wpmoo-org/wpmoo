@@ -2,8 +2,6 @@
 @use "../mixins" as *;
 
 .wpmoo-field {
-  --wpmoo-grid-span: 12;
-
   display: flex;
   align-items: flex-start;
   gap: wpmoo-spacing(xl);
@@ -50,7 +48,6 @@
   textarea,
   select {
     width: 100%;
-    max-width: 360px;
     padding: wpmoo-spacing(sm) wpmoo-spacing(md);
     border: 1px solid wpmoo-color(border);
     border-radius: wpmoo-radius(field);
@@ -70,7 +67,6 @@
     min-height: 120px;
     resize: vertical;
     width: 100%;
-    max-width: none;
   }
 
   input[type="checkbox"] {

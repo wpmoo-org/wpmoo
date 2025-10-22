@@ -11,6 +11,8 @@
 
 namespace WPMoo\Options;
 
+use WPMoo\Support\Concerns\HasColumns;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -19,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Fluent builder for option sections.
  */
 class SectionBuilder {
+	use HasColumns;
 	/**
 	 * Section ID.
 	 *
@@ -53,6 +56,18 @@ class SectionBuilder {
 	 * @var array<int, array<string, mixed>>
 	 */
 	protected $fields = array();
+
+	/**
+	 * Layout configuration.
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $layout = array(
+		'size'    => 12,
+		'columns' => array(
+			'default' => 12,
+		),
+	);
 
 	/**
 	 * Constructor.
@@ -101,6 +116,32 @@ class SectionBuilder {
 		$this->icon = $icon;
 
 		return $this;
+	}
+
+	/**
+	 * Define column span(s) for the section card.
+	 *
+	 * @param mixed ...$columns Column definitions.
+	 * @return $this
+	 */
+	public function size( ...$columns ): self {
+		$parsed       = $this->parseColumnSpans( $columns );
+		$this->layout = array(
+			'size'    => $parsed['default'],
+			'columns' => $parsed,
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Alias for size().
+	 *
+	 * @param mixed ...$columns Column definitions.
+	 * @return $this
+	 */
+	public function columns( ...$columns ): self {
+		return $this->size( ...$columns );
 	}
 
 	/**
@@ -154,6 +195,7 @@ class SectionBuilder {
 			'description' => $this->description,
 			'icon'        => $this->icon,
 			'fields'      => $fields,
+			'layout'      => $this->layout,
 		);
 	}
 }

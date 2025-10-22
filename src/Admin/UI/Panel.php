@@ -187,10 +187,40 @@ class Panel {
 			$tab_id     = $section_id . '-tab';
 			$is_active  = $section_id === $active_section || ( '' === $active_section && 0 === $index );
 			$hidden     = $is_active ? 'false' : 'true';
-			$classes    = 'wpmoo-panel__section' . ( $is_active ? ' is-active' : '' );
 			$expanded   = $is_active ? 'true' : 'false';
 
-			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( $classes ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '">';
+			$layout = array(
+				'columns' => array(
+					'default' => 12,
+				),
+			);
+
+			if ( isset( $section['layout'] ) && is_array( $section['layout'] ) ) {
+				$layout = array_merge( $layout, $section['layout'] );
+			}
+
+			if ( empty( $layout['columns'] ) || ! is_array( $layout['columns'] ) ) {
+				$layout['columns'] = array(
+					'default' => isset( $layout['size'] ) ? $layout['size'] : 12,
+				);
+			}
+
+			$default_span = isset( $layout['columns']['default'] )
+				? $this->normalise_grid_span( $layout['columns']['default'] )
+				: 12;
+
+			$section_classes = array( 'wpmoo-panel__section' );
+
+			if ( $is_active ) {
+				$section_classes[] = 'is-active';
+			}
+
+			$section_classes[] = 'wpmoo-col';
+			$section_classes   = array_merge( $section_classes, $this->build_grid_classes( $layout['columns'] ) );
+			$section_classes   = array_unique( array_filter( $section_classes ) );
+			$style_attribute   = ' style="--wpmoo-grid-span:' . $this->esc_attr( (string) $default_span ) . '"';
+
+			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '"' . $style_attribute . '>';
 
 			echo '<button type="button" class="wpmoo-panel__section-toggle' . ( $is_active ? ' is-active' : '' ) . '" data-panel-switch="' . $this->esc_attr( $section_id ) . '" aria-expanded="' . $expanded . '">';
 
@@ -228,6 +258,61 @@ class Panel {
 	}
 
 	/**
+	 * Build responsive grid classes for a column configuration.
+	 *
+	 * @param array<string, int|string> $columns Column configuration.
+	 * @return array<int, string>
+	 */
+	protected function build_grid_classes( array $columns ): array {
+		$classes = array();
+
+		foreach ( $columns as $breakpoint => $span ) {
+			$span = $this->normalise_grid_span( $span );
+
+			if ( 'default' === $breakpoint || '' === $breakpoint ) {
+				$classes[] = 'wpmoo-col-' . $span;
+				continue;
+			}
+
+			$breakpoint = strtolower( (string) $breakpoint );
+			$breakpoint = preg_replace( '/[^a-z0-9]/', '', $breakpoint );
+
+			if ( '' === $breakpoint ) {
+				$classes[] = 'wpmoo-col-' . $span;
+				continue;
+			}
+
+			$classes[] = 'wpmoo-col-' . $breakpoint . '-' . $span;
+		}
+
+		return $classes;
+	}
+
+	/**
+	 * Clamp a grid span to valid bounds.
+	 *
+	 * @param mixed $span Raw span value.
+	 * @return int
+	 */
+	protected function normalise_grid_span( $span ): int {
+		if ( is_string( $span ) && is_numeric( $span ) ) {
+			$span = (int) $span;
+		} elseif ( ! is_int( $span ) ) {
+			$span = (int) $span;
+		}
+
+		if ( $span < 1 ) {
+			return 1;
+		}
+
+		if ( $span > 12 ) {
+			return 12;
+		}
+
+		return $span;
+	}
+
+	/**
 	 * Normalize panel sections.
 	 *
 	 * @param array<int, array<string, mixed>> $sections Section configuration.
@@ -244,6 +329,7 @@ class Panel {
 				'description' => '',
 				'icon'        => '',
 				'content'     => '',
+				'layout'      => array(),
 			);
 
 			$section = array_merge( $defaults, is_array( $section ) ? $section : array() );

@@ -8,6 +8,7 @@
 namespace WPMoo\Options;
 
 use InvalidArgumentException;
+use WPMoo\Support\Concerns\HasColumns;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Represents an options section/panel.
  */
 class Section {
+	use HasColumns;
 
 	/**
 	 * Section identifier.
@@ -53,6 +55,18 @@ class Section {
 	 * @var array<int, array<string, mixed>>
 	 */
 	protected $fields = array();
+
+	/**
+	 * Layout settings.
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $layout = array(
+		'size'    => 12,
+		'columns' => array(
+			'default' => 12,
+		),
+	);
 
 	/**
 	 * Constructor.
@@ -140,6 +154,46 @@ class Section {
 	}
 
 	/**
+	 * Retrieve the section layout configuration.
+	 *
+	 * @param string|null $key Optional key.
+	 * @return mixed
+	 */
+	public function layout( ?string $key = null ) {
+		if ( null === $key ) {
+			return $this->layout;
+		}
+
+		return isset( $this->layout[ $key ] ) ? $this->layout[ $key ] : null;
+	}
+
+	/**
+	 * Define responsive column spans for the section.
+	 *
+	 * @param mixed ...$columns Column definitions.
+	 * @return $this
+	 */
+	public function size( ...$columns ): self {
+		$parsed            = $this->parseColumnSpans( $columns );
+		$this->layout      = array(
+			'size'    => $parsed['default'],
+			'columns' => $parsed,
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Alias for size().
+	 *
+	 * @param mixed ...$columns Column definitions.
+	 * @return $this
+	 */
+	public function columns( ...$columns ): self {
+		return $this->size( ...$columns );
+	}
+
+	/**
 	 * Add a field to the section.
 	 *
 	 * @param Field|FieldBuilder|array<string, mixed> $field Field definition.
@@ -195,6 +249,7 @@ class Section {
 			'description' => $this->description,
 			'icon'        => $this->icon,
 			'fields'      => $this->fields,
+			'layout'      => $this->layout,
 		);
 	}
 
@@ -248,4 +303,3 @@ class Section {
 		);
 	}
 }
-
