@@ -158,31 +158,49 @@ class Field {
 	 * @return array<string, mixed>|null
 	 */
 	protected function resolve_alias( string $method, array $arguments ) {
-		$map = array(
-			'set_label'         => array( 'label', $arguments ),
-			'set_title'         => array( 'label', $arguments ),
-			'set_description'   => array( 'description', $arguments ),
-			'set_default_value' => array( 'default', $arguments ),
-			'default_value'     => array( 'default', $arguments ),
-			'set_placeholder'   => array( 'placeholder', $arguments ),
-			'set_help_text'     => array( 'help', $arguments ),
-			'help_text'         => array( 'help', $arguments ),
-			'set_help'          => array( 'help', $arguments ),
-			'set_options'       => array( 'options', $arguments ),
-			'set_attributes'    => array( 'attributes', $arguments ),
-			'add_attributes'    => $this->normalize_attribute_arguments( $arguments ),
-			'add_attribute'     => $this->normalize_attribute_arguments( $arguments ),
-			'set_before'        => array( 'before', $arguments ),
-			'set_after'         => array( 'after', $arguments ),
-			'set_help_html'     => array( 'help', $arguments ),
-			'set_arg'           => array( 'set', $arguments ),
-		);
+		switch ( $method ) {
+			case 'set_label':
+			case 'set_title':
+				return array( 'method' => 'label', 'arguments' => $arguments );
 
-		if ( isset( $map[ $method ] ) ) {
-			return array(
-				'method'    => $map[ $method ][0],
-				'arguments' => $map[ $method ][1],
-			);
+			case 'set_description':
+				return array( 'method' => 'description', 'arguments' => $arguments );
+
+			case 'set_default_value':
+			case 'default_value':
+				return array( 'method' => 'default', 'arguments' => $arguments );
+
+			case 'set_placeholder':
+				return array( 'method' => 'placeholder', 'arguments' => $arguments );
+
+			case 'set_help_text':
+			case 'help_text':
+			case 'set_help':
+			case 'set_help_html':
+				return array( 'method' => 'help', 'arguments' => $arguments );
+
+			case 'set_options':
+				return array( 'method' => 'options', 'arguments' => $arguments );
+
+			case 'set_attributes':
+				return array( 'method' => 'attributes', 'arguments' => $arguments );
+
+			case 'add_attributes':
+			case 'add_attribute':
+				$normalized = $this->normalize_attribute_arguments( $arguments );
+				return array(
+					'arguments' => $normalized[1],
+					'method'    => $normalized[0],
+				);
+
+			case 'set_before':
+				return array( 'method' => 'before', 'arguments' => $arguments );
+
+			case 'set_after':
+				return array( 'method' => 'after', 'arguments' => $arguments );
+
+			case 'set_arg':
+				return array( 'method' => 'set', 'arguments' => $arguments );
 		}
 
 		return null;
@@ -224,6 +242,25 @@ class Field {
 		if ( 'set' === $method && isset( $arguments[1] ) ) {
 			$arguments[1] = $this->normalize_nested_value( $arguments[1] );
 			return $arguments;
+		}
+
+		if ( 'fields' === $method ) {
+			if ( empty( $arguments ) ) {
+				return array( array() );
+			}
+
+			if ( 1 === count( $arguments ) && is_array( $arguments[0] ) ) {
+				$arguments[0] = $this->normalize_nested_value( $arguments[0] );
+				return $arguments;
+			}
+
+			$normalized = array();
+
+			foreach ( $arguments as $argument ) {
+				$normalized[] = $this->normalize_nested_value( $argument );
+			}
+
+			return array( $normalized );
 		}
 
 		if ( in_array( $method, array( 'attributes', 'options', 'args' ), true ) && isset( $arguments[0] ) ) {

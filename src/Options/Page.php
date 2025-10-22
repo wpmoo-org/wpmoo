@@ -388,7 +388,7 @@ class Page {
 			$content = ob_get_clean();
 
 			if ( '' !== trim( $content ) ) {
-				$content = '<div class="wpmoo-grid wpmoo-grid--fields">' . $content . '</div>';
+				$content = '<div class="wpmoo-grid wpmoo-grid--fields wpmoo-grid--guttered gutter-lg">' . $content . '</div>';
 			}
 
 			$section_layout = array(
@@ -532,6 +532,10 @@ class Page {
 
 		$columns = $field->layout( 'columns' );
 
+		if ( 'fieldset' !== $field->type() ) {
+			$columns = array( 'default' => 12 );
+		}
+
 		if ( ! is_array( $columns ) || empty( $columns ) ) {
 			$columns = array(
 				'default' => $this->normalise_grid_span( $field->layout( 'size' ) ),
@@ -546,9 +550,13 @@ class Page {
 			'wpmoo-col',
 		);
 
+		if ( 'fieldset' !== $field->type() ) {
+			$classes[] = 'wpmoo-field--separated';
+		}
+
 		$classes = array_merge( $classes, $this->build_grid_classes( $columns ) );
 
-		echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '" style="--wpmoo-grid-span:' . $this->esc_attr( (string) $default_span ) . '">';
+		echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '">';
 
 		if ( $field->label() ) {
 			echo '<div class="wpmoo-title">';

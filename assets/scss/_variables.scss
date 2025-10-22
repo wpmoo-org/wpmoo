@@ -33,9 +33,17 @@ $spacing: (
   xs: 4px,
   sm: 8px,
   md: 12px,
-  lg: 16px,
+  lg: 32px,
   xl: 20px,
   xxl: 26px
+);
+$grid-gutters: (
+  none: 0,
+  xs: 6px,
+  sm: 12px,
+  md: 18px,
+  lg: 28px,
+  xl: 44px,
 );
 
 $transitions: (

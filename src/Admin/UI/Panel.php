@@ -218,9 +218,7 @@ class Panel {
 			$section_classes[] = 'wpmoo-col';
 			$section_classes   = array_merge( $section_classes, $this->build_grid_classes( $layout['columns'] ) );
 			$section_classes   = array_unique( array_filter( $section_classes ) );
-			$style_attribute   = ' style="--wpmoo-grid-span:' . $this->esc_attr( (string) $default_span ) . '"';
-
-			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '"' . $style_attribute . '>';
+			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '">';
 
 			echo '<button type="button" class="wpmoo-panel__section-toggle' . ( $is_active ? ' is-active' : '' ) . '" data-panel-switch="' . $this->esc_attr( $section_id ) . '" aria-expanded="' . $expanded . '">';
 

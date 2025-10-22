@@ -13,14 +13,60 @@ use WPMoo\Options\Field;
 Container::create('options', 'demo_settings', 'Demo Settings')
     ->section('layout_examples', 'Layout Examples')
     ->add_fields(array(
-        Field::text('half_left', 'Half Left')->size('md-6'),
-        Field::text('half_right', 'Half Right')->size('md-6'),
-        Field::color('quarter', 'Quarter Width')->size('sm-6 lg-3'),
-        Field::textarea('full', 'Full Width'),
+        Field::fieldset('account_card', 'Account Card')
+            ->description('Combine related controls inside a responsive block.')
+            ->fields(array(
+                Field::text('first_name', 'First Name'),
+                Field::text('last_name', 'Last Name'),
+                Field::text('email', 'Email Address')
+                    ->attributes(array('type' => 'email')),
+            ))
+            ->size('lg-6'),
+
+        Field::fieldset('profile_card', 'Profile Card')
+            ->fields(array(
+                Field::text('company', 'Company'),
+                Field::text('role', 'Role'),
+                Field::textarea('notes', 'Notes'),
+            ))
+            ->size('lg-6'),
+
+        Field::textarea('full', 'Standalone Field'),
     ));
 ```
 
-On large screens the fields above render next to each other (6 + 6, then 3) and automatically stack on tablets/phones.
+Fieldsets behave like cards that can be placed on the 12-column grid, while every other field automatically spans the full width. In narrow viewports the grid collapses and each fieldset stacks vertically.
+
+## Moo Facade (DSL)
+
+You can also register pages and sections procedurally without instantiating builders manually:
+
+```php
+use WPMoo\Moo;
+use WPMoo\Options\Field;
+
+Moo::make('page', 'demo_settings', 'Demo Settings');
+
+Moo::make('section', 'basic_details', 'Basic Details')
+    ->parent('demo_settings')
+    ->fields(
+        Field::text('first_name', 'First Name'),
+        Field::text('last_name', 'Last Name')->placeholder('Surname'),
+    );
+
+Moo::make('section', 'advanced_inputs', 'Advanced Inputs')
+    ->parent('demo_settings')
+    ->fields(
+        Field::fieldset('account_secondary', 'Secondary')
+            ->gutter('md')
+            ->fields(
+                Field::text('api_token', 'API Token'),
+                Field::text('slug', 'Slug')->default('demo'),
+            )
+    );
+```
+
+`Moo::make()` accepts `page` (alias `container`) and `section` definitions. Sections can be chained anywhere in your codebase as long as they call `->parent('page_id')` to attach themselves to an existing page.
 
 ## Grid Utility Classes
 

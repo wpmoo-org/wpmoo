@@ -6,7 +6,8 @@
   --wpmoo-grid-gutter: 0;
 
   display: grid;
-  gap: var(--wpmoo-grid-gap);
+  row-gap: var(--wpmoo-grid-gap);
+  column-gap: var(--wpmoo-grid-gutter);
   grid-template-columns: repeat(var(--wpmoo-grid-columns), minmax(0, 1fr));
 }
 
@@ -24,11 +25,6 @@
 
 .wpmoo-grid--guttered {
   --wpmoo-grid-gutter: var(--wpmoo-grid-gap);
-  margin: calc(var(--wpmoo-grid-gutter) / -2);
-}
-
-.wpmoo-grid--guttered .wpmoo-col {
-  padding: calc(var(--wpmoo-grid-gutter) / 2);
 }
 
 @for $i from 1 through 12 {
