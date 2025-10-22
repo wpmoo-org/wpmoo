@@ -381,6 +381,10 @@ class Page {
 
 			$content = ob_get_clean();
 
+			if ( '' !== trim( $content ) ) {
+				$content = '<div class="wpmoo-grid wpmoo-grid--fields">' . $content . '</div>';
+			}
+
 			$panel_sections[] = array(
 				'id'          => $section_id,
 				'label'       => $section_title,
@@ -498,7 +502,18 @@ class Page {
 		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name  = $this->field_input_name( $field );
 
-		echo '<div class="wpmoo-field wpmoo-field-' . $this->esc_attr( $field->type() ) . '">';
+		$size = (int) $field->layout( 'size' );
+		if ( $size < 1 || $size > 12 ) {
+			$size = 12;
+		}
+
+		$classes = array(
+			'wpmoo-field',
+			'wpmoo-field-' . $field->type(),
+			'wpmoo-col-span-' . $size,
+		);
+
+		echo '<div class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" style="--wpmoo-grid-span:' . $this->esc_attr( (string) $size ) . '">';
 
 		if ( $field->label() ) {
 			echo '<div class="wpmoo-title">';
@@ -527,7 +542,6 @@ class Page {
 
 		echo '</div>';
 
-		echo '<div class="clear"></div>';
 		echo '</div>';
 	}
 

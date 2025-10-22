@@ -94,6 +94,15 @@ abstract class Field {
 	protected $args = array();
 
 	/**
+	 * Layout configuration.
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $layout = array(
+		'size' => 12,
+	);
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array<string, mixed> $config Field configuration.
@@ -111,6 +120,7 @@ abstract class Field {
 			'after'       => '',
 			'help'        => '',
 			'placeholder' => null,
+			'layout'      => array(),
 		);
 
 		$config = array_merge( $defaults, $config );
@@ -136,6 +146,13 @@ abstract class Field {
 
 		if ( null !== $config['placeholder'] ) {
 			$attributes['placeholder'] = $config['placeholder'];
+		}
+
+		if ( isset( $config['layout'] ) && is_array( $config['layout'] ) ) {
+			$this->layout = array_merge(
+				$this->layout,
+				$config['layout']
+			);
 		}
 
 		$this->attributes = $attributes;
@@ -194,6 +211,20 @@ abstract class Field {
 	 */
 	public function args() {
 		return $this->attributes;
+	}
+
+	/**
+	 * Retrieve layout configuration.
+	 *
+	 * @param string|null $key Optional key to retrieve.
+	 * @return mixed
+	 */
+	public function layout( $key = null ) {
+		if ( null === $key ) {
+			return $this->layout;
+		}
+
+		return isset( $this->layout[ $key ] ) ? $this->layout[ $key ] : null;
 	}
 
 	/**

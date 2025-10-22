@@ -137,6 +137,38 @@ class FieldBuilder {
 	}
 
 	/**
+	 * Define layout configuration.
+	 *
+	 * @param array<string, mixed> $layout Layout settings.
+	 * @return $this
+	 */
+	public function layout( array $layout ): self {
+		if ( ! isset( $this->config['layout'] ) ) {
+			$this->config['layout'] = array();
+		}
+
+		$this->config['layout'] = array_merge( $this->config['layout'], $layout );
+
+		return $this;
+	}
+
+	/**
+	 * Set grid column span (1-12).
+	 *
+	 * @param int $columns Column span.
+	 * @return $this
+	 */
+	public function size( int $columns ): self {
+		$columns = max( 1, min( 12, $columns ) );
+
+		return $this->layout(
+			array(
+				'size' => $columns,
+			)
+		);
+	}
+
+	/**
 	 * Markup displayed before the field control.
 	 *
 	 * @param string $markup HTML markup.

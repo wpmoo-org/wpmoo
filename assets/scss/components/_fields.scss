@@ -2,11 +2,14 @@
 @use "../mixins" as *;
 
 .wpmoo-field {
+  --wpmoo-grid-span: 12;
+
   display: flex;
   align-items: flex-start;
   gap: wpmoo-spacing(xl);
   padding: wpmoo-spacing(xl) 0;
   border-bottom: 1px solid wpmoo-color(border-soft);
+  width: 100%;
 
   &:last-child {
     border-bottom: none;

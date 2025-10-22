@@ -1,0 +1,53 @@
+@use "../variables" as *;
+
+.wpmoo-grid {
+  --wpmoo-grid-columns: 12;
+  --wpmoo-grid-gap: wpmoo-spacing(xl);
+
+  display: grid;
+  gap: var(--wpmoo-grid-gap);
+  grid-template-columns: repeat(var(--wpmoo-grid-columns), minmax(0, 1fr));
+}
+
+.wpmoo-grid--fields {
+  align-items: stretch;
+}
+
+.wpmoo-grid--fields .wpmoo-field {
+  grid-column: span var(--wpmoo-grid-span, 12);
+}
+
+@media (max-width: 1024px) {
+  .wpmoo-grid {
+    --wpmoo-grid-columns: 6;
+  }
+}
+
+@media (max-width: 782px) {
+  .wpmoo-grid {
+    --wpmoo-grid-columns: 1;
+  }
+}
+
+@for $i from 1 through 12 {
+  .wpmoo-col-span-#{$i} {
+    --wpmoo-grid-span: #{$i};
+  }
+}
+
+.wpmoo-grid.gap-sm {
+  --wpmoo-grid-gap: wpmoo-spacing(sm);
+}
+
+.wpmoo-grid.gap-md {
+  --wpmoo-grid-gap: wpmoo-spacing(md);
+}
+
+.wpmoo-grid.gap-lg {
+  --wpmoo-grid-gap: wpmoo-spacing(lg);
+}
+
+.wpmoo-grid.gap-xl {
+  --wpmoo-grid-gap: wpmoo-spacing(xl);
+}
+
