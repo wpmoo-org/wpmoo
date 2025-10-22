@@ -11,7 +11,6 @@
 
 namespace WPMoo\Options;
 
-use InvalidArgumentException;
 use WPMoo\Support\Concerns\HasColumns;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -86,9 +85,7 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function args( array $args ): self {
-		$this->config['args'] = $args;
-
-		return $this;
+		return $this->attributes( $args );
 	}
 
 	/**
@@ -102,12 +99,7 @@ class FieldBuilder {
 			$this->config['attributes'] = array();
 		}
 
-		if ( ! isset( $this->config['args'] ) ) {
-			$this->config['args'] = array();
-		}
-
 		$this->config['attributes']['placeholder'] = $placeholder;
-		$this->config['args']['placeholder']        = $placeholder;
 
 		return $this;
 	}
@@ -138,16 +130,6 @@ class FieldBuilder {
 		$this->config['attributes'] = array_merge( $this->config['attributes'], $attributes );
 
 		return $this;
-	}
-
-	/**
-	 * Variadic version of attributes().
-	 *
-	 * @param mixed ...$args Key/value pairs or associative array.
-	 * @return $this
-	 */
-	public function attrs( ...$args ): self {
-		return $this->attributes( $this->variadic_to_assoc( $args ) );
 	}
 
 	/**
@@ -267,38 +249,6 @@ class FieldBuilder {
 		$this->config[ $key ] = $value;
 
 		return $this;
-	}
-
-	/**
-	 * Normalize variadic key/value arguments into an associative array.
-	 *
-	 * @param array<int, mixed> $arguments Raw arguments to normalise.
-	 * @return array<string, mixed>
-	 */
-	protected function variadic_to_assoc( array $arguments ): array {
-		if ( 1 === count( $arguments ) && is_array( $arguments[0] ) ) {
-			return $arguments[0];
-		}
-
-		$argument_count = count( $arguments );
-
-		if ( 0 === $argument_count ) {
-			return array();
-		}
-
-		if ( 0 !== $argument_count % 2 ) {
-			throw new \InvalidArgumentException( 'Odd number of arguments supplied; expected key/value pairs.' );
-		}
-
-		$result = array();
-
-		for ( $i = 0; $i < $argument_count; $i += 2 ) {
-			$key   = (string) $arguments[ $i ];
-			$value = $arguments[ $i + 1 ];
-			$result[ $key ] = $value;
-		}
-
-		return $result;
 	}
 
 	/**
