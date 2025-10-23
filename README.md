@@ -36,16 +36,16 @@ You can also register pages and sections procedurally without instantiating buil
 use WPMoo\Moo;
 use WPMoo\Options\Field;
 
-Moo::make('page', 'demo_settings', 'Demo Settings');
+Moo::page('demo_settings', 'Demo Settings');
 
-Moo::make('section', 'basic_details', 'Basic Details')
+Moo::section('basic_details', 'Basic Details')
     ->parent('demo_settings')
     ->fields(
         Field::text('first_name', 'First Name')->width(50),
         Field::text('last_name', 'Last Name')->placeholder('Surname')->width(50),
     );
 
-Moo::make('section', 'advanced_inputs', 'Advanced Inputs')
+Moo::section('advanced_inputs', 'Advanced Inputs')
     ->parent('demo_settings')
     ->fields(
         Field::fieldset('account_secondary', 'Secondary')
@@ -57,4 +57,4 @@ Moo::make('section', 'advanced_inputs', 'Advanced Inputs')
     );
 ```
 
-`Moo::make()` accepts `page` (alias `container`) and `section` definitions. Sections can be chained anywhere in your codebase as long as they call `->parent('page_id')` to attach themselves to an existing page.
+Use `Moo::page()` (alias `Moo::container()`) to define option pages, `Moo::section()` to attach reusable sections, and `Moo::metabox()` / `Moo::panel()` for post edit screens. Sections can be chained anywhere in your codebase—attach them to pages with `->parent('page_id')` or to metaboxes with `->metabox('metabox_id')`.

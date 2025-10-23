@@ -1,6 +1,6 @@
 <?php
 /**
- * Fluent section wrapper used by Moo::make().
+ * Fluent section wrapper used by the Moo facade.
  *
  * @package WPMoo\Moo
  */
@@ -9,6 +9,7 @@ namespace WPMoo\Moo;
 
 use InvalidArgumentException;
 use WPMoo\Moo\PageHandle;
+use WPMoo\Metabox\FieldBuilder as MetaboxFieldBuilder;
 use WPMoo\Options\Field as FieldDefinition;
 use WPMoo\Options\FieldBuilder;
 use WPMoo\Options\SectionBuilder;
@@ -18,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Represents a section definition registered through Moo::make().
+ * Represents a section definition registered through the Moo facade.
  */
 class SectionHandle {
 
@@ -79,9 +80,30 @@ class SectionHandle {
 	protected $parent_id = null;
 
 	/**
+	 * Parent metabox handle.
+	 *
+	 * @var MetaboxHandle|null
+	 */
+	protected $metabox = null;
+
+	/**
+	 * Parent metabox identifier (when not yet loaded).
+	 *
+	 * @var string|null
+	 */
+	protected $metabox_id = null;
+
+	/**
+	 * Attachment context ('page' or 'metabox').
+	 *
+	 * @var string|null
+	 */
+	protected $context = null;
+
+	/**
 	 * Underlying SectionBuilder once attached.
 	 *
-	 * @var SectionBuilder|null
+	 * @var SectionBuilder|\WPMoo\Metabox\SectionBuilder|null
 	 */
 	protected $builder = null;
 
@@ -171,7 +193,7 @@ class SectionHandle {
 	public function columns( ...$columns ): self {
 		$this->columns = $columns;
 
-		if ( $this->builder ) {
+		if ( $this->builder && method_exists( $this->builder, 'columns' ) ) {
 			$this->builder->columns( ...$columns );
 		}
 
@@ -195,6 +217,12 @@ class SectionHandle {
 	 * @return $this
 	 */
 	public function parent( $page ): self {
+		if ( null !== $this->context && 'page' !== $this->context ) {
+			throw new InvalidArgumentException( 'Section already assigned to a metabox. Create a new section handle instead.' );
+		}
+
+		$this->context = 'page';
+
 		if ( $page instanceof PageHandle ) {
 			$this->parent_id = $page->id();
 			$page->attachSection( $this );
@@ -203,6 +231,33 @@ class SectionHandle {
 
 		$this->parent_id = (string) $page;
 		\WPMoo\Moo::assignSectionToPage( $this, $this->parent_id );
+
+		return $this;
+	}
+
+	/**
+	 * Attach the section to a metabox.
+	 *
+	 * @param string|MetaboxHandle $metabox Metabox identifier or handle.
+	 * @return $this
+	 */
+	public function metabox( $metabox ): self {
+		if ( null !== $this->context && 'metabox' !== $this->context ) {
+			throw new InvalidArgumentException( 'Section already assigned to a page. Create a new section handle for metabox usage.' );
+		}
+
+		$this->context = 'metabox';
+
+		if ( $metabox instanceof MetaboxHandle ) {
+			$this->metabox    = $metabox;
+			$this->metabox_id = $metabox->id();
+			$metabox->attachSection( $this );
+
+			return $this;
+		}
+
+		$this->metabox_id = (string) $metabox;
+		\WPMoo\Moo::assignSectionToMetabox( $this, $this->metabox_id );
 
 		return $this;
 	}
@@ -245,7 +300,7 @@ class SectionHandle {
 	 * @return mixed
 	 */
 	public function make( string $type, ...$arguments ) {
-        return \WPMoo\Moo::make( $type, ...$arguments );
+		return \WPMoo\Moo::make( $type, ...$arguments );
 	}
 
 	/**
@@ -259,17 +314,48 @@ class SectionHandle {
 			return;
 		}
 
+		if ( null === $this->context ) {
+			$this->context = 'page';
+		}
+
+		if ( 'metabox' === $this->context ) {
+			throw new InvalidArgumentException( 'Section configured for a metabox cannot be attached to a page.' );
+		}
+
 		$this->page    = $page;
 		$this->builder = $page->builder()->section( $this->id, $this->title, $this->description );
 
-		if ( '' !== $this->icon ) {
-			$this->builder->icon( $this->icon );
+		$this->apply_icon();
+		$this->apply_columns();
+		$this->flush_fields();
+		$this->attached = true;
+	}
+
+	/**
+	 * Internal: attach to a metabox handle.
+	 *
+	 * @param MetaboxHandle $metabox Metabox handle.
+	 * @return void
+	 */
+	public function attachToMetabox( MetaboxHandle $metabox ): void {
+		if ( $this->attached ) {
+			return;
 		}
 
-		if ( ! empty( $this->columns ) ) {
-			$this->builder->columns( ...$this->columns );
+		if ( null === $this->context ) {
+			$this->context = 'metabox';
 		}
 
+		if ( 'page' === $this->context ) {
+			throw new InvalidArgumentException( 'Section configured for a page cannot be attached to a metabox.' );
+		}
+
+		$this->metabox    = $metabox;
+		$this->metabox_id = $metabox->id();
+		$this->builder    = $metabox->builder()->section( $this->id, $this->title, $this->description );
+
+		$this->apply_icon();
+		$this->apply_columns();
 		$this->flush_fields();
 		$this->attached = true;
 	}
@@ -286,8 +372,36 @@ class SectionHandle {
 			'description' => $this->description,
 			'icon'        => $this->icon,
 			'parent'      => $this->parent_id,
+			'metabox'     => $this->metabox_id,
 			'columns'     => $this->columns,
+			'context'     => $this->context,
 		);
+	}
+
+	/**
+	 * Apply stored icon to the builder when available.
+	 *
+	 * @return void
+	 */
+	protected function apply_icon(): void {
+		if ( '' === $this->icon || ! $this->builder || ! method_exists( $this->builder, 'icon' ) ) {
+			return;
+		}
+
+		$this->builder->icon( $this->icon );
+	}
+
+	/**
+	 * Apply stored column configuration when supported.
+	 *
+	 * @return void
+	 */
+	protected function apply_columns(): void {
+		if ( empty( $this->columns ) || ! $this->builder || ! method_exists( $this->builder, 'columns' ) ) {
+			return;
+		}
+
+		$this->builder->columns( ...$this->columns );
 	}
 
 	/**
@@ -325,6 +439,10 @@ class SectionHandle {
 			return $field->build();
 		}
 
+		if ( $field instanceof MetaboxFieldBuilder ) {
+			return $field->build();
+		}
+
 		if ( is_array( $field ) ) {
 			if ( empty( $field['id'] ) || empty( $field['type'] ) ) {
 				throw new InvalidArgumentException( 'Field arrays require both "id" and "type" keys.' );
@@ -333,6 +451,6 @@ class SectionHandle {
 			return $field;
 		}
 
-		throw new InvalidArgumentException( 'Unsupported field definition supplied to Moo::make() section.' );
+		throw new InvalidArgumentException( 'Unsupported field definition supplied to Moo section.' );
 	}
 }

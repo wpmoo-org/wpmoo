@@ -307,6 +307,16 @@ class MetaboxHandle {
 	}
 
 	/**
+	 * Attach a fluent section handle to the metabox.
+	 *
+	 * @param SectionHandle $section Section handle instance.
+	 * @return void
+	 */
+	public function attachSection( SectionHandle $section ): void {
+		$section->attachToMetabox( $this );
+	}
+
+	/**
 	 * Define a section for the panel layout.
 	 *
 	 * @param string $id          Section identifier.
@@ -484,4 +494,3 @@ class MetaboxHandle {
 		throw new InvalidArgumentException( 'Unsupported field definition supplied to Moo::metabox().' );
 	}
 }
-

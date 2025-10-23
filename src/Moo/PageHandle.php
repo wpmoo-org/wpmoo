@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Provides a fluent interface for configuring option pages via Moo::make().
+ * Provides a fluent interface for configuring option pages via the Moo facade.
  */
 class PageHandle {
 
@@ -168,11 +168,11 @@ class PageHandle {
 	 * @return SectionHandle
 	 */
 	public function section( string $id, string $title = '', string $description = '' ): SectionHandle {
-		return \WPMoo\Moo::make( 'section', $id, $title, $description )->parent( $this->id );
+		return \WPMoo\Moo::section( $id, $title, $description )->parent( $this->id );
 	}
 
 	/**
-	 * Convenience helper for chaining additional Moo::make() calls.
+	 * Convenience helper for chaining additional Moo facade calls.
 	 *
 	 * @param string $type Type identifier.
 	 * @param mixed  ...$arguments Additional arguments.

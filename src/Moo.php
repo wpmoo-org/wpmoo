@@ -38,6 +38,13 @@ class Moo {
 	protected static $pending_sections = array();
 
 	/**
+	 * Pending sections waiting for their parent metabox.
+	 *
+	 * @var array<string, array<int, SectionHandle>>
+	 */
+	protected static $pending_metabox_sections = array();
+
+	/**
 	 * Registered metabox handles keyed by identifier.
 	 *
 	 * @var array<string, MetaboxHandle>
@@ -59,13 +66,16 @@ class Moo {
 		switch ( $type ) {
 			case 'page':
 			case 'container':
-				return self::create_page( $id, $title, $description );
+				return self::container( $id, $title, $description );
 
 			case 'section':
-				return self::create_section( $id, $title, $description );
+				return self::section( $id, $title, $description );
 
 			case 'metabox':
 				return self::metabox( $id, $title, $description );
+
+			case 'panel':
+				return self::panel( $id, $title, $description );
 		}
 
 		throw new InvalidArgumentException(
@@ -74,13 +84,43 @@ class Moo {
 	}
 
 	/**
-	 * Fetch an existing page handle.
+	 * Fetch an existing page handle, or create one when metadata is provided.
 	 *
-	 * @param string $id Page identifier.
-	 * @return PageHandle|null
+	 * @param string      $id          Page identifier.
+	 * @param string|null $title       Optional title to create/update.
+	 * @param string|null $description Optional description to create/update.
+	 * @return PageHandle|null Returns null when the page has not been created yet and no metadata is supplied.
 	 */
-	public static function page( string $id ): ?PageHandle {
+	public static function page( string $id, ?string $title = null, ?string $description = null ): ?PageHandle {
+		if ( null !== $title || null !== $description ) {
+			return self::create_page( $id, $title ?? '', $description ?? '' );
+		}
+
 		return isset( self::$pages[ $id ] ) ? self::$pages[ $id ] : null;
+	}
+
+	/**
+	 * Define or retrieve a container (alias of page).
+	 *
+	 * @param string $id          Identifier.
+	 * @param string $title       Title.
+	 * @param string $description Description.
+	 * @return PageHandle
+	 */
+	public static function container( string $id, string $title = '', string $description = '' ): PageHandle {
+		return self::create_page( $id, $title, $description );
+	}
+
+	/**
+	 * Create a new section handle.
+	 *
+	 * @param string $id          Section identifier.
+	 * @param string $title       Section title.
+	 * @param string $description Section description.
+	 * @return SectionHandle
+	 */
+	public static function section( string $id, string $title = '', string $description = '' ): SectionHandle {
+		return self::create_section( $id, $title, $description );
 	}
 
 	/**
@@ -109,6 +149,29 @@ class Moo {
 
 		self::$metaboxes[ $id ] = $handle;
 
+		if ( isset( self::$pending_metabox_sections[ $id ] ) ) {
+			foreach ( self::$pending_metabox_sections[ $id ] as $section ) {
+				$handle->attachSection( $section );
+			}
+
+			unset( self::$pending_metabox_sections[ $id ] );
+		}
+
+		return $handle;
+	}
+
+	/**
+	 * Define a metabox with panel layout enabled.
+	 *
+	 * @param string $id          Metabox identifier.
+	 * @param string $title       Optional title.
+	 * @param string $description Optional description.
+	 * @return MetaboxHandle
+	 */
+	public static function panel( string $id, string $title = '', string $description = '' ): MetaboxHandle {
+		$handle = self::metabox( $id, $title, $description );
+		$handle->panel();
+
 		return $handle;
 	}
 
@@ -132,6 +195,26 @@ class Moo {
 		}
 
 		self::$pending_sections[ $page_id ][] = $section;
+	}
+
+	/**
+	 * Ensure a section is associated with the given metabox.
+	 *
+	 * @param SectionHandle $section    Section handle.
+	 * @param string        $metabox_id Parent metabox identifier.
+	 * @return void
+	 */
+	public static function assignSectionToMetabox( SectionHandle $section, string $metabox_id ): void {
+		if ( isset( self::$metaboxes[ $metabox_id ] ) ) {
+			self::$metaboxes[ $metabox_id ]->attachSection( $section );
+			return;
+		}
+
+		if ( ! isset( self::$pending_metabox_sections[ $metabox_id ] ) ) {
+			self::$pending_metabox_sections[ $metabox_id ] = array();
+		}
+
+		self::$pending_metabox_sections[ $metabox_id ][] = $section;
 	}
 
 	/**
