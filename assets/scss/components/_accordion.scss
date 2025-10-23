@@ -2,7 +2,6 @@
 @use "../mixins" as *;
 
 .wpmoo-accordion {
-  margin-top: wpmoo-spacing(lg);
 
   &__item {
     margin-bottom: wpmoo-spacing(sm);

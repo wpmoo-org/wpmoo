@@ -175,6 +175,14 @@
     border-left: 1px solid wpmoo-color(border);
     margin-left: -1px;
   }
+
+  .wpmoo-panel__section-body {
+    padding: wpmoo-spacing(xl);
+  }
+
+  .wpmoo-panel__section-description {
+    margin: 0 0 wpmoo-spacing(lg);
+  }
 }
 
 .wpmoo-options-actions {

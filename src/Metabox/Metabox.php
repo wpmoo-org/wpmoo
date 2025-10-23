@@ -358,6 +358,10 @@ class Metabox {
 
 			$content = ob_get_clean();
 
+			if ( '' !== trim( $content ) ) {
+				$content = '<div class="wpmoo-section-fields">' . $content . '</div>';
+			}
+
 			$panel_sections[] = array(
 				'id'          => $section['id'],
 				'label'       => $section['title'],
