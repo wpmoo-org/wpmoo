@@ -106,14 +106,14 @@ class Manager {
 	 */
 	protected function validate_type_class_pair( $type, $class ) {
 		if ( ! is_string( $type ) || '' === $type ) {
-			throw new InvalidArgumentException( $this->translate( 'Field type must be a non-empty string.' ) );
+			throw new InvalidArgumentException( esc_html__( 'Field type must be a non-empty string.', 'wpmoo' ) );
 		}
 
 		if ( ! class_exists( $class ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
-					$this->translate( 'Field class "%s" does not exist.' ),
-					$class
+					esc_html__( 'Field class "%s" does not exist.', 'wpmoo' ),
+					esc_html( $class )
 				)
 			);
 		}
@@ -121,9 +121,9 @@ class Manager {
 		if ( ! is_subclass_of( $class, Field::class ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
-					$this->translate( 'Field class "%1$s" must extend %2$s.' ),
-					$class,
-					Field::class
+					esc_html__( 'Field class "%1$s" must extend %2$s.', 'wpmoo' ),
+					esc_html( $class ),
+					esc_html( Field::class )
 				)
 			);
 		}
@@ -189,8 +189,8 @@ class Manager {
 		}
 
 		$admin_notice = sprintf(
-			$this->translate( 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.' ),
-			$type
+			esc_html__( 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.', 'wpmoo' ),
+			esc_html( $type )
 		);
 
 		if ( function_exists( 'add_action' ) ) {
@@ -207,8 +207,8 @@ class Manager {
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			$log_message = sprintf(
-				$this->translate( 'WPMoo: Field type "%s" is not registered.' ),
-				$type
+				esc_html__( 'WPMoo: Field type "%s" is not registered.', 'wpmoo' ),
+				esc_html( $type )
 			);
 			error_log( $log_message );
 		}

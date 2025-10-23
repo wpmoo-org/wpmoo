@@ -16,7 +16,6 @@ use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
-use WPMoo\Support\Concerns\EscapesOutput;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,7 +26,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Represents a single metabox instance.
  */
 class Metabox {
-	use EscapesOutput;
 
 	/**
 	 * Indicates whether the subsystem has been booted.
@@ -466,31 +464,31 @@ class Metabox {
 		$help_button = '';
 
 		if ( '' !== $help_text ) {
-			$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . $this->esc_attr( $help_text ) . '"';
-			$help_button .= ' data-tooltip="' . $this->esc_attr( $help_text ) . '"';
-			$help_button .= ' data-help-text="' . $this->esc_attr( $help_text ) . '"';
+			$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . esc_attr( $help_text ) . '"';
+			$help_button .= ' data-tooltip="' . esc_attr( $help_text ) . '"';
+			$help_button .= ' data-help-text="' . esc_attr( $help_text ) . '"';
 
 			if ( '' !== $help_html ) {
-				$help_button .= ' data-help-html="' . $this->esc_attr( $help_html ) . '"';
+				$help_button .= ' data-help-html="' . esc_attr( $help_html ) . '"';
 			}
 
 			$help_button .= '>';
 			$help_button .= '<span aria-hidden="true">?</span>';
-			$help_button .= '<span class="screen-reader-text">' . $this->esc_html( $help_text ) . '</span>';
+			$help_button .= '<span class="screen-reader-text">' . esc_html( $help_text ) . '</span>';
 			$help_button .= '</button>';
 		}
 
-		echo '<div class="wpmoo-field wpmoo-field-' . $this->esc_attr( $field->type() ) . '">';
+		echo '<div class="wpmoo-field wpmoo-field-' . esc_attr( $field->type() ) . '">';
 		echo '<div class="wpmoo-title">';
 
 		if ( $field->label() ) {
 			echo '<div class="wpmoo-title__heading">';
-			echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+			echo '<h4>' . esc_html( $field->label() ) . '</h4>';
 			echo '</div>';
 		}
 
 		if ( $field->description() ) {
-			echo '<div class="wpmoo-subtitle-text">' . $this->esc_html( $field->description() ) . '</div>';
+			echo '<div class="wpmoo-subtitle-text">' . esc_html( $field->description() ) . '</div>';
 		}
 
 		echo '</div>';

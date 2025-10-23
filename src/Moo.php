@@ -79,7 +79,10 @@ class Moo {
 		}
 
 		throw new InvalidArgumentException(
-			sprintf( 'Unsupported Moo::make() type "%s".', $type )
+			sprintf(
+				esc_html__( 'Unsupported Moo::make() type "%s".', 'wpmoo' ),
+				esc_html( $type )
+			)
 		);
 	}
 

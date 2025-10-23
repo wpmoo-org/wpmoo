@@ -74,7 +74,7 @@ class Builder {
 	 */
 	public function __construct( string $type ) {
 		if ( empty( $type ) ) {
-			throw new InvalidArgumentException( $this->translate( 'Post type slug cannot be empty.' ) );
+			throw new InvalidArgumentException( esc_html__( 'Post type slug cannot be empty.', 'wpmoo' ) );
 		}
 
 		$this->type = $type;

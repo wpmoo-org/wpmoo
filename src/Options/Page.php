@@ -16,7 +16,6 @@ use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
-use WPMoo\Support\Concerns\EscapesOutput;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
 
@@ -28,7 +27,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Builds a WordPress admin options page from configuration.
  */
 class Page {
-	use EscapesOutput;
 	use TranslatesStrings;
 
 	/**
@@ -412,7 +410,7 @@ class Page {
 
 		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Render methods ensure inner values are escaped.
 		echo '<div class="wrap wpmoo-options">';
-		echo '<h1 class="wp-heading-inline">' . $this->esc_html( $this->config['page_title'] ) . '</h1>';
+		echo '<h1 class="wp-heading-inline">' . esc_html( $this->config['page_title'] ) . '</h1>';
 
 		if ( function_exists( 'settings_errors' ) ) {
 			settings_errors( $this->repository->option_key() );
@@ -424,9 +422,9 @@ class Page {
 			wp_nonce_field( $this->nonce_action(), $this->nonce_name() );
 		}
 
-		echo '<input type="hidden" name="_wpmoo_options_page" value="' . $this->esc_attr( $this->config['menu_slug'] ) . '" />';
+		echo '<input type="hidden" name="_wpmoo_options_page" value="' . esc_attr( $this->config['menu_slug'] ) . '" />';
 
-		echo '<input type="hidden" class="wpmoo-active-panel" data-panel-id="' . $this->esc_attr( $panel_id ) . '" name="_wpmoo_active_panel[' . $this->esc_attr( $panel_id ) . ']" value="' . $this->esc_attr( $active_section ) . '" />';
+		echo '<input type="hidden" class="wpmoo-active-panel" data-panel-id="' . esc_attr( $panel_id ) . '" name="_wpmoo_active_panel[' . esc_attr( $panel_id ) . ']" value="' . esc_attr( $active_section ) . '" />';
 		echo $panel->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		echo '<div class="wpmoo-options-actions">';
@@ -434,7 +432,7 @@ class Page {
 		if ( function_exists( 'submit_button' ) ) {
 			submit_button( __( 'Save Changes', 'wpmoo' ) );
 		} else {
-			echo '<p class="submit"><button type="submit" class="button button-primary">' . $this->esc_html( $this->translate( 'Save Changes', 'wpmoo' ) ) . '</button></p>';
+			echo '<p class="submit"><button type="submit" class="button button-primary">' . esc_html( $this->translate( 'Save Changes', 'wpmoo' ) ) . '</button></p>';
 		}
 
 		echo '</div>';
@@ -519,7 +517,7 @@ class Page {
 
 		if ( $width > 0 && $width < 100 && 'fieldset' !== $field->type() ) {
 			$classes[]  = 'wpmoo-field--has-width';
-			$style_attr = ' style="' . $this->esc_attr( '--wpmoo-field-width:' . (string) $width . '%;' ) . '"';
+			$style_attr = ' style="' . esc_attr( '--wpmoo-field-width:' . (string) $width . '%;' ) . '"';
 		}
 
 		$help_text   = $field->help_text();
@@ -527,31 +525,31 @@ class Page {
 		$help_button = '';
 
 		if ( '' !== $help_text ) {
-			$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . $this->esc_attr( $help_text ) . '"';
-			$help_button .= ' data-tooltip="' . $this->esc_attr( $help_text ) . '"';
-			$help_button .= ' data-help-text="' . $this->esc_attr( $help_text ) . '"';
+			$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . esc_attr( $help_text ) . '"';
+			$help_button .= ' data-tooltip="' . esc_attr( $help_text ) . '"';
+			$help_button .= ' data-help-text="' . esc_attr( $help_text ) . '"';
 
 			if ( '' !== $help_html ) {
-				$help_button .= ' data-help-html="' . $this->esc_attr( $help_html ) . '"';
+				$help_button .= ' data-help-html="' . esc_attr( $help_html ) . '"';
 			}
 
 			$help_button .= '>';
 			$help_button .= '<span aria-hidden="true">?</span>';
-			$help_button .= '<span class="screen-reader-text">' . $this->esc_html( $help_text ) . '</span>';
+			$help_button .= '<span class="screen-reader-text">' . esc_html( $help_text ) . '</span>';
 			$help_button .= '</button>';
 		}
 
 		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Field rendering handles escaping internally or via helper methods.
-		echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '"' . $style_attr . '>';
+		echo '<div class="' . esc_attr( implode( ' ', array_unique( $classes ) ) ) . '"' . $style_attr . '>';
 
 		if ( $field->label() ) {
 			echo '<div class="wpmoo-title">';
 			echo '<div class="wpmoo-title__heading">';
-			echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+			echo '<h4>' . esc_html( $field->label() ) . '</h4>';
 			echo '</div>';
 
 			if ( $field->description() ) {
-				echo '<div class="wpmoo-subtitle-text">' . $this->esc_html( $field->description() ) . '</div>';
+				echo '<div class="wpmoo-subtitle-text">' . esc_html( $field->description() ) . '</div>';
 			}
 
 			echo '</div>';
@@ -609,16 +607,16 @@ class Page {
 
 		echo '<tr>';
 		echo '<th scope="row">';
-		echo '<label for="' . $this->esc_attr( $field->id() ) . '">' . $this->esc_html( $field->label() ) . '</label>';
+		echo '<label for="' . esc_attr( $field->id() ) . '">' . esc_html( $field->label() ) . '</label>';
 		if ( $desc && 'label' === $desc_position ) {
-			echo '<p class="description">' . $this->esc_html( $desc ) . '</p>';
+			echo '<p class="description">' . esc_html( $desc ) . '</p>';
 		}
 		echo '</th>';
 		echo '<td>';
 		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered field handles escaping internally.
 
 		if ( $desc && 'field' === $desc_position ) {
-			echo '<p class="description">' . $this->esc_html( $desc ) . '</p>';
+			echo '<p class="description">' . esc_html( $desc ) . '</p>';
 		}
 
 		echo '</td>';

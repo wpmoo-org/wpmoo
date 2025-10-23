@@ -75,7 +75,7 @@ class Builder {
 	 */
 	public function __construct( string $option_key, Manager $field_manager ) {
 		if ( empty( $option_key ) ) {
-			throw new InvalidArgumentException( $this->translate( 'Option key cannot be empty.' ) );
+			throw new InvalidArgumentException( esc_html__( 'Option key cannot be empty.', 'wpmoo' ) );
 		}
 
 		$this->option_key    = $option_key;

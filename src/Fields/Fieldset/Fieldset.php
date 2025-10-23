@@ -106,9 +106,9 @@ class Fieldset extends Field {
 
 		ob_start();
 
-		$gutter_class = 'wpmoo-fieldset--gutter-' . $this->esc_attr( $this->gutter );
+		$gutter_class = 'wpmoo-fieldset--gutter-' . sanitize_html_class( $this->gutter );
 
-		echo '<div class="wpmoo-fieldset-group ' . $gutter_class . '" data-wpmoo-fieldset="' . $this->esc_attr( $this->id() ) . '">';
+		echo '<div class="wpmoo-fieldset-group ' . esc_attr( $gutter_class ) . '" data-wpmoo-fieldset="' . esc_attr( $this->id() ) . '">';
 		echo '<div class="wpmoo-fieldset__fields">';
 
 		foreach ( $this->fields as $field ) {
@@ -127,38 +127,37 @@ class Fieldset extends Field {
 			$help_button = '';
 
 			if ( '' !== $help_text ) {
-				$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . $this->esc_attr( $help_text ) . '"';
-				$help_button .= ' data-tooltip="' . $this->esc_attr( $help_text ) . '"';
-				$help_button .= ' data-help-text="' . $this->esc_attr( $help_text ) . '"';
+				$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . esc_attr( $help_text ) . '"';
+				$help_button .= ' data-tooltip="' . esc_attr( $help_text ) . '"';
+				$help_button .= ' data-help-text="' . esc_attr( $help_text ) . '"';
 
 				if ( '' !== $help_html ) {
-					$help_button .= ' data-help-html="' . $this->esc_attr( $help_html ) . '"';
+					$help_button .= ' data-help-html="' . esc_attr( $help_html ) . '"';
 				}
 
 				$help_button .= '>';
 				$help_button .= '<span aria-hidden="true">?</span>';
-				$help_button .= '<span class="screen-reader-text">' . $this->esc_html( $help_text ) . '</span>';
+				$help_button .= '<span class="screen-reader-text">' . esc_html( $help_text ) . '</span>';
 				$help_button .= '</button>';
 			}
 
 			$width = $field->width();
-			$style = '';
 
 			if ( $width > 0 && $width < 100 ) {
 				$classes[] = 'wpmoo-field--has-width';
-				$style     = ' style="--wpmoo-field-width:' . $this->esc_attr( (string) $width ) . '%;"';
+				echo '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( '--wpmoo-field-width:' . (string) $width . '%;' ) . '">';
+			} else {
+				echo '<div class="' . esc_attr( implode( ' ', $classes ) ) . '">';
 			}
-
-			echo '<div class="' . $this->esc_attr( implode( ' ', $classes ) ) . '"' . $style . '>';
 
 			if ( $field->label() ) {
 				echo '<div class="wpmoo-title">';
 				echo '<div class="wpmoo-title__heading">';
-				echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+				echo '<h4>' . esc_html( $field->label() ) . '</h4>';
 				echo '</div>';
 
 				if ( $field->description() ) {
-					echo '<div class="wpmoo-subtitle-text">' . $this->esc_html( $field->description() ) . '</div>';
+					echo '<div class="wpmoo-subtitle-text">' . esc_html( $field->description() ) . '</div>';
 				}
 
 				echo '</div>';

@@ -11,7 +11,6 @@
 
 namespace WPMoo\Admin\UI;
 
-use WPMoo\Support\Concerns\EscapesOutput;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,7 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Renders a panel component that wraps sections inside a WordPress postbox.
  */
 class Panel {
-	use EscapesOutput;
 
 	/**
 	 * Panel identifier.
@@ -138,16 +136,16 @@ class Panel {
 			$classes[] = 'wpmoo-panel--embedded';
 		}
 
-		echo '<div id="' . $this->esc_attr( $panel_id_attr ) . '" class="' . $this->esc_attr( implode( ' ', $classes ) ) . '" data-wpmoo-panel data-panel-id="' . $this->esc_attr( $panel_id_attr ) . '" data-panel-active="' . $this->esc_attr( $active_section ) . '" data-panel-persist="' . ( $this->persist ? '1' : '0' ) . '" data-panel-multi="' . ( $this->accordion_multi ? '1' : '0' ) . '">';
+		echo '<div id="' . esc_attr( $panel_id_attr ) . '" class="' . esc_attr( implode( ' ', $classes ) ) . '" data-wpmoo-panel data-panel-id="' . esc_attr( $panel_id_attr ) . '" data-panel-active="' . esc_attr( $active_section ) . '" data-panel-persist="' . esc_attr( $this->persist ? '1' : '0' ) . '" data-panel-multi="' . esc_attr( $this->accordion_multi ? '1' : '0' ) . '">';
 
 		if ( $this->frame ) {
 			echo '<div class="postbox-header">';
-			echo '<h2 class="hndle">' . $this->esc_html( $this->title ) . '</h2>';
+			echo '<h2 class="hndle">' . esc_html( $this->title ) . '</h2>';
 
 			if ( $this->collapsible ) {
 				echo '<div class="handle-actions hide-if-no-js">';
 				echo '<button type="button" class="handlediv" aria-expanded="true">';
-				echo '<span class="screen-reader-text">' . $this->esc_html( $this->toggle_text() ) . '</span>';
+				echo '<span class="screen-reader-text">' . esc_html( $this->toggle_text() ) . '</span>';
 				echo '<span class="toggle-indicator" aria-hidden="true"></span>';
 				echo '</button>';
 				echo '</div>';
@@ -160,7 +158,7 @@ class Panel {
 		echo '<div class="wpmoo-panel__layout">';
 
 		if ( $has_multiple_sections ) {
-			echo '<nav class="wpmoo-panel__tabs" role="tablist" aria-label="' . $this->esc_attr__( 'Section navigation', 'wpmoo' ) . '">';
+			echo '<nav class="wpmoo-panel__tabs" role="tablist" aria-label="' . esc_attr__( 'Section navigation', 'wpmoo' ) . '">';
 			foreach ( $this->sections as $index => $section ) {
 				$section_id = $section['id'];
 				$tab_id     = $section_id . '-tab';
@@ -168,13 +166,13 @@ class Panel {
 				$classes    = 'wpmoo-panel__tab' . ( $is_active ? ' is-active' : '' );
 				$selected   = $is_active ? 'true' : 'false';
 
-				echo '<button type="button" class="' . $this->esc_attr( $classes ) . '" id="' . $this->esc_attr( $tab_id ) . '" role="tab" aria-selected="' . $selected . '" aria-controls="' . $this->esc_attr( $section_id ) . '" data-panel-tab="' . $this->esc_attr( $section_id ) . '">';
+				echo '<button type="button" class="' . esc_attr( $classes ) . '" id="' . esc_attr( $tab_id ) . '" role="tab" aria-selected="' . esc_attr( $selected ) . '" aria-controls="' . esc_attr( $section_id ) . '" data-panel-tab="' . esc_attr( $section_id ) . '">';
 
 				if ( $section['icon'] ) {
-					echo '<span class="wpmoo-panel__tab-icon dashicons ' . $this->esc_attr( $section['icon'] ) . '" aria-hidden="true"></span>';
+					echo '<span class="wpmoo-panel__tab-icon dashicons ' . esc_attr( $section['icon'] ) . '" aria-hidden="true"></span>';
 				}
 
-				echo '<span class="wpmoo-panel__tab-label">' . $this->esc_html( $section['label'] ) . '</span>';
+				echo '<span class="wpmoo-panel__tab-label">' . esc_html( $section['label'] ) . '</span>';
 				echo '</button>';
 			}
 			echo '</nav>';
@@ -194,22 +192,22 @@ class Panel {
 			if ( $is_active ) {
 				$section_classes[] = 'is-active';
 			}
-			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '">';
+			echo '<section id="' . esc_attr( $section_id ) . '" class="' . esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . esc_attr( $hidden ) . '" aria-labelledby="' . esc_attr( $tab_id ) . '">';
 
-			echo '<button type="button" class="wpmoo-panel__section-toggle' . ( $is_active ? ' is-active' : '' ) . '" data-panel-switch="' . $this->esc_attr( $section_id ) . '" aria-expanded="' . $expanded . '">';
+			echo '<button type="button" class="wpmoo-panel__section-toggle' . ( $is_active ? ' is-active' : '' ) . '" data-panel-switch="' . esc_attr( $section_id ) . '" aria-expanded="' . esc_attr( $expanded ) . '">';
 
 			if ( $section['icon'] ) {
-				echo '<span class="wpmoo-panel__section-toggle-icon dashicons ' . $this->esc_attr( $section['icon'] ) . '" aria-hidden="true"></span>';
+				echo '<span class="wpmoo-panel__section-toggle-icon dashicons ' . esc_attr( $section['icon'] ) . '" aria-hidden="true"></span>';
 			}
 
-			echo '<span class="wpmoo-panel__section-toggle-label">' . $this->esc_html( $section['label'] ) . '</span>';
+			echo '<span class="wpmoo-panel__section-toggle-label">' . esc_html( $section['label'] ) . '</span>';
 			echo '<span class="wpmoo-panel__section-toggle-indicator" aria-hidden="true"></span>';
 			echo '</button>';
 
 			echo '<div class="wpmoo-panel__section-body">';
 
 			if ( $section['description'] ) {
-				echo '<p class="wpmoo-panel__section-description">' . $this->esc_html( $section['description'] ) . '</p>';
+				echo '<p class="wpmoo-panel__section-description">' . esc_html( $section['description'] ) . '</p>';
 			}
 
 			echo $section['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Content is pre-escaped by the caller.

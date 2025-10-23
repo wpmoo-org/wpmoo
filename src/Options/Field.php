@@ -68,7 +68,10 @@ class Field {
 	public static function __callStatic( string $method, array $arguments ) {
 		if ( empty( $arguments ) ) {
 			throw new InvalidArgumentException(
-				sprintf( 'Field type "%s" requires an id as the first argument.', $method )
+				sprintf(
+					esc_html__( 'Field type "%s" requires an id as the first argument.', 'wpmoo' ),
+					esc_html( $method )
+				)
 			);
 		}
 
@@ -132,7 +135,11 @@ class Field {
 		}
 
 		throw new BadMethodCallException(
-			sprintf( 'Call to undefined method %s::%s()', static::class, $name )
+			sprintf(
+				esc_html__( 'Call to undefined method %1$s::%2$s()', 'wpmoo' ),
+				esc_html( static::class ),
+				esc_html( $name )
+			)
 		);
 	}
 

@@ -77,12 +77,12 @@ class Accordion extends Field {
 		$value = is_array( $value ) ? $value : array();
 
 		if ( empty( $this->sections ) ) {
-			return '<p class="wpmoo-accordion__empty">' . $this->esc_html( $this->empty_message() ) . '</p>';
+			return '<p class="wpmoo-accordion__empty">' . esc_html( $this->empty_message() ) . '</p>';
 		}
 
 		ob_start();
 
-		echo '<div class="wpmoo-accordion" data-wpmoo-accordion="' . $this->esc_attr( $this->id() ) . '">';
+		echo '<div class="wpmoo-accordion" data-wpmoo-accordion="' . esc_attr( $this->id() ) . '">';
 
 		foreach ( $this->sections as $section ) {
 			$this->render_section( $section, $name, $value );
@@ -130,14 +130,14 @@ class Accordion extends Field {
 		echo '<summary class="wpmoo-accordion__summary">';
 
 		if ( ! empty( $section['icon'] ) ) {
-			echo '<span class="wpmoo-accordion__icon ' . $this->esc_attr( $section['icon'] ) . '"></span>';
+			echo '<span class="wpmoo-accordion__icon ' . esc_attr( $section['icon'] ) . '"></span>';
 		}
 
-		echo '<span class="wpmoo-accordion__title">' . $this->esc_html( $title ) . '</span>';
+		echo '<span class="wpmoo-accordion__title">' . esc_html( $title ) . '</span>';
 		echo '</summary>';
 
 		if ( ! empty( $section['description'] ) ) {
-			echo '<p class="wpmoo-accordion__description">' . $this->esc_html( $section['description'] ) . '</p>';
+			echo '<p class="wpmoo-accordion__description">' . esc_html( $section['description'] ) . '</p>';
 		}
 
 		echo '<div class="wpmoo-accordion__content">';
@@ -147,13 +147,13 @@ class Accordion extends Field {
 			$field_name  = $base_name . '[' . $field_id . ']';
 			$field_value = array_key_exists( $field_id, $values ) ? $values[ $field_id ] : $field->default();
 
-			echo '<div class="wpmoo-field wpmoo-field-' . $this->esc_attr( $field->type() ) . ' wpmoo-field--accordion">';
+			echo '<div class="wpmoo-field wpmoo-field-' . esc_attr( $field->type() ) . ' wpmoo-field--accordion">';
 
 			if ( $field->label() ) {
 				echo '<div class="wpmoo-title">';
-				echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+				echo '<h4>' . esc_html( $field->label() ) . '</h4>';
 				if ( $field->description() ) {
-					echo '<div class="wpmoo-subtitle-text">' . $this->esc_html( $field->description() ) . '</div>';
+					echo '<div class="wpmoo-subtitle-text">' . esc_html( $field->description() ) . '</div>';
 				}
 				echo '</div>';
 			}

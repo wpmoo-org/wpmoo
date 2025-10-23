@@ -68,7 +68,7 @@ class Builder {
 	 */
 	public function __construct( string $id, Manager $field_manager ) {
 		if ( empty( $id ) ) {
-			throw new InvalidArgumentException( $this->translate( 'Metabox ID cannot be empty.' ) );
+			throw new InvalidArgumentException( esc_html__( 'Metabox ID cannot be empty.', 'wpmoo' ) );
 		}
 
 		$this->id            = $id;

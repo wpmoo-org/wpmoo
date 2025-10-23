@@ -74,7 +74,7 @@ class Builder {
 	 */
 	public function __construct( string $taxonomy ) {
 		if ( empty( $taxonomy ) ) {
-			throw new InvalidArgumentException( $this->translate( 'Taxonomy slug cannot be empty.' ) );
+			throw new InvalidArgumentException( esc_html__( 'Taxonomy slug cannot be empty.', 'wpmoo' ) );
 		}
 
 		$this->taxonomy = $taxonomy;

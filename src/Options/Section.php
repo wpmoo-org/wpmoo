@@ -291,15 +291,23 @@ class Section {
 				throw new InvalidArgumentException( 'Field configuration requires an "id" key.' );
 			}
 
-			if ( empty( $field['type'] ) ) {
-				throw new InvalidArgumentException( sprintf( 'Field "%s" configuration requires a "type" key.', $field['id'] ) );
-			}
+				if ( empty( $field['type'] ) ) {
+					throw new InvalidArgumentException(
+						sprintf(
+							esc_html__( 'Field "%s" configuration requires a "type" key.', 'wpmoo' ),
+							esc_html( $field['id'] )
+						)
+					);
+				}
 
 			return $field;
 		}
 
-		throw new InvalidArgumentException(
-			sprintf( 'Unsupported field definition of type %s.', is_object( $field ) ? get_class( $field ) : gettype( $field ) )
-		);
+			throw new InvalidArgumentException(
+				sprintf(
+					esc_html__( 'Unsupported field definition of type %s.', 'wpmoo' ),
+					esc_html( is_object( $field ) ? get_class( $field ) : gettype( $field ) )
+				)
+			);
 	}
 }
