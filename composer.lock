@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d3aab1691588c30917b632d8f7d20a48",
+    "content-hash": "e5e17a2f3d3ef8f3fa2421518c280c0d",
     "packages": [],
     "packages-dev": [
         {
@@ -640,11 +640,47 @@
                 }
             ],
             "time": "2025-07-24T20:08:31+00:00"
+        },
+        {
+            "name": "wpmoo/wpmoo-coding-standards",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../wpmoo-coding-standards",
+                "reference": "3ae750cccb6d5ca52b4494b2170aec179fd4599c"
+            },
+            "require": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+                "phpcompatibility/phpcompatibility-wp": "^2.1",
+                "squizlabs/php_codesniffer": "^3.10",
+                "wp-coding-standards/wpcs": "^3.0"
+            },
+            "type": "phpcodesniffer-standard",
+            "extra": {
+                "phpcodesniffer-standard": {
+                    "name": "WPMoo"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "WPMoo\\": "WPMoo/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Shared PHPCS standard and custom sniffs for WPMoo projects.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "wpmoo/wpmoo-coding-standards": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

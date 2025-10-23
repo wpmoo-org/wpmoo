@@ -5,7 +5,7 @@
   "homepage": "https://wpmoo.org",
   "authors": [
     {
-      "name": "Ahmet Cangir",
+      "name": "WPMoo",
       "email": "hello@wpmoo.org",
       "homepage": "https://wpmoo.org/"
     }
@@ -43,10 +43,17 @@
   "bin": [
     "bin/moo"
   ],
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../wpmoo-coding-standards",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
   "require-dev": {
-    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-    "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "wp-coding-standards/wpcs": "^3.0"
+    "wpmoo/wpmoo-coding-standards": "dev-main"
   },
   "config": {
     "allow-plugins": {
