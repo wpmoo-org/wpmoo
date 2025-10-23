@@ -59,10 +59,9 @@ class Connection {
 	 * @return int|false
 	 */
 	public function query( $query, $args = array() ) {
-		if ( ! empty( $args ) ) {
-			$query = $this->prepare( $query, $args );
-		}
+		$query = $this->prepare( $query, $args );
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Queries are routed through $this->prepare(), which proxies to $wpdb->prepare().
 		return $this->wpdb->query( $query );
 	}
 
@@ -74,10 +73,9 @@ class Connection {
 	 * @return array<int, object>|null
 	 */
 	public function get_results( $query, $args = array() ) {
-		if ( ! empty( $args ) ) {
-			$query = $this->prepare( $query, $args );
-		}
+		$query = $this->prepare( $query, $args );
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Queries are routed through $this->prepare(), which proxies to $wpdb->prepare().
 		return $this->wpdb->get_results( $query );
 	}
 

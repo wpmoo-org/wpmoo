@@ -153,12 +153,17 @@ class Container {
 	 * @param string $title Page title.
 	 */
 	protected function __construct( string $type, string $id, string $title ) {
-		$this->type                  = $type;
-		$this->id                    = $id;
-		$this->page_title            = $title ?: ucwords( str_replace( array( '-', '_' ), ' ', $id ) );
-		$this->menu_title            = $this->page_title;
-		$this->menu_slug             = $id;
-		$this->option_key            = $id;
+		$this->type       = $type;
+		$this->id         = $id;
+
+		if ( '' === $title ) {
+			$title = ucwords( str_replace( array( '-', '_' ), ' ', $id ) );
+		}
+
+		$this->page_title = $title;
+		$this->menu_title = $this->page_title;
+		$this->menu_slug  = $id;
+		$this->option_key = $id;
 		$default_section_title = function_exists( '__' ) ? __( 'General', 'wpmoo' ) : 'General';
 		$this->default_section_title = $default_section_title;
 
@@ -297,6 +302,7 @@ class Container {
 	 *
 	 * @param string $key Option key.
 	 * @return $this
+	 * @throws InvalidArgumentException When the option key resolves to an empty string.
 	 */
 	public function set_option_key( string $key ): self {
 		$key = $this->sanitize_key( $key );
@@ -370,6 +376,7 @@ class Container {
 	 *
 	 * @param string $slug Menu slug.
 	 * @return $this
+	 * @throws InvalidArgumentException When the slug resolves to an empty string.
 	 */
 	public function set_page_slug( string $slug ): self {
 		$slug = static::normalize_id( $slug );
