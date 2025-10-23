@@ -447,22 +447,22 @@ class MetaboxHandle {
 	/**
 	 * Determine whether an array is a sequential list.
 	 *
-	 * @param array<int|string, mixed> $array Input array.
+	 * @param array<int|string, mixed> $items Input array.
 	 * @return bool
 	 */
-	protected function is_list_array( array $array ): bool {
+	protected function is_list_array( array $items ): bool {
 		if ( function_exists( 'array_is_list' ) ) {
-			return array_is_list( $array );
+			return array_is_list( $items );
 		}
 
 		$expected = 0;
 
-		foreach ( $array as $key => $_value ) {
+		foreach ( $items as $key => $_value ) {
 			if ( $key !== $expected ) {
 				return false;
 			}
 
-			$expected++;
+			++$expected;
 		}
 
 		return true;

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ruleset name="WPMoo – CI Baseline">
+    <description>Lightweight PHPCS ruleset focused on PHP and WordPress version compatibility.</description>
+
+    <file>.</file>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="8"/>
+    <arg name="encoding" value="utf-8"/>
+
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>node_modules/*</exclude-pattern>
+
+    <config name="testVersion" value="7.4-"/>
+    <config name="minimum_supported_wp_version" value="6.5"/>
+
+    <rule ref="PHPCompatibilityWP"/>
+</ruleset>
