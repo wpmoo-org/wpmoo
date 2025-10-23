@@ -68,7 +68,13 @@ class Options {
 		};
 
 		if ( function_exists( 'did_action' ) && did_action( 'init' ) ) {
-			$register_callback();
+			$doing_init = function_exists( 'doing_action' ) && doing_action( 'init' );
+
+			if ( $doing_init && function_exists( 'add_action' ) ) {
+				add_action( 'init', $register_callback, 99 );
+			} else {
+				$register_callback();
+			}
 		} elseif ( function_exists( 'add_action' ) ) {
 			add_action( 'init', $register_callback, 15 );
 		}
