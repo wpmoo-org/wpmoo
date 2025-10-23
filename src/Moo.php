@@ -160,6 +160,8 @@ class Moo {
 			unset( self::$pending_metabox_sections[ $id ] );
 		}
 
+		$handle->registerOnInit();
+
 		return $handle;
 	}
 

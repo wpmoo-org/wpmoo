@@ -360,7 +360,27 @@ class MetaboxHandle {
 			return $this;
 		}
 
+		if ( $this->registration_hooked ) {
+			if ( $priority === $this->register_priority || ! function_exists( 'remove_action' ) ) {
+				return $this;
+			}
+
+			remove_action( 'init', array( $this, 'maybe_register' ), $this->register_priority );
+			$this->registration_hooked = false;
+		}
+
+		$priority = max( 1, $priority );
+
 		if ( function_exists( 'did_action' ) && did_action( 'init' ) ) {
+			if ( function_exists( 'doing_action' ) && doing_action( 'init' ) && function_exists( 'add_action' ) ) {
+				$adjusted_priority           = max( $priority, 99 );
+				add_action( 'init', array( $this, 'maybe_register' ), $adjusted_priority );
+				$this->registration_hooked = true;
+				$this->register_priority   = $adjusted_priority;
+
+				return $this;
+			}
+
 			$this->register();
 
 			return $this;
