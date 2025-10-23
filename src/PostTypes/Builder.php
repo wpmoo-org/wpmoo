@@ -33,13 +33,13 @@ class Builder
 
         if (isset($this->posttype->column)) {
             // modify the admin edit column.
-            add_filter('manage_' . $name . '_posts_column', [$this, 'modifyColumns'], 10, 1);
+            add_filter('manage_' . $name . '_posts_columns', [$this, 'modifyColumns'], 10, 1);
 
             // populate custom column
             add_filter('manage_' . $name . '_posts_custom_column', [$this, 'populateColumns'], 10, 2);
 
             // run filter to make column sortable.
-            add_filter('manage_edit-' . $name . '_sortable_column', [$this, 'setSortableColumns'], 10, 1);
+            add_filter('manage_edit-' . $name . '_sortable_columns', [$this, 'setSortableColumns'], 10, 1);
 
             // run action that sorts column on request.
             add_action('pre_get_posts', [$this, 'sortSortableColumns'], 10, 1);

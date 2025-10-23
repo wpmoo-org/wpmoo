@@ -26,7 +26,7 @@ class Builder
 
         if (isset($this->taxonomy->columns)) {
             // Modify the columns for the Taxonomy
-            add_filter("manage_edit-' . $name . '_columns", [$this, 'modifyColumns']);
+            add_filter('manage_edit-' . $name . '_columns', [$this, 'modifyColumns']);
 
             // populate the columns for the Taxonomy
             add_filter('manage_' . $name . '_custom_column', [$this, 'populateColumns'], 10, 3);

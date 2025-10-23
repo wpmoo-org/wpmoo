@@ -297,19 +297,19 @@ class PostType
     {
         // default labels
         $labels = [
-            'name' => $this->plural,
-            'singular_name' => $this->singular,
-            'menu_name' => $this->plural,
-            'all_items' => $this->plural,
-            'add_new' => "Add New",
-            'add_new_item' => "Add New {$this->singular}",
-            'edit_item' => "Edit {$this->singular}",
-            'new_item' => "New {$this->singular}",
-            'view_item' => "View {$this->singular}",
-            'search_items' => "Search {$this->plural}",
-            'not_found' => "No {$this->plural} found",
-            'not_found_in_trash' => "No {$this->plural} found in Trash",
-            'parent_item_colon' => "Parent {$this->singular}:",
+            'name'                  => $this->plural,
+            'singular_name'         => $this->singular,
+            'menu_name'             => $this->plural,
+            'all_items'             => $this->plural,
+            'add_new'               => function_exists('__') ? __('Add New', 'wpmoo') : 'Add New',
+            'add_new_item'          => function_exists('__') ? sprintf(__('Add New %s', 'wpmoo'), $this->singular) : "Add New {$this->singular}",
+            'edit_item'             => function_exists('__') ? sprintf(__('Edit %s', 'wpmoo'), $this->singular) : "Edit {$this->singular}",
+            'new_item'              => function_exists('__') ? sprintf(__('New %s', 'wpmoo'), $this->singular) : "New {$this->singular}",
+            'view_item'             => function_exists('__') ? sprintf(__('View %s', 'wpmoo'), $this->singular) : "View {$this->singular}",
+            'search_items'          => function_exists('__') ? sprintf(__('Search %s', 'wpmoo'), $this->plural) : "Search {$this->plural}",
+            'not_found'             => function_exists('__') ? sprintf(__('No %s found', 'wpmoo'), $this->plural) : "No {$this->plural} found",
+            'not_found_in_trash'    => function_exists('__') ? sprintf(__('No %s found in Trash', 'wpmoo'), $this->plural) : "No {$this->plural} found in Trash",
+            'parent_item_colon'     => function_exists('__') ? sprintf(__('Parent %s:', 'wpmoo'), $this->singular) : "Parent {$this->singular}:",
         ];
 
         return array_replace_recursive($labels, $this->labels);
