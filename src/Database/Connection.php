@@ -54,20 +54,30 @@ class Connection {
 	/**
 	 * Execute an SQL query.
 	 *
-	 * @param string $query SQL query.
+	 * @param string            $query SQL query.
+	 * @param array<int, mixed> $args  Values to replace placeholders.
 	 * @return int|false
 	 */
-	public function query( $query ) {
+	public function query( $query, $args = array() ) {
+		if ( ! empty( $args ) ) {
+			$query = $this->prepare( $query, $args );
+		}
+
 		return $this->wpdb->query( $query );
 	}
 
 	/**
 	 * Retrieve multiple rows from the database.
 	 *
-	 * @param string $query SQL query.
+	 * @param string            $query SQL query.
+	 * @param array<int, mixed> $args  Values to replace placeholders.
 	 * @return array<int, object>|null
 	 */
-	public function get_results( $query ) {
+	public function get_results( $query, $args = array() ) {
+		if ( ! empty( $args ) ) {
+			$query = $this->prepare( $query, $args );
+		}
+
 		return $this->wpdb->get_results( $query );
 	}
 

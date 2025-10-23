@@ -1,38 +1,37 @@
 {
-    "name": "wpmoo-org/wpmoo",
-    "description": "WPMoo \u2014 WordPress Micro Object-Oriented Framework (PHP 7.4+)",
-    "license": "GPL-3.0",
-    "version": "0.5.0",
-    "homepage": "https://wpmoo.org",
-    "authors": [
-        {
-            "name": "Ahmet Cangir",
-            "email": "hello@wpmoo.org",
-            "homepage": "https://wpmoo.org/"
-        }
-    ],
-    "keywords": [
-        "wordpress",
-        "wp-cli",
-        "framework",
-        "micro-framework",
-        "php",
-        "php7.4",
-        "php8.0",
-        "php8.1",
-        "php8.2",
-        "php8.3",
-        "oop",
-        "object-oriented"
-    ],
-    "support": {
-        "issues": "https://github.com/wpmoo/wpmoo/issues",
-        "source": "https://github.com/wpmoo/wpmoo/"
-    },
-    "type": "wordpress-framework",
-    "require": {
-        "php": ">=7.4"
-    },
+  "name": "wpmoo-org/wpmoo",
+  "description": "WPMoo — WordPress Micro Object-Oriented Framework (PHP 7.4+)",
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://wpmoo.org",
+  "authors": [
+    {
+      "name": "Ahmet Cangir",
+      "email": "hello@wpmoo.org",
+      "homepage": "https://wpmoo.org/"
+    }
+  ],
+  "keywords": [
+    "wordpress",
+    "wp-cli",
+    "framework",
+    "micro-framework",
+    "php",
+    "php7.4",
+    "php8.0",
+    "php8.1",
+    "php8.2",
+    "php8.3",
+    "oop",
+    "object-oriented"
+  ],
+  "support": {
+    "issues": "https://github.com/wpmoo/wpmoo/issues",
+    "source": "https://github.com/wpmoo/wpmoo/"
+  },
+  "type": "wordpress-framework",
+  "require": {
+    "php": ">=7.4"
+  },
   "autoload": {
     "psr-4": {
       "WPMoo\\": "src/"
@@ -41,17 +40,27 @@
       "wpmoo.php"
     ]
   },
-    "bin": [
-        "bin/moo"
-    ],
-    "require-dev": {
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-        "phpcompatibility/phpcompatibility-wp": "^2.1",
-        "wp-coding-standards/wpcs": "^3.0"
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
+  "bin": [
+    "bin/moo"
+  ],
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "wp-coding-standards/wpcs": "^3.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
+  },
+  "scripts": {
+    "check:validate": "composer validate",
+    "lint:php": "find . -path './vendor' -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l",
+    "phpcs": "vendor/bin/phpcs --standard=phpcs.xml",
+    "check": [
+      "@check:validate",
+      "@lint:php",
+      "@phpcs"
+    ]
+  }
 }

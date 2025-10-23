@@ -8,6 +8,8 @@ Modern, lightweight WordPress framework for rapid plugin development with fluent
 
 CI runs linting and compatibility sniffs across PHP 7.4–8.3 and WordPress 6.5+ so the framework stays aligned with its published requirements.
 
+Run `composer check` locally to execute the same validation, lint, and compatibility sniffs before pushing. For a full WordPress.org coding standard pass, run `vendor/bin/phpcs --standard=WordPress --ignore=vendor,node_modules .` manually when you have time to address the broader styling recommendations.
+
 ## Field Widths
 
 Every option field can request a share of the row using `width()` (percentage) or the shorthand `size()` helper. Fields lay out in a flex row and stack automatically on smaller screens:

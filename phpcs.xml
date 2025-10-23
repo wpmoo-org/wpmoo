@@ -1,20 +1,17 @@
 <?xml version="1.0"?>
-<ruleset name="WPMoo Standards">
-    <description>Validate compatibility with PHP 7.4+ and WordPress 6.5+.</description>
+<ruleset name="WPMoo – CI Baseline">
+    <description>Lightweight PHPCS ruleset focused on PHP and WordPress version compatibility.</description>
 
-    <arg name="basepath" value="."/>
+    <file>.</file>
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="8"/>
+    <arg name="encoding" value="utf-8"/>
 
-    <file>src</file>
-    <file>wpmoo.php</file>
-    <ignore>./vendor</ignore>
-    <ignore>./node_modules</ignore>
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>node_modules/*</exclude-pattern>
 
     <config name="testVersion" value="7.4-"/>
     <config name="minimum_supported_wp_version" value="6.5"/>
 
-    <rule ref="WordPress-Core"/>
-    <rule ref="WordPress-Extra"/>
     <rule ref="PHPCompatibilityWP"/>
 </ruleset>

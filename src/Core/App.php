@@ -12,7 +12,7 @@
 namespace WPMoo\Core;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', dirname( __FILE__ ) );
+	define( 'ABSPATH', __DIR__ );
 }
 
 /**
@@ -111,7 +111,7 @@ final class App {
 
 		if ( ! defined( 'WPMOO_URL' ) ) {
 			$library_path_normalized = str_replace( '\\', '/', $library_path );
-			$url = '';
+			$url                     = '';
 
 			if ( defined( 'WP_CONTENT_DIR' ) && defined( 'WP_CONTENT_URL' ) ) {
 				$content_dir = str_replace( '\\', '/', WP_CONTENT_DIR );
@@ -125,7 +125,7 @@ final class App {
 				$url = plugins_url( 'vendor/wpmoo-org/wpmoo/', WPMOO_FILE );
 			}
 
-			define( 'WPMOO_URL', rtrim( $url, "/\\" ) . '/' );
+			define( 'WPMOO_URL', rtrim( $url, '/\\' ) . '/' );
 		}
 	}
 
@@ -228,5 +228,4 @@ final class App {
 	public function textdomain() {
 		return $this->textdomain;
 	}
-
 }

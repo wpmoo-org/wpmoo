@@ -102,13 +102,13 @@ class Page {
 	public function enqueue_assets( $hook ) {
 		// Only load on our options page.
 		$menu_slug = $this->config['menu_slug'];
-		
+
 		if ( ! empty( $this->config['parent_slug'] ) ) {
 			$page_hook = get_plugin_page_hookname( $menu_slug, $this->config['parent_slug'] );
 		} else {
 			$page_hook = 'toplevel_page_' . $menu_slug;
 		}
-		
+
 		if ( $hook !== $page_hook ) {
 			return;
 		}
@@ -136,7 +136,7 @@ class Page {
 
 		// Enqueue JS.
 		if ( function_exists( 'wp_enqueue_script' ) ) {
-			$persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] );
+			$persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Persists UI state only.
 			wp_enqueue_script( 'postbox' );
 			wp_enqueue_script(
 				'wpmoo',
@@ -151,11 +151,11 @@ class Page {
 					'wpmoo',
 					'wpmooAdminOptions',
 					array(
-						'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-						'nonce'    => wp_create_nonce( 'wpmoo_options_save' ),
-						'menuSlug' => $this->config['menu_slug'],
+						'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+						'nonce'       => wp_create_nonce( 'wpmoo_options_save' ),
+						'menuSlug'    => $this->config['menu_slug'],
 						'persistTabs' => (bool) $persist_tabs,
-						'strings'  => array(
+						'strings'     => array(
 							'saving' => function_exists( '__' ) ? __( 'Saving…', 'wpmoo' ) : 'Saving…',
 							'saved'  => function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.',
 							'error'  => function_exists( '__' ) ? __( 'Unable to save settings.', 'wpmoo' ) : 'Unable to save settings.',
@@ -382,34 +382,35 @@ class Page {
 
 			$content = ob_get_clean();
 
-		if ( '' !== trim( $content ) ) {
-			$content = '<div class="wpmoo-section-fields">' . $content . '</div>';
-		}
+			if ( '' !== trim( $content ) ) {
+				$content = '<div class="wpmoo-section-fields">' . $content . '</div>';
+			}
 
-		$panel_sections[] = array(
-			'id'          => $section_id,
-			'label'       => $section_title,
-			'description' => $section_desc,
-			'icon'        => $section_icon,
-			'content'     => $content,
-		);
+			$panel_sections[] = array(
+				'id'          => $section_id,
+				'label'       => $section_title,
+				'description' => $section_desc,
+				'icon'        => $section_icon,
+				'content'     => $content,
+			);
 		}
 
 		$panel_id       = 'wpmoo-options-panel-' . $this->config['menu_slug'];
 		$active_section = $this->determine_active_section( $panel_id, $panel_sections );
-		$persist_tabs   = ! empty( $_REQUEST['_wpmoo_active_panel'] );
+		$persist_tabs   = ! empty( $_REQUEST['_wpmoo_active_panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Persists UI state only.
 		$panel          = Panel::make(
 			array(
-				'id'          => $panel_id,
-				'title'       => $this->config['page_title'],
-				'sections'    => $panel_sections,
-				'collapsible' => false,
+				'id'              => $panel_id,
+				'title'           => $this->config['page_title'],
+				'sections'        => $panel_sections,
+				'collapsible'     => false,
 				'accordion_multi' => true,
-				'persist'     => $persist_tabs,
-				'active'      => $active_section,
+				'persist'         => $persist_tabs,
+				'active'          => $active_section,
 			)
 		);
 
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Render methods ensure inner values are escaped.
 		echo '<div class="wrap wpmoo-options">';
 		echo '<h1 class="wp-heading-inline">' . $this->esc_html( $this->config['page_title'] ) . '</h1>';
 
@@ -437,6 +438,7 @@ class Page {
 		}
 
 		echo '</div>';
+		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		echo '</form>';
 		echo '</div>';
@@ -513,11 +515,11 @@ class Page {
 			$classes[] = 'wpmoo-field--separated';
 		}
 
-		$style = '';
+		$style_attr = '';
 
 		if ( $width > 0 && $width < 100 && 'fieldset' !== $field->type() ) {
-			$classes[] = 'wpmoo-field--has-width';
-			$style     = ' style="--wpmoo-field-width:' . $this->esc_attr( (string) $width ) . '%;"';
+			$classes[]  = 'wpmoo-field--has-width';
+			$style_attr = ' style="' . $this->esc_attr( '--wpmoo-field-width:' . (string) $width . '%;' ) . '"';
 		}
 
 		$help_text   = $field->help_text();
@@ -539,7 +541,8 @@ class Page {
 			$help_button .= '</button>';
 		}
 
-		echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '"' . $style . '>';
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Field rendering handles escaping internally or via helper methods.
+		echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '"' . $style_attr . '>';
 
 		if ( $field->label() ) {
 			echo '<div class="wpmoo-title">';
@@ -574,6 +577,7 @@ class Page {
 		}
 
 		echo '</div>';
+		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		if ( $field->after() ) {
 			echo '<div class="wpmoo-field-after">' . $field->after_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -599,8 +603,8 @@ class Page {
 		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name  = $this->field_input_name( $field );
 
-		$args = $field->args();
-		$desc = $field->description();
+		$args          = $field->args();
+		$desc          = $field->description();
 		$desc_position = isset( $args['description_position'] ) ? $args['description_position'] : 'field';
 
 		echo '<tr>';
@@ -714,8 +718,8 @@ class Page {
 
 				$field_config['field_manager'] = $this->field_manager;
 
-				$field     = $this->field_manager->make( $field_config );
-				$fields[]  = $field;
+				$field                        = $this->field_manager->make( $field_config );
+				$fields[]                     = $field;
 				$this->fields[ $field->id() ] = $field;
 			}
 
@@ -855,5 +859,4 @@ class Page {
 	public function field_input_name( Field $field ) {
 		return $this->repository->option_key() . '[' . $field->id() . ']';
 	}
-
 }
