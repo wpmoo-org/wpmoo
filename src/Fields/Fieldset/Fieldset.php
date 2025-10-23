@@ -104,52 +104,52 @@ class Fieldset extends Field {
 			return '';
 		}
 
-	ob_start();
+		ob_start();
 
-	$gutter_class = 'wpmoo-fieldset--gutter-' . $this->esc_attr( $this->gutter );
+		$gutter_class = 'wpmoo-fieldset--gutter-' . $this->esc_attr( $this->gutter );
 
-	echo '<div class="wpmoo-fieldset-group ' . $gutter_class . '" data-wpmoo-fieldset="' . $this->esc_attr( $this->id() ) . '">';
-	echo '<div class="wpmoo-fieldset__fields">';
+		echo '<div class="wpmoo-fieldset-group ' . $gutter_class . '" data-wpmoo-fieldset="' . $this->esc_attr( $this->id() ) . '">';
+		echo '<div class="wpmoo-fieldset__fields">';
 
 		foreach ( $this->fields as $field ) {
 			$field_id    = $field->id();
 			$field_name  = $name . '[' . $field_id . ']';
 			$field_value = array_key_exists( $field_id, $values ) ? $values[ $field_id ] : $field->default();
 
-		$classes = array(
-			'wpmoo-field',
-			'wpmoo-field-' . $field->type(),
-			'wpmoo-field--nested',
-		);
+			$classes = array(
+				'wpmoo-field',
+				'wpmoo-field-' . $field->type(),
+				'wpmoo-field--nested',
+			);
 
-		$help_text   = $field->help_text();
-		$help_html   = $field->help_html();
-		$help_button = '';
+			$help_text   = $field->help_text();
+			$help_html   = $field->help_html();
+			$help_button = '';
 
-		if ( '' !== $help_text ) {
-			$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . $this->esc_attr( $help_text ) . '"';
-			$help_button .= ' data-tooltip="' . $this->esc_attr( $help_text ) . '"';
-			$help_button .= ' data-help-text="' . $this->esc_attr( $help_text ) . '"';
+			if ( '' !== $help_text ) {
+				$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . $this->esc_attr( $help_text ) . '"';
+				$help_button .= ' data-tooltip="' . $this->esc_attr( $help_text ) . '"';
+				$help_button .= ' data-help-text="' . $this->esc_attr( $help_text ) . '"';
 
-			if ( '' !== $help_html ) {
-				$help_button .= ' data-help-html="' . $this->esc_attr( $help_html ) . '"';
+				if ( '' !== $help_html ) {
+					$help_button .= ' data-help-html="' . $this->esc_attr( $help_html ) . '"';
+				}
+
+				$help_button .= '>';
+				$help_button .= '<span aria-hidden="true">?</span>';
+				$help_button .= '<span class="screen-reader-text">' . $this->esc_html( $help_text ) . '</span>';
+				$help_button .= '</button>';
 			}
 
-			$help_button .= '>';
-			$help_button .= '<span aria-hidden="true">?</span>';
-			$help_button .= '<span class="screen-reader-text">' . $this->esc_html( $help_text ) . '</span>';
-			$help_button .= '</button>';
-		}
+			$width = $field->width();
+			$style = '';
 
-		$width = $field->width();
-		$style = '';
+			if ( $width > 0 && $width < 100 ) {
+				$classes[] = 'wpmoo-field--has-width';
+				$style     = ' style="--wpmoo-field-width:' . $this->esc_attr( (string) $width ) . '%;"';
+			}
 
-		if ( $width > 0 && $width < 100 ) {
-			$classes[] = 'wpmoo-field--has-width';
-			$style     = ' style="--wpmoo-field-width:' . $this->esc_attr( (string) $width ) . '%;"';
-		}
-
-		echo '<div class="' . $this->esc_attr( implode( ' ', $classes ) ) . '"' . $style . '>';
+			echo '<div class="' . $this->esc_attr( implode( ' ', $classes ) ) . '"' . $style . '>';
 
 			if ( $field->label() ) {
 				echo '<div class="wpmoo-title">';
@@ -214,8 +214,8 @@ class Fieldset extends Field {
 		$values = is_array( $value ) ? $value : array();
 
 		foreach ( $this->fields as $field ) {
-			$field_id    = $field->id();
-			$field_value = array_key_exists( $field_id, $values ) ? $values[ $field_id ] : $field->default();
+			$field_id           = $field->id();
+			$field_value        = array_key_exists( $field_id, $values ) ? $values[ $field_id ] : $field->default();
 			$clean[ $field_id ] = $field->sanitize( $field_value );
 		}
 
@@ -258,5 +258,4 @@ class Fieldset extends Field {
 
 		return $instances;
 	}
-
 }

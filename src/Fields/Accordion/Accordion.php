@@ -105,8 +105,8 @@ class Accordion extends Field {
 
 		foreach ( $this->sections as $section ) {
 			foreach ( $section['fields'] as $field ) {
-				$field_id    = $field->id();
-				$field_value = array_key_exists( $field_id, $data ) ? $data[ $field_id ] : $field->default();
+				$field_id           = $field->id();
+				$field_value        = array_key_exists( $field_id, $data ) ? $data[ $field_id ] : $field->default();
 				$clean[ $field_id ] = $field->sanitize( $field_value );
 			}
 		}
@@ -208,7 +208,7 @@ class Accordion extends Field {
 					}
 
 					$field_config['field_manager'] = $this->field_manager;
-					$field_objects[]              = $this->field_manager->make( $field_config );
+					$field_objects[]               = $this->field_manager->make( $field_config );
 				}
 			}
 

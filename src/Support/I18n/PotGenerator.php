@@ -44,70 +44,70 @@ class PotGenerator {
 	 * @var array<string, array<string, int|string>>
 	 */
 	protected $function_meta = array(
-		'__'            => array(
-			'type'          => 'single',
-			'domain_index'  => 1,
+		'__'         => array(
+			'type'         => 'single',
+			'domain_index' => 1,
 		),
-		'_e'            => array(
-			'type'          => 'single',
-			'domain_index'  => 1,
+		'_e'         => array(
+			'type'         => 'single',
+			'domain_index' => 1,
 		),
-		'esc_html__'    => array(
-			'type'          => 'single',
-			'domain_index'  => 1,
+		'esc_html__' => array(
+			'type'         => 'single',
+			'domain_index' => 1,
 		),
-		'esc_attr__'    => array(
-			'type'          => 'single',
-			'domain_index'  => 1,
+		'esc_attr__' => array(
+			'type'         => 'single',
+			'domain_index' => 1,
 		),
-		'esc_html_e'    => array(
-			'type'          => 'single',
-			'domain_index'  => 1,
+		'esc_html_e' => array(
+			'type'         => 'single',
+			'domain_index' => 1,
 		),
-		'esc_attr_e'    => array(
-			'type'          => 'single',
-			'domain_index'  => 1,
+		'esc_attr_e' => array(
+			'type'         => 'single',
+			'domain_index' => 1,
 		),
-		'translate'     => array(
-			'type'          => 'single',
+		'translate'  => array(
+			'type' => 'single',
 		),
-		'_x'            => array(
+		'_x'         => array(
 			'type'          => 'context',
 			'context_index' => 1,
 			'domain_index'  => 2,
 		),
-		'_ex'           => array(
+		'_ex'        => array(
 			'type'          => 'context',
 			'context_index' => 1,
 			'domain_index'  => 2,
 		),
-		'esc_html_x'    => array(
+		'esc_html_x' => array(
 			'type'          => 'context',
 			'context_index' => 1,
 			'domain_index'  => 2,
 		),
-		'esc_attr_x'    => array(
+		'esc_attr_x' => array(
 			'type'          => 'context',
 			'context_index' => 1,
 			'domain_index'  => 2,
 		),
-		'_n'            => array(
-			'type'          => 'plural',
-			'plural_index'  => 1,
-			'domain_index'  => 3,
+		'_n'         => array(
+			'type'         => 'plural',
+			'plural_index' => 1,
+			'domain_index' => 3,
 		),
-		'_n_noop'       => array(
-			'type'          => 'plural',
-			'plural_index'  => 1,
-			'domain_index'  => 2,
+		'_n_noop'    => array(
+			'type'         => 'plural',
+			'plural_index' => 1,
+			'domain_index' => 2,
 		),
-		'_nx'           => array(
+		'_nx'        => array(
 			'type'          => 'plural_context',
 			'plural_index'  => 1,
 			'context_index' => 2,
 			'domain_index'  => 4,
 		),
-		'_nx_noop'      => array(
+		'_nx_noop'   => array(
 			'type'          => 'plural_context',
 			'plural_index'  => 1,
 			'context_index' => 2,
@@ -181,9 +181,9 @@ class PotGenerator {
 			return;
 		}
 
-		$tokens                   = token_get_all( $contents );
-		$token_count              = count( $tokens );
-		$last_translator_comment  = null;
+		$tokens                  = token_get_all( $contents );
+		$token_count             = count( $tokens );
+		$last_translator_comment = null;
 
 		for ( $index = 0; $index < $token_count; $index++ ) {
 			$token = $tokens[ $index ];
@@ -300,9 +300,9 @@ class PotGenerator {
 	 * @return array<int, array<int, mixed>>
 	 */
 	protected function extract_arguments( array &$tokens, &$index ) {
-		$arguments    = array();
-		$token_count  = count( $tokens );
-		$position     = $index + 1;
+		$arguments   = array();
+		$token_count = count( $tokens );
+		$position    = $index + 1;
 
 		// Find the opening parenthesis.
 		while ( $position < $token_count ) {
@@ -310,7 +310,7 @@ class PotGenerator {
 
 			if ( is_array( $token ) ) {
 				if ( in_array( $token[0], array( T_WHITESPACE, T_COMMENT, T_DOC_COMMENT ), true ) ) {
-					$position++;
+					++$position;
 					continue;
 				}
 
@@ -318,28 +318,28 @@ class PotGenerator {
 			}
 
 			if ( '(' === $token ) {
-				$position++;
+				++$position;
 				break;
 			}
 
 			return array();
 		}
 
-		$depth      = 1;
-		$current    = array();
+		$depth   = 1;
+		$current = array();
 
 		for ( ; $position < $token_count; $position++ ) {
 			$token = $tokens[ $position ];
 
 			if ( is_string( $token ) ) {
 				if ( '(' === $token ) {
-					$depth++;
+					++$depth;
 					$current[] = $token;
 					continue;
 				}
 
 				if ( ')' === $token ) {
-					$depth--;
+					--$depth;
 
 					if ( 0 === $depth ) {
 						if ( ! empty( $current ) ) {
@@ -695,9 +695,9 @@ class PotGenerator {
 		$clean = array();
 
 		foreach ( $lines as $line ) {
-			$line = preg_replace( '/^\s*\/{2}/', '', $line );
-			$line = preg_replace( '/^\s*\*/', '', $line );
-			$line = preg_replace( '/^\s*#/', '', $line );
+			$line    = preg_replace( '/^\s*\/{2}/', '', $line );
+			$line    = preg_replace( '/^\s*\*/', '', $line );
+			$line    = preg_replace( '/^\s*#/', '', $line );
 			$clean[] = trim( $line );
 		}
 

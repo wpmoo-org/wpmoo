@@ -161,33 +161,57 @@ class Field {
 		switch ( $method ) {
 			case 'set_label':
 			case 'set_title':
-				return array( 'method' => 'label', 'arguments' => $arguments );
+				return array(
+					'method'    => 'label',
+					'arguments' => $arguments,
+				);
 
 			case 'set_description':
-				return array( 'method' => 'description', 'arguments' => $arguments );
+				return array(
+					'method'    => 'description',
+					'arguments' => $arguments,
+				);
 
 			case 'set_default_value':
 			case 'default_value':
-				return array( 'method' => 'default', 'arguments' => $arguments );
+				return array(
+					'method'    => 'default',
+					'arguments' => $arguments,
+				);
 
 			case 'set_placeholder':
-				return array( 'method' => 'placeholder', 'arguments' => $arguments );
+				return array(
+					'method'    => 'placeholder',
+					'arguments' => $arguments,
+				);
 
 			case 'set_help_text':
 			case 'help_text':
 			case 'set_help':
 			case 'set_help_html':
-				return array( 'method' => 'help', 'arguments' => $arguments );
+				return array(
+					'method'    => 'help',
+					'arguments' => $arguments,
+				);
 
-		case 'set_options':
-			return array( 'method' => 'options', 'arguments' => $arguments );
+			case 'set_options':
+				return array(
+					'method'    => 'options',
+					'arguments' => $arguments,
+				);
 
-		case 'set_width':
-		case 'width':
-			return array( 'method' => 'width', 'arguments' => $arguments );
+			case 'set_width':
+			case 'width':
+				return array(
+					'method'    => 'width',
+					'arguments' => $arguments,
+				);
 
 			case 'set_attributes':
-				return array( 'method' => 'attributes', 'arguments' => $arguments );
+				return array(
+					'method'    => 'attributes',
+					'arguments' => $arguments,
+				);
 
 			case 'add_attributes':
 			case 'add_attribute':
@@ -198,13 +222,22 @@ class Field {
 				);
 
 			case 'set_before':
-				return array( 'method' => 'before', 'arguments' => $arguments );
+				return array(
+					'method'    => 'before',
+					'arguments' => $arguments,
+				);
 
 			case 'set_after':
-				return array( 'method' => 'after', 'arguments' => $arguments );
+				return array(
+					'method'    => 'after',
+					'arguments' => $arguments,
+				);
 
 			case 'set_arg':
-				return array( 'method' => 'set', 'arguments' => $arguments );
+				return array(
+					'method'    => 'set',
+					'arguments' => $arguments,
+				);
 		}
 
 		return null;
@@ -238,7 +271,7 @@ class Field {
 	/**
 	 * Normalise arguments before forwarding them to the builder.
 	 *
-	 * @param string              $method    Method being invoked.
+	 * @param string            $method    Method being invoked.
 	 * @param array<int, mixed> $arguments Original arguments.
 	 * @return array<int, mixed>
 	 */

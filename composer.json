@@ -43,15 +43,6 @@
   "bin": [
     "bin/moo"
   ],
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../wpmoo-coding-standards",
-      "options": {
-        "symlink": true
-      }
-    }
-  ],
   "require-dev": {
     "wpmoo/wpmoo-coding-standards": "dev-main"
   },

@@ -174,8 +174,8 @@ class Section {
 	 * @return $this
 	 */
 	public function size( ...$columns ): self {
-		$parsed            = $this->parseColumnSpans( $columns );
-		$this->layout      = array(
+		$parsed       = $this->parseColumnSpans( $columns );
+		$this->layout = array(
 			'size'    => $parsed['default'],
 			'columns' => $parsed,
 		);

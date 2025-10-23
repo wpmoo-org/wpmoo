@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class SectionBuilder {
 	use HasColumns;
+
 	/**
 	 * Section ID.
 	 *
@@ -153,7 +154,7 @@ class SectionBuilder {
 	 */
 	public function field( string $id, string $type ): FieldBuilder {
 		$field = new FieldBuilder( $id, $type );
-		
+
 		$this->fields[] = $field;
 
 		return $field;

@@ -103,7 +103,7 @@ class Panel {
 		$this->title           = $config['title'];
 		$this->collapsible     = (bool) $config['collapsible'];
 		$this->frame           = (bool) $config['frame'];
-		$this->persist         = (bool) $config['persist'] ;
+		$this->persist         = (bool) $config['persist'];
 		$this->accordion_multi = (bool) $config['accordion_multi'];
 		$this->active          = is_string( $config['active'] ) ? $config['active'] : '';
 		$this->sections        = $this->normalize_sections( $config['sections'] );
@@ -214,7 +214,7 @@ class Panel {
 
 			echo $section['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Content is pre-escaped by the caller.
 
-            echo '</div>'; // .wpmoo-panel__section-body
+			echo '</div>'; // .wpmoo-panel__section-body
 
 			echo '</section>';
 		}
@@ -310,5 +310,4 @@ class Panel {
 
 		return 'Toggle panel: ' . $this->title;
 	}
-
 }

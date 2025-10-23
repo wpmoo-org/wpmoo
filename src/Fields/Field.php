@@ -172,7 +172,7 @@ abstract class Field {
 		$this->width = isset( $config['width'] ) ? (int) $config['width'] : 0;
 
 		if ( $this->width <= 0 ) {
-			$size = isset( $this->layout['size'] ) ? (int) $this->layout['size'] : 12;
+			$size        = isset( $this->layout['size'] ) ? (int) $this->layout['size'] : 12;
 			$this->width = (int) round( ( $size / 12 ) * 100 );
 		}
 
@@ -293,7 +293,7 @@ abstract class Field {
 			}
 
 			if ( ! isset( $this->layout['columns']['default'] ) ) {
-				$first = reset( $this->layout['columns'] );
+				$first                              = reset( $this->layout['columns'] );
 				$this->layout['columns']['default'] = false !== $first ? (int) $first : 12;
 			}
 
@@ -484,5 +484,4 @@ abstract class Field {
 
 		return trim( strip_tags( $value ) );
 	}
-
 }

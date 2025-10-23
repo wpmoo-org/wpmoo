@@ -180,7 +180,7 @@ class Builder {
 	 */
 	public function section( string $id, string $title = '', string $description = '' ): SectionBuilder {
 		$section = new SectionBuilder( $id, $title, $description );
-		
+
 		$this->sections[] = $section;
 
 		return $section;
@@ -224,7 +224,7 @@ class Builder {
 		// Build sections from SectionBuilder instances.
 		if ( ! empty( $this->sections ) && ! isset( $this->config['sections'] ) ) {
 			$this->config['sections'] = array();
-			
+
 			foreach ( $this->sections as $section_builder ) {
 				$this->config['sections'][] = $section_builder->build();
 			}
@@ -240,5 +240,4 @@ class Builder {
 
 		return $this->page;
 	}
-
 }

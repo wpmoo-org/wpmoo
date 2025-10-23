@@ -54,7 +54,7 @@ class Options {
 	/**
 	 * Start a new options page builder.
 	 *
-	 * @param string $option_key Option key.
+	 * @param string        $option_key Option key.
 	 * @param callable|null $callback Optional configurator executed with the builder.
 	 * @return Builder
 	 */
@@ -174,7 +174,7 @@ class Options {
 	/**
 	 * Get an option payload with defaults merged in.
 	 *
-	 * @param string              $option_key Option identifier.
+	 * @param string               $option_key Option identifier.
 	 * @param array<string, mixed> $default    Fallback values.
 	 * @return array<string, mixed>
 	 */
@@ -232,5 +232,4 @@ class Options {
 
 		self::$booted = true;
 	}
-
 }

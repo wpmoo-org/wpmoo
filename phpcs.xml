@@ -1,17 +1,16 @@
 <?xml version="1.0"?>
-<ruleset name="WPMoo – CI Baseline">
-    <description>Lightweight PHPCS ruleset focused on PHP and WordPress version compatibility.</description>
+<ruleset name="WPMoo Framework">
+    <description>Project ruleset consuming the shared WPMoo coding standard configuration.</description>
 
-    <rule ref="WPMoo"/>
+    <rule ref="vendor/wpmoo/wpmoo-coding-standards/phpcs.xml.dist"/>
 
     <file>.</file>
-    <arg name="extensions" value="php"/>
-    <arg name="parallel" value="8"/>
-    <arg name="encoding" value="utf-8"/>
 
-    <exclude-pattern>vendor/*</exclude-pattern>
-    <exclude-pattern>node_modules/*</exclude-pattern>
-
-    <config name="testVersion" value="7.4-"/>
-    <config name="minimum_supported_wp_version" value="6.5"/>
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="wpmoo-starter"/>
+            </property>
+        </properties>
+    </rule>
 </ruleset>

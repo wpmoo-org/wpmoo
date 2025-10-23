@@ -42,10 +42,10 @@ class Assets {
 		$plugin_path = $app->path();
 		$plugin_url  = $app->url();
 		if ( ! empty( $plugin_path ) && ! empty( $plugin_url ) ) {
-			$plugin_path         = self::normalize_path( $plugin_path ) . '/';
-			$plugin_url          = self::trail( $plugin_url );
-			$vendor_assets_path  = $plugin_path . 'vendor/wpmoo-org/wpmoo/assets/';
-			$direct_assets_path  = $plugin_path . 'assets/';
+			$plugin_path        = self::normalize_path( $plugin_path ) . '/';
+			$plugin_url         = self::trail( $plugin_url );
+			$vendor_assets_path = $plugin_path . 'vendor/wpmoo-org/wpmoo/assets/';
+			$direct_assets_path = $plugin_path . 'assets/';
 			if ( is_dir( $vendor_assets_path ) ) {
 				self::$base_url = self::trail( $plugin_url . 'vendor/wpmoo-org/wpmoo/assets/' );
 				return self::$base_url;
@@ -60,9 +60,9 @@ class Assets {
 		$assets_path = $library_dir . '/assets/';
 
 		if ( defined( 'WPMOO_FILE' ) && function_exists( 'plugins_url' ) && self::is_within_plugin_directory( WPMOO_FILE ) ) {
-			$plugin_dir          = str_replace( '\\', '/', plugin_dir_path( WPMOO_FILE ) );
-			$direct_assets_path  = $plugin_dir . 'assets/';
-			$vendor_assets_path  = $plugin_dir . 'vendor/wpmoo-org/wpmoo/assets/';
+			$plugin_dir         = str_replace( '\\', '/', plugin_dir_path( WPMOO_FILE ) );
+			$direct_assets_path = $plugin_dir . 'assets/';
+			$vendor_assets_path = $plugin_dir . 'vendor/wpmoo-org/wpmoo/assets/';
 
 			if ( file_exists( $vendor_assets_path ) ) {
 				self::$base_url = self::trail( plugins_url( 'vendor/wpmoo-org/wpmoo/assets/', WPMOO_FILE ) );
@@ -77,7 +77,7 @@ class Assets {
 			$plugin_real = str_replace( '\\', '/', dirname( WPMOO_FILE ) );
 
 			if ( 0 === strpos( $assets_path, $plugin_real ) ) {
-				$relative = ltrim( substr( $assets_path, strlen( $plugin_real ) ), '/' );
+				$relative       = ltrim( substr( $assets_path, strlen( $plugin_real ) ), '/' );
 				self::$base_url = self::trail( plugins_url( $relative, WPMOO_FILE ) );
 
 				return self::$base_url;
@@ -116,7 +116,7 @@ class Assets {
 	 * @return string
 	 */
 	protected static function trail( string $value ): string {
-		return rtrim( $value, "\\/" ) . '/';
+		return rtrim( $value, '\\/' ) . '/';
 	}
 
 	/**

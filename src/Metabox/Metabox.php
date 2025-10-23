@@ -51,7 +51,7 @@ class Metabox {
 	protected static $needs_assets = false;
 
 	/**
-	 * Registered metaboxes. 
+	 * Registered metaboxes.
 	 *
 	 * @var Metabox[]
 	 */
@@ -140,7 +140,7 @@ class Metabox {
 	 * @return Metabox
 	 */
 	protected static function registerFromArray( array $config ): Metabox {
-		$metabox = new self( $config, self::$shared_manager );
+		$metabox           = new self( $config, self::$shared_manager );
 		self::$metaboxes[] = $metabox;
 
 		$metabox->boot();
@@ -405,8 +405,8 @@ class Metabox {
 			: $submitted;
 
 		foreach ( $this->fields as $field ) {
-			$key      = $field->id();
-			$value    = array_key_exists( $key, $submitted ) ? $submitted[ $key ] : null;
+			$key       = $field->id();
+			$value     = array_key_exists( $key, $submitted ) ? $submitted[ $key ] : null;
 			$sanitized = $field->sanitize( $value );
 
 			update_post_meta( $post_id, $key, $sanitized );
@@ -458,9 +458,9 @@ class Metabox {
 	 * @return void
 	 */
 	protected function render_field( Field $field, $post ) {
-		$current = get_post_meta( $post->ID, $field->id(), true );
-		$value   = '' !== $current ? $current : $field->default();
-		$name    = sprintf( 'wpmoo_metabox[%s][%s]', $this->config['id'], $field->id() );
+		$current     = get_post_meta( $post->ID, $field->id(), true );
+		$value       = '' !== $current ? $current : $field->default();
+		$name        = sprintf( 'wpmoo_metabox[%s][%s]', $this->config['id'], $field->id() );
 		$help_text   = $field->help_text();
 		$help_html   = $field->help_html();
 		$help_button = '';
@@ -593,7 +593,7 @@ class Metabox {
 
 			$field_config['field_manager'] = $this->field_manager;
 
-			$field = $this->field_manager->make( $field_config );
+			$field                  = $this->field_manager->make( $field_config );
 			$fields[ $field->id() ] = $field;
 		}
 
@@ -643,7 +643,7 @@ class Metabox {
 			}
 
 			$section['fields'] = $field_objects;
-			$normalized[]     = $section;
+			$normalized[]      = $section;
 		}
 
 		return $normalized;
@@ -666,5 +666,4 @@ class Metabox {
 	protected function nonce_action() {
 		return 'wpmoo_metabox_' . $this->config['id'] . '_save';
 	}
-
 }

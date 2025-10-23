@@ -246,7 +246,7 @@ class Manager {
 						: 'Missing WPMoo field type "%s". Please register or include the field class.',
 					$this->missing_type
 				);
-				$message = function_exists( 'esc_html' ) ? esc_html( $raw_message ) : $raw_message;
+				$message     = function_exists( 'esc_html' ) ? esc_html( $raw_message ) : $raw_message;
 
 				return sprintf( '<div class="notice notice-error inline"><p>%s</p></div>', $message );
 			}

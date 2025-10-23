@@ -39,8 +39,8 @@ class Connection {
 	/**
 	 * Prepare an SQL query.
 	 *
-	 * @param string               $query SQL query with placeholders.
-	 * @param array<int, mixed>    $args  Values to replace placeholders.
+	 * @param string            $query SQL query with placeholders.
+	 * @param array<int, mixed> $args  Values to replace placeholders.
 	 * @return string
 	 */
 	public function prepare( $query, $args = array() ) {
@@ -82,7 +82,7 @@ class Connection {
 	/**
 	 * Insert a record into the database.
 	 *
-	 * @param string              $table Table name.
+	 * @param string               $table Table name.
 	 * @param array<string, mixed> $data  Column data.
 	 * @return int|false
 	 */

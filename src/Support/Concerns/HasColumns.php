@@ -62,8 +62,8 @@ trait HasColumns {
 
 				if ( false !== strpos( $value, '-' ) ) {
 					list( $breakpoint, $span_value ) = explode( '-', $value, 2 );
-					$breakpoint = $this->normalizeBreakpointKey( $breakpoint );
-					$span       = $this->clampColumnSpan( $span_value );
+					$breakpoint                      = $this->normalizeBreakpointKey( $breakpoint );
+					$span                            = $this->clampColumnSpan( $span_value );
 
 					if ( null !== $span ) {
 						$columns[ $breakpoint ] = $span;
@@ -165,4 +165,3 @@ trait HasColumns {
 		return '' !== $breakpoint ? $breakpoint : 'default';
 	}
 }
-

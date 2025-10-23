@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5e17a2f3d3ef8f3fa2421518c280c0d",
+    "content-hash": "3f5e19d7172c14af845908747de62696",
     "packages": [],
     "packages-dev": [
         {
@@ -644,10 +644,16 @@
         {
             "name": "wpmoo/wpmoo-coding-standards",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wpmoo-org/wpmoo-coding-standards.git",
+                "reference": "943331c1b519fad82433b7084db88338e0a1348b"
+            },
             "dist": {
-                "type": "path",
-                "url": "../wpmoo-coding-standards",
-                "reference": "3ae750cccb6d5ca52b4494b2170aec179fd4599c"
+                "type": "zip",
+                "url": "https://api.github.com/repos/wpmoo-org/wpmoo-coding-standards/zipball/943331c1b519fad82433b7084db88338e0a1348b",
+                "reference": "943331c1b519fad82433b7084db88338e0a1348b",
+                "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
@@ -655,6 +661,7 @@
                 "squizlabs/php_codesniffer": "^3.10",
                 "wp-coding-standards/wpcs": "^3.0"
             },
+            "default-branch": true,
             "type": "phpcodesniffer-standard",
             "extra": {
                 "phpcodesniffer-standard": {
@@ -666,14 +673,24 @@
                     "WPMoo\\": "WPMoo/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
+            "authors": [
+                {
+                    "name": "WPMoo",
+                    "email": "hello@wpmoo.org",
+                    "homepage": "https://wpmoo.org/"
+                }
+            ],
             "description": "Shared PHPCS standard and custom sniffs for WPMoo projects.",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "homepage": "https://wpmoo.org",
+            "support": {
+                "issues": "https://github.com/wpmoo-org/wpmoo-coding-standards/issues",
+                "source": "https://github.com/wpmoo-org/wpmoo-coding-standards/tree/main"
+            },
+            "time": "2025-10-23T20:08:48+00:00"
         }
     ],
     "aliases": [],

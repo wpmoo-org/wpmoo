@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class FieldBuilder {
 	use HasColumns;
+
 	/**
 	 * Field configuration.
 	 *
@@ -175,7 +176,7 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function width( int $percentage ): self {
-		$percentage = max( 0, min( 100, $percentage ) );
+		$percentage            = max( 0, min( 100, $percentage ) );
 		$this->config['width'] = $percentage;
 
 		return $this;
@@ -186,7 +187,7 @@ class FieldBuilder {
 	 *
 	 * @param mixed ...$columns Column definitions (int, string, array).
 	 * @return $this
-	*/
+	 */
 	public function size( ...$columns ): self {
 		$parsed = $this->parseColumnSpans( $columns );
 

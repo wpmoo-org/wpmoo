@@ -23,9 +23,9 @@ class Arr {
 	/**
 	 * Retrieve a value using dot-notation.
 	 *
-	 * @param mixed       $array   Source array.
-	 * @param string      $key     Dot-notated key.
-	 * @param mixed|null  $default Default fallback.
+	 * @param mixed      $array   Source array.
+	 * @param string     $key     Dot-notated key.
+	 * @param mixed|null $default Default fallback.
 	 * @return mixed
 	 */
 	public static function get( $array, $key, $default = null ) {

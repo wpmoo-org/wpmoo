@@ -447,7 +447,7 @@ class Page {
 	/**
 	 * Determine which section should be active on render.
 	 *
-	 * @param string                                 $panel_id Panel identifier.
+	 * @param string                           $panel_id Panel identifier.
 	 * @param array<int, array<string, mixed>> $sections Available sections.
 	 * @return string
 	 */
@@ -595,8 +595,8 @@ class Page {
 	/**
 	 * Render a single field row inside the form table.
 	 *
-	 * @param Field                 $field  Field instance.
-	 * @param array<string, mixed>  $values Option values.
+	 * @param Field                $field  Field instance.
+	 * @param array<string, mixed> $values Option values.
 	 * @return void
 	 */
 	protected function render_field_row( Field $field, array $values ) {

@@ -148,7 +148,7 @@ class Builder {
 	 */
 	public function field( string $id, string $type ): FieldBuilder {
 		$field = new FieldBuilder( $id, $type );
-		
+
 		$this->fields[] = $field;
 
 		return $field;
@@ -256,7 +256,7 @@ class Builder {
 	 * @return SectionBuilder
 	 */
 	public function section( string $id, string $title = '', string $description = '' ): SectionBuilder {
-		$section = new SectionBuilder( $id, $title, $description );
+		$section          = new SectionBuilder( $id, $title, $description );
 		$this->sections[] = $section;
 
 		return $section;

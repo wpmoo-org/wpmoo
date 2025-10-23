@@ -153,18 +153,18 @@ class Container {
 	 * @param string $title Page title.
 	 */
 	protected function __construct( string $type, string $id, string $title ) {
-		$this->type       = $type;
-		$this->id         = $id;
+		$this->type = $type;
+		$this->id   = $id;
 
 		if ( '' === $title ) {
 			$title = ucwords( str_replace( array( '-', '_' ), ' ', $id ) );
 		}
 
-		$this->page_title = $title;
-		$this->menu_title = $this->page_title;
-		$this->menu_slug  = $id;
-		$this->option_key = $id;
-		$default_section_title = function_exists( '__' ) ? __( 'General', 'wpmoo' ) : 'General';
+		$this->page_title            = $title;
+		$this->menu_title            = $this->page_title;
+		$this->menu_slug             = $id;
+		$this->option_key            = $id;
+		$default_section_title       = function_exists( '__' ) ? __( 'General', 'wpmoo' ) : 'General';
 		$this->default_section_title = $default_section_title;
 
 		if ( in_array( $type, array( 'theme-options', 'theme_options' ), true ) ) {
@@ -271,7 +271,7 @@ class Container {
 			return;
 		}
 
-		$queued         = static::$queue;
+		$queued        = static::$queue;
 		static::$queue = array();
 
 		foreach ( $queued as $hash => $container ) {
@@ -290,8 +290,8 @@ class Container {
 			return $this->page;
 		}
 
-		$config          = $this->to_config();
-		$this->page      = Options::register( $config );
+		$config           = $this->to_config();
+		$this->page       = Options::register( $config );
 		$this->registered = true;
 
 		return $this->page;
@@ -497,7 +497,7 @@ class Container {
 	 * @return Section
 	 */
 	public function section( string $id, string $title = '', string $description = '' ): Section {
-		$section = Section::make( $id, '' !== $title ? $title : $id, $description );
+		$section                          = Section::make( $id, '' !== $title ? $title : $id, $description );
 		$this->sections[ $section->id() ] = $section;
 
 		return $section;
@@ -564,9 +564,9 @@ class Container {
 	/**
 	 * Convenience alias mirroring Carbon Fields' add_tab().
 	 *
-	 * @param string         $title  Tab title.
+	 * @param string           $title  Tab title.
 	 * @param array<int,mixed> $fields Field definitions.
-	 * @param string         $id     Optional identifier.
+	 * @param string           $id     Optional identifier.
 	 * @return $this
 	 */
 	public function add_tab( string $title, array $fields, string $id = '' ): self {
@@ -634,7 +634,7 @@ class Container {
 			return $this->sections[ $id ];
 		}
 
-		$section = Section::make( $id, $title );
+		$section               = Section::make( $id, $title );
 		$this->sections[ $id ] = $section;
 
 		return $section;

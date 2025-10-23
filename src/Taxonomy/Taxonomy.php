@@ -22,7 +22,7 @@ class Taxonomy {
 	/**
 	 * Start building a new taxonomy.
 	 *
-	 * @param string                $taxonomy     Taxonomy slug.
+	 * @param string                    $taxonomy     Taxonomy slug.
 	 * @param string|array<int, string> $object_types Optional. Post type(s) to attach to.
 	 * @return Builder
 	 */
@@ -40,7 +40,7 @@ class Taxonomy {
 	/**
 	 * Backward compatible alias of create().
 	 *
-	 * @param string                $taxonomy     Taxonomy slug.
+	 * @param string                    $taxonomy     Taxonomy slug.
 	 * @param string|array<int, string> $object_types Optional. Post type(s) to attach to.
 	 * @return Builder
 	 */
