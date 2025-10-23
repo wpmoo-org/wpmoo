@@ -12,6 +12,7 @@
 namespace WPMoo\Fields;
 
 use InvalidArgumentException;
+use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -21,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Keeps track of field type mappings.
  */
 class Manager {
+	use TranslatesStrings;
 
 	/**
 	 * Registered field type map.
@@ -258,7 +260,4 @@ class Manager {
 	 * @param string $text Text to translate.
 	 * @return string
 	 */
-	protected function translate( string $text ): string {
-		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
-	}
 }

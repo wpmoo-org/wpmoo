@@ -1,8 +1,29 @@
-# -------------------------
-# BEGIN Whitelisted Files
-# -------------------------
+# Ignore dependencies and build artifacts
 vendor/
-composer.lock
-# -------------------------
-# END Whitelisted Files
-# -------------------------
+node_modules/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE specific files
+.vscode/
+
+# Ignore log files
+*.log
+
+# Ignore compiled CSS files
+*.css
+*.css.map
+
+# Ignore build directories
+dist/
+build/
+
+# Ignore package lock files
+package-lock.json
+yarn.lock
+.pnpm-lock.yaml
+
+# Ignore temporary files
+*.tmp

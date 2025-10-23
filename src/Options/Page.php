@@ -16,6 +16,9 @@ use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
+use WPMoo\Support\Concerns\EscapesOutput;
+use WPMoo\Support\Concerns\TranslatesStrings;
+use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,6 +28,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Builds a WordPress admin options page from configuration.
  */
 class Page {
+	use EscapesOutput;
+	use TranslatesStrings;
 
 	/**
 	 * Normalized page configuration.
@@ -109,7 +114,7 @@ class Page {
 		}
 
 		$assets_url = Assets::url();
-		$version    = '0.3.0';
+		$version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.4.3';
 
 		if ( empty( $assets_url ) ) {
 			return;
@@ -122,8 +127,8 @@ class Page {
 		// Enqueue CSS.
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style(
-				'wpmoo-framework',
-				$assets_url . 'css/wpmoo-framework.css',
+				'wpmoo',
+				$assets_url . 'css/wpmoo.css',
 				array(),
 				$version
 			);
@@ -134,8 +139,8 @@ class Page {
 			$persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] );
 			wp_enqueue_script( 'postbox' );
 			wp_enqueue_script(
-				'wpmoo-framework',
-				$assets_url . 'js/wpmoo-framework.js',
+				'wpmoo',
+				$assets_url . 'js/wpmoo.js',
 				array( 'jquery' ),
 				$version,
 				true
@@ -143,7 +148,7 @@ class Page {
 
 			if ( function_exists( 'wp_localize_script' ) ) {
 				wp_localize_script(
-					'wpmoo-framework',
+					'wpmoo',
 					'wpmooAdminOptions',
 					array(
 						'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
@@ -377,13 +382,17 @@ class Page {
 
 			$content = ob_get_clean();
 
-			$panel_sections[] = array(
-				'id'          => $section_id,
-				'label'       => $section_title,
-				'description' => $section_desc,
-				'icon'        => $section_icon,
-				'content'     => $content,
-			);
+		if ( '' !== trim( $content ) ) {
+			$content = '<div class="wpmoo-section-fields">' . $content . '</div>';
+		}
+
+		$panel_sections[] = array(
+			'id'          => $section_id,
+			'label'       => $section_title,
+			'description' => $section_desc,
+			'icon'        => $section_icon,
+			'content'     => $content,
+		);
 		}
 
 		$panel_id       = 'wpmoo-options-panel-' . $this->config['menu_slug'];
@@ -494,22 +503,88 @@ class Page {
 		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name  = $this->field_input_name( $field );
 
-		echo '<div class="wpmoo-field wpmoo-field-' . $this->esc_attr( $field->type() ) . '">';
+		$width   = $field->width();
+		$classes = array(
+			'wpmoo-field',
+			'wpmoo-field-' . $field->type(),
+		);
+
+		if ( 'fieldset' !== $field->type() ) {
+			$classes[] = 'wpmoo-field--separated';
+		}
+
+		$style = '';
+
+		if ( $width > 0 && $width < 100 && 'fieldset' !== $field->type() ) {
+			$classes[] = 'wpmoo-field--has-width';
+			$style     = ' style="--wpmoo-field-width:' . $this->esc_attr( (string) $width ) . '%;"';
+		}
+
+		$help_text   = $field->help_text();
+		$help_html   = $field->help_html();
+		$help_button = '';
+
+		if ( '' !== $help_text ) {
+			$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . $this->esc_attr( $help_text ) . '"';
+			$help_button .= ' data-tooltip="' . $this->esc_attr( $help_text ) . '"';
+			$help_button .= ' data-help-text="' . $this->esc_attr( $help_text ) . '"';
+
+			if ( '' !== $help_html ) {
+				$help_button .= ' data-help-html="' . $this->esc_attr( $help_html ) . '"';
+			}
+
+			$help_button .= '>';
+			$help_button .= '<span aria-hidden="true">?</span>';
+			$help_button .= '<span class="screen-reader-text">' . $this->esc_html( $help_text ) . '</span>';
+			$help_button .= '</button>';
+		}
+
+		echo '<div class="' . $this->esc_attr( implode( ' ', array_unique( $classes ) ) ) . '"' . $style . '>';
 
 		if ( $field->label() ) {
 			echo '<div class="wpmoo-title">';
+			echo '<div class="wpmoo-title__heading">';
 			echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+			echo '</div>';
+
 			if ( $field->description() ) {
 				echo '<div class="wpmoo-subtitle-text">' . $this->esc_html( $field->description() ) . '</div>';
 			}
+
 			echo '</div>';
 		}
 
 		echo '<div class="wpmoo-fieldset">';
+
+		if ( $field->before() ) {
+			echo '<div class="wpmoo-field-before">' . $field->before_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		echo '<div class="wpmoo-fieldset__control">';
+
+		if ( $help_button ) {
+			echo '<div class="wpmoo-fieldset__control-inner">';
+		}
+
 		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		if ( $help_button ) {
+			echo $help_button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '</div>';
+		}
+
 		echo '</div>';
 
-		echo '<div class="clear"></div>';
+		if ( $field->after() ) {
+			echo '<div class="wpmoo-field-after">' . $field->after_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		if ( '' === $field->label() && '' !== $help_html && '' === $help_button ) {
+			echo '<div class="wpmoo-field-help-text">' . $help_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		echo '</div>';
+
 		echo '</div>';
 	}
 
@@ -591,7 +666,7 @@ class Page {
 		}
 
 		if ( '' === $config['menu_slug'] ) {
-			$config['menu_slug'] = $this->slugify( $config['menu_title'] );
+			$config['menu_slug'] = Str::slug( $config['menu_title'] );
 		}
 
 		if ( '' === $config['option_key'] ) {
@@ -627,7 +702,7 @@ class Page {
 
 			if ( '' === $section['id'] ) {
 				$base          = '' !== $section['title'] ? $section['title'] : uniqid( 'section_', true );
-				$section['id'] = $this->slugify( $base );
+				$section['id'] = Str::slug( $base );
 			}
 
 			$fields = array();
@@ -636,6 +711,8 @@ class Page {
 				if ( empty( $field_config['id'] ) ) {
 					continue;
 				}
+
+				$field_config['field_manager'] = $this->field_manager;
 
 				$field     = $this->field_manager->make( $field_config );
 				$fields[]  = $field;
@@ -647,33 +724,6 @@ class Page {
 		}
 
 		return $normalized;
-	}
-
-	/**
-	 * Generate a slug from the given value.
-	 *
-	 * @param string $value Raw string.
-	 * @return string
-	 */
-	protected function slugify( $value ) {
-		if ( function_exists( 'sanitize_title' ) ) {
-			return sanitize_title( $value );
-		}
-
-		$value = strtolower( preg_replace( '/[^a-zA-Z0-9]+/', '-', $value ) );
-
-		return trim( $value, '-' );
-	}
-
-	/**
-	 * Translate strings safely.
-	 *
-	 * @param string $text   Text to translate.
-	 * @param string $domain Text domain.
-	 * @return string
-	 */
-	protected function translate( string $text, string $domain ): string {
-		return function_exists( '__' ) ? \__( $text, $domain ) : $text;
 	}
 
 	/**
@@ -742,34 +792,6 @@ class Page {
 	}
 
 	/**
-	 * Escape HTML output.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_html( $value ) {
-		if ( function_exists( 'esc_html' ) ) {
-			return esc_html( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escape an attribute value.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_attr( $value ) {
-		if ( function_exists( 'esc_attr' ) ) {
-			return esc_attr( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
 	 * Provide access to the repository instance.
 	 *
 	 * @return OptionRepository
@@ -833,4 +855,5 @@ class Page {
 	public function field_input_name( Field $field ) {
 		return $this->repository->option_key() . '[' . $field->id() . ']';
 	}
+
 }

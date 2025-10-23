@@ -13,6 +13,7 @@ namespace WPMoo\PostType;
 
 use InvalidArgumentException;
 use WPMoo\Columns\Columns;
+use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,6 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Fluent builder for register_post_type arguments.
  */
 class Builder {
+	use TranslatesStrings;
+
 	/**
 	 * Post type key.
 	 *
@@ -432,7 +435,4 @@ class Builder {
 	 * @param string $text Text to translate.
 	 * @return string
 	 */
-	protected function translate( string $text ): string {
-		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
-	}
 }

@@ -11,6 +11,8 @@
 
 namespace WPMoo\Options;
 
+use WPMoo\Support\Concerns\HasColumns;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -19,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Fluent builder for option fields.
  */
 class FieldBuilder {
+	use HasColumns;
 	/**
 	 * Field configuration.
 	 *
@@ -82,9 +85,7 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function args( array $args ): self {
-		$this->config['args'] = $args;
-
-		return $this;
+		return $this->attributes( $args );
 	}
 
 	/**
@@ -94,11 +95,11 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function placeholder( string $placeholder ): self {
-		if ( ! isset( $this->config['args'] ) ) {
-			$this->config['args'] = array();
+		if ( ! isset( $this->config['attributes'] ) ) {
+			$this->config['attributes'] = array();
 		}
 
-		$this->config['args']['placeholder'] = $placeholder;
+		$this->config['attributes']['placeholder'] = $placeholder;
 
 		return $this;
 	}
@@ -112,6 +113,159 @@ class FieldBuilder {
 	public function options( array $options ): self {
 		$this->config['options'] = $options;
 
+		return $this;
+	}
+
+	/**
+	 * Merge additional HTML attributes.
+	 *
+	 * @param array<string, mixed> $attributes Attributes to merge.
+	 * @return $this
+	 */
+	public function attributes( array $attributes ): self {
+		if ( ! isset( $this->config['attributes'] ) ) {
+			$this->config['attributes'] = array();
+		}
+
+		$this->config['attributes'] = array_merge( $this->config['attributes'], $attributes );
+
+		return $this;
+	}
+
+	/**
+	 * Define layout configuration.
+	 *
+	 * @param array<string, mixed> $layout Layout settings.
+	 * @return $this
+	 */
+	public function layout( array $layout ): self {
+		if ( ! isset( $this->config['layout'] ) ) {
+			$this->config['layout'] = array();
+		}
+
+		if ( isset( $layout['size'] ) && ! isset( $layout['columns'] ) ) {
+			$layout['columns'] = array(
+				'default' => $this->clampColumnSpan( $layout['size'] ),
+			);
+		}
+
+		$this->config['layout'] = array_merge( $this->config['layout'], $layout );
+
+		if ( isset( $this->config['layout']['columns']['default'] ) ) {
+			$span = $this->clampColumnSpan( $this->config['layout']['columns']['default'] );
+
+			if ( null !== $span ) {
+				$this->config['width'] = (int) round( ( $span / 12 ) * 100 );
+			}
+		} elseif ( isset( $this->config['layout']['size'] ) ) {
+			$span = $this->clampColumnSpan( $this->config['layout']['size'] );
+
+			if ( null !== $span ) {
+				$this->config['width'] = (int) round( ( $span / 12 ) * 100 );
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Set explicit width percentage (0-100).
+	 *
+	 * @param int $percentage Width percentage.
+	 * @return $this
+	 */
+	public function width( int $percentage ): self {
+		$percentage = max( 0, min( 100, $percentage ) );
+		$this->config['width'] = $percentage;
+
+		return $this;
+	}
+
+	/**
+	 * Set grid column span(s).
+	 *
+	 * @param mixed ...$columns Column definitions (int, string, array).
+	 * @return $this
+	*/
+	public function size( ...$columns ): self {
+		$parsed = $this->parseColumnSpans( $columns );
+
+		$this->layout(
+			array(
+				'size'    => $parsed['default'],
+				'columns' => $parsed,
+			)
+		);
+
+		$width = (int) round( ( $parsed['default'] / 12 ) * 100 );
+
+		return $this->width( $width );
+	}
+
+	/**
+	 * Define nested fields (used by composite controls).
+	 *
+	 * @param array<int, mixed> $fields Field definitions.
+	 * @return $this
+	 */
+	public function fields( array $fields ): self {
+		return $this->set( 'fields', $fields );
+	}
+
+	/**
+	 * Set preferred gutter size for grid-based controls.
+	 *
+	 * @param string $gutter Gutter keyword (sm, md, lg, xl, none).
+	 * @return $this
+	 */
+	public function gutter( string $gutter ): self {
+		return $this->layout(
+			array(
+				'gutter' => $gutter,
+			)
+		);
+	}
+
+	/**
+	 * Alias for size().
+	 *
+	 * @param mixed ...$columns Column definitions.
+	 * @return $this
+	 */
+	public function columns( ...$columns ): self {
+		return $this->size( ...$columns );
+	}
+
+	/**
+	 * Markup displayed before the field control.
+	 *
+	 * @param string $markup HTML markup.
+	 * @return $this
+	 */
+	public function before( string $markup ): self {
+		$this->config['before'] = $markup;
+		return $this;
+	}
+
+	/**
+	 * Markup displayed after the field control.
+	 *
+	 * @param string $markup HTML markup.
+	 * @return $this
+	 */
+	public function after( string $markup ): self {
+		$this->config['after'] = $markup;
+		return $this;
+	}
+
+	/**
+	 * Helper text rendered beneath the control.
+	 *
+	 * @param string $markup Helper text.
+	 * @return $this
+	 */
+	public function help( string $markup ): self {
+		$this->config['help'] = $markup;
 		return $this;
 	}
 

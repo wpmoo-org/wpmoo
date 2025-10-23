@@ -13,6 +13,7 @@ namespace WPMoo\Options;
 
 use InvalidArgumentException;
 use WPMoo\Fields\Manager;
+use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,6 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Fluent builder for options pages.
  */
 class Builder {
+	use TranslatesStrings;
+
 	/**
 	 * Option key.
 	 *
@@ -49,6 +52,20 @@ class Builder {
 	 * @var Manager
 	 */
 	protected $field_manager;
+
+	/**
+	 * Whether the builder has been registered.
+	 *
+	 * @var bool
+	 */
+	protected $registered = false;
+
+	/**
+	 * Cached page instance after registration.
+	 *
+	 * @var Page|null
+	 */
+	protected $page = null;
 
 	/**
 	 * Constructor.
@@ -200,6 +217,10 @@ class Builder {
 	 * @return Page
 	 */
 	public function register(): Page {
+		if ( $this->registered && $this->page instanceof Page ) {
+			return $this->page;
+		}
+
 		// Build sections from SectionBuilder instances.
 		if ( ! empty( $this->sections ) && ! isset( $this->config['sections'] ) ) {
 			$this->config['sections'] = array();
@@ -209,22 +230,15 @@ class Builder {
 			}
 		}
 
-		$page = new Page( $this->config, $this->field_manager );
-		$page->boot();
+		$this->page = new Page( $this->config, $this->field_manager );
+		$this->page->boot();
 
 		// Register in Options static cache.
-		Options::registerPage( $page );
+		Options::registerPage( $this->page );
 
-		return $page;
+		$this->registered = true;
+
+		return $this->page;
 	}
 
-	/**
-	 * Translate strings while remaining compatible with non-WordPress contexts.
-	 *
-	 * @param string $text Text to translate.
-	 * @return string
-	 */
-	protected function translate( string $text ): string {
-		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
-	}
 }

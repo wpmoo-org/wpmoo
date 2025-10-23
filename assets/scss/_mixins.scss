@@ -1,0 +1,24 @@
+@use "sass:list";
+@use "variables" as *;
+
+@mixin focus-ring {
+  border-color: wpmoo-color(primary);
+  box-shadow: 0 0 0 1px wpmoo-color(primary-soft);
+  outline: none;
+}
+
+@mixin transition($properties...) {
+  $duration: wpmoo-transition-duration();
+  $timing: wpmoo-transition-timing();
+  $rules: ();
+
+  @each $property in $properties {
+    $rules: list.append(
+      $rules,
+      "#{$property} #{$duration} #{$timing}",
+      $separator: comma
+    );
+  }
+
+  transition: $rules;
+}

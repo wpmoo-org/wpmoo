@@ -31,6 +31,16 @@ class Console {
 	}
 
 	/**
+	 * Output a stylized title/banner message.
+	 *
+	 * @param string $message Message text.
+	 * @return void
+	 */
+	public static function banner( $message ) {
+		echo "\033[35;1m{$message}\033[0m" . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Intentional escape codes.
+	}
+
+	/**
 	 * Output an error message.
 	 *
 	 * @param string $message Message text.

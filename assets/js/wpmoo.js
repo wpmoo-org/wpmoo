@@ -335,6 +335,194 @@
     });
   });
 
+  (function registerFieldHelp() {
+    var HELP_SELECTOR = ".wpmoo-field-help";
+    var helpPopoverId = "wpmoo-help-popover";
+    var $activeButton = null;
+    var $popover = null;
+    var $document = $(document);
+    var $window = $(window);
+    var decoder = document.createElement("textarea");
+
+    function decodeEntities(value) {
+      if (!value) {
+        return "";
+      }
+
+      decoder.innerHTML = value;
+      return decoder.value;
+    }
+
+    function escapeHtml(value) {
+      return $("<div>").text(value || "").html();
+    }
+
+    function ensurePopover() {
+      if ($popover && $popover.length) {
+        return $popover;
+      }
+
+      $popover = $("<div>", {
+        id: helpPopoverId,
+        class: "wpmoo-help-popover",
+        role: "dialog",
+        "aria-hidden": "true",
+      })
+        .append('<div class="wpmoo-help-popover__content"></div>')
+        .append('<div class="wpmoo-help-popover__arrow"></div>');
+
+      $("body").append($popover);
+
+      return $popover;
+    }
+
+    function getPopoverContent($button) {
+      var htmlAttr = $button.attr("data-help-html");
+      if (htmlAttr) {
+        return decodeEntities(htmlAttr);
+      }
+
+      var text = $button.attr("data-help-text") || $button.attr("data-tooltip") || "";
+      if (text) {
+        return "<p>" + escapeHtml(text) + "</p>";
+      }
+
+      return "";
+    }
+
+    function positionPopover($button, popover) {
+      if (!popover || !popover.length || !$button || !$button.length) {
+        return;
+      }
+
+      var buttonNode = $button[0];
+      if (!buttonNode.getBoundingClientRect) {
+        return;
+      }
+
+      var rect = buttonNode.getBoundingClientRect();
+      var gap = 12;
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft || 0;
+
+      popover.css({ top: 0, left: 0, transform: "none" });
+      var popoverWidth = popover.outerWidth();
+      var popoverHeight = popover.outerHeight();
+
+      var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+      var availableRight = viewportWidth - rect.right;
+      var availableLeft = rect.left;
+      var placement = "right";
+
+      if (availableRight < popoverWidth + gap && availableLeft > availableRight) {
+        placement = "left";
+      }
+
+      var top = scrollTop + rect.top + rect.height / 2 - popoverHeight / 2;
+      var minTop = scrollTop + 12;
+      var maxTop = scrollTop + (window.innerHeight || document.documentElement.clientHeight || popoverHeight) - popoverHeight - 12;
+      top = Math.max(minTop, Math.min(top, maxTop));
+
+      var left =
+        placement === "right"
+          ? scrollLeft + rect.right + gap
+          : scrollLeft + rect.left - popoverWidth - gap;
+
+      popover
+        .attr("data-side", placement)
+        .css({
+          top: Math.round(top) + "px",
+          left: Math.round(left) + "px",
+        });
+    }
+
+    function closePopover() {
+      if (!$activeButton) {
+        return;
+      }
+
+      var popover = ensurePopover();
+      popover.removeClass("is-visible").attr("aria-hidden", "true").attr("data-side", "");
+      popover.find(".wpmoo-help-popover__content").empty();
+
+      $activeButton.removeClass("is-active").attr("aria-expanded", "false");
+      $activeButton = null;
+    }
+
+    function openPopover($button) {
+      if (!$button || !$button.length) {
+        return;
+      }
+
+      var content = getPopoverContent($button);
+      if (!content) {
+        closePopover();
+        return;
+      }
+
+      if ($activeButton && $button.is($activeButton)) {
+        closePopover();
+        return;
+      }
+
+      closePopover();
+
+      var popover = ensurePopover();
+      popover.find(".wpmoo-help-popover__content").html(content);
+      popover.attr("aria-hidden", "false");
+
+      $activeButton = $button;
+      $button.addClass("is-active").attr("aria-expanded", "true").attr("aria-controls", helpPopoverId);
+
+      positionPopover($button, popover);
+      requestAnimationFrame(function () {
+        popover.addClass("is-visible");
+      });
+    }
+
+    $document.on("click", HELP_SELECTOR, function (event) {
+      event.preventDefault();
+      openPopover($(this));
+    });
+
+    $document.on("keydown", HELP_SELECTOR, function (event) {
+      if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+        event.preventDefault();
+        openPopover($(this));
+      } else if (event.key === "Escape") {
+        closePopover();
+      }
+    });
+
+    $document.on("click", function (event) {
+      if (!$activeButton) {
+        return;
+      }
+
+      var $target = $(event.target);
+      if (
+        !$target.closest(HELP_SELECTOR).length &&
+        !$target.closest(".wpmoo-help-popover").length
+      ) {
+        closePopover();
+      }
+    });
+
+    $document.on("keydown", function (event) {
+      if (event.key === "Escape") {
+        closePopover();
+      }
+    });
+
+    $window.on("resize scroll", function () {
+      if (!$activeButton) {
+        return;
+      }
+
+      positionPopover($activeButton, ensurePopover());
+    });
+  })();
+
   var optionsConfig = window.wpmooAdminOptions || null;
 
   if (optionsConfig && optionsConfig.menuSlug) {

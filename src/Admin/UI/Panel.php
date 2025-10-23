@@ -11,6 +11,9 @@
 
 namespace WPMoo\Admin\UI;
 
+use WPMoo\Support\Concerns\EscapesOutput;
+use WPMoo\Support\Str;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -19,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Renders a panel component that wraps sections inside a WordPress postbox.
  */
 class Panel {
+	use EscapesOutput;
 
 	/**
 	 * Panel identifier.
@@ -183,10 +187,14 @@ class Panel {
 			$tab_id     = $section_id . '-tab';
 			$is_active  = $section_id === $active_section || ( '' === $active_section && 0 === $index );
 			$hidden     = $is_active ? 'false' : 'true';
-			$classes    = 'wpmoo-panel__section' . ( $is_active ? ' is-active' : '' );
 			$expanded   = $is_active ? 'true' : 'false';
 
-			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( $classes ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '">';
+			$section_classes = array( 'wpmoo-panel__section' );
+
+			if ( $is_active ) {
+				$section_classes[] = 'is-active';
+			}
+			echo '<section id="' . $this->esc_attr( $section_id ) . '" class="' . $this->esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . $this->esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . $hidden . '" aria-labelledby="' . $this->esc_attr( $tab_id ) . '">';
 
 			echo '<button type="button" class="wpmoo-panel__section-toggle' . ( $is_active ? ' is-active' : '' ) . '" data-panel-switch="' . $this->esc_attr( $section_id ) . '" aria-expanded="' . $expanded . '">';
 
@@ -240,12 +248,13 @@ class Panel {
 				'description' => '',
 				'icon'        => '',
 				'content'     => '',
+				'layout'      => array(),
 			);
 
 			$section = array_merge( $defaults, is_array( $section ) ? $section : array() );
 
 			if ( '' === $section['id'] ) {
-				$section['id'] = $this->slugify( $section['label'] ? $section['label'] : uniqid( 'section_', true ) );
+				$section['id'] = Str::slug( $section['label'] ? $section['label'] : uniqid( 'section_', true ) );
 			}
 
 			if ( '' === $section['label'] && ! empty( $section['title'] ) ) {
@@ -285,16 +294,6 @@ class Panel {
 	 * @param string $value Raw input.
 	 * @return string
 	 */
-	protected function slugify( $value ) {
-		if ( function_exists( 'sanitize_title' ) ) {
-			return sanitize_title( $value );
-		}
-
-		$value = strtolower( preg_replace( '/[^a-zA-Z0-9]+/', '-', $value ) );
-
-		return trim( $value, '-' );
-	}
-
 	/**
 	 * Build the toggle button text.
 	 *
@@ -312,46 +311,4 @@ class Panel {
 		return 'Toggle panel: ' . $this->title;
 	}
 
-	/**
-	 * Escape HTML output.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_html( $value ) {
-		if ( function_exists( 'esc_html' ) ) {
-			return esc_html( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escape attribute output.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_attr( $value ) {
-		if ( function_exists( 'esc_attr' ) ) {
-			return esc_attr( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escape attribute output with translation.
-	 *
-	 * @param string $text Text to translate.
-	 * @param string $domain Text domain.
-	 * @return string
-	 */
-	protected function esc_attr__( $text, $domain ) {
-		if ( function_exists( 'esc_attr__' ) ) {
-			return esc_attr__( $text, $domain );
-		}
-
-		return $this->esc_attr( $text );
-	}
 }

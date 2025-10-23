@@ -81,7 +81,7 @@ final class App {
 			$this->path     = plugin_dir_path( $file );
 			$this->url      = plugin_dir_url( $file );
 		} else {
-			$this->basename = basename( $file );
+			$this->basename = '';
 			$this->path     = dirname( $file ) . '/';
 			$this->url      = $this->path;
 		}
@@ -89,7 +89,6 @@ final class App {
 		$this->textdomain = $textdomain;
 
 		$this->define_constants( $file );
-		$this->maybe_load_textdomain();
 		$this->register_hooks();
 	}
 
@@ -104,14 +103,29 @@ final class App {
 			define( 'WPMOO_FILE', $file );
 		}
 
+		$library_path = dirname( __DIR__, 2 ) . '/';
+
 		if ( ! defined( 'WPMOO_PATH' ) ) {
-			$path = $this->path ? $this->path : dirname( $file ) . '/';
-			define( 'WPMOO_PATH', $path );
+			define( 'WPMOO_PATH', $library_path );
 		}
 
 		if ( ! defined( 'WPMOO_URL' ) ) {
-			$url = $this->url ? $this->url : '';
-			define( 'WPMOO_URL', $url );
+			$library_path_normalized = str_replace( '\\', '/', $library_path );
+			$url = '';
+
+			if ( defined( 'WP_CONTENT_DIR' ) && defined( 'WP_CONTENT_URL' ) ) {
+				$content_dir = str_replace( '\\', '/', WP_CONTENT_DIR );
+
+				if ( 0 === strpos( $library_path_normalized, $content_dir ) ) {
+					$url = WP_CONTENT_URL . '/' . ltrim( substr( $library_path_normalized, strlen( $content_dir ) ), '/' );
+				}
+			}
+
+			if ( '' === $url && function_exists( 'plugins_url' ) && defined( 'WPMOO_FILE' ) ) {
+				$url = plugins_url( 'vendor/wpmoo-org/wpmoo/', WPMOO_FILE );
+			}
+
+			define( 'WPMOO_URL', rtrim( $url, "/\\" ) . '/' );
 		}
 	}
 
@@ -120,9 +134,16 @@ final class App {
 	 *
 	 * @return void
 	 */
-	protected function maybe_load_textdomain() {
+	public function load_textdomain() {
+		static $loaded = false;
+
+		if ( $loaded ) {
+			return;
+		}
+
 		if ( function_exists( 'load_plugin_textdomain' ) && $this->basename ) {
 			load_plugin_textdomain( $this->textdomain, false, dirname( $this->basename ) . '/languages' );
+			$loaded = true;
 		}
 	}
 
@@ -133,6 +154,7 @@ final class App {
 	 */
 	protected function register_hooks() {
 		if ( function_exists( 'add_action' ) ) {
+			add_action( 'init', array( $this, 'load_textdomain' ), 0 );
 			add_action( 'init', array( $this, 'init' ) );
 		}
 
@@ -206,4 +228,5 @@ final class App {
 	public function textdomain() {
 		return $this->textdomain;
 	}
+
 }

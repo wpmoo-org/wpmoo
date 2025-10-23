@@ -26,7 +26,7 @@ class Taxonomy {
 	 * @param string|array<int, string> $object_types Optional. Post type(s) to attach to.
 	 * @return Builder
 	 */
-	public static function register( string $taxonomy, $object_types = null ): Builder {
+	public static function create( string $taxonomy, $object_types = null ): Builder {
 		$builder = new Builder( $taxonomy );
 
 		if ( ! is_null( $object_types ) ) {
@@ -35,5 +35,16 @@ class Taxonomy {
 		}
 
 		return $builder;
+	}
+
+	/**
+	 * Backward compatible alias of create().
+	 *
+	 * @param string                $taxonomy     Taxonomy slug.
+	 * @param string|array<int, string> $object_types Optional. Post type(s) to attach to.
+	 * @return Builder
+	 */
+	public static function register( string $taxonomy, $object_types = null ): Builder {
+		return self::create( $taxonomy, $object_types );
 	}
 }

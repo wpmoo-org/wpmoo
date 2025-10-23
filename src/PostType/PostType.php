@@ -25,7 +25,17 @@ class PostType {
 	 * @param string $type Post type slug.
 	 * @return Builder
 	 */
-	public static function register( string $type ): Builder {
+	public static function create( string $type ): Builder {
 		return new Builder( $type );
+	}
+
+	/**
+	 * Backward compatible alias of create().
+	 *
+	 * @param string $type Post type slug.
+	 * @return Builder
+	 */
+	public static function register( string $type ): Builder {
+		return self::create( $type );
 	}
 }

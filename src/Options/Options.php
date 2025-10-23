@@ -52,9 +52,44 @@ class Options {
 	protected static $repositories = array();
 
 	/**
-	 * Register a new options page.
+	 * Start a new options page builder.
 	 *
-	 * @param string|array<string, mixed> $option_key_or_config Option key or full config array (backward compatibility).
+	 * @param string $option_key Option key.
+	 * @param callable|null $callback Optional configurator executed with the builder.
+	 * @return Builder
+	 */
+	public static function create( string $option_key, ?callable $callback = null ): Builder {
+		self::boot();
+
+		$builder = new Builder( $option_key, self::$field_manager );
+
+		$register_callback = static function () use ( $builder ) {
+			$builder->register();
+		};
+
+		if ( function_exists( 'did_action' ) && did_action( 'init' ) ) {
+			$doing_init = function_exists( 'doing_action' ) && doing_action( 'init' );
+
+			if ( $doing_init && function_exists( 'add_action' ) ) {
+				add_action( 'init', $register_callback, 99 );
+			} else {
+				$register_callback();
+			}
+		} elseif ( function_exists( 'add_action' ) ) {
+			add_action( 'init', $register_callback, 15 );
+		}
+
+		if ( null !== $callback ) {
+			$callback( $builder );
+		}
+
+		return $builder;
+	}
+
+	/**
+	 * Register a new options page (backward compatibility).
+	 *
+	 * @param string|array<string, mixed> $option_key_or_config Option key or full config array.
 	 * @return Builder|Page
 	 */
 	public static function register( $option_key_or_config ) {
@@ -66,7 +101,7 @@ class Options {
 		}
 
 		// New fluent API: return Builder.
-		return new Builder( $option_key_or_config, self::$field_manager );
+		return self::create( (string) $option_key_or_config );
 	}
 
 	/**

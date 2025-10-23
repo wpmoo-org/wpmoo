@@ -1,0 +1,53 @@
+@use "../variables" as *;
+
+@media (max-width: 782px) {
+  .wpmoo-field {
+    flex-direction: column;
+  }
+
+  .wpmoo-title {
+    width: 100%;
+    flex: none;
+  }
+
+  .wpmoo-panel__layout {
+    flex-direction: column;
+  }
+
+  .wpmoo-panel__tabs {
+    display: none;
+  }
+
+  .wpmoo-panel__content {
+    padding: 0;
+    border-left: none;
+    margin-left: 0;
+  }
+
+  .wpmoo-panel__section {
+    display: block;
+    border-top: 1px solid wpmoo-color(border);
+    margin: 0;
+    background: wpmoo-color(section-background);
+    padding: 0;
+
+    &:first-of-type {
+      border-top: none;
+    }
+  }
+
+  .wpmoo-panel__section-toggle {
+    display: flex;
+  }
+
+  .wpmoo-panel__section-body {
+    display: none;
+    padding: wpmoo-spacing(lg);
+    background: wpmoo-color(section-background);
+    border-bottom: 1px solid wpmoo-color(border-muted);
+  }
+
+  .wpmoo-panel__section.is-active .wpmoo-panel__section-body {
+    display: block;
+  }
+}

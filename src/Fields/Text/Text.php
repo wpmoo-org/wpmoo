@@ -30,46 +30,23 @@ class Text extends Field {
 	 * @return string
 	 */
 	public function render( $name, $value ) {
-		$attributes = $this->build_attributes();
-		$value      = null !== $value ? $value : $this->default();
-		$value      = null !== $value ? $this->esc_attr( $value ) : '';
+		$attributes = $this->attributes();
+		$type       = isset( $attributes['type'] ) ? $attributes['type'] : 'text';
+
+		if ( isset( $attributes['type'] ) ) {
+			unset( $attributes['type'] );
+		}
+
+		$value = null !== $value ? $value : $this->default();
+		$value = null !== $value ? $this->esc_attr( $value ) : '';
 
 		return sprintf(
-			'<input type="text" name="%s" id="%s" value="%s"%s />',
+			'<input type="%1$s" name="%2$s" id="%3$s" value="%4$s"%5$s />',
+			$this->esc_attr( $type ),
 			$this->esc_attr( $name ),
 			$this->esc_attr( $this->id() ),
 			$value,
-			$attributes
+			$this->compile_attributes( $attributes )
 		);
-	}
-
-	/**
-	 * Compile additional HTML attributes.
-	 *
-	 * @return string
-	 */
-	protected function build_attributes() {
-		if ( empty( $this->args() ) ) {
-			return '';
-		}
-
-		$output = '';
-
-		foreach ( $this->args() as $attribute => $value ) {
-			if ( is_bool( $value ) ) {
-				if ( $value ) {
-					$output .= ' ' . $this->esc_attr( $attribute );
-				}
-				continue;
-			}
-
-			$output .= sprintf(
-				' %s="%s"',
-				$this->esc_attr( $attribute ),
-				$this->esc_attr( $value )
-			);
-		}
-
-		return $output;
 	}
 }

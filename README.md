@@ -2,120 +2,59 @@
 
 Modern, lightweight WordPress framework for rapid plugin development with fluent builder APIs.
 
-## Features
+## Field Widths
 
-- 🐮 **Modern PHP** - Built with PHP 7.4+ features
-- 🎯 **Type-Safe** - Full type hints and return types
-- 🚀 **Fast** - Optimized performance with minimal overhead
-- 🎨 **Modern UI** - Pines UI/Tailwind CSS admin interface
-- 🔧 **Developer Friendly** - Intuitive, fluent builder APIs for all components
-- 🔄 **Backward Compatible** - Works with both builder and array-based syntax
-
-## Installation
-
-```bash
-composer require wpmoo-org/wpmoo
-```
-
-## Bootstrap in a plugin
+Every option field can request a share of the row using `width()` (percentage) or the shorthand `size()` helper. Fields lay out in a flex row and stack automatically on smaller screens:
 
 ```php
-use WPMoo\Core\App;
-require __DIR__ . '/vendor/autoload.php';
-App::instance()->boot(__FILE__, 'your-plugin-textdomain');
+use WPMoo\Options\Container;
+use WPMoo\Options\Field;
+
+Container::create('options', 'demo_settings', 'Demo Settings')
+    ->section('layout_examples', 'Layout Examples')
+    ->add_fields(array(
+        Field::text('first_name', 'First Name')->width(50),
+        Field::text('last_name', 'Last Name')->width(50),
+        Field::fieldset('profile_card', 'Profile Card')
+            ->width(50)
+            ->fields(array(
+                Field::text('company', 'Company'),
+                Field::text('role', 'Role'),
+                Field::textarea('notes', 'Notes'),
+            )),
+        Field::textarea('bio', 'Biography'),
+    ));
 ```
 
-## Quick Examples
+Fieldsets honour the same width rules so you can build card-style layouts without extra markup.
 
-### Post Types with Builder
+## Moo Facade (DSL)
+
+You can also register pages and sections procedurally without instantiating builders manually:
 
 ```php
-use WPMoo\PostType\Builder;
+use WPMoo\Moo;
+use WPMoo\Options\Field;
 
-Builder::create('book')
-    ->labels('Book', 'Books')
-    ->icon('book')
-    ->supports(['title', 'editor', 'thumbnail'])
-    ->hierarchical()
-    ->hasArchive()
-    ->menuPosition(5)
-    ->public()
-    ->showInMenu()
-    ->register();
+Moo::page('demo_settings', 'Demo Settings');
+
+Moo::section('basic_details', 'Basic Details')
+    ->parent('demo_settings')
+    ->fields(
+        Field::text('first_name', 'First Name')->width(50),
+        Field::text('last_name', 'Last Name')->placeholder('Surname')->width(50),
+    );
+
+Moo::section('advanced_inputs', 'Advanced Inputs')
+    ->parent('demo_settings')
+    ->fields(
+        Field::fieldset('account_secondary', 'Secondary')
+            ->width(50)
+            ->fields(
+                Field::text('api_token', 'API Token'),
+                Field::text('slug', 'Slug')->default('demo'),
+            )
+    );
 ```
 
-### Taxonomies with Builder
-
-```php
-use WPMoo\Taxonomy\Builder;
-
-Builder::create('genre', 'book')
-    ->labels('Genre', 'Genres')
-    ->hierarchical()
-    ->showInMenu()
-    ->showInRest()
-    ->register();
-```
-
-### Options Pages with Builder
-
-```php
-use WPMoo\Options\Builder;
-
-Builder::create('my_settings')
-    ->pageTitle('My Settings')
-    ->menuTitle('Settings')
-    ->capability('manage_options')
-    ->icon('dashicons-admin-generic')
-    ->section('general', 'General Settings')
-        ->field('site_title', 'text')
-            ->label('Site Title')
-            ->description('Your website title')
-            ->default('My Awesome Site')
-            ->end()
-        ->field('enabled', 'checkbox')
-            ->label('Enable Feature')
-            ->default(true)
-            ->end()
-        ->endSection()
-    ->register();
-```
-
-### Metaboxes with Builder
-
-```php
-use WPMoo\Metabox\Builder;
-
-Builder::create('product_details')
-    ->title('Product Details')
-    ->postType('product')
-    ->normal()
-    ->high()
-    ->field('price', 'text')
-        ->label('Price')
-        ->description('Product price in USD')
-        ->default('0.00')
-        ->end()
-    ->field('sku', 'text')
-        ->label('SKU')
-        ->end()
-    ->register();
-```
-
-## Documentation
-
-📚 **Full documentation available at:** [wpmoo-docs](https://github.com/wpmoo-org/wpmoo-docs)
-
-- [Getting Started](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/getting-started.md)
-- [PostType Features & Builder](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/post-types/features.md)
-- [Options Builder API](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/options/builder.md)
-- [Metabox Builder API](https://github.com/wpmoo-org/wpmoo-docs/blob/main/docs/metabox/builder.md)
-
-## Requirements
-
-- PHP 7.4 or higher
-- WordPress 5.9 or higher
-
-## License
-
-MIT License
+Use `Moo::page()` (alias `Moo::container()`) to define option pages, `Moo::section()` to attach reusable sections, and `Moo::metabox()` / `Moo::panel()` for post edit screens. Sections can be chained anywhere in your codebase—attach them to pages with `->parent('page_id')` or to metaboxes with `->metabox('metabox_id')`.

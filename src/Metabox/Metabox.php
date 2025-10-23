@@ -16,6 +16,8 @@ use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
+use WPMoo\Support\Concerns\EscapesOutput;
+use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,6 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Represents a single metabox instance.
  */
 class Metabox {
+	use EscapesOutput;
 
 	/**
 	 * Indicates whether the subsystem has been booted.
@@ -101,9 +104,21 @@ class Metabox {
 	}
 
 	/**
-	 * Register a new metabox.
+	 * Start building a new metabox.
 	 *
-	 * @param string|array<string, mixed> $id_or_config Metabox ID or full config array (backward compatibility).
+	 * @param string $id Metabox identifier.
+	 * @return Builder
+	 */
+	public static function create( string $id ): Builder {
+		self::ensure_booted();
+
+		return new Builder( $id, self::$shared_manager );
+	}
+
+	/**
+	 * Register a new metabox (backward compatibility).
+	 *
+	 * @param string|array<string, mixed> $id_or_config Metabox ID or full config array.
 	 * @return Builder|Metabox
 	 */
 	public static function register( $id_or_config ) {
@@ -115,7 +130,7 @@ class Metabox {
 		}
 
 		// New fluent API: return Builder.
-		return new Builder( $id_or_config, self::$shared_manager );
+		return self::create( (string) $id_or_config );
 	}
 
 	/**
@@ -163,7 +178,7 @@ class Metabox {
 		}
 
 		$assets_url = Assets::url();
-		$version    = '0.3.0';
+		$version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.4.3';
 
 		if ( empty( $assets_url ) ) {
 			return;
@@ -171,12 +186,12 @@ class Metabox {
 
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style( 'dashicons' );
-			wp_enqueue_style( 'wpmoo-framework', $assets_url . 'css/wpmoo-framework.css', array(), $version );
+			wp_enqueue_style( 'wpmoo', $assets_url . 'css/wpmoo.css', array(), $version );
 		}
 
 		if ( function_exists( 'wp_enqueue_script' ) ) {
 			wp_enqueue_script( 'postbox' );
-			wp_enqueue_script( 'wpmoo-framework', $assets_url . 'js/wpmoo-framework.js', array( 'jquery' ), $version, true );
+			wp_enqueue_script( 'wpmoo', $assets_url . 'js/wpmoo.js', array( 'jquery' ), $version, true );
 		}
 	}
 
@@ -343,6 +358,10 @@ class Metabox {
 
 			$content = ob_get_clean();
 
+			if ( '' !== trim( $content ) ) {
+				$content = '<div class="wpmoo-section-fields">' . $content . '</div>';
+			}
+
 			$panel_sections[] = array(
 				'id'          => $section['id'],
 				'label'       => $section['title'],
@@ -442,12 +461,32 @@ class Metabox {
 		$current = get_post_meta( $post->ID, $field->id(), true );
 		$value   = '' !== $current ? $current : $field->default();
 		$name    = sprintf( 'wpmoo_metabox[%s][%s]', $this->config['id'], $field->id() );
+		$help_text   = $field->help_text();
+		$help_html   = $field->help_html();
+		$help_button = '';
+
+		if ( '' !== $help_text ) {
+			$help_button  = '<button type="button" class="wpmoo-field-help" aria-label="' . $this->esc_attr( $help_text ) . '"';
+			$help_button .= ' data-tooltip="' . $this->esc_attr( $help_text ) . '"';
+			$help_button .= ' data-help-text="' . $this->esc_attr( $help_text ) . '"';
+
+			if ( '' !== $help_html ) {
+				$help_button .= ' data-help-html="' . $this->esc_attr( $help_html ) . '"';
+			}
+
+			$help_button .= '>';
+			$help_button .= '<span aria-hidden="true">?</span>';
+			$help_button .= '<span class="screen-reader-text">' . $this->esc_html( $help_text ) . '</span>';
+			$help_button .= '</button>';
+		}
 
 		echo '<div class="wpmoo-field wpmoo-field-' . $this->esc_attr( $field->type() ) . '">';
 		echo '<div class="wpmoo-title">';
 
 		if ( $field->label() ) {
+			echo '<div class="wpmoo-title__heading">';
 			echo '<h4>' . $this->esc_html( $field->label() ) . '</h4>';
+			echo '</div>';
 		}
 
 		if ( $field->description() ) {
@@ -456,7 +495,34 @@ class Metabox {
 
 		echo '</div>';
 		echo '<div class="wpmoo-fieldset">';
+
+		if ( $field->before() ) {
+			echo '<div class="wpmoo-field-before">' . $field->before_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		echo '<div class="wpmoo-fieldset__control">';
+
+		if ( $help_button ) {
+			echo '<div class="wpmoo-fieldset__control-inner">';
+		}
+
 		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Field render method handles escaping.
+
+		if ( $help_button ) {
+			echo $help_button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '</div>';
+		}
+
+		echo '</div>';
+
+		if ( $field->after() ) {
+			echo '<div class="wpmoo-field-after">' . $field->after_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		if ( '' === $field->label() && '' !== $help_html && '' === $help_button ) {
+			echo '<div class="wpmoo-field-help-text">' . $help_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
 		echo '</div>';
 		echo '<div class="clear"></div>';
 		echo '</div>';
@@ -525,27 +591,13 @@ class Metabox {
 				continue;
 			}
 
+			$field_config['field_manager'] = $this->field_manager;
+
 			$field = $this->field_manager->make( $field_config );
 			$fields[ $field->id() ] = $field;
 		}
 
 		return $fields;
-	}
-
-	/**
-	 * Generate a slug from the provided value.
-	 *
-	 * @param string $value Raw string.
-	 * @return string
-	 */
-	protected function slugify( $value ) {
-		if ( function_exists( 'sanitize_title' ) ) {
-			return sanitize_title( $value );
-		}
-
-		$value = strtolower( preg_replace( '/[^a-zA-Z0-9]+/', '-', $value ) );
-
-		return trim( $value, '-' );
 	}
 
 	/**
@@ -569,7 +621,7 @@ class Metabox {
 			$section = array_merge( $defaults, is_array( $section ) ? $section : array() );
 
 			if ( '' === $section['id'] ) {
-				$section['id'] = $this->slugify( $section['title'] ? $section['title'] : uniqid( 'section_', true ) );
+				$section['id'] = Str::slug( $section['title'] ? $section['title'] : uniqid( 'section_', true ) );
 			}
 
 			if ( '' === $section['title'] ) {
@@ -615,31 +667,4 @@ class Metabox {
 		return 'wpmoo_metabox_' . $this->config['id'] . '_save';
 	}
 
-	/**
-	 * Escape a value for HTML output.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_html( $value ) {
-		if ( function_exists( 'esc_html' ) ) {
-			return esc_html( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
-
-	/**
-	 * Escape a value for attribute usage.
-	 *
-	 * @param mixed $value Raw value.
-	 * @return string
-	 */
-	protected function esc_attr( $value ) {
-		if ( function_exists( 'esc_attr' ) ) {
-			return esc_attr( $value );
-		}
-
-		return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
-	}
 }
