@@ -71,6 +71,9 @@ class PotGenerator {
 		'translate'  => array(
 			'type' => 'single',
 		),
+		'translate_string' => array(
+			'type' => 'single',
+		),
 		'_x'         => array(
 			'type'          => 'context',
 			'context_index' => 1,
@@ -206,7 +209,7 @@ class PotGenerator {
 					continue;
 				}
 
-				if ( $this->is_method_call( $tokens, $index ) && 'translate' !== $function ) {
+				if ( $this->is_method_call( $tokens, $index ) && ! in_array( $function, array( 'translate', 'translate_string' ), true ) ) {
 					$last_translator_comment = null;
 					continue;
 				}

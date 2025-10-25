@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wpmoo\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-20 14:00+0000\n"
+"POT-Creation-Date: 2025-10-25 12:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,107 +14,144 @@ msgstr ""
 "X-Domain: wpmoo\n"
 ""
 
-#: src/Taxonomy/Builder.php:409
+#: src/Taxonomy/Builder.php:412
 msgid "Add New %s"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:416
+#: src/Taxonomy/Builder.php:419
 msgid "Add or remove %s"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:405
+#: src/Taxonomy/Builder.php:408
 msgid "All %s"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:417
+#: src/Options/Field.php:139
+msgid "Call to undefined method %1$s::%2$s()."
+msgstr ""
+
+#: src/Taxonomy/Builder.php:420
 msgid "Choose from most used %s"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:406
+#: src/Taxonomy/Builder.php:409
 msgid "Edit %s"
 msgstr ""
 
-#: src/Fields/Manager.php:122
+#: src/Options/Section.php:299
+msgid "Field \"%s\" configuration requires a \"type\" key."
+msgstr ""
+
+#: src/Fields/Manager.php:158
 msgid "Field class \"%1$s\" must extend %2$s."
 msgstr ""
 
-#: src/Fields/Manager.php:113
+#: src/Fields/Manager.php:149
 msgid "Field class \"%s\" does not exist."
 msgstr ""
 
-#: src/Fields/Manager.php:107
+#: src/Options/Field.php:72
+msgid "Field type \"%s\" requires an id as the first argument."
+msgstr ""
+
+#: src/Fields/Manager.php:143
 msgid "Field type must be a non-empty string."
 msgstr ""
 
-#: src/Metabox/Builder.php:61
+#: src/Options/Container.php:167 src/Options/Page.php:360
+msgid "General"
+msgstr ""
+
+#: src/Metabox/Builder.php:71
 msgid "Metabox ID cannot be empty."
 msgstr ""
 
-#: src/Taxonomy/Builder.php:410
+#: src/Taxonomy/Builder.php:413
 msgid "New %s Name"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:418
+#: src/Taxonomy/Builder.php:421
 msgid "No %s found"
 msgstr ""
 
-#: src/Options/Builder.php:61
+#: src/Fields/Accordion/Accordion.php:229
+msgid "No accordion sections have been configured."
+msgstr ""
+
+#: src/Options/Builder.php:78
 msgid "Option key cannot be empty."
 msgstr ""
 
-#: src/Taxonomy/Builder.php:411
+#: src/Taxonomy/Builder.php:414
 msgid "Parent %s"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:412
+#: src/Taxonomy/Builder.php:415
 msgid "Parent %s:"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:414
+#: src/Taxonomy/Builder.php:417
 msgid "Popular %s"
 msgstr ""
 
-#: src/PostType/Builder.php:74
+#: src/PostType/Builder.php:77
 msgid "Post type slug cannot be empty."
 msgstr ""
 
-#: src/Options/Page.php:290 src/Options/Page.php:376
-msgid "Save"
+#: src/Options/Page.php:433 src/Options/Page.php:435
+msgid "Save Changes"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:413
+#: src/Options/Page.php:157
+msgid "Saving…"
+msgstr ""
+
+#: src/Taxonomy/Builder.php:416
 msgid "Search %s"
 msgstr ""
 
-#: src/Options/Page.php:287
-msgid "Search..."
+#: src/Admin/UI/Panel.php:161
+msgid "Section navigation"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:415
+#: src/Taxonomy/Builder.php:418
 msgid "Separate %s with commas"
 msgstr ""
 
-#: src/Options/Page.php:232
+#: src/Options/Page.php:158 src/Options/Page.php:258 src/Options/Page.php:316
 msgid "Settings saved."
 msgstr ""
 
-#: src/Taxonomy/Builder.php:74
+#: src/Taxonomy/Builder.php:77
 msgid "Taxonomy slug cannot be empty."
 msgstr ""
 
-#: src/Taxonomy/Builder.php:408
+#. %s: panel title
+#: src/Admin/UI/Panel.php:304
+msgid "Toggle panel: %s"
+msgstr ""
+
+#: src/Options/Page.php:159
+msgid "Unable to save settings."
+msgstr ""
+
+#: src/Moo.php:83
+msgid "Unsupported Moo::make() type \"%s\"."
+msgstr ""
+
+#: src/Options/Section.php:312
+msgid "Unsupported field definition of type %s."
+msgstr ""
+
+#: src/Taxonomy/Builder.php:411
 msgid "Update %s"
 msgstr ""
 
-#: src/Taxonomy/Builder.php:407
+#: src/Taxonomy/Builder.php:410
 msgid "View %s"
 msgstr ""
 
-#: src/Fields/Manager.php:190
-msgid "WPMoo: Field type \"%s\" could not be loaded. Please ensure its class is autoloaded or registered."
-msgstr ""
-
-#: src/Fields/Manager.php:208
-msgid "WPMoo: Field type \"%s\" is not registered."
+#: src/Options/Page.php:290
+msgid "You are not allowed to save these settings."
 msgstr ""
 

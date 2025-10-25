@@ -11,3 +11,6 @@
 - Components that build nested fields (`Options`, `Metabox`, `Fieldset`, `Accordion`) reuse the shared manager, so third-party registrations are available regardless of load order.
 
 - Exception messages should rely on `TranslatesStrings::translate()` (or the static helper patterns in `Options\Field`/`Moo`) rather than `esc_*` functions, ensuring errors remain readable when WordPress localization utilities are not bootstrapped.
+- Exception messages should rely on `TranslatesStrings::translate()` (or the static helper patterns in `Options\Field`/`Moo`) rather than `esc_*` functions, ensuring errors remain readable when WordPress localization utilities are not bootstrapped.
+
+- The CLI POT generator now recognises `translate_string()` in addition to the standard WordPress helpers, so strings wrapped in the fallback-friendly helper are still extracted during `php moo update`.
