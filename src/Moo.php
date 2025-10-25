@@ -80,8 +80,8 @@ class Moo {
 
 		throw new InvalidArgumentException(
 			sprintf(
-				esc_html__( 'Unsupported Moo::make() type "%s".', 'wpmoo' ),
-				esc_html( $type )
+				self::translate_string( 'Unsupported Moo::make() type "%s".' ),
+				(string) $type
 			)
 		);
 	}
@@ -271,5 +271,15 @@ class Moo {
 	 */
 	protected static function create_section( string $id, string $title, string $description ): SectionHandle {
 		return new SectionHandle( $id, $title, $description );
+	}
+
+	/**
+	 * Translate a string while tolerating non-WordPress runtimes.
+	 *
+	 * @param string $text Message to translate.
+	 * @return string
+	 */
+	protected static function translate_string( string $text ): string {
+		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
 }

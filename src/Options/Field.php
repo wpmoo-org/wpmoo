@@ -69,8 +69,8 @@ class Field {
 		if ( empty( $arguments ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
-					esc_html__( 'Field type "%s" requires an id as the first argument.', 'wpmoo' ),
-					esc_html( $method )
+					static::translate_string( 'Field type "%s" requires an id as the first argument.' ),
+					(string) $method
 				)
 			);
 		}
@@ -136,9 +136,9 @@ class Field {
 
 		throw new BadMethodCallException(
 			sprintf(
-				esc_html__( 'Call to undefined method %1$s::%2$s()', 'wpmoo' ),
-				esc_html( static::class ),
-				esc_html( $name )
+				static::translate_string( 'Call to undefined method %1$s::%2$s().' ),
+				static::class,
+				(string) $name
 			)
 		);
 	}
@@ -338,5 +338,15 @@ class Field {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Translate a message while tolerating non-WordPress runtimes.
+	 *
+	 * @param string $text Message to translate.
+	 * @return string
+	 */
+	protected static function translate_string( string $text ): string {
+		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
 }

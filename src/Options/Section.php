@@ -9,6 +9,7 @@ namespace WPMoo\Options;
 
 use InvalidArgumentException;
 use WPMoo\Support\Concerns\HasColumns;
+use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Section {
 	use HasColumns;
+	use TranslatesStrings;
 
 	/**
 	 * Section identifier.
@@ -291,23 +293,25 @@ class Section {
 				throw new InvalidArgumentException( 'Field configuration requires an "id" key.' );
 			}
 
-				if ( empty( $field['type'] ) ) {
-					throw new InvalidArgumentException(
-						sprintf(
-							esc_html__( 'Field "%s" configuration requires a "type" key.', 'wpmoo' ),
-							esc_html( $field['id'] )
-						)
-					);
-				}
+			if ( empty( $field['type'] ) ) {
+				throw new InvalidArgumentException(
+					sprintf(
+						$this->translate( 'Field "%s" configuration requires a "type" key.' ),
+						(string) $field['id']
+					)
+				);
+			}
 
 			return $field;
 		}
 
-			throw new InvalidArgumentException(
-				sprintf(
-					esc_html__( 'Unsupported field definition of type %s.', 'wpmoo' ),
-					esc_html( is_object( $field ) ? get_class( $field ) : gettype( $field ) )
-				)
-			);
+		$type = is_object( $field ) ? get_class( $field ) : gettype( $field );
+
+		throw new InvalidArgumentException(
+			sprintf(
+				$this->translate( 'Unsupported field definition of type %s.' ),
+				(string) $type
+			)
+		);
 	}
 }
