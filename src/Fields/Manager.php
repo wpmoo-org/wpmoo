@@ -12,6 +12,12 @@
 namespace WPMoo\Fields;
 
 use InvalidArgumentException;
+use WPMoo\Fields\Accordion\Accordion;
+use WPMoo\Fields\Checkbox\Checkbox;
+use WPMoo\Fields\Color\Color;
+use WPMoo\Fields\Fieldset\Fieldset;
+use WPMoo\Fields\Text\Text;
+use WPMoo\Fields\Textarea\Textarea;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,6 +29,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Manager {
 	use TranslatesStrings;
+
+	/**
+	 * Shared singleton instance.
+	 *
+	 * @var Manager|null
+	 */
+	protected static $instance = null;
 
 	/**
 	 * Registered field type map.
@@ -37,6 +50,27 @@ class Manager {
 	 * @var array<string, bool>
 	 */
 	protected $missing_notices = array();
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		$this->register_default_types();
+		$this->trigger_registration_hook();
+	}
+
+	/**
+	 * Retrieve the shared manager instance.
+	 *
+	 * @return Manager
+	 */
+	public static function instance(): Manager {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
 
 	/**
 	 * Register a new field type.
@@ -106,14 +140,14 @@ class Manager {
 	 */
 	protected function validate_type_class_pair( $type, $class ) {
 		if ( ! is_string( $type ) || '' === $type ) {
-			throw new InvalidArgumentException( esc_html__( 'Field type must be a non-empty string.', 'wpmoo' ) );
+			throw new InvalidArgumentException( $this->translate( 'Field type must be a non-empty string.' ) );
 		}
 
 		if ( ! class_exists( $class ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
-					esc_html__( 'Field class "%s" does not exist.', 'wpmoo' ),
-					esc_html( $class )
+					$this->translate( 'Field class "%s" does not exist.' ),
+					$class
 				)
 			);
 		}
@@ -121,9 +155,9 @@ class Manager {
 		if ( ! is_subclass_of( $class, Field::class ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
-					esc_html__( 'Field class "%1$s" must extend %2$s.', 'wpmoo' ),
-					esc_html( $class ),
-					esc_html( Field::class )
+					$this->translate( 'Field class "%1$s" must extend %2$s.' ),
+					$class,
+					Field::class
 				)
 			);
 		}
@@ -188,10 +222,16 @@ class Manager {
 			return;
 		}
 
-		$admin_notice = sprintf(
-			esc_html__( 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.', 'wpmoo' ),
-			esc_html( $type )
+		$raw_notice = sprintf(
+			function_exists( '__' )
+				? \__( 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.', 'wpmoo' )
+				: 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.',
+			$type
 		);
+
+		$admin_notice = function_exists( 'esc_html' )
+			? esc_html( $raw_notice )
+			: htmlspecialchars( $raw_notice, ENT_QUOTES, 'UTF-8' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 
 		if ( function_exists( 'add_action' ) ) {
 			add_action(
@@ -199,7 +239,7 @@ class Manager {
 				static function () use ( $admin_notice ) {
 					printf(
 						'<div class="notice notice-error"><p>%s</p></div>',
-						esc_html( $admin_notice )
+						$admin_notice
 					);
 				}
 			);
@@ -207,8 +247,10 @@ class Manager {
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			$log_message = sprintf(
-				esc_html__( 'WPMoo: Field type "%s" is not registered.', 'wpmoo' ),
-				esc_html( $type )
+				function_exists( '__' )
+					? \__( 'WPMoo: Field type "%s" is not registered.', 'wpmoo' )
+					: 'WPMoo: Field type "%s" is not registered.',
+				$type
 			);
 			error_log( $log_message );
 		}
@@ -255,9 +297,55 @@ class Manager {
 	}
 
 	/**
-	 * Translate strings while remaining compatible with non-WordPress contexts.
+	 * Register the built-in field types with this manager instance.
 	 *
-	 * @param string $text Text to translate.
-	 * @return string
+	 * @return void
 	 */
+	protected function register_default_types(): void {
+		$defaults = $this->default_type_map();
+
+		if ( function_exists( 'apply_filters' ) ) {
+			$defaults = (array) apply_filters( 'wpmoo_default_field_types', $defaults, $this );
+		}
+
+		foreach ( $defaults as $type => $class ) {
+			if ( ! is_string( $type ) || '' === $type || $this->has( $type ) ) {
+				continue;
+			}
+
+			try {
+				$this->register( $type, $class );
+			} catch ( InvalidArgumentException $exception ) {
+				// Skip invalid default registrations silently to avoid fatal errors.
+				continue;
+			}
+		}
+	}
+
+	/**
+	 * Provide the framework's default field map.
+	 *
+	 * @return array<string, class-string<Field>>
+	 */
+	protected function default_type_map(): array {
+		return array(
+			'text'      => Text::class,
+			'textarea'  => Textarea::class,
+			'checkbox'  => Checkbox::class,
+			'color'     => Color::class,
+			'accordion' => Accordion::class,
+			'fieldset'  => Fieldset::class,
+		);
+	}
+
+	/**
+	 * Trigger the registration hook so consumers can add custom field types.
+	 *
+	 * @return void
+	 */
+	protected function trigger_registration_hook(): void {
+		if ( function_exists( 'do_action' ) ) {
+			do_action( 'wpmoo_register_field_types', $this );
+		}
+	}
 }

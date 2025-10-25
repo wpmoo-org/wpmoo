@@ -1,0 +1,11 @@
+## Developer Notes
+
+- `Fields\Manager::instance()` provides a shared singleton seeded with the core field types (`text`, `textarea`, `checkbox`, `color`, `accordion`, `fieldset`). Extend via the `wpmoo_default_field_types` filter to swap defaults or the `wpmoo_register_field_types` action to add custom types:
+
+  ```php
+  add_action( 'wpmoo_register_field_types', function ( WPMoo\Fields\Manager $manager ) {
+      $manager->register( 'my-field', \Vendor\Plugin\Fields\MyField::class );
+  } );
+  ```
+
+- Components that build nested fields (`Options`, `Metabox`, `Fieldset`, `Accordion`) reuse the shared manager, so third-party registrations are available regardless of load order.

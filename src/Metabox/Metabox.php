@@ -223,7 +223,7 @@ class Metabox {
 			return;
 		}
 
-		self::$shared_manager = new Manager();
+		self::$shared_manager = Manager::instance();
 
 		if ( function_exists( 'add_action' ) ) {
 			add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );

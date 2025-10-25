@@ -228,7 +228,7 @@ class Options {
 			return;
 		}
 
-		self::$field_manager = new Manager();
+		self::$field_manager = Manager::instance();
 
 		self::$booted = true;
 	}

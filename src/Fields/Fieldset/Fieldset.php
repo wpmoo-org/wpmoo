@@ -54,7 +54,7 @@ class Fieldset extends Field {
 	public function __construct( array $config ) {
 		$manager = isset( $config['field_manager'] ) && $config['field_manager'] instanceof Manager
 			? $config['field_manager']
-			: new Manager();
+			: Manager::instance();
 
 		$this->field_manager = $manager;
 
