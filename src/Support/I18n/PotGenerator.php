@@ -74,6 +74,22 @@ class PotGenerator {
 		'translate_string' => array(
 			'type' => 'single',
 		),
+		'translate_with_context' => array(
+			'type'          => 'context',
+			'context_index' => 1,
+			'domain_index'  => 3,
+		),
+		'translate_plural' => array(
+			'type'         => 'plural',
+			'plural_index' => 1,
+			'domain_index' => 4,
+		),
+		'translate_plural_with_context' => array(
+			'type'          => 'plural_context',
+			'plural_index'  => 1,
+			'context_index' => 3,
+			'domain_index'  => 5,
+		),
 		'_x'         => array(
 			'type'          => 'context',
 			'context_index' => 1,
@@ -209,7 +225,7 @@ class PotGenerator {
 					continue;
 				}
 
-				if ( $this->is_method_call( $tokens, $index ) && ! in_array( $function, array( 'translate', 'translate_string' ), true ) ) {
+				if ( $this->is_method_call( $tokens, $index ) && ! in_array( $function, array( 'translate', 'translate_string', 'translate_with_context', 'translate_plural', 'translate_plural_with_context' ), true ) ) {
 					$last_translator_comment = null;
 					continue;
 				}
