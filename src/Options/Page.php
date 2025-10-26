@@ -111,57 +111,67 @@ class Page {
 			return;
 		}
 
-		$assets_url = Assets::url();
-		$version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.4.3';
+        // Allow consumers (e.g., starter plugin) to disable framework CSS/JS enqueues
+        // and provide their own bundled assets.
+        $enqueue_framework_assets = true;
+        if ( function_exists( 'apply_filters' ) ) {
+            $enqueue_framework_assets = (bool) apply_filters( 'wpmoo_enqueue_assets', true, $hook, 'options' );
+        }
 
-		if ( empty( $assets_url ) ) {
-			return;
-		}
+        $assets_url = Assets::url();
+        $version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.4.3';
 
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style( 'dashicons' );
 		}
 
-		// Enqueue CSS.
-		if ( function_exists( 'wp_enqueue_style' ) ) {
-			wp_enqueue_style(
-				'wpmoo',
-				$assets_url . 'css/wpmoo.css',
-				array(),
-				$version
-			);
-		}
+        // Enqueue framework CSS if permitted.
+        if ( $enqueue_framework_assets && function_exists( 'wp_enqueue_style' ) ) {
+            if ( ! empty( $assets_url ) ) {
+                wp_enqueue_style(
+                    'wpmoo',
+                    $assets_url . 'css/wpmoo.css',
+                    array(),
+                    $version
+                );
+            }
+        }
 
-		// Enqueue JS.
-		if ( function_exists( 'wp_enqueue_script' ) ) {
-			$persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Persists UI state only.
-			wp_enqueue_script( 'postbox' );
-			wp_enqueue_script(
-				'wpmoo',
-				$assets_url . 'js/wpmoo.js',
-				array( 'jquery' ),
-				$version,
-				true
-			);
+        // Enqueue JS.
+        if ( function_exists( 'wp_enqueue_script' ) ) {
+            $persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Persists UI state only.
+            wp_enqueue_script( 'postbox' );
 
-			if ( function_exists( 'wp_localize_script' ) ) {
-				wp_localize_script(
-					'wpmoo',
-					'wpmooAdminOptions',
-					array(
-						'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
-						'nonce'       => wp_create_nonce( 'wpmoo_options_save' ),
-						'menuSlug'    => $this->config['menu_slug'],
-						'persistTabs' => (bool) $persist_tabs,
-						'strings'     => array(
-							'saving' => function_exists( '__' ) ? __( 'Saving…', 'wpmoo' ) : 'Saving…',
-							'saved'  => function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.',
-							'error'  => function_exists( '__' ) ? __( 'Unable to save settings.', 'wpmoo' ) : 'Unable to save settings.',
-						),
-					)
-				);
-			}
-		}
+            if ( $enqueue_framework_assets ) {
+                if ( ! empty( $assets_url ) ) {
+                    wp_enqueue_script(
+                        'wpmoo',
+                        $assets_url . 'js/wpmoo.js',
+                        array( 'jquery' ),
+                        $version,
+                        true
+                    );
+
+                    if ( function_exists( 'wp_localize_script' ) ) {
+                        wp_localize_script(
+                            'wpmoo',
+                            'wpmooAdminOptions',
+                            array(
+                                'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+                                'nonce'       => wp_create_nonce( 'wpmoo_options_save' ),
+                                'menuSlug'    => $this->config['menu_slug'],
+                                'persistTabs' => (bool) $persist_tabs,
+                                'strings'     => array(
+                                    'saving' => function_exists( '__' ) ? __( 'Saving…', 'wpmoo' ) : 'Saving…',
+                                    'saved'  => function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.',
+                                    'error'  => function_exists( '__' ) ? __( 'Unable to save settings.', 'wpmoo' ) : 'Unable to save settings.',
+                                ),
+                            )
+                        );
+                    }
+                }
+            }
+        }
 	}
 
 	/**
