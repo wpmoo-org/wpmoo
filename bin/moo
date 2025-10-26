@@ -46,7 +46,7 @@ if ( ! $autoload_loaded ) {
 }
 
 use WPMoo\Core\App;
-use WPMoo\Core\CLI;
+use WPMoo\CLI\CLI;
 
 App::instance()->boot( __FILE__, 'wpmoo' );
 CLI::run( $argv );
