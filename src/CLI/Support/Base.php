@@ -505,7 +505,8 @@ class Base {
     }
 
     protected static function refresh_embedded_framework( $working_dir ) {
-        $framework_path = $working_dir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'wpmoo-org';
+        // Mirror the installed Composer package path: vendor/wpmoo/wpmoo
+        $framework_path = $working_dir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'wpmoo';
         if ( ! is_dir( $framework_path ) ) { return; }
         $framework_path .= DIRECTORY_SEPARATOR . 'wpmoo';
         if ( is_link( $framework_path ) || is_file( $framework_path ) ) { @unlink( $framework_path ); }

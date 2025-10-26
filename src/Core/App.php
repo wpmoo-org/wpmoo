@@ -122,7 +122,9 @@ final class App {
 			}
 
 			if ( '' === $url && function_exists( 'plugins_url' ) && defined( 'WPMOO_FILE' ) ) {
-				$url = plugins_url( 'vendor/wpmoo-org/wpmoo/', WPMOO_FILE );
+				// Resolve assets from the installed Composer package path.
+				// Package name is "wpmoo/wpmoo" so vendor path is "vendor/wpmoo/wpmoo/".
+				$url = plugins_url( 'vendor/wpmoo/wpmoo/', WPMOO_FILE );
 			}
 
 			define( 'WPMOO_URL', rtrim( $url, '/\\' ) . '/' );
