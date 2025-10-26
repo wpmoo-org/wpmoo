@@ -455,6 +455,9 @@ class Base {
                 @unlink( $target );
             }
         }
+        // Remove external CLI package if present (dev dependency should not ship).
+        $cli_pkg = $root . DIRECTORY_SEPARATOR . 'wpmoo' . DIRECTORY_SEPARATOR . 'wpmoo-cli';
+        if ( is_dir( $cli_pkg ) ) { self::delete_directory( $cli_pkg ); }
     }
 
     protected static function ensure_minified_assets( $assets_dir ) {

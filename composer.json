@@ -40,9 +40,6 @@
       "wpmoo.php"
     ]
   },
-  "bin": [
-    "bin/moo"
-  ],
   "require-dev": {
     "wpmoo/wpmoo-coding-standards": "dev-main"
   },
