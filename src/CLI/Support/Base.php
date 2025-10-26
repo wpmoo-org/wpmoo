@@ -302,6 +302,7 @@ class Base {
             '/composer.json', '/composer.lock', '/package.json', '/package-lock.json', '/pnpm-lock.yaml', '/yarn.lock',
             '/.gitignore', '/.gitattributes', '/phpcs.xml', '/phpcs.xml.dist', '/.phpcs.xml', '/.phpcs.xml.dist',
             '/deploy.php', '/webpack.mix.js', '/webpack.config.js', '/gulpfile.js', '/vite.config.js',
+            '/namespace',
         );
     }
 
