@@ -33,7 +33,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: "8.2"
           tools: composer:v2
           coverage: none
           ini-values: memory_limit=-1
@@ -71,7 +71,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0', '8.1', '8.2', '8.3']
+        php: ["7.4", "8.0", "8.1", "8.2", "8.3"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -102,7 +102,7 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --ansi
       - name: Run PHPUnit
-        run: phpunit -v
+        run: phpunit
   static-analysis:
     name: Static analysis (PHPStan)
     needs: checks
@@ -114,7 +114,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: "8.2"
           tools: composer:v2
           coverage: none
           ini-values: memory_limit=-1
