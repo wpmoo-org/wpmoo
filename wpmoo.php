@@ -38,6 +38,7 @@ foreach ( $autoload_paths as $autoload ) {
 	}
 }
 
-if ( class_exists( \WPMoo\Core\App::class ) && function_exists( 'plugin_basename' ) ) {
+// Only boot inside a real WordPress runtime to avoid side effects under tooling.
+if ( function_exists( 'plugin_basename' ) && class_exists( \WPMoo\Core\App::class ) ) {
 	\WPMoo\Core\App::instance()->boot( __FILE__, 'wpmoo' );
 }

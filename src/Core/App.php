@@ -11,10 +11,6 @@
 
 namespace WPMoo\Core;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ );
-}
-
 /**
  * Handles plugin bootstrap, hook registration, and shared utilities.
  */

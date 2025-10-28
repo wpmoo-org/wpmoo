@@ -1,1 +1,1 @@
-{"version":2,"defects":[],"times":{"SmokeTest::testAutoloadsFrameworkCore":0.001,"ArrTest::testGetWithDefault":0,"ArrTest::testSet":0,"StrTest::testStartsAndEndsWith":0,"StrTest::testEmptyNeedleSemantics":0,"StrTest::testSlugFallback":0}}
+{"version":2,"defects":[],"times":{"SmokeTest::testAutoloadsFrameworkCore":0.002,"ArrTest::testGetWithDefault":0,"ArrTest::testSet":0,"StrTest::testStartsAndEndsWith":0,"StrTest::testEmptyNeedleSemantics":0,"StrTest::testSlugFallback":0}}

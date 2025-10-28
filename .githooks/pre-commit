@@ -55,7 +55,7 @@ fi
 if [ "${SKIP_TESTS:-0}" != "1" ] && [ -x vendor/bin/phpunit ] \
    && { [ -f phpunit.xml ] || [ -f phpunit.xml.dist ]; }; then
   echo "→ Running PHPUnit"
-  vendor/bin/phpunit -v || exit 1
+  vendor/bin/phpunit || exit 1
 fi
 
 echo "✔ Pre-commit checks passed"

@@ -23,9 +23,8 @@ fi
 if [ "$SKIP_TESTS" != "1" ] && [ -x vendor/bin/phpunit ] \
    && { [ -f phpunit.xml ] || [ -f phpunit.xml.dist ]; }; then
   echo "→ PHPUnit (full suite)"
-  vendor/bin/phpunit -v || exit 1
+  vendor/bin/phpunit || exit 1
 fi
 
 echo "✔ Pre-push checks passed"
 exit 0
-
