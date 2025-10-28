@@ -2,43 +2,95 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - dev
   pull_request:
-    branches:
-      - main
-      - dev
 
 jobs:
-  php:
-    name: PHP ${{ matrix.php-version }}
+  checks:
+    name: Static checks (Composer/PHPCS)
+    runs-on: ubuntu-latest
+    outputs:
+      has_tests: ${{ steps.detect-tests.outputs.has_tests }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Detect tests config
+        id: detect-tests
+        run: |
+          if [ -f phpunit.xml ] || [ -f phpunit.xml.dist ]; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_tests=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+          ini-values: memory_limit=-1
+      - name: Compute composer cache key
+        id: composer-cache
+        run: |
+          if [ -f composer.lock ]; then
+            echo "lockhash=$(sha256sum composer.lock | cut -d ' ' -f1)" >> "$GITHUB_OUTPUT"
+          else
+            echo "lockhash=none" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Cache Composer downloads
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.composer/cache
+            ~/.cache/composer
+          key: composer-${{ steps.composer-cache.outputs.lockhash }}
+          restore-keys: |
+            composer-
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --ansi
+      - name: Composer validate
+        run: composer validate --strict --no-check-lock --ansi
+      - name: Lint PHP
+        run: composer run lint:php --ansi
+      - name: PHPCS
+        run: composer run phpcs --ansi
+
+  tests:
+    name: PHPUnit ${{ matrix.php }}
+    needs: checks
+    if: ${{ needs.checks.outputs.has_tests == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        php-version: ["7.4", "8.0", "8.1", "8.2", "8.3"]
-
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3']
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up PHP
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
-          tools: composer:v2
+          php-version: ${{ matrix.php }}
+          tools: composer:v2, phpunit
           coverage: none
-
-      - name: Validate composer.json
-        run: composer validate
-
-      - name: Install dependencies
-        run: composer install --no-progress --prefer-dist
-
-      - name: PHP lint
+          ini-values: memory_limit=-1
+      - name: Compute composer cache key
+        id: composer-cache
         run: |
-          find . -path './vendor' -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
-
-      - name: WordPress/PHP compatibility sniff
-        run: vendor/bin/phpcs --standard=phpcs.xml
+          if [ -f composer.lock ]; then
+            echo "lockhash=$(sha256sum composer.lock | cut -d ' ' -f1)" >> "$GITHUB_OUTPUT"
+          else
+            echo "lockhash=none" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Cache Composer downloads
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.composer/cache
+            ~/.cache/composer
+          key: composer-${{ steps.composer-cache.outputs.lockhash }}
+          restore-keys: |
+            composer-
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --ansi
+      - name: Run PHPUnit
+        run: phpunit -v
