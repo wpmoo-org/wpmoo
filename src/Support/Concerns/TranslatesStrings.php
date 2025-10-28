@@ -24,6 +24,7 @@ trait TranslatesStrings {
 	 * @return string
 	 */
 	protected function translate( string $text, string $domain = 'wpmoo' ): string {
+        // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText,WordPress.WP.I18n.NonSingularStringLiteralDomain
 		return function_exists( '__' ) ? \__( $text, $domain ) : $text;
 	}
 
@@ -36,6 +37,7 @@ trait TranslatesStrings {
 	 * @return string
 	 */
 	protected function translate_with_context( string $text, string $context, string $domain = 'wpmoo' ): string {
+        // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText,WordPress.WP.I18n.NonSingularStringLiteralContext,WordPress.WP.I18n.NonSingularStringLiteralDomain
 		return function_exists( '_x' ) ? _x( $text, $context, $domain ) : $text;
 	}
 
@@ -50,6 +52,7 @@ trait TranslatesStrings {
 	 */
 	protected function translate_plural( string $singular, string $plural, int $count, string $domain = 'wpmoo' ): string {
 		if ( function_exists( '_n' ) ) {
+            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText,WordPress.WP.I18n.NonSingularStringLiteralDomain,WordPress.WP.I18n.NonSingularStringLiteralSingle,WordPress.WP.I18n.NonSingularStringLiteralPlural
 			return _n( $singular, $plural, $count, $domain );
 		}
 
@@ -68,6 +71,7 @@ trait TranslatesStrings {
 	 */
 	protected function translate_plural_with_context( string $singular, string $plural, int $count, string $context, string $domain = 'wpmoo' ): string {
 		if ( function_exists( '_nx' ) ) {
+            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText,WordPress.WP.I18n.NonSingularStringLiteralContext,WordPress.WP.I18n.NonSingularStringLiteralDomain,WordPress.WP.I18n.NonSingularStringLiteralSingle,WordPress.WP.I18n.NonSingularStringLiteralPlural
 			return _nx( $singular, $plural, $count, $context, $domain );
 		}
 

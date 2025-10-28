@@ -394,9 +394,9 @@ class Metabox {
 			return;
 		}
 
-		$submitted = isset( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) && is_array( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified via nonce in should_handle_save().
-			? $_POST['wpmoo_metabox'][ $this->config['id'] ]
-			: array();
+			$submitted = isset( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) && is_array( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified via nonce in should_handle_save().
+				? $_POST['wpmoo_metabox'][ $this->config['id'] ] // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified via nonce in should_handle_save().
+				: array();
 
 		$submitted = function_exists( 'wp_unslash' )
 			? wp_unslash( $submitted ) // phpcs:ignore WordPress.Security.SafeInput.NotSanitizedInput

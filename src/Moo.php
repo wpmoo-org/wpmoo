@@ -280,6 +280,7 @@ class Moo {
 	 * @return string
 	 */
 	protected static function translate_string( string $text ): string {
+        // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
 }

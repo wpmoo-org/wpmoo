@@ -60,8 +60,9 @@ class Arr {
 	 */
 	public static function set( &$array, $key, $value ) {
 		$segments = explode( '.', $key );
+		$segments_count = count( $segments );
 
-		while ( count( $segments ) > 1 ) {
+		while ( $segments_count > 1 ) {
 			$segment = array_shift( $segments );
 
 			if ( ! isset( $array[ $segment ] ) || ! is_array( $array[ $segment ] ) ) {
@@ -69,6 +70,7 @@ class Arr {
 			}
 
 			$array = &$array[ $segment ];
+			--$segments_count;
 		}
 
 		$array[ array_shift( $segments ) ] = $value;

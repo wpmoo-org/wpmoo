@@ -273,7 +273,7 @@ class Page {
 
 		if ( $redirect && function_exists( 'wp_safe_redirect' ) ) {
 			wp_safe_redirect( $redirect );
-			exit;
+			return;
 		}
 	}
 
@@ -770,7 +770,7 @@ class Page {
 		if ( isset( $_POST['_wpmoo_active_panel'] ) && is_array( $_POST['_wpmoo_active_panel'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified earlier in submission handler.
 			$panels = array();
 
-			foreach ( $_POST['_wpmoo_active_panel'] as $panel_id => $target ) {
+			foreach ( $_POST['_wpmoo_active_panel'] as $panel_id => $target ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified earlier in submission handler.
 				$panel_id = $this->sanitize_panel_target( (string) $panel_id );
 				$target   = $this->sanitize_panel_target( (string) $target );
 

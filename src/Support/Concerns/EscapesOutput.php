@@ -53,6 +53,7 @@ trait EscapesOutput {
 	 */
 	protected function esc_attr__( $text, $domain ) {
 		if ( function_exists( 'esc_attr__' ) ) {
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText,WordPress.WP.I18n.NonSingularStringLiteralDomain
 			return esc_attr__( $text, $domain );
 		}
 

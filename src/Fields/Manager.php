@@ -222,12 +222,12 @@ class Manager {
 			return;
 		}
 
-		$raw_notice = sprintf(
-			function_exists( '__' )
+			$message_template = function_exists( '__' )
+				// translators: %s: field type slug.
 				? \__( 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.', 'wpmoo' )
-				: 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.',
-			$type
-		);
+				: 'WPMoo: Field type "%s" could not be loaded. Please ensure its class is autoloaded or registered.';
+
+			$raw_notice = sprintf( $message_template, $type );
 
 		$admin_notice = function_exists( 'esc_html' )
 			? esc_html( $raw_notice )
@@ -246,12 +246,12 @@ class Manager {
 		}
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$log_message = sprintf(
-				function_exists( '__' )
+				$debug_template = function_exists( '__' )
+					// translators: %s: field type slug.
 					? \__( 'WPMoo: Field type "%s" is not registered.', 'wpmoo' )
-					: 'WPMoo: Field type "%s" is not registered.',
-				$type
-			);
+					: 'WPMoo: Field type "%s" is not registered.';
+
+				$log_message = sprintf( $debug_template, $type );
 			error_log( $log_message );
 		}
 
@@ -282,12 +282,12 @@ class Manager {
 			}
 
 			public function render( $name, $value ) {
-				$raw_message = sprintf(
-					function_exists( '__' )
+					$missing_template = function_exists( '__' )
+						// translators: %s: missing field type slug.
 						? \__( 'Missing WPMoo field type "%s". Please register or include the field class.', 'wpmoo' )
-						: 'Missing WPMoo field type "%s". Please register or include the field class.',
-					$this->missing_type
-				);
+						: 'Missing WPMoo field type "%s". Please register or include the field class.';
+
+					$raw_message = sprintf( $missing_template, $this->missing_type );
 				$message     = function_exists( 'esc_html' ) ? esc_html( $raw_message ) : $raw_message;
 
 				return sprintf( '<div class="notice notice-error inline"><p>%s</p></div>', $message );

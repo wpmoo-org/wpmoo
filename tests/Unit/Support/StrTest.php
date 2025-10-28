@@ -1,13 +1,15 @@
 <?php
-declare(strict_types=1);
-
 /**
  * Tests for WPMoo\Support\Str helper.
  */
+declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use WPMoo\Support\Str;
 
+/**
+ * Str helper test suite.
+ */
 final class StrTest extends TestCase {
 
 	/**

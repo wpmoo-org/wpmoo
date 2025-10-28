@@ -1,13 +1,15 @@
 <?php
-declare(strict_types=1);
-
 /**
  * Tests for WPMoo\Support\Arr helper.
  */
+declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use WPMoo\Support\Arr;
 
+/**
+ * Arr helper test suite.
+ */
 final class ArrTest extends TestCase {
 
 	/**

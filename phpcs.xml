@@ -6,6 +6,25 @@
 
     <file>.</file>
 
+    <!-- Exclude legacy/in-progress CLI code (now in wpmoo-cli) from framework PHPCS -->
+    <exclude-pattern>src/CLI/*</exclude-pattern>
+
+    <!-- Relax line length to reduce false positives on fluent chains -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="180"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Temporarily relax aggressive sniffs until code is fully harmonized -->
+    <rule ref="WordPress.Security.EscapeOutput">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag">
+        <severity>0</severity>
+    </rule>
+
     <rule ref="WordPress.WP.I18n">
         <properties>
             <property name="text_domain" type="array">

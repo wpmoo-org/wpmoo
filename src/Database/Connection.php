@@ -48,6 +48,7 @@ class Connection {
 			return $query;
 		}
 
+        // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnsupportedPlaceholder,WordPress.DB.PreparedSQL.NotPrepared -- Input queries are constructed by callers; passing bound values to wpdb->prepare.
 		return $this->wpdb->prepare( $query, $args );
 	}
 
