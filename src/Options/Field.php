@@ -42,6 +42,7 @@ class Field {
 	 * @param string $id    Field identifier.
 	 * @param string $label Optional label.
 	 * @return static
+	 * @throws InvalidArgumentException When id is empty.
 	 */
 	public static function make( string $type, string $id, string $label = '' ): self {
 		if ( '' === $id ) {
@@ -64,15 +65,18 @@ class Field {
 	 * @param string $method Method name.
 	 * @param array  $arguments Invocation arguments.
 	 * @return static
+	 * @throws InvalidArgumentException When id is missing.
 	 */
 	public static function __callStatic( string $method, array $arguments ) {
 		if ( empty( $arguments ) ) {
+			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException(
 				sprintf(
 					static::translate_string( 'Field type "%s" requires an id as the first argument.' ),
 					(string) $method
 				)
 			);
+				/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
 		$id    = (string) array_shift( $arguments );
@@ -105,6 +109,7 @@ class Field {
 	 * @param string $name Method name.
 	 * @param array  $arguments Invocation arguments.
 	 * @return $this|mixed
+	 * @throws BadMethodCallException When the proxied method does not exist.
 	 */
 	public function __call( $name, $arguments ) {
 		$lower = strtolower( $name );
@@ -134,6 +139,7 @@ class Field {
 			return $result;
 		}
 
+		/* phpcs:disable WordPress.Security.EscapeOutput */
 		throw new BadMethodCallException(
 			sprintf(
 				static::translate_string( 'Call to undefined method %1$s::%2$s().' ),
@@ -141,6 +147,7 @@ class Field {
 				(string) $name
 			)
 		);
+		/* phpcs:enable WordPress.Security.EscapeOutput */
 	}
 
 	/**

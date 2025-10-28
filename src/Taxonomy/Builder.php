@@ -71,10 +71,13 @@ class Builder {
 	 * Constructor.
 	 *
 	 * @param string $taxonomy Taxonomy slug.
+	 * @throws InvalidArgumentException When slug is empty.
 	 */
 	public function __construct( string $taxonomy ) {
 		if ( empty( $taxonomy ) ) {
+			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Taxonomy slug cannot be empty.' ) );
+			/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
 		$this->taxonomy = $taxonomy;

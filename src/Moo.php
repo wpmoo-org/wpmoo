@@ -59,6 +59,7 @@ class Moo {
 	 * @param string $title       Optional title.
 	 * @param string $description Optional description.
 	 * @return mixed
+	 * @throws InvalidArgumentException For unsupported type.
 	 */
 	public static function make( string $type, string $id, string $title = '', string $description = '' ) {
 		$type = strtolower( trim( $type ) );
@@ -78,12 +79,14 @@ class Moo {
 				return self::panel( $id, $title, $description );
 		}
 
+		/* phpcs:disable WordPress.Security.EscapeOutput */
 		throw new InvalidArgumentException(
 			sprintf(
 				self::translate_string( 'Unsupported Moo::make() type "%s".' ),
 				(string) $type
 			)
 		);
+		/* phpcs:enable WordPress.Security.EscapeOutput */
 	}
 
 	/**

@@ -260,6 +260,7 @@ class Section {
 	 *
 	 * @param string $value Raw identifier.
 	 * @return string
+	 * @throws InvalidArgumentException When id is empty.
 	 */
 	protected function normalize_id( string $value ): string {
 		$value = trim( $value );
@@ -278,6 +279,7 @@ class Section {
 	 *
 	 * @param mixed $field Raw field definition.
 	 * @return array<string, mixed>
+	 * @throws InvalidArgumentException When field definition is invalid.
 	 */
 	protected function normalize_field( $field ): array {
 		if ( $field instanceof Field ) {
@@ -294,12 +296,14 @@ class Section {
 			}
 
 			if ( empty( $field['type'] ) ) {
+				/* phpcs:disable WordPress.Security.EscapeOutput */
 				throw new InvalidArgumentException(
 					sprintf(
 						$this->translate( 'Field "%s" configuration requires a "type" key.' ),
 						(string) $field['id']
 					)
 				);
+				/* phpcs:enable WordPress.Security.EscapeOutput */
 			}
 
 			return $field;
@@ -307,11 +311,13 @@ class Section {
 
 		$type = is_object( $field ) ? get_class( $field ) : gettype( $field );
 
+		/* phpcs:disable WordPress.Security.EscapeOutput */
 		throw new InvalidArgumentException(
 			sprintf(
 				$this->translate( 'Unsupported field definition of type %s.' ),
 				(string) $type
 			)
 		);
+		/* phpcs:enable WordPress.Security.EscapeOutput */
 	}
 }

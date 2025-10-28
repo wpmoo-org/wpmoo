@@ -65,10 +65,13 @@ class Builder {
 	 *
 	 * @param string  $id            Metabox ID.
 	 * @param Manager $field_manager Field manager.
+	 * @throws InvalidArgumentException When id is empty.
 	 */
 	public function __construct( string $id, Manager $field_manager ) {
 		if ( empty( $id ) ) {
+			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Metabox ID cannot be empty.' ) );
+			/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
 		$this->id            = $id;

@@ -71,10 +71,13 @@ class Builder {
 	 * Constructor.
 	 *
 	 * @param string $type Post type slug.
+	 * @throws InvalidArgumentException When slug is empty.
 	 */
 	public function __construct( string $type ) {
 		if ( empty( $type ) ) {
+			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Post type slug cannot be empty.' ) );
+			/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
 		$this->type = $type;

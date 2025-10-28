@@ -226,6 +226,7 @@ class Fieldset extends Field {
 	 *
 	 * @param array<int, mixed> $fields Raw field definitions.
 	 * @return array<int, Field>
+	 * @throws InvalidArgumentException When a nested field is missing required keys.
 	 */
 	protected function prepare_fields( array $fields ) {
 		$instances = array();

@@ -72,10 +72,13 @@ class Builder {
 	 *
 	 * @param string  $option_key    Option key.
 	 * @param Manager $field_manager Field manager.
+	 * @throws InvalidArgumentException When option key is empty.
 	 */
 	public function __construct( string $option_key, Manager $field_manager ) {
 		if ( empty( $option_key ) ) {
+			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Option key cannot be empty.' ) );
+			/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
 		$this->option_key    = $option_key;

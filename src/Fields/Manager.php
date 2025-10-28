@@ -137,29 +137,36 @@ class Manager {
 	 * @param string $type  Field type key.
 	 * @param string $class Field class name.
 	 * @return void
+	 * @throws InvalidArgumentException When the type/class pair is invalid.
 	 */
 	protected function validate_type_class_pair( $type, $class ) {
 		if ( ! is_string( $type ) || '' === $type ) {
+			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Field type must be a non-empty string.' ) );
+			/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
 		if ( ! class_exists( $class ) ) {
-			throw new InvalidArgumentException(
-				sprintf(
-					$this->translate( 'Field class "%s" does not exist.' ),
-					$class
-				)
-			);
+				/* phpcs:disable WordPress.Security.EscapeOutput */
+				throw new InvalidArgumentException(
+					sprintf(
+						$this->translate( 'Field class "%s" does not exist.' ),
+						$class
+					)
+				);
+				/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
 		if ( ! is_subclass_of( $class, Field::class ) ) {
-			throw new InvalidArgumentException(
-				sprintf(
-					$this->translate( 'Field class "%1$s" must extend %2$s.' ),
-					$class,
-					Field::class
-				)
-			);
+				/* phpcs:disable WordPress.Security.EscapeOutput */
+				throw new InvalidArgumentException(
+					sprintf(
+						$this->translate( 'Field class "%1$s" must extend %2$s.' ),
+						$class,
+						Field::class
+					)
+				);
+				/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 	}
 
@@ -239,7 +246,7 @@ class Manager {
 				static function () use ( $admin_notice ) {
 					printf(
 						'<div class="notice notice-error"><p>%s</p></div>',
-						$admin_notice
+						esc_html( $admin_notice )
 					);
 				}
 			);
@@ -274,9 +281,9 @@ class Manager {
 			 *
 			 * @var string
 			 */
-			protected $missing_type;
+			protected string $missing_type;
 
-			public function __construct( array $config, $missing_type ) {
+			public function __construct( array $config, string $missing_type ) {
 				$this->missing_type = $missing_type;
 				parent::__construct( $config );
 			}

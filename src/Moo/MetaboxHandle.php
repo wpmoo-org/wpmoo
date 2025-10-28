@@ -493,6 +493,7 @@ class MetaboxHandle {
 	 *
 	 * @param mixed $field Raw field definition.
 	 * @return array<string, mixed>
+	 * @throws InvalidArgumentException When the field definition is invalid.
 	 */
 	protected function normalize_field( $field ): array {
 		if ( $field instanceof FieldDefinition ) {

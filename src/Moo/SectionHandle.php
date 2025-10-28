@@ -215,6 +215,7 @@ class SectionHandle {
 	 *
 	 * @param string|PageHandle $page Page identifier or handle.
 	 * @return $this
+	 * @throws InvalidArgumentException When the section is already attached to a metabox.
 	 */
 	public function parent( $page ): self {
 		if ( null !== $this->context && 'page' !== $this->context ) {
@@ -240,6 +241,7 @@ class SectionHandle {
 	 *
 	 * @param string|MetaboxHandle $metabox Metabox identifier or handle.
 	 * @return $this
+	 * @throws InvalidArgumentException When the section is already attached to a page.
 	 */
 	public function metabox( $metabox ): self {
 		if ( null !== $this->context && 'metabox' !== $this->context ) {
@@ -308,6 +310,7 @@ class SectionHandle {
 	 *
 	 * @param PageHandle $page Page handle.
 	 * @return void
+	 * @throws InvalidArgumentException When attempting to attach a metabox section to a page.
 	 */
 	public function attach( PageHandle $page ): void {
 		if ( $this->attached ) {
@@ -336,6 +339,7 @@ class SectionHandle {
 	 *
 	 * @param MetaboxHandle $metabox Metabox handle.
 	 * @return void
+	 * @throws InvalidArgumentException When attempting to attach a page section to a metabox.
 	 */
 	public function attachToMetabox( MetaboxHandle $metabox ): void {
 		if ( $this->attached ) {
@@ -429,6 +433,7 @@ class SectionHandle {
 	 *
 	 * @param mixed $field Raw field definition.
 	 * @return array<string, mixed>
+	 * @throws InvalidArgumentException When the field definition is invalid.
 	 */
 	protected function normalise_field( $field ): array {
 		if ( $field instanceof FieldDefinition ) {
