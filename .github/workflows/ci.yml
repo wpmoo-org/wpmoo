@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       has_tests: ${{ steps.detect-tests.outputs.has_tests }}
+      has_phpstan: ${{ steps.detect-phpstan.outputs.has_phpstan }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,6 +21,14 @@ jobs:
             echo "has_tests=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_tests=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Detect PHPStan config
+        id: detect-phpstan
+        run: |
+          if [ -f phpstan.neon ] || [ -f phpstan.neon.dist ]; then
+            echo "has_phpstan=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_phpstan=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -94,3 +103,39 @@ jobs:
         run: composer install --no-interaction --prefer-dist --ansi
       - name: Run PHPUnit
         run: phpunit -v
+  static-analysis:
+    name: Static analysis (PHPStan)
+    needs: checks
+    if: ${{ needs.checks.outputs.has_phpstan == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+          ini-values: memory_limit=-1
+      - name: Compute composer cache key
+        id: composer-cache
+        run: |
+          if [ -f composer.lock ]; then
+            echo "lockhash=$(sha256sum composer.lock | cut -d ' ' -f1)" >> "$GITHUB_OUTPUT"
+          else
+            echo "lockhash=none" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Cache Composer downloads
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.composer/cache
+            ~/.cache/composer
+          key: composer-${{ steps.composer-cache.outputs.lockhash }}
+          restore-keys: |
+            composer-
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --ansi
+      - name: Run PHPStan
+        run: composer run phpstan --ansi

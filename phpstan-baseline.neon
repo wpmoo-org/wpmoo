@@ -1,0 +1,92 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 5
+			path: src/Database/Model.php
+
+		-
+			message: "#^Method WPMoo\\\\Database\\\\Query\\:\\:table\\(\\) should return static\\(WPMoo\\\\Database\\\\Query\\) but returns WPMoo\\\\Database\\\\Query\\.$#"
+			count: 1
+			path: src/Database/Query.php
+
+		-
+			message: "#^Method class@anonymous/Fields/Manager\\.php\\:270\\:\\:__construct\\(\\) has parameter \\$missing_type with no type specified\\.$#"
+			count: 1
+			path: src/Fields/Manager.php
+
+		-
+			message: "#^Instanceof between array and WPMoo\\\\Options\\\\Field will always evaluate to false\\.$#"
+			count: 1
+			path: src/Moo/SectionHandle.php
+
+		-
+			message: "#^Cannot call method build\\(\\) on array\\<string, mixed\\>\\.$#"
+			count: 1
+			path: src/Options/Builder.php
+
+		-
+			message: "#^Cannot unset offset string on array\\{\\}\\.$#"
+			count: 1
+			path: src/Options/Container.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Container\\:\\:create\\(\\) should return static\\(WPMoo\\\\Options\\\\Container\\) but returns WPMoo\\\\Options\\\\Container\\.$#"
+			count: 2
+			path: src/Options/Container.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Container\\:\\:get\\(\\) should return static\\(WPMoo\\\\Options\\\\Container\\)\\|null but returns WPMoo\\\\Options\\\\Container\\|null\\.$#"
+			count: 1
+			path: src/Options/Container.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Field\\:\\:__call\\(\\) has parameter \\$arguments with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Options/Field.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Field\\:\\:__callStatic\\(\\) has parameter \\$arguments with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Options/Field.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Field\\:\\:make\\(\\) should return static\\(WPMoo\\\\Options\\\\Field\\) but returns WPMoo\\\\Options\\\\Field\\.$#"
+			count: 1
+			path: src/Options/Field.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Field\\:\\:normalize_attribute_arguments\\(\\) should return array\\<string, mixed\\> but returns array\\<int, array\\<int, array\\<string, mixed\\>\\>\\|string\\>\\.$#"
+			count: 1
+			path: src/Options/Field.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Field\\:\\:normalize_attribute_arguments\\(\\) should return array\\<string, mixed\\> but returns array\\<int, array\\<int, array\\>\\|string\\>\\.$#"
+			count: 1
+			path: src/Options/Field.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Field\\:\\:resolve_alias\\(\\) has parameter \\$arguments with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Options/Field.php
+
+		-
+			message: "#^Offset 0 does not exist on array\\<string, mixed\\>\\.$#"
+			count: 1
+			path: src/Options/Field.php
+
+		-
+			message: "#^Offset 1 does not exist on array\\<string, mixed\\>\\.$#"
+			count: 1
+			path: src/Options/Field.php
+
+		-
+			message: "#^Method WPMoo\\\\Options\\\\Section\\:\\:make\\(\\) should return static\\(WPMoo\\\\Options\\\\Section\\) but returns WPMoo\\\\Options\\\\Section\\.$#"
+			count: 2
+			path: src/Options/Section.php
+
+		-
+			message: "#^Variable \\$output in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: src/Support/I18n/PotGenerator.php
+
