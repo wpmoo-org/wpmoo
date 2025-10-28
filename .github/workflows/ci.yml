@@ -55,6 +55,8 @@ jobs:
           restore-keys: |
             composer-
       - name: Install dependencies
+        env:
+          COMPOSER_ROOT_VERSION: dev-main
         run: composer install --no-interaction --prefer-dist --ansi
       - name: Composer validate
         run: composer validate --strict --no-check-lock --ansi
@@ -100,6 +102,8 @@ jobs:
           restore-keys: |
             composer-
       - name: Install dependencies
+        env:
+          COMPOSER_ROOT_VERSION: dev-main
         run: composer install --no-interaction --prefer-dist --ansi
       - name: Run PHPUnit
         run: phpunit
