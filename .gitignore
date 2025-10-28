@@ -27,5 +27,7 @@ yarn.lock
 
 # Ignore temporary files
 *.tmp
+# Ignore Composer lock in library repo
+composer.lock
 # PHPUnit cache
 .phpunit.result.cache
