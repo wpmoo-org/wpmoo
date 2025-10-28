@@ -15,7 +15,7 @@ namespace WPMoo\Options;
 use WPMoo\Fields\Manager;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

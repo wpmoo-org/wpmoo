@@ -13,7 +13,7 @@ use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

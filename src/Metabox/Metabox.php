@@ -19,7 +19,7 @@ use WPMoo\Support\Assets;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

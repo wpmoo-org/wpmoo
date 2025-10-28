@@ -12,7 +12,7 @@
 namespace WPMoo\Taxonomy;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

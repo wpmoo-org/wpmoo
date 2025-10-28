@@ -12,7 +12,7 @@
 namespace WPMoo\Database;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

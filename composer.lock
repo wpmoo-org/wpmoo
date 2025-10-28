@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "702062c87825c6e271678fbe40436990",
+    "content-hash": "41422d8bb62ab56f457deebb0bf8a5a2",
     "packages": [],
     "packages-dev": [
         {
@@ -889,6 +889,74 @@
             "time": "2025-07-24T20:08:31+00:00"
         },
         {
+            "name": "wpmoo/wpmoo-cli",
+            "version": "dev-dev",
+            "dist": {
+                "type": "path",
+                "url": "../wpmoo-cli",
+                "reference": "25cae99ce24b76528defed01e71b2119f07da5e9"
+            },
+            "require": {
+                "php": ">=7.4",
+                "wpmoo/wpmoo": "dev-main"
+            },
+            "require-dev": {
+                "wpmoo/wpmoo-coding-standards": "dev-main"
+            },
+            "bin": [
+                "bin/moo"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WPMoo\\CLI\\": "src/CLI/"
+                }
+            },
+            "scripts": {
+                "check:validate": [
+                    "composer validate"
+                ],
+                "lint:php": [
+                    "find . -path './vendor' -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l"
+                ],
+                "phpcs": [
+                    "vendor/bin/phpcs -n"
+                ],
+                "hooks:install": [
+                    "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit .githooks/pre-push"
+                ],
+                "check": [
+                    "@check:validate",
+                    "@lint:php",
+                    "@phpcs"
+                ]
+            },
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "WPMoo",
+                    "email": "hello@wpmoo.org",
+                    "homepage": "https://wpmoo.org/"
+                }
+            ],
+            "description": "WPMoo CLI – modular commands for the WPMoo framework (PHP 7.4+)",
+            "homepage": "https://wpmoo.org",
+            "keywords": [
+                "cli",
+                "framework",
+                "plugin",
+                "wordpress",
+                "wp-cli",
+                "wpmoo"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "wpmoo/wpmoo-coding-standards",
             "version": "dev-main",
             "source": {
@@ -943,6 +1011,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "wpmoo/wpmoo-cli": 20,
         "wpmoo/wpmoo-coding-standards": 20
     },
     "prefer-stable": false,

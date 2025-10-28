@@ -11,7 +11,7 @@ use BadMethodCallException;
 use InvalidArgumentException;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

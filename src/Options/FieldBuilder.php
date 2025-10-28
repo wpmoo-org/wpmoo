@@ -14,7 +14,7 @@ namespace WPMoo\Options;
 use WPMoo\Support\Concerns\HasColumns;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

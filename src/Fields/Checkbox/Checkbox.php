@@ -14,7 +14,7 @@ namespace WPMoo\Fields\Checkbox;
 use WPMoo\Fields\Field;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

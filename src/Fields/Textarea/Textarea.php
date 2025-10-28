@@ -14,7 +14,7 @@ namespace WPMoo\Fields\Textarea;
 use WPMoo\Fields\Field;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

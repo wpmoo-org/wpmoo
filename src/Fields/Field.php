@@ -15,7 +15,7 @@ use WPMoo\Support\Concerns\EscapesOutput;
 use WPMoo\Support\Concerns\HasColumns;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

@@ -11,7 +11,7 @@ use InvalidArgumentException;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

@@ -15,7 +15,7 @@ use WPMoo\Metabox\Metabox;
 use WPMoo\Options\Options;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

@@ -17,7 +17,7 @@ use WPMoo\Options\Field as FieldDefinition;
 use WPMoo\Options\FieldBuilder as FieldDefinitionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

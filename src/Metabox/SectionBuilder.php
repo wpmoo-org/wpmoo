@@ -14,7 +14,7 @@ namespace WPMoo\Metabox;
 use WPMoo\Options\Field as OptionsFieldDefinition;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

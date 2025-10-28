@@ -12,7 +12,7 @@
 namespace WPMoo\PostType;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

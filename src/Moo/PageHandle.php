@@ -12,7 +12,7 @@ use WPMoo\Moo\SectionHandle;
 use WPMoo\Options\Builder as OptionsBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

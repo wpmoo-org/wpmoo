@@ -12,7 +12,7 @@
 namespace WPMoo\Support;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

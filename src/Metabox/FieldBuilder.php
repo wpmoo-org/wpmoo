@@ -12,7 +12,7 @@
 namespace WPMoo\Metabox;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

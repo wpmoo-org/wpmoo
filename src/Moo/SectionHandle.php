@@ -15,7 +15,7 @@ use WPMoo\Options\FieldBuilder;
 use WPMoo\Options\SectionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

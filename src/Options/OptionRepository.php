@@ -15,7 +15,7 @@ namespace WPMoo\Options;
 use WPMoo\Support\Arr;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

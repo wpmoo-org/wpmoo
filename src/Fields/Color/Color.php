@@ -14,7 +14,7 @@ namespace WPMoo\Fields\Color;
 use WPMoo\Fields\Field;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

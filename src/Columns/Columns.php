@@ -12,7 +12,7 @@
 namespace WPMoo\Columns;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

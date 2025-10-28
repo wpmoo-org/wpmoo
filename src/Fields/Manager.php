@@ -21,7 +21,7 @@ use WPMoo\Fields\Textarea\Textarea;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

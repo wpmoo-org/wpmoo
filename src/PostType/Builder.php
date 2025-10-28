@@ -16,7 +16,7 @@ use WPMoo\Columns\Columns;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**

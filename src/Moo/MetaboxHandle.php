@@ -17,7 +17,7 @@ use WPMoo\Options\Field as FieldDefinition;
 use WPMoo\Options\FieldBuilder as OptionsFieldBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	wp_die();
 }
 
 /**
@@ -373,7 +373,7 @@ class MetaboxHandle {
 
 		if ( function_exists( 'did_action' ) && did_action( 'init' ) ) {
 			if ( function_exists( 'doing_action' ) && doing_action( 'init' ) && function_exists( 'add_action' ) ) {
-				$adjusted_priority           = max( $priority, 99 );
+				$adjusted_priority = max( $priority, 99 );
 				add_action( 'init', array( $this, 'maybe_register' ), $adjusted_priority );
 				$this->registration_hooked = true;
 				$this->register_priority   = $adjusted_priority;

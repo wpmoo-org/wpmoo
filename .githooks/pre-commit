@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "WPMoo pre-commit: validate, lint, PHPCS, PHPStan, PHPUnit"
+echo "WPMoo pre-commit: moo check (quick) or fallback"
 
 # Collect staged files
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | tr '\n' ' ')
@@ -9,7 +9,19 @@ PHP_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.php$' 
 
 # Nothing staged; nothing to do
 if [ -z "${STAGED_FILES}" ]; then
+  echo "(no staged changes; skipping checks)"
   exit 0
+fi
+
+# Prefer WPMoo CLI check via Composer if available
+if [ -x "./vendor/bin/moo" ] || grep -q '"moo"' composer.json 2>/dev/null; then
+  if command -v composer >/dev/null 2>&1; then
+    composer moo -- check --quick || exit 1
+    exit 0
+  else
+    ./vendor/bin/moo check --quick || exit 1
+    exit 0
+  fi
 fi
 
 # Composer validate (skip lock check)
@@ -48,4 +60,3 @@ fi
 
 echo "✔ Pre-commit checks passed"
 exit 0
-
