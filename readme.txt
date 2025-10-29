@@ -2,7 +2,7 @@
 Contributors: wpmoo
 Tags: framework, developer, options, fields
 Requires at least: 6.2
-Tested up to: 6.6
+Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 0.4.3
 License: GPLv3
@@ -23,4 +23,3 @@ WPMoo provides fluent builders for options pages, metaboxes, custom post types, 
 
 = 0.4.3 =
 * Current development version.
-
