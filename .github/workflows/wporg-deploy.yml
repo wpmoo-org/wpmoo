@@ -43,6 +43,7 @@ jobs:
         run: php vendor/bin/moo deploy
 
       - name: Plugin Check (WordPress.org)
+        if: ${{ github.event.release.target_commitish == 'main' }}
         uses: WordPress/plugin-check-action@v1
         with:
           plugin-directory: dist/${{ env.PLUGIN_DIR }}

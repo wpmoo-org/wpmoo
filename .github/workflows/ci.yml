@@ -8,6 +8,8 @@ jobs:
   checks:
     name: Static checks (Composer/PHPCS)
     runs-on: ubuntu-latest
+    env:
+      PLUGIN_DIR: ${{ github.event.repository.name }}
     outputs:
       has_tests: ${{ steps.detect-tests.outputs.has_tests }}
       has_phpstan: ${{ steps.detect-phpstan.outputs.has_phpstan }}
@@ -74,6 +76,13 @@ jobs:
           else
             vendor/bin/phpcs -n || true
           fi
+      - name: Build distribution directory (WPMoo CLI)
+        run: php vendor/bin/moo deploy
+      - name: Plugin Check (WordPress.org)
+        uses: WordPress/plugin-check-action@v1
+        with:
+          plugin-directory: dist/${{ env.PLUGIN_DIR }}
+          fail-on-warning: false
 
   tests:
     name: PHPUnit ${{ matrix.php }}
