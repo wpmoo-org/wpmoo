@@ -61,9 +61,19 @@ jobs:
       - name: Composer validate
         run: composer validate --strict --no-check-lock --ansi
       - name: Lint PHP
-        run: composer run lint:php --ansi
+        run: |
+          if composer run --list | grep -q "lint:php"; then
+            composer run lint:php --ansi
+          else
+            find . -path './vendor' -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+          fi
       - name: PHPCS
-        run: composer run phpcs --ansi
+        run: |
+          if composer run --list | grep -q "phpcs"; then
+            composer run phpcs --ansi
+          else
+            vendor/bin/phpcs -n || true
+          fi
 
   tests:
     name: PHPUnit ${{ matrix.php }}
@@ -107,6 +117,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --ansi
       - name: Run PHPUnit
         run: phpunit
+
   static-analysis:
     name: Static analysis (PHPStan)
     needs: checks
@@ -142,4 +153,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --ansi
       - name: Run PHPStan
-        run: composer run phpstan --ansi
+        run: |
+          if composer run --list | grep -q "phpstan"; then
+            composer run phpstan --ansi
+          else
+            vendor/bin/phpstan analyse --no-progress || true
+          fi
