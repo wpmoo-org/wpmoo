@@ -12,10 +12,6 @@ Thumbs.db
 # Ignore log files
 *.log
 
-# Ignore compiled CSS files
-*.css
-*.css.map
-
 # Ignore build directories
 dist/
 build/

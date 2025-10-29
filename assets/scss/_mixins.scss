@@ -10,15 +10,14 @@
 @mixin transition($properties...) {
   $duration: wpmoo-transition-duration();
   $timing: wpmoo-transition-timing();
-  $rules: ();
+  $rules: (
+  );
 
-  @each $property in $properties {
-    $rules: list.append(
-      $rules,
+@each $property in $properties {
+  $rules: list.append($rules,
       "#{$property} #{$duration} #{$timing}",
-      $separator: comma
-    );
-  }
+      $separator: comma);
+}
 
-  transition: $rules;
+transition: $rules;
 }
