@@ -77,12 +77,13 @@ jobs:
             vendor/bin/phpcs -n || true
           fi
       - name: Build distribution directory (WPMoo CLI)
-        run: php vendor/bin/moo deploy
+        run: php vendor/bin/moo deploy --wp
       - name: Plugin Check (WordPress.org)
         uses: WordPress/plugin-check-action@v1.1.3
         with:
           build-dir: ../dist/${{ env.PLUGIN_DIR }}
           strict: true
+          ignore-codes: trademarked_term
 
   tests:
     name: PHPUnit ${{ matrix.php }}

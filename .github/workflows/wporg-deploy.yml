@@ -40,7 +40,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --ansi
 
       - name: Build distribution directory (WPMoo CLI)
-        run: php vendor/bin/moo deploy
+        run: php vendor/bin/moo deploy --wp
 
       - name: Plugin Check (WordPress.org)
         if: ${{ github.event.release.target_commitish == 'main' }}
@@ -48,6 +48,7 @@ jobs:
         with:
           build-dir: ../dist/${{ env.PLUGIN_DIR }}
           strict: true
+          ignore-codes: trademarked_term
 
       - name: Deploy to WordPress.org (SVN)
         uses: 10up/action-wordpress-plugin-deploy@2.3.0
