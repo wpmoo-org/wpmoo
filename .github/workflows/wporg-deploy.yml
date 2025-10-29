@@ -39,6 +39,12 @@ jobs:
       - name: Install Composer dependencies (with dev)
         run: composer install --no-interaction --prefer-dist --ansi
 
+      - name: Update "Tested up to" to latest WP
+        run: |
+          LATEST=$(php -r 'echo json_decode(file_get_contents("https://api.wordpress.org/core/version-check/1.7/"), true)["offers"][0]["current"];')
+          echo "Latest WP: $LATEST"
+          sed -i.bak -E "s/^(Tested up to:).*/\\1 ${LATEST}/" readme.txt && rm -f readme.txt.bak
+
       - name: Build distribution directory (WPMoo CLI)
         run: php vendor/bin/moo deploy --wp
 
