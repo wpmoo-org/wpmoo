@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   checks:
     name: Static checks (Composer/PHPCS)
@@ -74,6 +77,18 @@ jobs:
           LATEST=$(php -r 'echo json_decode(file_get_contents("https://api.wordpress.org/core/version-check/1.7/"), true)["offers"][0]["current"];')
           echo "Latest WP: $LATEST"
           sed -i.bak -E "s/^(Tested up to:).*/\\1 ${LATEST}/" readme.txt && rm -f readme.txt.bak
+      - name: Commit readme bump (main)
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          set -e
+          LATEST=$(php -r 'echo json_decode(file_get_contents("https://api.wordpress.org/core/version-check/1.7/"), true)["offers"][0]["current"];')
+          if git diff --quiet -- readme.txt; then
+            echo "No readme changes to commit"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add readme.txt
+          git commit -m "docs(readme): auto-bump Tested up to to ${LATEST}"
+          git push
       - name: PHPCS
         run: |
           if composer run --list | grep -q "phpcs"; then
