@@ -82,7 +82,7 @@ jobs:
         uses: WordPress/plugin-check-action@v1
         with:
           plugin-directory: dist/${{ env.PLUGIN_DIR }}
-          fail-on-warning: false
+          fail-on-warning: true
 
   tests:
     name: PHPUnit ${{ matrix.php }}
