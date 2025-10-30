@@ -2,12 +2,14 @@
 /**
  * Fluent section builder used by the Container API.
  *
- * @package WPMoo\Options
+ * @package WPMoo\Sections
  */
 
-namespace WPMoo\Options;
+namespace WPMoo\Sections;
 
 use InvalidArgumentException;
+use WPMoo\Options\Field as FieldDefinition;
+use WPMoo\Fields\FieldBuilder;
 use WPMoo\Support\Concerns\HasColumns;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
@@ -17,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Represents an options section/panel.
+ * Represents a section/panel.
  */
 class Section {
 	use HasColumns;
@@ -198,7 +200,7 @@ class Section {
 	/**
 	 * Add a field to the section.
 	 *
-	 * @param Field|FieldBuilder|array<string, mixed> $field Field definition.
+	 * @param FieldDefinition|FieldBuilder|array<string, mixed> $field Field definition.
 	 * @return $this
 	 */
 	public function add_field( $field ): self {
@@ -282,7 +284,7 @@ class Section {
 	 * @throws InvalidArgumentException When field definition is invalid.
 	 */
 	protected function normalize_field( $field ): array {
-		if ( $field instanceof Field ) {
+		if ( $field instanceof FieldDefinition ) {
 			return $field->toArray();
 		}
 
@@ -296,14 +298,14 @@ class Section {
 			}
 
 			if ( empty( $field['type'] ) ) {
-				/* phpcs:disable WordPress.Security.EscapeOutput */
+                /* phpcs:disable WordPress.Security.EscapeOutput */
 				throw new InvalidArgumentException(
 					sprintf(
 						$this->translate( 'Field "%s" configuration requires a "type" key.' ),
 						(string) $field['id']
 					)
 				);
-				/* phpcs:enable WordPress.Security.EscapeOutput */
+                /* phpcs:enable WordPress.Security.EscapeOutput */
 			}
 
 			return $field;
@@ -311,13 +313,13 @@ class Section {
 
 		$type = is_object( $field ) ? get_class( $field ) : gettype( $field );
 
-		/* phpcs:disable WordPress.Security.EscapeOutput */
+        /* phpcs:disable WordPress.Security.EscapeOutput */
 		throw new InvalidArgumentException(
 			sprintf(
 				$this->translate( 'Unsupported field definition of type %s.' ),
 				(string) $type
 			)
 		);
-		/* phpcs:enable WordPress.Security.EscapeOutput */
+        /* phpcs:enable WordPress.Security.EscapeOutput */
 	}
 }

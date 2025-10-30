@@ -9,10 +9,9 @@ namespace WPMoo\Moo;
 
 use InvalidArgumentException;
 use WPMoo\Moo\PageHandle;
-use WPMoo\Metabox\FieldBuilder as MetaboxFieldBuilder;
+use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
 use WPMoo\Options\Field as FieldDefinition;
-use WPMoo\Options\FieldBuilder;
-use WPMoo\Options\SectionBuilder;
+use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -103,7 +102,7 @@ class SectionHandle {
 	/**
 	 * Underlying SectionBuilder once attached.
 	 *
-	 * @var SectionBuilder|\WPMoo\Metabox\SectionBuilder|null
+	 * @var BaseSectionBuilder|null
 	 */
 	protected $builder = null;
 
@@ -440,11 +439,7 @@ class SectionHandle {
 			return $field->toArray();
 		}
 
-		if ( $field instanceof FieldBuilder ) {
-			return $field->build();
-		}
-
-		if ( $field instanceof MetaboxFieldBuilder ) {
+		if ( $field instanceof BaseFieldBuilder ) {
 			return $field->build();
 		}
 

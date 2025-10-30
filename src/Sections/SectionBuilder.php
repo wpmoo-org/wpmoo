@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Provides common section properties and layout helpers.
+ * Holds fields and can build a full section config.
  */
 class SectionBuilder {
 	use HasColumns;
@@ -57,6 +58,13 @@ class SectionBuilder {
 		'size'    => 12,
 		'columns' => array( 'default' => 12 ),
 	);
+
+	/**
+	 * Fields in this section (built arrays or FieldBuilder instances).
+	 *
+	 * @var array<int, mixed>
+	 */
+	protected $fields = array();
 
 	/**
 	 * Constructor.
@@ -128,6 +136,33 @@ class SectionBuilder {
 	}
 
 	/**
+	 * Add a field using the shared Fields\FieldBuilder.
+	 *
+	 * @param string $id   Field ID.
+	 * @param string $type Field type.
+	 * @return \WPMoo\Fields\FieldBuilder
+	 */
+	public function field( string $id, string $type ): \WPMoo\Fields\FieldBuilder {
+		$field           = new \WPMoo\Fields\FieldBuilder( $id, $type );
+		$this->fields[]  = $field;
+		return $field;
+	}
+
+	/**
+	 * Append a list of prepared field definitions.
+	 * Accepts arrays or FieldBuilder instances.
+	 *
+	 * @param array<int, mixed> $fields Fields array.
+	 * @return $this
+	 */
+	public function fields( array $fields ): self {
+		foreach ( $fields as $field ) {
+			$this->fields[] = $field;
+		}
+		return $this;
+	}
+
+	/**
 	 * Get section id.
 	 *
 	 * @return string
@@ -143,5 +178,31 @@ class SectionBuilder {
 	 */
 	public function get_layout(): array {
 		return $this->layout;
+	}
+
+	/**
+	 * Build the section configuration.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function build(): array {
+		$fields = array();
+
+		foreach ( $this->fields as $field ) {
+			if ( $field instanceof \WPMoo\Fields\FieldBuilder ) {
+				$fields[] = $field->build();
+			} else {
+				$fields[] = $field;
+			}
+		}
+
+		return array(
+			'id'          => $this->id,
+			'title'       => $this->title,
+			'description' => $this->description,
+			'icon'        => $this->icon,
+			'fields'      => $fields,
+			'layout'      => $this->layout,
+		);
 	}
 }

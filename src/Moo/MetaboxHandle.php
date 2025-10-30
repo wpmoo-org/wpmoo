@@ -10,11 +10,11 @@ namespace WPMoo\Moo;
 use InvalidArgumentException;
 use Traversable;
 use WPMoo\Metabox\Builder as MetaboxBuilder;
-use WPMoo\Metabox\FieldBuilder as MetaboxFieldBuilder;
+use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
 use WPMoo\Metabox\Metabox as MetaboxInstance;
-use WPMoo\Metabox\SectionBuilder as MetaboxSectionBuilder;
+use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
 use WPMoo\Options\Field as FieldDefinition;
-use WPMoo\Options\FieldBuilder as OptionsFieldBuilder;
+
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -322,9 +322,9 @@ class MetaboxHandle {
 	 * @param string $id          Section identifier.
 	 * @param string $title       Section title.
 	 * @param string $description Optional description.
-	 * @return MetaboxSectionBuilder
+	 * @return BaseSectionBuilder
 	 */
-	public function section( string $id, string $title = '', string $description = '' ): MetaboxSectionBuilder {
+	public function section( string $id, string $title = '', string $description = '' ): BaseSectionBuilder {
 		return $this->builder->section( $id, $title, $description );
 	}
 
@@ -500,7 +500,7 @@ class MetaboxHandle {
 			return $field->toArray();
 		}
 
-		if ( $field instanceof OptionsFieldBuilder || $field instanceof MetaboxFieldBuilder ) {
+		if ( $field instanceof BaseFieldBuilder ) {
 			return $field->build();
 		}
 

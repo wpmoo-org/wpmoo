@@ -14,7 +14,7 @@ use InvalidArgumentException;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Options\Field as FieldDefinition;
-use WPMoo\Options\FieldBuilder as FieldDefinitionBuilder;
+use WPMoo\Fields\FieldBuilder as FieldDefinitionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();

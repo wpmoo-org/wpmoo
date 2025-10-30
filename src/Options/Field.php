@@ -22,16 +22,16 @@ class Field {
 	/**
 	 * Underlying field builder instance.
 	 *
-	 * @var FieldBuilder
+	 * @var \WPMoo\Fields\FieldBuilder
 	 */
 	protected $builder;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param FieldBuilder $builder Field builder.
+	 * @param \WPMoo\Fields\FieldBuilder $builder Field builder.
 	 */
-	protected function __construct( FieldBuilder $builder ) {
+	protected function __construct( \WPMoo\Fields\FieldBuilder $builder ) {
 		$this->builder = $builder;
 	}
 
@@ -50,7 +50,7 @@ class Field {
 		}
 
 		$type    = static::normalize_type( $type );
-		$builder = new FieldBuilder( $id, $type );
+		$builder = new \WPMoo\Fields\FieldBuilder( $id, $type );
 
 		if ( '' !== $label ) {
 			$builder->label( $label );
@@ -88,9 +88,9 @@ class Field {
 	/**
 	 * Return the underlying builder instance.
 	 *
-	 * @return FieldBuilder
+	 * @return \WPMoo\Fields\FieldBuilder
 	 */
-	public function builder(): FieldBuilder {
+	public function builder(): \WPMoo\Fields\FieldBuilder {
 		return $this->builder;
 	}
 

@@ -13,6 +13,7 @@ namespace WPMoo\Options;
 
 use InvalidArgumentException;
 use WPMoo\Fields\Manager;
+use WPMoo\Sections\SectionBuilder;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {

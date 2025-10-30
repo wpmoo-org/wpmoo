@@ -13,6 +13,8 @@ namespace WPMoo\Metabox;
 
 use InvalidArgumentException;
 use WPMoo\Fields\Manager;
+use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
+use WPMoo\Sections\SectionBuilder;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -147,10 +149,10 @@ class Builder {
 	 *
 	 * @param string $id   Field ID.
 	 * @param string $type Field type.
-	 * @return FieldBuilder
+	 * @return BaseFieldBuilder
 	 */
-	public function field( string $id, string $type ): FieldBuilder {
-		$field = new FieldBuilder( $id, $type );
+	public function field( string $id, string $type ): BaseFieldBuilder {
+		$field = new BaseFieldBuilder( $id, $type );
 
 		$this->fields[] = $field;
 
@@ -275,7 +277,7 @@ class Builder {
 		$built_fields = array();
 
 		foreach ( $this->fields as $field ) {
-			if ( $field instanceof FieldBuilder ) {
+			if ( $field instanceof BaseFieldBuilder ) {
 				$built_fields[] = $field->build();
 			} else {
 				$built_fields[] = $field;

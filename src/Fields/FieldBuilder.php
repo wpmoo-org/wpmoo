@@ -173,6 +173,17 @@ class FieldBuilder {
 	}
 
 	/**
+	 * Helper text rendered beneath the control.
+	 *
+	 * @param string $markup Helper text (HTML allowed).
+	 * @return $this
+	 */
+	public function help( string $markup ): self {
+		$this->config['help'] = $markup;
+		return $this;
+	}
+
+	/**
 	 * Define layout configuration (Options grid helpers).
 	 *
 	 * @param array<string, mixed> $layout Layout settings.
