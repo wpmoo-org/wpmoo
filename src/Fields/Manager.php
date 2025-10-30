@@ -12,6 +12,7 @@
 namespace WPMoo\Fields;
 
 use InvalidArgumentException;
+use WPMoo\Fields\BaseField;
 use WPMoo\Fields\Accordion\Accordion;
 use WPMoo\Fields\Checkbox\Checkbox;
 use WPMoo\Fields\Color\Color;
@@ -269,12 +270,12 @@ class Manager {
 	 * Provide a harmless fallback field when a type cannot be resolved.
 	 *
 	 * @param array<string, mixed> $config Field configuration.
-	 * @return Field
+	 * @return BaseField
 	 */
 	protected function fallback_field( array $config ) {
 		$type = isset( $config['type'] ) ? $config['type'] : 'unknown';
 
-		return new class( $config, $type ) extends Field {
+		return new class( $config, $type ) extends BaseField {
 
 			/**
 			 * Missing type slug.
@@ -332,7 +333,7 @@ class Manager {
 	/**
 	 * Provide the framework's default field map.
 	 *
-	 * @return array<string, class-string<Field>>
+	 * @return array<string, class-string<BaseField>>
 	 */
 	protected function default_type_map(): array {
 		return array(

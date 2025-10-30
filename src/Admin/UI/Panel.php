@@ -113,9 +113,9 @@ class Panel {
 	 * @param array<string, mixed> $config Panel configuration.
 	 * @return static
 	 */
-    public static function make( array $config = array() ): static {
-        return new static( $config );
-    }
+	public static function make( array $config = array() ): static {
+		return new static( $config );
+	}
 
 	/**
 	 * Render the panel markup.

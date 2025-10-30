@@ -262,13 +262,13 @@ class SectionHandle {
 		return $this;
 	}
 
-    /**
-     * Define multiple fields.
-     *
-     * @param (\WPMoo\Fields\FieldBuilder|array<string,mixed>) ...$fields Field definitions or an array of field definitions.
-     * @return $this
-     */
-    public function fields( ...$fields ): self {
+	/**
+	 * Define multiple fields.
+	 *
+	 * @param (\WPMoo\Fields\FieldBuilder|array<string,mixed>) ...$fields Field definitions or an array of field definitions.
+	 * @return $this
+	 */
+	public function fields( ...$fields ): self {
 		if ( 1 === count( $fields ) && is_array( $fields[0] ) ) {
 			$fields = $fields[0];
 		}
@@ -426,14 +426,14 @@ class SectionHandle {
 		$this->builder->fields( $prepared );
 	}
 
-    /**
-     * Convert an incoming field definition into an array.
-     *
-     * @param \WPMoo\Fields\FieldBuilder|array<string,mixed> $field Raw field definition.
-     * @return array<string, mixed>
-     * @throws InvalidArgumentException When the field definition is invalid.
-     */
-    protected function normalise_field( $field ): array {
+	/**
+	 * Convert an incoming field definition into an array.
+	 *
+	 * @param \WPMoo\Fields\FieldBuilder|array<string,mixed> $field Raw field definition.
+	 * @return array<string, mixed>
+	 * @throws InvalidArgumentException When the field definition is invalid.
+	 */
+	protected function normalise_field( $field ): array {
 		if ( $field instanceof BaseFieldBuilder ) {
 			return $field->build();
 		}

@@ -32,14 +32,14 @@ class Container {
 	/**
 	 * Queued containers awaiting registration.
 	 *
-	 * @var array<string, Container>
+	 * @var array<string, static>
 	 */
 	protected static $queue = array();
 
 	/**
 	 * Registered instances keyed by container id.
 	 *
-	 * @var array<string, Container>
+	 * @var array<string, static>
 	 */
 	protected static $instances = array();
 
@@ -278,7 +278,6 @@ class Container {
 		static::$queue = array();
 
 		foreach ( $queued as $hash => $container ) {
-			unset( static::$queue[ $hash ] );
 			$container->register();
 		}
 	}

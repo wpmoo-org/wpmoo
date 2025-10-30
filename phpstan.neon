@@ -1,7 +1,15 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
 parameters:
     level: 5
     paths:
         - src
     stubFiles:
         - phpstan-stubs/wpmoo-fields-field.stub.php
-    checkMissingIterableValueType: false
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        -
+            message: '#Variable \$output in empty\(\) always exists and is not falsy#'
+            path: src/Support/I18n/PotGenerator.php
