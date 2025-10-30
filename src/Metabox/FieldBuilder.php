@@ -25,7 +25,7 @@ class FieldBuilder extends BaseFieldBuilder {
 	 *
 	 * @var array<string, mixed>
 	 */
-    // Inherit $config and fluent API from base builder.
+	// Inherit $config and fluent API from base builder.
 
 	/**
 	 * Constructor.
@@ -33,7 +33,8 @@ class FieldBuilder extends BaseFieldBuilder {
 	 * @param string $id   Field ID.
 	 * @param string $type Field type.
 	 */
-    public function __construct( string $id, string $type ) { parent::__construct( $id, $type ); }
+	public function __construct( string $id, string $type ) {
+		parent::__construct( $id, $type ); }
 
 	/**
 	 * Set field label.
@@ -77,7 +78,8 @@ class FieldBuilder extends BaseFieldBuilder {
 	 * @param array<string, mixed> $args Arguments.
 	 * @return $this
 	 */
-    public function args( array $args ): self { return parent::args( $args ); }
+	public function args( array $args ): self {
+		return parent::args( $args ); }
 
 	/**
 	 * Set placeholder.
@@ -85,7 +87,8 @@ class FieldBuilder extends BaseFieldBuilder {
 	 * @param string $placeholder Placeholder text.
 	 * @return $this
 	 */
-    public function placeholder( string $placeholder ): self { return parent::placeholder( $placeholder ); }
+	public function placeholder( string $placeholder ): self {
+		return parent::placeholder( $placeholder ); }
 
 	/**
 	 * Set options for select/radio fields.
@@ -93,7 +96,8 @@ class FieldBuilder extends BaseFieldBuilder {
 	 * @param array<string, string> $options Options array.
 	 * @return $this
 	 */
-    public function options( array $options ): self { return parent::options( $options ); }
+	public function options( array $options ): self {
+		return parent::options( $options ); }
 
 	/**
 	 * Generic config setter.
@@ -102,12 +106,14 @@ class FieldBuilder extends BaseFieldBuilder {
 	 * @param mixed  $value Config value.
 	 * @return $this
 	 */
-    public function set( string $key, $value ): self { return parent::set( $key, $value ); }
+	public function set( string $key, $value ): self {
+		return parent::set( $key, $value ); }
 
 	/**
 	 * Build the field configuration.
 	 *
 	 * @return array<string, mixed>
 	 */
-    public function build(): array { return parent::build(); }
+	public function build(): array {
+		return parent::build(); }
 }

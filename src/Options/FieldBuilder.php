@@ -27,7 +27,7 @@ class FieldBuilder extends BaseFieldBuilder {
 	 *
 	 * @var array<string, mixed>
 	 */
-    // Inherit $config from base builder.
+	// Inherit $config from base builder.
 
 	/**
 	 * Constructor.
@@ -35,7 +35,8 @@ class FieldBuilder extends BaseFieldBuilder {
 	 * @param string $id   Field ID.
 	 * @param string $type Field type.
 	 */
-    public function __construct( string $id, string $type ) { parent::__construct( $id, $type ); }
+	public function __construct( string $id, string $type ) {
+		parent::__construct( $id, $type ); }
 
 	/**
 	 * Set field label.
@@ -79,7 +80,8 @@ class FieldBuilder extends BaseFieldBuilder {
 	 * @param array<string, mixed> $args Arguments.
 	 * @return $this
 	 */
-    public function args( array $args ): self { return parent::args( $args ); }
+	public function args( array $args ): self {
+		return parent::args( $args ); }
 
 	/**
 	 * Set placeholder.

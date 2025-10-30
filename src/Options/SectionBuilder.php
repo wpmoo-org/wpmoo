@@ -11,7 +11,7 @@
 
 namespace WPMoo\Options;
 
-use WPMoo\Support\Concerns\HasColumns;
+use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -19,131 +19,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Fluent builder for option sections.
+ * Extends the shared Sections\SectionBuilder for common props/layout.
  */
-class SectionBuilder {
-	use HasColumns;
-
-	/**
-	 * Section ID.
-	 *
-	 * @var string
-	 */
-	protected $id;
-
-	/**
-	 * Section title.
-	 *
-	 * @var string
-	 */
-	protected $title;
-
-	/**
-	 * Section description.
-	 *
-	 * @var string
-	 */
-	protected $description;
-
-	/**
-	 * Section icon (dashicons class).
-	 *
-	 * @var string
-	 */
-	protected $icon = '';
-
+class SectionBuilder extends BaseSectionBuilder {
 	/**
 	 * Fields in this section.
 	 *
-	 * @var array<int, array<string, mixed>>
+	 * @var array<int, array<string, mixed>|FieldBuilder>
 	 */
 	protected $fields = array();
-
-	/**
-	 * Layout configuration.
-	 *
-	 * @var array<string, mixed>
-	 */
-	protected $layout = array(
-		'size'    => 12,
-		'columns' => array(
-			'default' => 12,
-		),
-	);
-
-	/**
-	 * Constructor.
-	 *
-	 * @param string $id          Section ID.
-	 * @param string $title       Section title.
-	 * @param string $description Section description.
-	 */
-	public function __construct( string $id, string $title = '', string $description = '' ) {
-		$this->id          = $id;
-		$this->title       = $title;
-		$this->description = $description;
-	}
-
-	/**
-	 * Set section title.
-	 *
-	 * @param string $title Title.
-	 * @return $this
-	 */
-	public function title( string $title ): self {
-		$this->title = $title;
-
-		return $this;
-	}
-
-	/**
-	 * Set section description.
-	 *
-	 * @param string $description Description.
-	 * @return $this
-	 */
-	public function description( string $description ): self {
-		$this->description = $description;
-
-		return $this;
-	}
-
-	/**
-	 * Set section icon (dashicons class name).
-	 *
-	 * @param string $icon Dashicons class (e.g. dashicons-admin-generic).
-	 * @return $this
-	 */
-	public function icon( string $icon ): self {
-		$this->icon = $icon;
-
-		return $this;
-	}
-
-	/**
-	 * Define column span(s) for the section card.
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
-	 */
-	public function size( ...$columns ): self {
-		$parsed       = $this->parseColumnSpans( $columns );
-		$this->layout = array(
-			'size'    => $parsed['default'],
-			'columns' => $parsed,
-		);
-
-		return $this;
-	}
-
-	/**
-	 * Alias for size().
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
-	 */
-	public function columns( ...$columns ): self {
-		return $this->size( ...$columns );
-	}
 
 	/**
 	 * Add a field to the section.
@@ -153,8 +37,7 @@ class SectionBuilder {
 	 * @return FieldBuilder
 	 */
 	public function field( string $id, string $type ): FieldBuilder {
-		$field = new FieldBuilder( $id, $type );
-
+		$field          = new FieldBuilder( $id, $type );
 		$this->fields[] = $field;
 
 		return $field;
@@ -191,12 +74,12 @@ class SectionBuilder {
 		}
 
 		return array(
-			'id'          => $this->id,
+			'id'          => $this->id(),
 			'title'       => $this->title,
 			'description' => $this->description,
 			'icon'        => $this->icon,
 			'fields'      => $fields,
-			'layout'      => $this->layout,
+			'layout'      => $this->get_layout(),
 		);
 	}
 }

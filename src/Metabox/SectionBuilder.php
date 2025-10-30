@@ -12,6 +12,7 @@
 namespace WPMoo\Metabox;
 
 use WPMoo\Options\Field as OptionsFieldDefinition;
+use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -19,92 +20,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Defines a metabox section and its fields.
+ * Extends the shared Sections\SectionBuilder for common props/layout.
  */
-class SectionBuilder {
-
-	/**
-	 * Section identifier.
-	 *
-	 * @var string
-	 */
-	protected $id;
-
-	/**
-	 * Section title.
-	 *
-	 * @var string
-	 */
-	protected $title;
-
-	/**
-	 * Section description.
-	 *
-	 * @var string
-	 */
-	protected $description;
-
-	/**
-	 * Section icon (dashicons).
-	 *
-	 * @var string
-	 */
-	protected $icon = '';
-
+class SectionBuilder extends BaseSectionBuilder {
 	/**
 	 * Fields included in the section.
 	 *
 	 * @var array<int, mixed>
 	 */
 	protected $fields = array();
-
-	/**
-	 * Constructor.
-	 *
-	 * @param string $id          Section identifier.
-	 * @param string $title       Section title.
-	 * @param string $description Section description.
-	 */
-	public function __construct( string $id, string $title = '', string $description = '' ) {
-		$this->id          = $id;
-		$this->title       = $title;
-		$this->description = $description;
-	}
-
-	/**
-	 * Set the section title.
-	 *
-	 * @param string $title Section title.
-	 * @return $this
-	 */
-	public function title( string $title ): self {
-		$this->title = $title;
-
-		return $this;
-	}
-
-	/**
-	 * Set the section description.
-	 *
-	 * @param string $description Section description.
-	 * @return $this
-	 */
-	public function description( string $description ): self {
-		$this->description = $description;
-
-		return $this;
-	}
-
-	/**
-	 * Set the section icon (dashicons class).
-	 *
-	 * @param string $icon Icon class name.
-	 * @return $this
-	 */
-	public function icon( string $icon ): self {
-		$this->icon = $icon;
-
-		return $this;
-	}
 
 	/**
 	 * Add a field to the section.
@@ -114,8 +38,7 @@ class SectionBuilder {
 	 * @return FieldBuilder
 	 */
 	public function field( string $id, string $type ): FieldBuilder {
-		$field = new FieldBuilder( $id, $type );
-
+		$field          = new FieldBuilder( $id, $type );
 		$this->fields[] = $field;
 
 		return $field;
@@ -164,7 +87,7 @@ class SectionBuilder {
 		}
 
 		return array(
-			'id'          => $this->id,
+			'id'          => $this->id(),
 			'title'       => $this->title,
 			'description' => $this->description,
 			'icon'        => $this->icon,
