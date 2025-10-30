@@ -114,7 +114,7 @@ class Section {
 	 * @param string $title Section title.
 	 * @return $this
 	 */
-	public function title( string $title ): self {
+    public function title( string $title ): static {
 		$this->title = $title;
 
 		return $this;
@@ -126,7 +126,7 @@ class Section {
 	 * @param string $description Description text.
 	 * @return $this
 	 */
-	public function description( string $description ): self {
+    public function description( string $description ): static {
 		$this->description = $description;
 
 		return $this;
@@ -138,21 +138,21 @@ class Section {
 	 * @param string $icon Icon identifier.
 	 * @return $this
 	 */
-	public function icon( string $icon ): self {
+    public function icon( string $icon ): static {
 		$this->icon = $icon;
 
 		return $this;
 	}
 
-	public function set_title( string $title ): self {
+    public function set_title( string $title ): static {
 		return $this->title( $title );
 	}
 
-	public function set_description( string $description ): self {
+    public function set_description( string $description ): static {
 		return $this->description( $description );
 	}
 
-	public function set_icon( string $icon ): self {
+    public function set_icon( string $icon ): static {
 		return $this->icon( $icon );
 	}
 
@@ -176,7 +176,7 @@ class Section {
 	 * @param mixed ...$columns Column definitions.
 	 * @return $this
 	 */
-	public function size( ...$columns ): self {
+    public function size( ...$columns ): static {
 		$parsed       = $this->parseColumnSpans( $columns );
 		$this->layout = array(
 			'size'    => $parsed['default'],
@@ -192,7 +192,7 @@ class Section {
 	 * @param mixed ...$columns Column definitions.
 	 * @return $this
 	 */
-	public function columns( ...$columns ): self {
+    public function columns( ...$columns ): static {
 		return $this->size( ...$columns );
 	}
 
@@ -202,7 +202,7 @@ class Section {
 	 * @param FieldBuilder|array<string, mixed> $field Field definition.
 	 * @return $this
 	 */
-	public function add_field( $field ): self {
+    public function add_field( $field ): static {
 		$this->fields[] = $this->normalize_field( $field );
 
 		return $this;
@@ -214,7 +214,7 @@ class Section {
 	 * @param array<int, mixed> $fields List of field definitions.
 	 * @return $this
 	 */
-	public function add_fields( array $fields ): self {
+    public function add_fields( array $fields ): static {
 		foreach ( $fields as $field ) {
 			$this->add_field( $field );
 		}
