@@ -39,10 +39,21 @@ if [ -n "${PHP_FILES}" ]; then
   done <<< "${PHP_FILES}"
 fi
 
-# PHPCS on staged PHP files (errors only)
-if [ -n "${PHP_FILES}" ] && [ -x vendor/bin/phpcs ] && [ -f phpcs.xml ]; then
-  echo "→ Running PHPCS"
-  vendor/bin/phpcs -n --standard=phpcs.xml ${PHP_FILES} || exit 1
+# PHPCBF then PHPCS on staged PHP files
+if [ -n "${PHP_FILES}" ]; then
+  if [ -x vendor/bin/phpcbf ]; then
+    echo "→ PHPCBF (auto-fix staged files)"
+    if [ -f phpcs.xml ]; then
+      vendor/bin/phpcbf --standard=phpcs.xml ${PHP_FILES} || true
+    else
+      vendor/bin/phpcbf ${PHP_FILES} || true
+    fi
+    git add ${PHP_FILES}
+  fi
+  if [ -x vendor/bin/phpcs ] && [ -f phpcs.xml ]; then
+    echo "→ PHPCS"
+    vendor/bin/phpcs -n --standard=phpcs.xml ${PHP_FILES} || exit 1
+  fi
 fi
 
 # SCSS format + lint on staged files (if Node + tools available)
