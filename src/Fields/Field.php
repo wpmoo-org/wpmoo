@@ -13,6 +13,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Field builder (alias for FieldBuilder).
+ *
+ * Magic static constructors are provided via __callStatic so you can write:
+ *  Field::text('id'), Field::textarea('id'), Field::color('id'), etc.
+ * These are declared here for static analysers (PHPStan, Psalm).
+ *
+ * @method static Field text(string $id)
+ * @method static Field textarea(string $id)
+ * @method static Field color(string $id)
+ * @method static Field checkbox(string $id)
+ * @method static Field accordion(string $id)
+ * @method static Field fieldset(string $id)
  */
 class Field extends FieldBuilder {
 	/**
