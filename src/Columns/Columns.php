@@ -3,7 +3,7 @@
  * Admin columns manager for post types and taxonomies.
  *
  * @package WPMoo\Columns
- * @since 0.2.0
+ * @since 0.1.0
  * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
  * @link https://github.com/wpmoo/wpmoo GitHub Repository.
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3

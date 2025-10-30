@@ -3,15 +3,15 @@
  * Accordion field for grouping multiple inputs inside a collapsible container.
  *
  * @package WPMoo\Fields
- * @since 0.4.4
+ * @since 0.1.0
  * @link https://wpmoo.org
  * @license GPL-3.0-or-later
  */
 
 namespace WPMoo\Fields\Accordion;
 
-    use WPMoo\Fields\BaseField as Field;
-    use WPMoo\Fields\FieldBuilder;
+	use WPMoo\Fields\BaseField as Field;
+	use WPMoo\Fields\FieldBuilder;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Str;
 
@@ -202,21 +202,21 @@ class Accordion extends Field {
 
 			$field_objects = array();
 
-                if ( is_array( $section['fields'] ) ) {
-                    foreach ( $section['fields'] as $field_config ) {
-                        // Allow passing FieldBuilder instances for convenience.
-                        if ( $field_config instanceof FieldBuilder ) {
-                            $field_config = $field_config->build();
-                        }
+			if ( is_array( $section['fields'] ) ) {
+				foreach ( $section['fields'] as $field_config ) {
+					// Allow passing FieldBuilder instances for convenience.
+					if ( $field_config instanceof FieldBuilder ) {
+						$field_config = $field_config->build();
+					}
 
-                        if ( ! is_array( $field_config ) || empty( $field_config['id'] ) ) {
-                            continue;
-                        }
+					if ( ! is_array( $field_config ) || empty( $field_config['id'] ) ) {
+						continue;
+					}
 
-                        $field_config['field_manager'] = $this->field_manager;
-                        $field_objects[]               = $this->field_manager->make( $field_config );
-                    }
-                }
+					$field_config['field_manager'] = $this->field_manager;
+					$field_objects[]               = $this->field_manager->make( $field_config );
+				}
+			}
 
 			$section['fields'] = $field_objects;
 			$normalized[]      = $section;

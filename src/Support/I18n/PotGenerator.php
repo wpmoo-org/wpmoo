@@ -3,7 +3,7 @@
  * Lightweight POT generator tailored for WPMoo projects.
  *
  * @package WPMoo\Support\I18n
- * @since 0.2.0
+ * @since 0.1.0
  */
 
 namespace WPMoo\Support\I18n;

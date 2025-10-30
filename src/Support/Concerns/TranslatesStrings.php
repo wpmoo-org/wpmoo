@@ -3,7 +3,7 @@
  * Shared translation helpers with WordPress fallbacks.
  *
  * @package WPMoo\Support\Concerns
- * @since 0.4.4
+ * @since 0.1.0
  */
 
 namespace WPMoo\Support\Concerns;

@@ -3,7 +3,7 @@
  * Shared fluent field builder used across components (Options/Metabox).
  *
  * @package WPMoo\Fields
- * @since 0.4.4
+ * @since 0.1.0
  */
 
 namespace WPMoo\Fields;

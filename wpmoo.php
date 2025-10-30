@@ -21,7 +21,7 @@ if ( ! defined( 'WPMOO_PATH' ) ) {
 }
 
 if ( ! defined( 'WPMOO_VERSION' ) ) {
-    define( 'WPMOO_VERSION', '0.1.0' );
+	define( 'WPMOO_VERSION', '0.1.0' );
 }
 
 $autoload_paths = array(

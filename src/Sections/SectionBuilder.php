@@ -3,7 +3,7 @@
  * Base section builder shared by Options and Metabox components.
  *
  * @package WPMoo\Sections
- * @since 0.4.4
+ * @since 0.1.0
  */
 
 namespace WPMoo\Sections;
