@@ -120,7 +120,7 @@ class Page {
 		}
 
 		$assets_url = Assets::url();
-		$version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.4.3';
+        $version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.1.0';
 
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style( 'dashicons' );
