@@ -19,6 +19,53 @@
   $(document).ready(function () {
     var canStore = storageAvailable("localStorage");
 
+    // Enhance Accordion field toggling (defensive JS in case native <details> is blocked by theme/JS)
+    (function initAccordions() {
+      var DOC = $(document);
+
+      function syncSummaryState($details) {
+        if (!$details || !$details.length) return;
+        var $summary = $details.children('.wpmoo-accordion__summary');
+        var $content = $details.children('.wpmoo-accordion__content');
+        var isOpen = !!$details.prop('open');
+        if ($summary.length) {
+          $summary.attr('aria-expanded', isOpen ? 'true' : 'false');
+        }
+        if ($content && $content.length) {
+          if (isOpen) {
+            // Force visibility in case external CSS applied a stronger rule.
+            $content.stop(true, true).slideDown(180).css('display', 'block').attr('aria-hidden', 'false');
+          } else {
+            $content.stop(true, true).slideUp(180).css('display', 'none').attr('aria-hidden', 'true');
+          }
+        }
+      }
+
+      // Initialize current states
+      $('.wpmoo-accordion details.wpmoo-accordion__item').each(function () {
+        syncSummaryState($(this));
+      });
+
+      // Click/keyboard handlers (prevent double-toggle by taking control)
+      DOC.on('click', '.wpmoo-accordion__summary', function (e) {
+        var $details = $(this).closest('details.wpmoo-accordion__item');
+        if (!$details.length) return;
+        e.preventDefault();
+        $details.prop('open', !$details.prop('open'));
+        syncSummaryState($details);
+      });
+
+      DOC.on('keydown', '.wpmoo-accordion__summary', function (e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          var $details = $(this).closest('details.wpmoo-accordion__item');
+          if (!$details.length) return;
+          e.preventDefault();
+          $details.prop('open', !$details.prop('open'));
+          syncSummaryState($details);
+        }
+      });
+    })();
+
     $("[data-wpmoo-panel]").each(function () {
       var $panel = $(this);
       var panelId = $panel.data("panel-id") || $panel.attr("id") || "";

@@ -95,7 +95,8 @@
     }
 
     > .wpmoo-accordion__content {
-      display: block;
+      display: block !important;
+      visibility: visible;
     }
   }
 
@@ -107,5 +108,13 @@
     border: 1px solid wpmoo-color(border);
     border-radius: wpmoo-radius(field);
     background: wpmoo-color(background);
+  }
+
+  // Hide optional description when collapsed; reveal when open.
+  &__item:not([open]) > .wpmoo-accordion__description {
+    display: none;
+  }
+  &__item[open] > .wpmoo-accordion__description {
+    display: block;
   }
 }

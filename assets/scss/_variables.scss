@@ -90,17 +90,13 @@ $shadows: (
 }
 
 @function wpmoo-transition-duration() {
-  @return var(
-    --wpmoo-transition-duration,
-    map.get($transitions, duration)
-  );
+  @return var(--wpmoo-transition-duration,
+    map.get($transitions, duration));
 }
 
 @function wpmoo-transition-timing() {
-  @return var(
-    --wpmoo-transition-timing,
-    map.get($transitions, timing)
-  );
+  @return var(--wpmoo-transition-timing,
+    map.get($transitions, timing));
 }
 
 @function wpmoo-shadow($name) {
