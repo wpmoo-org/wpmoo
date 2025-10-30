@@ -13,6 +13,9 @@
 namespace WPMoo\Options;
 
 use WPMoo\Fields\Manager;
+use WPMoo\Page\Builder as PageBuilder;
+use WPMoo\Page\Page;
+use WPMoo\Page\OptionRepository;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -56,12 +59,12 @@ class Options {
 	 *
 	 * @param string        $option_key Option key.
 	 * @param callable|null $callback Optional configurator executed with the builder.
-	 * @return Builder
+	 * @return PageBuilder
 	 */
-	public static function create( string $option_key, ?callable $callback = null ): Builder {
+	public static function create( string $option_key, ?callable $callback = null ): PageBuilder {
 		self::boot();
 
-		$builder = new Builder( $option_key, self::$field_manager );
+		$builder = new PageBuilder( $option_key, self::$field_manager );
 
 		$register_callback = static function () use ( $builder ) {
 			$builder->register();
@@ -90,7 +93,7 @@ class Options {
 	 * Register a new options page (backward compatibility).
 	 *
 	 * @param string|array<string, mixed> $option_key_or_config Option key or full config array.
-	 * @return Builder|Page
+	 * @return PageBuilder|Page
 	 */
 	public static function register( $option_key_or_config ) {
 		self::boot();

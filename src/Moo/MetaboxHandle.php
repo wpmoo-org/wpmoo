@@ -13,7 +13,6 @@ use WPMoo\Metabox\Builder as MetaboxBuilder;
 use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
 use WPMoo\Metabox\Metabox as MetaboxInstance;
 use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
-use WPMoo\Options\Field as FieldDefinition;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -496,9 +495,7 @@ class MetaboxHandle {
 	 * @throws InvalidArgumentException When the field definition is invalid.
 	 */
 	protected function normalize_field( $field ): array {
-		if ( $field instanceof FieldDefinition ) {
-			return $field->toArray();
-		}
+		// Field facade removed; accept arrays or base FieldBuilder.
 
 		if ( $field instanceof BaseFieldBuilder ) {
 			return $field->build();

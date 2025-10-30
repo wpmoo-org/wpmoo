@@ -10,7 +10,6 @@ namespace WPMoo\Moo;
 use InvalidArgumentException;
 use WPMoo\Moo\PageHandle;
 use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
-use WPMoo\Options\Field as FieldDefinition;
 use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -270,7 +269,7 @@ class SectionHandle {
 	 * @return $this
 	 */
 	public function fields( ...$fields ): self {
-		if ( 1 === count( $fields ) && is_array( $fields[0] ) && ! $fields[0] instanceof FieldDefinition ) {
+		if ( 1 === count( $fields ) && is_array( $fields[0] ) ) {
 			$fields = $fields[0];
 		}
 

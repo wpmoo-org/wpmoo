@@ -8,7 +8,6 @@
 namespace WPMoo\Sections;
 
 use InvalidArgumentException;
-use WPMoo\Options\Field as FieldDefinition;
 use WPMoo\Fields\FieldBuilder;
 use WPMoo\Support\Concerns\HasColumns;
 use WPMoo\Support\Concerns\TranslatesStrings;
@@ -200,7 +199,7 @@ class Section {
 	/**
 	 * Add a field to the section.
 	 *
-	 * @param FieldDefinition|FieldBuilder|array<string, mixed> $field Field definition.
+	 * @param FieldBuilder|array<string, mixed> $field Field definition.
 	 * @return $this
 	 */
 	public function add_field( $field ): self {

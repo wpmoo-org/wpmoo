@@ -5,7 +5,7 @@
  * @package WPMoo\Options
  */
 
-namespace WPMoo\Options;
+namespace WPMoo\Container;
 
 use InvalidArgumentException;
 use WPMoo\Support\Str;

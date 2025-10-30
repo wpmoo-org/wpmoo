@@ -9,7 +9,7 @@ namespace WPMoo\Moo;
 
 use InvalidArgumentException;
 use WPMoo\Moo\SectionHandle;
-use WPMoo\Options\Builder as OptionsBuilder;
+use WPMoo\Page\Builder as OptionsBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();

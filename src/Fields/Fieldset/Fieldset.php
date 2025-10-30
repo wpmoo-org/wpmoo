@@ -13,7 +13,6 @@ namespace WPMoo\Fields\Fieldset;
 use InvalidArgumentException;
 use WPMoo\Fields\Field;
 use WPMoo\Fields\Manager;
-use WPMoo\Options\Field as FieldDefinition;
 use WPMoo\Fields\FieldBuilder as FieldDefinitionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -239,10 +238,6 @@ class Fieldset extends Field {
 
 			if ( $field instanceof FieldDefinitionBuilder ) {
 				$field = $field->build();
-			}
-
-			if ( $field instanceof FieldDefinition ) {
-				$field = $field->toArray();
 			}
 
 			if ( is_array( $field ) ) {
