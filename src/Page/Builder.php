@@ -194,11 +194,53 @@ class Builder {
 	/**
 	 * Add sections from array (backward compatibility).
 	 *
-	 * @param array<int, array<string, mixed>> $sections Sections array.
+	 * Accepts a list of section arrays or SectionBuilder instances.
+	 * Normalizes arrays to SectionBuilder to keep a single code path.
+	 *
+	 * @param array<int, mixed> $sections Sections array or builders.
 	 * @return $this
 	 */
 	public function sections( array $sections ): self {
-		$this->config['sections'] = $sections;
+		foreach ( $sections as $section ) {
+			if ( $section instanceof SectionBuilder ) {
+				$this->sections[] = $section;
+				continue;
+			}
+
+			if ( is_array( $section ) ) {
+				$id          = isset( $section['id'] ) && is_string( $section['id'] ) ? $section['id'] : '';
+				$title       = isset( $section['title'] ) && is_string( $section['title'] ) ? $section['title'] : '';
+				$description = isset( $section['description'] ) && is_string( $section['description'] ) ? $section['description'] : '';
+
+				if ( '' === $id ) {
+					$id = '' !== $title ? $title : ( 'section_' . uniqid() );
+				}
+
+				$builder = new SectionBuilder( $id, $title, $description );
+
+				if ( ! empty( $section['icon'] ) && is_string( $section['icon'] ) ) {
+					$builder->icon( $section['icon'] );
+				}
+
+				if ( isset( $section['layout'] ) && is_array( $section['layout'] ) && isset( $section['layout']['columns'] ) && is_array( $section['layout']['columns'] ) ) {
+					$builder->size( $section['layout']['columns'] );
+				}
+
+				if ( isset( $section['fields'] ) && is_array( $section['fields'] ) ) {
+					$builder->fields( $section['fields'] );
+				}
+
+				$this->sections[] = $builder;
+				continue;
+			}
+
+			/* phpcs:disable WordPress.Security.EscapeOutput */
+			throw new InvalidArgumentException( $this->translate( 'Invalid section definition provided to sections().' ) );
+			/* phpcs:enable WordPress.Security.EscapeOutput */
+		}
+
+		// Ensure we don't accidentally bypass builder normalization later.
+		unset( $this->config['sections'] );
 
 		return $this;
 	}
