@@ -11,6 +11,7 @@
 
 namespace WPMoo\Metabox;
 
+use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
@@ -18,13 +19,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Fluent builder for metabox fields.
  */
-class FieldBuilder {
+class FieldBuilder extends BaseFieldBuilder {
 	/**
 	 * Field configuration.
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected $config = array();
+    // Inherit $config and fluent API from base builder.
 
 	/**
 	 * Constructor.
@@ -32,12 +33,7 @@ class FieldBuilder {
 	 * @param string $id   Field ID.
 	 * @param string $type Field type.
 	 */
-	public function __construct( string $id, string $type ) {
-		$this->config = array(
-			'id'   => $id,
-			'type' => $type,
-		);
-	}
+    public function __construct( string $id, string $type ) { parent::__construct( $id, $type ); }
 
 	/**
 	 * Set field label.
@@ -81,11 +77,7 @@ class FieldBuilder {
 	 * @param array<string, mixed> $args Arguments.
 	 * @return $this
 	 */
-	public function args( array $args ): self {
-		$this->config['args'] = $args;
-
-		return $this;
-	}
+    public function args( array $args ): self { return parent::args( $args ); }
 
 	/**
 	 * Set placeholder.
@@ -93,15 +85,7 @@ class FieldBuilder {
 	 * @param string $placeholder Placeholder text.
 	 * @return $this
 	 */
-	public function placeholder( string $placeholder ): self {
-		if ( ! isset( $this->config['args'] ) ) {
-			$this->config['args'] = array();
-		}
-
-		$this->config['args']['placeholder'] = $placeholder;
-
-		return $this;
-	}
+    public function placeholder( string $placeholder ): self { return parent::placeholder( $placeholder ); }
 
 	/**
 	 * Set options for select/radio fields.
@@ -109,11 +93,7 @@ class FieldBuilder {
 	 * @param array<string, string> $options Options array.
 	 * @return $this
 	 */
-	public function options( array $options ): self {
-		$this->config['options'] = $options;
-
-		return $this;
-	}
+    public function options( array $options ): self { return parent::options( $options ); }
 
 	/**
 	 * Generic config setter.
@@ -122,18 +102,12 @@ class FieldBuilder {
 	 * @param mixed  $value Config value.
 	 * @return $this
 	 */
-	public function set( string $key, $value ): self {
-		$this->config[ $key ] = $value;
-
-		return $this;
-	}
+    public function set( string $key, $value ): self { return parent::set( $key, $value ); }
 
 	/**
 	 * Build the field configuration.
 	 *
 	 * @return array<string, mixed>
 	 */
-	public function build(): array {
-		return $this->config;
-	}
+    public function build(): array { return parent::build(); }
 }

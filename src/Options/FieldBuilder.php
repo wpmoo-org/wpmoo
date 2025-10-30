@@ -11,7 +11,7 @@
 
 namespace WPMoo\Options;
 
-use WPMoo\Support\Concerns\HasColumns;
+use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -20,15 +20,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Fluent builder for option fields.
  */
-class FieldBuilder {
-	use HasColumns;
+class FieldBuilder extends BaseFieldBuilder {
 
 	/**
 	 * Field configuration.
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected $config = array();
+    // Inherit $config from base builder.
 
 	/**
 	 * Constructor.
@@ -36,12 +35,7 @@ class FieldBuilder {
 	 * @param string $id   Field ID.
 	 * @param string $type Field type.
 	 */
-	public function __construct( string $id, string $type ) {
-		$this->config = array(
-			'id'   => $id,
-			'type' => $type,
-		);
-	}
+    public function __construct( string $id, string $type ) { parent::__construct( $id, $type ); }
 
 	/**
 	 * Set field label.
@@ -85,9 +79,7 @@ class FieldBuilder {
 	 * @param array<string, mixed> $args Arguments.
 	 * @return $this
 	 */
-	public function args( array $args ): self {
-		return $this->attributes( $args );
-	}
+    public function args( array $args ): self { return parent::args( $args ); }
 
 	/**
 	 * Set placeholder.
