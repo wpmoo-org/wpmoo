@@ -24,10 +24,14 @@
     "oop",
     "object-oriented"
   ],
-  "version": "0.1.0",
   "support": {
     "issues": "https://github.com/wpmoo/wpmoo/issues",
     "source": "https://github.com/wpmoo/wpmoo/"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.1.x-dev"
+    }
   },
   "type": "wordpress-framework",
   "require": {
