@@ -10,7 +10,7 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html GPLv3
  */
 
-namespace WPMoo\Page;
+namespace WPMoo\Options;
 
 use WPMoo\Support\Arr;
 

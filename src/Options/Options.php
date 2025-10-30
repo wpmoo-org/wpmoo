@@ -13,9 +13,9 @@
 namespace WPMoo\Options;
 
 use WPMoo\Fields\Manager;
-use WPMoo\Page\Builder as PageBuilder;
+use WPMoo\Options\Builder as PageBuilder;
 use WPMoo\Page\Page;
-use WPMoo\Page\OptionRepository;
+use WPMoo\Options\OptionRepository;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -195,10 +195,56 @@ class Options {
 				return $default;
 			}
 
-			return array_merge( $default, $stored );
+				return array_merge( $default, $stored );
 		}
 
-		return $default;
+			return $default;
+	}
+
+		/**
+		 * Replace entire option payload (persist immediately).
+		 *
+		 * @param string               $option_key Option identifier.
+		 * @param array<string, mixed> $data       New data.
+		 * @return bool True on success.
+		 */
+	public static function set( string $option_key, array $data ): bool {
+		if ( function_exists( 'update_option' ) ) {
+			return (bool) update_option( $option_key, $data );
+		}
+
+		return false;
+	}
+
+		/**
+		 * Patch option payload with partial data (merge and persist).
+		 *
+		 * @param string               $option_key Option identifier.
+		 * @param array<string, mixed> $patch      Partial data to merge.
+		 * @return bool True on success.
+		 */
+	public static function update( string $option_key, array $patch ): bool {
+		$current = self::get( $option_key, array() );
+		if ( ! is_array( $current ) ) {
+			$current = array();
+		}
+
+		$merged = array_merge( $current, $patch );
+		return self::set( $option_key, $merged );
+	}
+
+		/**
+		 * Delete an option payload.
+		 *
+		 * @param string $option_key Option identifier.
+		 * @return bool True on success.
+		 */
+	public static function delete( string $option_key ): bool {
+		if ( function_exists( 'delete_option' ) ) {
+			return (bool) delete_option( $option_key );
+		}
+
+		return false;
 	}
 
 	/**

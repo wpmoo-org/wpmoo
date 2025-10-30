@@ -17,7 +17,7 @@ use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
 use WPMoo\Support\Concerns\TranslatesStrings;
-use WPMoo\Page\OptionRepository;
+use WPMoo\Options\OptionRepository;
 use WPMoo\Support\Str;
 
 if ( ! defined( 'ABSPATH' ) ) {
