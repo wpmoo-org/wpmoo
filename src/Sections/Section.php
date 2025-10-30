@@ -100,13 +100,13 @@ class Section {
 	 * @param string      $description Optional description.
 	 * @return static
 	 */
-	public static function make( string $id_or_title, ?string $title = null, string $description = '' ): self {
-		if ( null === $title || '' === $title ) {
-			return new self( $id_or_title, $id_or_title, $description );
-		}
+    public static function make( string $id_or_title, ?string $title = null, string $description = '' ): static {
+        if ( null === $title || '' === $title ) {
+            return new static( $id_or_title, $id_or_title, $description );
+        }
 
-		return new self( $id_or_title, $title, $description );
-	}
+        return new static( $id_or_title, $title, $description );
+    }
 
 	/**
 	 * Set section title.
@@ -282,14 +282,10 @@ class Section {
 	 * @return array<string, mixed>
 	 * @throws InvalidArgumentException When field definition is invalid.
 	 */
-	protected function normalize_field( $field ): array {
-		if ( $field instanceof FieldDefinition ) {
-			return $field->toArray();
-		}
-
-		if ( $field instanceof FieldBuilder ) {
-			return $field->build();
-		}
+    protected function normalize_field( $field ): array {
+        if ( $field instanceof FieldBuilder ) {
+            return $field->build();
+        }
 
 		if ( is_array( $field ) ) {
 			if ( empty( $field['id'] ) ) {

@@ -434,10 +434,6 @@ class SectionHandle {
 	 * @throws InvalidArgumentException When the field definition is invalid.
 	 */
 	protected function normalise_field( $field ): array {
-		if ( $field instanceof FieldDefinition ) {
-			return $field->toArray();
-		}
-
 		if ( $field instanceof BaseFieldBuilder ) {
 			return $field->build();
 		}
