@@ -5,7 +5,7 @@
  * @package WPMoo\Fields
  * @since 0.1.0
  * @link https://wpmoo.org
- * @license GPL-3.0-or-later
+ * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
 namespace WPMoo\Fields\Fieldset;
