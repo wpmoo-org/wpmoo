@@ -10,7 +10,7 @@
 
 namespace WPMoo\Fields\Accordion;
 
-use WPMoo\Fields\Field;
+use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Str;
 

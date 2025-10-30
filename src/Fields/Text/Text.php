@@ -11,7 +11,7 @@
 
 namespace WPMoo\Fields\Text;
 
-use WPMoo\Fields\Field;
+use WPMoo\Fields\BaseField as Field;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();

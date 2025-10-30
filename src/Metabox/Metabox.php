@@ -13,7 +13,7 @@ namespace WPMoo\Metabox;
 
 use WP_Post;
 use WPMoo\Admin\UI\Panel;
-use WPMoo\Fields\Field;
+use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
 use WPMoo\Support\Str;

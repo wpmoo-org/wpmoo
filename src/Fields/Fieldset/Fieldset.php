@@ -11,7 +11,7 @@
 namespace WPMoo\Fields\Fieldset;
 
 use InvalidArgumentException;
-use WPMoo\Fields\Field;
+use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Fields\FieldBuilder as FieldDefinitionBuilder;
 

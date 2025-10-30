@@ -40,7 +40,7 @@ class Manager {
 	/**
 	 * Registered field type map.
 	 *
-	 * @var array<string, class-string<Field>>
+	 * @var array<string, class-string<BaseField>>
 	 */
 	protected $types = array();
 
@@ -100,7 +100,7 @@ class Manager {
 	 * Create a field instance.
 	 *
 	 * @param array<string, mixed> $config Field configuration.
-	 * @return Field
+	 * @return BaseField
 	 * @throws InvalidArgumentException When a field type has not been registered.
 	 */
 	public function make( array $config ) {
@@ -157,13 +157,13 @@ class Manager {
 				/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
-		if ( ! is_subclass_of( $class, Field::class ) ) {
+		if ( ! is_subclass_of( $class, BaseField::class ) ) {
 				/* phpcs:disable WordPress.Security.EscapeOutput */
 				throw new InvalidArgumentException(
 					sprintf(
 						$this->translate( 'Field class "%1$s" must extend %2$s.' ),
 						$class,
-						Field::class
+						BaseField::class
 					)
 				);
 				/* phpcs:enable WordPress.Security.EscapeOutput */
