@@ -68,7 +68,9 @@
     "check": [
       "@check:validate",
       "@lint:php",
-      "@phpcs"
+      "@phpcbf",
+      "@phpcs",
+      "@phpstan"
     ]
   }
 }
