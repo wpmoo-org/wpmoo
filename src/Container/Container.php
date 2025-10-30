@@ -9,6 +9,9 @@ namespace WPMoo\Container;
 
 use InvalidArgumentException;
 use WPMoo\Support\Str;
+use WPMoo\Sections\Section;
+use WPMoo\Options\Options;
+use WPMoo\Page\Page;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -113,14 +116,14 @@ class Container {
 	/**
 	 * Registered sections keyed by id.
 	 *
-	 * @var array<string, Section>
+	 * @var array<string, \WPMoo\Sections\Section>
 	 */
 	protected $sections = array();
 
 	/**
 	 * Registered Page instance after boot.
 	 *
-	 * @var Page|null
+	 * @var \WPMoo\Page\Page|null
 	 */
 	protected $page = null;
 
@@ -180,7 +183,7 @@ class Container {
 	 * @param string|null $name       Optional explicit title.
 	 * @return static
 	 */
-	public static function create( string $type, string $id_or_name, ?string $name = null ): self {
+	public static function create( string $type, string $id_or_name, ?string $name = null ): static {
 		$type = static::normalize_type( $type );
 
 		if ( null === $name || '' === $name ) {
@@ -199,7 +202,7 @@ class Container {
 			return static::$instances[ $id ];
 		}
 
-		$container = new self( $type, $id, $title );
+		$container = new static( $type, $id, $title );
 
 		static::$instances[ $id ] = $container;
 		static::queue( $container );
@@ -215,7 +218,7 @@ class Container {
 	 * @param string|null $name       Optional explicit title.
 	 * @return static
 	 */
-	public static function make( string $type, string $id_or_name, ?string $name = null ): self {
+	public static function make( string $type, string $id_or_name, ?string $name = null ): static {
 		return static::create( $type, $id_or_name, $name );
 	}
 

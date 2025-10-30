@@ -1,4 +1,7 @@
 parameters:
+    level: 5
+    paths:
+        - src
     stubFiles:
         - phpstan-stubs/wpmoo-fields-field.stub.php
-
+    checkMissingIterableValueType: false
