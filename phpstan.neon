@@ -1,0 +1,4 @@
+parameters:
+    stubFiles:
+        - phpstan-stubs/wpmoo-fields-field.stub.php
+
