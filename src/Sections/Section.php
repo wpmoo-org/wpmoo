@@ -111,8 +111,8 @@ class Section {
 	/**
 	 * Set section title.
 	 *
-	 * @param string $title Section title.
-	 * @return $this
+     * @param string $title Section title.
+     * @return static
 	 */
     public function title( string $title ): static {
 		$this->title = $title;
@@ -123,8 +123,8 @@ class Section {
 	/**
 	 * Set section description.
 	 *
-	 * @param string $description Description text.
-	 * @return $this
+     * @param string $description Description text.
+     * @return static
 	 */
     public function description( string $description ): static {
 		$this->description = $description;
@@ -135,8 +135,8 @@ class Section {
 	/**
 	 * Set section icon (dashicons class).
 	 *
-	 * @param string $icon Icon identifier.
-	 * @return $this
+     * @param string $icon Icon identifier.
+     * @return static
 	 */
     public function icon( string $icon ): static {
 		$this->icon = $icon;
@@ -173,8 +173,8 @@ class Section {
 	/**
 	 * Define responsive column spans for the section.
 	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
+     * @param mixed ...$columns Column definitions.
+     * @return static
 	 */
     public function size( ...$columns ): static {
 		$parsed       = $this->parseColumnSpans( $columns );
@@ -189,8 +189,8 @@ class Section {
 	/**
 	 * Alias for size().
 	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
+     * @param mixed ...$columns Column definitions.
+     * @return static
 	 */
     public function columns( ...$columns ): static {
 		return $this->size( ...$columns );
@@ -199,8 +199,8 @@ class Section {
 	/**
 	 * Add a field to the section.
 	 *
-	 * @param FieldBuilder|array<string, mixed> $field Field definition.
-	 * @return $this
+     * @param FieldBuilder|array<string, mixed> $field Field definition.
+     * @return static
 	 */
     public function add_field( $field ): static {
 		$this->fields[] = $this->normalize_field( $field );
@@ -211,8 +211,8 @@ class Section {
 	/**
 	 * Add multiple fields.
 	 *
-	 * @param array<int, mixed> $fields List of field definitions.
-	 * @return $this
+     * @param array<int, mixed> $fields List of field definitions.
+     * @return static
 	 */
     public function add_fields( array $fields ): static {
 		foreach ( $fields as $field ) {
