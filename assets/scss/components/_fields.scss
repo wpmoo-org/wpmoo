@@ -163,6 +163,16 @@
     resize: vertical;
   }
 
+  // Optional monospace helper for code-like inputs
+  // Matches examples using ->attributes(['class' => 'monospace']) in fields
+  textarea.monospace,
+  .monospace.wp-editor-area,
+  input.monospace,
+  .wpmoo-input__control.monospace {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+  }
+
   input[type="checkbox"] {
     margin-right: wpmoo-spacing(sm);
   }
