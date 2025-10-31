@@ -281,6 +281,41 @@
     border-radius: wpmoo-radius(field);
     box-shadow: 0 1px 0 rgba(0, 0, 0, .03);
     overflow: hidden;
+    // Create two columns: main content and a narrow side control rail
+    display: grid;
+    grid-template-columns: 1fr 56px;
+  }
+
+  &__main {
+    grid-column: 1;
+    min-width: 0; // prevent overflow from nested fields
+  }
+
+  &__side {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    padding: 8px 6px;
+    background: wpmoo-color(panel-bg);
+    border-left: 1px solid wpmoo-color(border-soft);
+
+    .button {
+      min-width: auto;
+      width: 100%;
+      height: 28px;
+      padding: 2px 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      color: wpmoo-color(primary);
+    }
+
+    .button:disabled {
+      opacity: .45;
+      cursor: default;
+    }
   }
 
   &__head {

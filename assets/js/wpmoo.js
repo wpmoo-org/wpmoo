@@ -431,6 +431,41 @@
     $item.remove();
   });
 
+  // Repeatable fields: clone current item (duplicate structure, clear values), insert after
+  $(document).on('click', '[data-repeat-clone]', function () {
+    var $item = $(this).closest('.wpmoo-repeat__item');
+    var $wrap = $(this).closest('.wpmoo-repeat');
+    if (!$item.length || !$wrap.length) return;
+    var $itemsWrap = $wrap.find('.wpmoo-repeat__items');
+    if (!$itemsWrap.length) return;
+
+    var max = parseInt($wrap.data('repeat-max') || 0, 10) || 0;
+    var count = $itemsWrap.children('.wpmoo-repeat__item').length;
+    if (max > 0 && count >= max) {
+      return; // respect max
+    }
+
+    var $clone = $item.clone(true, true);
+    $clone.find('input, select, textarea').each(function () {
+      var $el = $(this);
+      if ($el.is(':checkbox') || $el.is(':radio')) {
+        $el.prop('checked', false);
+      } else {
+        $el.val('');
+      }
+    });
+
+    $clone.insertAfter($item);
+
+    // Focus the first control in the cloned item.
+    var $first = $clone.find('input, select, textarea').first();
+    if ($first.length) { $first.trigger('focus'); }
+
+    // Re-init sorting + renumber titles and controls.
+    initRepeatableSorting($wrap);
+    renumber($wrap);
+  });
+
   (function registerFieldHelp() {
     var HELP_SELECTOR = ".wpmoo-field-help";
     var helpPopoverId = "wpmoo-help-popover";

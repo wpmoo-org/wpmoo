@@ -720,11 +720,17 @@ abstract class BaseField {
 	 */
 	public function add_button_text(): string {
 		$label = (string) $this->add_button;
-		if ( '' === $label ) {
-			// Default label when none provided.
-			$label = function_exists( '__' ) ? __( 'Add', 'wpmoo' ) : 'Add';
+		if ( '' !== $label ) {
+			return $label;
 		}
-		return $label;
+
+		// Default label when none provided: be label-aware (e.g., "Add Tags").
+		$base = function_exists( '__' ) ? __( 'Add', 'wpmoo' ) : 'Add';
+		if ( '' !== (string) $this->label ) {
+			return $base . ' ' . (string) $this->label;
+		}
+
+		return $base;
 	}
 
 	/**
