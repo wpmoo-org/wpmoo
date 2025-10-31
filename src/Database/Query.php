@@ -17,6 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Builds simple SELECT queries.
+ *
+ * @phpstan-consistent-constructor
  */
 class Query {
 
@@ -75,8 +77,8 @@ class Query {
 	 * @param string $table Table name.
 	 * @return static
 	 */
-	public static function table( $table ) {
-		$instance        = new self();
+	public static function table( $table ): static {
+		$instance        = new static();
 		$instance->table = $table;
 
 		return $instance;

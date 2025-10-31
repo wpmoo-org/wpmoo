@@ -19,6 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Fluent container builder mirroring Carbon Fields usage.
+ *
+ * @phpstan-consistent-constructor
  */
 class Container {
 
@@ -236,6 +238,7 @@ class Container {
 	 * Queue a container for registration.
 	 *
 	 * @param Container $container Container instance.
+	 * @phpstan-param static $container
 	 * @return void
 	 */
 	protected static function queue( Container $container ) {

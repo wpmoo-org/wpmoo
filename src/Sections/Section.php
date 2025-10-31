@@ -19,6 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Represents a section/panel.
+ *
+ * @phpstan-consistent-constructor
  */
 class Section {
 	use HasColumns;

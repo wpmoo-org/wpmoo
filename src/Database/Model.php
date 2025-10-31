@@ -17,6 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Provides simple CRUD helpers for database tables.
+ *
+ * @phpstan-consistent-constructor
  */
 abstract class Model {
 

@@ -19,6 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Renders a panel component that wraps sections inside a WordPress postbox.
+ *
+ * @phpstan-consistent-constructor
  */
 class Panel {
 

@@ -42,9 +42,9 @@ class Builder {
 	protected $config = array();
 
 	/**
-	 * Sections configuration.
+	 * Sections configuration (builders only; arrays are normalized via sections()).
 	 *
-	 * @var array<int, array<string, mixed>>
+	 * @var array<int, SectionBuilder>
 	 */
 	protected $sections = array();
 

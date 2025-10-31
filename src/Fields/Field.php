@@ -24,8 +24,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @method static Field checkbox(string $id)
  * @method static Field accordion(string $id)
  * @method static Field fieldset(string $id)
+ *
+ * @phpstan-consistent-constructor
  */
-class Field extends FieldBuilder {
+final class Field extends FieldBuilder {
 	/**
 	 * Create a builder via static typed constructor, e.g. Field::text('id').
 
@@ -48,7 +50,7 @@ class Field extends FieldBuilder {
 		// Allow snake_case in static calls (maps to kebab-case types if used).
 		$type = str_replace( '_', '-', $type );
 
-		return new static( $id, $type );
+		return new self( $id, $type );
 	}
 
 	/**
@@ -59,6 +61,6 @@ class Field extends FieldBuilder {
 	 * @return static
 	 */
 	public static function make( string $id, string $type ) {
-		return new static( $id, $type );
+		return new self( $id, $type );
 	}
 }
