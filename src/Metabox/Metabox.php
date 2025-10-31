@@ -405,9 +405,13 @@ class Metabox {
 		foreach ( $this->fields as $field ) {
 			$key       = $field->id();
 			$value     = array_key_exists( $key, $submitted ) ? $submitted[ $key ] : null;
-			$sanitized = $field->sanitize( $value );
 
-			update_post_meta( $post_id, $key, $sanitized );
+			if ( method_exists( $field, 'should_save' ) && ! $field->should_save() ) {
+				continue;
+			}
+
+				$sanitized = $field->sanitize( $value );
+				update_post_meta( $post_id, $key, $sanitized );
 		}
 	}
 
@@ -478,7 +482,14 @@ class Metabox {
 			$help_button .= '</button>';
 		}
 
-		echo '<div class="wpmoo-field wpmoo-field-' . esc_attr( $field->type() ) . '">';
+		$wrapper_classes = array( 'wpmoo-field', 'wpmoo-field-' . $field->type() );
+		$custom_class    = $field->css_class();
+		if ( is_string( $custom_class ) && '' !== $custom_class ) {
+			$extra_classes = preg_split( '/\s+/', trim( $custom_class ) );
+			$extra_classes = is_array( $extra_classes ) ? $extra_classes : array();
+			$wrapper_classes = array_merge( $wrapper_classes, $extra_classes );
+		}
+		echo '<div class="' . esc_attr( implode( ' ', array_unique( $wrapper_classes ) ) ) . '">';
 		echo '<div class="wpmoo-title">';
 
 		if ( $field->label() ) {

@@ -259,6 +259,9 @@ class Page {
 		$clean = array();
 
 		foreach ( $this->fields as $id => $field ) {
+			if ( method_exists( $field, 'should_save' ) && ! $field->should_save() ) {
+				continue;
+			}
 			$value        = isset( $submitted[ $id ] ) ? $submitted[ $id ] : null;
 			$clean[ $id ] = $field->sanitize( $value );
 		}
@@ -311,6 +314,9 @@ class Page {
 		$clean = array();
 
 		foreach ( $this->fields as $id => $field ) {
+			if ( method_exists( $field, 'should_save' ) && ! $field->should_save() ) {
+				continue;
+			}
 			$value        = array_key_exists( $id, $submitted ) ? $submitted[ $id ] : null;
 			$clean[ $id ] = $field->sanitize( $value );
 		}
@@ -519,6 +525,13 @@ class Page {
 			'wpmoo-field',
 			'wpmoo-field-' . $field->type(),
 		);
+
+		$custom_wrapper_class = method_exists( $field, 'css_class' ) ? $field->css_class() : '';
+		if ( is_string( $custom_wrapper_class ) && '' !== $custom_wrapper_class ) {
+			$extra_classes = preg_split( '/\s+/', trim( $custom_wrapper_class ) );
+			$extra_classes = is_array( $extra_classes ) ? $extra_classes : array();
+			$classes      = array_merge( $classes, $extra_classes );
+		}
 
 		if ( 'fieldset' !== $field->type() ) {
 			$classes[] = 'wpmoo-field--separated';

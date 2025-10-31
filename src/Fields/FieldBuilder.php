@@ -184,6 +184,149 @@ class FieldBuilder {
 	}
 
 	/**
+	 * Description displayed under the label.
+	 *
+	 * @param string $text Label description.
+	 * @return $this
+	 */
+	public function labelDescription( string $text ): self {
+		$this->config['label_description'] = $text;
+		return $this;
+	}
+
+	/**
+	 * Mark field as required (adds required attribute).
+	 *
+	 * @param bool $required Required flag.
+	 * @return $this
+	 */
+	public function required( bool $required = true ): self {
+		$this->config['required'] = $required;
+		return $this;
+	}
+
+	/**
+	 * Disable the control (adds disabled attribute).
+	 *
+	 * @param bool $disabled Disabled flag.
+	 * @return $this
+	 */
+	public function disabled( bool $disabled = true ): self {
+		$this->config['disabled'] = $disabled;
+		return $this;
+	}
+
+	/**
+	 * Set readonly attribute for the control.
+	 *
+	 * @param bool $readonly Read-only flag.
+	 * @return $this
+	 */
+	public function readOnly( bool $readonly = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		$this->config['readonly'] = $readonly;
+		return $this;
+	}
+
+	/**
+	 * Allow multiple values (e.g., multi-select).
+	 *
+	 * @param bool $multiple Multiple flag.
+	 * @return $this
+	 */
+	public function multiple( bool $multiple = true ): self {
+		$this->config['multiple'] = $multiple;
+		return $this;
+	}
+
+	/**
+	 * Apply a custom CSS class to the field wrapper.
+	 *
+	 * @param string $class CSS class name(s).
+	 * @return $this
+	 */
+	public function cssClass( string $class ): self {
+		$this->config['css_class'] = $class;
+		return $this;
+	}
+
+	/**
+	 * Provide a custom sanitization callback or 'none' to bypass.
+	 *
+	 * @param callable|string $callback Callable or the string 'none'.
+	 * @return $this
+	 */
+	public function sanitizeCallback( $callback ): self {
+		$this->config['sanitize_callback'] = $callback;
+		return $this;
+	}
+
+	/**
+	 * Control whether to persist value on save.
+	 *
+	 * @param bool $save Save flag.
+	 * @return $this
+	 */
+	public function saveField( bool $save = true ): self {
+		$this->config['save_field'] = $save;
+		return $this;
+	}
+
+	/**
+	 * Set validation rules (shape is consumer-defined; e.g., ['pattern' => '/^...$/']).
+	 *
+	 * @param array<string, mixed> $rules Rule map.
+	 * @return $this
+	 */
+	public function validation( array $rules ): self {
+		$this->config['validation'] = $rules;
+		return $this;
+	}
+
+	/**
+	 * Button label for adding repeatable items.
+	 *
+	 * @param string $text Button text.
+	 * @return $this
+	 */
+	public function addButton( string $text ): self {
+		$this->config['add_button'] = $text;
+		return $this;
+	}
+
+	/**
+	 * Prefered naming: repeatable settings API.
+	 */
+	public function repeatable( bool $repeatable = true ): self {
+		$this->config['repeatable'] = $repeatable;
+		return $this;
+	}
+
+	public function sortRepeatable( bool $enabled = true ): self {
+		$this->config['sort_repeatable'] = $enabled;
+		return $this;
+	}
+
+	public function repeatableDefault( bool $enabled = true ): self {
+		$this->config['repeatable_default'] = $enabled;
+		return $this;
+	}
+
+	public function repeatableAsMultiple( bool $enabled = true ): self {
+		$this->config['repeatable_as_multiple'] = $enabled;
+		return $this;
+	}
+
+	public function maxRepeatable( int $max ): self {
+		$this->config['max_repeatable'] = max( 0, $max );
+		return $this;
+	}
+
+	public function minRepeatable( int $min ): self {
+		$this->config['min_repeatable'] = max( 0, $min );
+		return $this;
+	}
+
+	/**
 	 * Define layout configuration (Options grid helpers).
 	 *
 	 * @param array<string, mixed> $layout Layout settings.

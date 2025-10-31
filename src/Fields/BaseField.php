@@ -82,6 +82,13 @@ abstract class BaseField {
 	protected $help = '';
 
 	/**
+	 * Description displayed under the field label.
+	 *
+	 * @var string
+	 */
+	protected $label_description = '';
+
+	/**
 	 * Additional HTML attributes.
 	 *
 	 * @var array<string, mixed>
@@ -115,6 +122,113 @@ abstract class BaseField {
 	);
 
 	/**
+	 * Common boolean flags.
+	 *
+	 * @var bool
+	 */
+	protected $required = false;
+
+	/**
+	 * Whether the control is disabled.
+	 *
+	 * @var bool
+	 */
+	protected $disabled = false;
+
+	/**
+	 * Whether the control is read-only.
+	 *
+	 * @var bool
+	 */
+	protected $readonly = false;
+
+	/**
+	 * Whether the control accepts multiple values.
+	 *
+	 * @var bool
+	 */
+	protected $multiple = false;
+
+	/**
+	 * Optional custom CSS class applied to wrapper.
+	 *
+	 * Note: Using css_class to avoid conflict with 'class' used for PHP class name.
+	 *
+	 * @var string
+	 */
+	protected $css_class = '';
+
+	/**
+	 * Optional custom sanitization callback. If set to string 'none', bypass sanitization.
+	 *
+	 * @var callable|string|null
+	 */
+	protected $sanitize_callback = null;
+
+	/**
+	 * Whether to persist the value on save operations.
+	 *
+	 * @var bool
+	 */
+	protected $save_field = true;
+
+	/**
+	 * Validation rule map (shape decided by consumers).
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $validation = array();
+
+	/**
+	 * Repeatable options (not yet wired to UI logic).
+	 *
+	 * @var bool
+	 */
+	protected $repeatable = false;
+
+	/**
+	 * Whether repeatable items can be sorted.
+	 *
+	 * @var bool
+	 */
+	protected $sort_repeatable = false;
+
+	/**
+	 * Whether to copy default value into new repeatable items.
+	 *
+	 * @var bool
+	 */
+	protected $repeatable_default = true;
+
+	/**
+	 * Store repeatable values in multiple rows.
+	 *
+	 * @var bool
+	 */
+	protected $repeatable_as_multiple = false;
+
+	/**
+	 * Maximum number of repeatable items.
+	 *
+	 * @var int
+	 */
+	protected $max_repeatable = 0;
+
+	/**
+	 * Minimum number of repeatable items.
+	 *
+	 * @var int
+	 */
+	protected $min_repeatable = 0;
+
+	/**
+	 * Button label for adding repeatable items.
+	 *
+	 * @var string
+	 */
+	protected $add_button = '';
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array<string, mixed> $config Field configuration.
@@ -125,6 +239,7 @@ abstract class BaseField {
 			'type'        => 'text',
 			'label'       => '',
 			'description' => '',
+			'label_description' => '',
 			'default'     => null,
 			'args'        => array(),
 			'attributes'  => array(),
@@ -133,6 +248,22 @@ abstract class BaseField {
 			'help'        => '',
 			'placeholder' => null,
 			'layout'      => array(),
+			'required'    => false,
+			'disabled'    => false,
+			'readonly'    => false,
+			'multiple'    => false,
+			'css_class'   => '',
+			'sanitize_callback' => null,
+			'save_field'  => true,
+			'validation'  => array(),
+			// Repeatable options.
+			'repeatable'             => false,
+			'sort_repeatable'        => false,
+			'repeatable_default'     => true,
+			'repeatable_as_multiple' => false,
+			'max_repeatable'         => 0,
+			'min_repeatable'         => 0,
+			'add_button'             => '',
 		);
 
 		$config = array_merge( $defaults, $config );
@@ -141,10 +272,27 @@ abstract class BaseField {
 		$this->type        = $config['type'];
 		$this->label       = $config['label'];
 		$this->description = $config['description'];
+		$this->label_description = is_string( $config['label_description'] ) ? $config['label_description'] : '';
 		$this->default     = $config['default'];
 		$this->before      = is_string( $config['before'] ) ? $config['before'] : '';
 		$this->after       = is_string( $config['after'] ) ? $config['after'] : '';
 		$this->help        = is_string( $config['help'] ) ? $config['help'] : '';
+		$this->required    = (bool) $config['required'];
+		$this->disabled    = (bool) $config['disabled'];
+		$this->readonly    = (bool) $config['readonly'];
+		$this->multiple    = (bool) $config['multiple'];
+		$this->css_class   = is_string( $config['css_class'] ) ? $config['css_class'] : '';
+		$this->sanitize_callback = $config['sanitize_callback'];
+		$this->save_field  = (bool) $config['save_field'];
+		$this->validation  = is_array( $config['validation'] ) ? $config['validation'] : array();
+		// Apply repeatable settings directly.
+		$this->repeatable             = (bool) $config['repeatable'];
+		$this->sort_repeatable        = (bool) $config['sort_repeatable'];
+		$this->repeatable_default     = (bool) $config['repeatable_default'];
+		$this->repeatable_as_multiple = (bool) $config['repeatable_as_multiple'];
+		$this->max_repeatable         = (int) $config['max_repeatable'];
+		$this->min_repeatable         = (int) $config['min_repeatable'];
+		$this->add_button             = is_string( $config['add_button'] ) ? $config['add_button'] : '';
 
 		$attributes = array();
 
@@ -158,6 +306,20 @@ abstract class BaseField {
 
 		if ( null !== $config['placeholder'] ) {
 			$attributes['placeholder'] = $config['placeholder'];
+		}
+
+		// Map common flags to HTML attributes for inputs.
+		if ( $this->required && ! isset( $attributes['required'] ) ) {
+			$attributes['required'] = true;
+		}
+		if ( $this->disabled && ! isset( $attributes['disabled'] ) ) {
+			$attributes['disabled'] = true;
+		}
+		if ( $this->readonly && ! isset( $attributes['readonly'] ) ) {
+			$attributes['readonly'] = true;
+		}
+		if ( $this->multiple && ! isset( $attributes['multiple'] ) ) {
+			$attributes['multiple'] = true;
 		}
 
 		if ( isset( $config['layout'] ) && is_array( $config['layout'] ) ) {
@@ -216,6 +378,15 @@ abstract class BaseField {
 	 */
 	public function description() {
 		return $this->description;
+	}
+
+	/**
+	 * Returns the label description (displayed under the label).
+	 *
+	 * @return string
+	 */
+	public function label_description() {
+		return $this->label_description;
 	}
 
 	/**
@@ -338,6 +509,33 @@ abstract class BaseField {
 	 */
 	public function after() {
 		return $this->after;
+	}
+
+	/**
+	 * Whether the field is marked as required.
+	 *
+	 * @return bool
+	 */
+	public function required(): bool {
+		return $this->required;
+	}
+
+	/**
+	 * Custom CSS class applied to the wrapper.
+	 *
+	 * @return string
+	 */
+	public function css_class(): string {
+		return $this->css_class;
+	}
+
+	/**
+	 * Whether to save this field on submit.
+	 *
+	 * @return bool
+	 */
+	public function should_save(): bool {
+		return $this->save_field;
 	}
 
 	/**
@@ -464,6 +662,14 @@ abstract class BaseField {
 	 * @return mixed
 	 */
 	public function sanitize( $value ) {
+		// Custom sanitizer handling.
+		if ( is_string( $this->sanitize_callback ) && 'none' === $this->sanitize_callback ) {
+			return $value;
+		}
+		if ( is_callable( $this->sanitize_callback ) ) {
+			return call_user_func( $this->sanitize_callback, $value, $this );
+		}
+
 		if ( is_string( $value ) ) {
 			return $this->sanitize_string( $value );
 		}
