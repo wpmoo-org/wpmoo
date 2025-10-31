@@ -263,6 +263,37 @@
   }
 }
 
+// Repeatable wrapper
+.wpmoo-repeat {
+  display: flex;
+  flex-direction: column;
+  gap: wpmoo-spacing(xs);
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: wpmoo-spacing(xs);
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: wpmoo-spacing(xs);
+
+    .wpmoo-input,
+    .wpmoo-input__control,
+    input,
+    select,
+    textarea {
+      flex: 1 1 auto;
+    }
+
+    .wpmoo-repeat__remove {
+      flex: 0 0 auto;
+    }
+  }
+}
+
 .wpmoo-fieldset__control-inner textarea+.wpmoo-field-help,
 .wpmoo-fieldset__control-inner .wp-editor-area+.wpmoo-field-help {
   align-self: flex-start;

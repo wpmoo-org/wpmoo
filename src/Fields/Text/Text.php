@@ -45,35 +45,35 @@ class Text extends Field {
 			$icon_class = trim( (string) $attributes['icon'] );
 			unset( $attributes['icon'] );
 		}
-        if ( isset( $attributes['icon_position'] ) && is_string( $attributes['icon_position'] ) ) {
-            $pos = strtolower( (string) $attributes['icon_position'] );
-            $icon_position = in_array( $pos, array( 'left', 'right' ), true ) ? $pos : 'left';
-            unset( $attributes['icon_position'] );
-        }
+		if ( isset( $attributes['icon_position'] ) && is_string( $attributes['icon_position'] ) ) {
+			$pos = strtolower( (string) $attributes['icon_position'] );
+			$icon_position = in_array( $pos, array( 'left', 'right' ), true ) ? $pos : 'left';
+			unset( $attributes['icon_position'] );
+		}
 
 		$value = null !== $value ? $value : $this->default();
 		$value = null !== $value ? $this->esc_attr( $value ) : '';
 
-        // If icon is present, ensure the input has enough inner padding as a safety net,
-        // in case theme styles override our framework CSS. This inline style augments the
-        // SCSS-based spacing from `.wpmoo-input--icon-*`.
-        if ( '' !== $icon_class ) {
-            $pad = 'left' === $icon_position ? 'padding-left:2rem;' : 'padding-right:2rem;';
-            if ( isset( $attributes['style'] ) && is_string( $attributes['style'] ) ) {
-                $attributes['style'] = rtrim( (string) $attributes['style'] ) . ' ' . $pad;
-            } else {
-                $attributes['style'] = $pad;
-            }
-        }
+		// If icon is present, ensure the input has enough inner padding as a safety net,
+		// in case theme styles override our framework CSS. This inline style augments the
+		// SCSS-based spacing from `.wpmoo-input--icon-*`.
+		if ( '' !== $icon_class ) {
+			$pad = 'left' === $icon_position ? 'padding-left:2rem;' : 'padding-right:2rem;';
+			if ( isset( $attributes['style'] ) && is_string( $attributes['style'] ) ) {
+				$attributes['style'] = rtrim( (string) $attributes['style'] ) . ' ' . $pad;
+			} else {
+				$attributes['style'] = $pad;
+			}
+		}
 
-        $input = sprintf(
-            '<input class="wpmoo-input__control" type="%1$s" name="%2$s" id="%3$s" value="%4$s"%5$s />',
-            $this->esc_attr( $type ),
-            $this->esc_attr( $name ),
-            $this->esc_attr( $this->id() ),
-            $value,
-            $this->compile_attributes( $attributes )
-        );
+		$input = sprintf(
+			'<input class="wpmoo-input__control" type="%1$s" name="%2$s" id="%3$s" value="%4$s"%5$s />',
+			$this->esc_attr( $type ),
+			$this->esc_attr( $name ),
+			$this->esc_attr( $this->id() ),
+			$value,
+			$this->compile_attributes( $attributes )
+		);
 
 		if ( '' === $icon_class ) {
 			// No icon requested; return plain input.

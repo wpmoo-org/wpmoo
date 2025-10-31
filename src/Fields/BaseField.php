@@ -719,7 +719,30 @@ abstract class BaseField {
 	 * @return string
 	 */
 	public function add_button_text(): string {
-		return (string) $this->add_button;
+		$label = (string) $this->add_button;
+		if ( '' === $label ) {
+			// Default label when none provided.
+			$label = function_exists( '__' ) ? __( 'Add', 'wpmoo' ) : 'Add';
+		}
+		return $label;
+	}
+
+	/**
+	 * Maximum repeatable items.
+	 *
+	 * @return int
+	 */
+	public function max_repeatable(): int { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return (int) $this->max_repeatable;
+	}
+
+	/**
+	 * Minimum repeatable items.
+	 *
+	 * @return int
+	 */
+	public function min_repeatable(): int { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return (int) $this->min_repeatable;
 	}
 
 	/**

@@ -66,7 +66,7 @@
       });
     })();
 
-    $("[data-wpmoo-panel]").each(function () {
+  $("[data-wpmoo-panel]").each(function () {
       var $panel = $(this);
       var panelId = $panel.data("panel-id") || $panel.attr("id") || "";
       var storageKey = panelId ? "wpmoo_panel_active_" + panelId : "";
@@ -380,6 +380,55 @@
         }
       });
     });
+  });
+
+  // Repeatable fields: add button handler (clone last item, clear values)
+  $(document).on('click', '[data-repeat-add]', function () {
+    var $wrap = $(this).closest('.wpmoo-repeat');
+    if (!$wrap.length) return;
+    var $items = $wrap.find('.wpmoo-repeat__items');
+    if (!$items.length) return;
+    var max = parseInt($wrap.data('repeat-max') || 0, 10) || 0;
+    var count = $items.children().length;
+    if (max > 0 && count >= max) {
+      return; // respect max
+    }
+    var $last = $items.children().last();
+    var $clone = $last.clone(true, true);
+    $clone.find('input, select, textarea').each(function () {
+      var $el = $(this);
+      if ($el.is(':checkbox') || $el.is(':radio')) {
+        $el.prop('checked', false);
+      } else {
+        $el.val('');
+      }
+    });
+    $items.append($clone);
+    // Focus the first control in the new clone.
+    var $first = $clone.find('input, select, textarea').first();
+    if ($first.length) { $first.trigger('focus'); }
+  });
+
+  // Repeatable fields: remove button handler
+  $(document).on('click', '[data-repeat-remove]', function () {
+    var $item = $(this).closest('.wpmoo-repeat__item');
+    var $wrap = $(this).closest('.wpmoo-repeat');
+    var $itemsWrap = $wrap.find('.wpmoo-repeat__items');
+    var min = parseInt($wrap.data('repeat-min') || 0, 10) || 0;
+    var count = $itemsWrap.children('.wpmoo-repeat__item').length;
+    if (count <= Math.max(min, 1)) {
+      // Clear values instead of removing if at min
+      $item.find('input, select, textarea').each(function () {
+        var $el = $(this);
+        if ($el.is(':checkbox') || $el.is(':radio')) {
+          $el.prop('checked', false);
+        } else {
+          $el.val('');
+        }
+      });
+      return;
+    }
+    $item.remove();
   });
 
   (function registerFieldHelp() {
