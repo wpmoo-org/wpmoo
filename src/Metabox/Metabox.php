@@ -554,13 +554,24 @@ class Metabox {
 			$max = method_exists( $field, 'max_repeatable' ) ? (int) $field->max_repeatable() : 0;
 			$btn = method_exists( $field, 'add_button_text' ) ? (string) $field->add_button_text() : 'Add';
 
-			echo '<div class="wpmoo-repeat" data-repeat-name="' . esc_attr( $name ) . '" data-repeat-min="' . esc_attr( (string) $min ) . '" data-repeat-max="' . esc_attr( (string) $max ) . '">';
+			echo '<div class="wpmoo-repeat" data-repeat-name="' . esc_attr( $name ) . '" data-repeat-min="' . esc_attr( (string) $min ) . '" data-repeat-max="' . esc_attr( (string) $max ) . '" data-repeat-label="' . esc_attr( $field->label() ? $field->label() : ( function_exists( '__' ) ? __( 'Item', 'wpmoo' ) : 'Item' ) ) . '">';
 			echo '<div class="wpmoo-repeat__items">';
+			$__i = 0;
 			foreach ( $items as $item ) {
-				echo '<div class="wpmoo-repeat__item">';
-				echo '<button type="button" class="button wpmoo-repeat__handle" aria-label="' . esc_attr__( 'Move', 'wpmoo' ) . '"><span class="dashicons dashicons-move" aria-hidden="true"></span></button>';
+				$__i++;
+				echo '<div class="wpmoo-repeat__item" data-repeat-index="' . esc_attr( (string) $__i ) . '">';
+				echo '<div class="wpmoo-repeat__head">';
+				echo '<button type="button" class="button wpmoo-repeat__handle" aria-label="' . esc_attr__( 'Move', 'wpmoo' ) . '"><span class="dashicons dashicons-menu" aria-hidden="true"></span></button>';
+				echo '<div class="wpmoo-repeat__title">' . esc_html( $__i . '. ' . ( $field->label() ? $field->label() : ( function_exists( '__' ) ? __( 'Item', 'wpmoo' ) : 'Item' ) ) ) . '</div>';
+				echo '<div class="wpmoo-repeat__actions">';
+				echo '<button type="button" class="button wpmoo-repeat__move-up" data-repeat-up aria-label="' . esc_attr__( 'Move up', 'wpmoo' ) . '"><span class="dashicons dashicons-arrow-up-alt2" aria-hidden="true"></span></button>';
+				echo '<button type="button" class="button wpmoo-repeat__move-down" data-repeat-down aria-label="' . esc_attr__( 'Move down', 'wpmoo' ) . '"><span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span></button>';
+				echo '<button type="button" class="button wpmoo-repeat__remove" data-repeat-remove aria-label="' . esc_attr__( 'Remove', 'wpmoo' ) . '"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button>';
+				echo '</div>';
+				echo '</div>';
+				echo '<div class="wpmoo-repeat__body">';
 				echo $field->render( $name . '[]', $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo '<button type="button" class="button wpmoo-repeat__remove" data-repeat-remove aria-label="' . esc_attr__( 'Remove', 'wpmoo' ) . '"><span class="dashicons dashicons-no-alt" aria-hidden="true"></span></button>';
+				echo '</div>';
 				echo '</div>';
 			}
 			echo '</div>';

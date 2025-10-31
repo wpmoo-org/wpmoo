@@ -267,7 +267,7 @@
 .wpmoo-repeat {
   display: flex;
   flex-direction: column;
-  gap: wpmoo-spacing(xs);
+  gap: wpmoo-spacing(sm);
 
   &__items {
     display: flex;
@@ -276,21 +276,85 @@
   }
 
   &__item {
-    display: flex;
+    background: #fff;
+    border: 1px solid wpmoo-color(border-soft);
+    border-radius: wpmoo-radius(field);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03);
+    overflow: hidden;
+  }
+
+  &__head {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
     align-items: center;
     gap: wpmoo-spacing(xs);
+    padding: wpmoo-spacing(sm) wpmoo-spacing(md);
+    background: wpmoo-color(panel-bg);
+    border-bottom: 1px solid wpmoo-color(border-soft);
+  }
 
-    .wpmoo-input,
-    .wpmoo-input__control,
-    input,
-    select,
-    textarea {
-      flex: 1 1 auto;
+  &__title {
+    font-weight: 600;
+    color: wpmoo-color(heading);
+    flex: 1 1 auto;
+  }
+
+  &__actions {
+    display: inline-flex;
+    gap: 2px;
+
+    .button {
+      min-width: auto;
+      padding: 2px 6px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      color: wpmoo-color(primary);
     }
 
-    .wpmoo-repeat__remove {
-      flex: 0 0 auto;
+    .button:disabled {
+      opacity: .45;
+      cursor: default;
     }
+  }
+
+  &__handle {
+    cursor: move;
+    min-width: 28px;
+    height: 28px;
+    border: none;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    color: wpmoo-color(toggle-indicator);
+    padding: 2px 6px;
+  }
+
+  // Ensure WP button styles don't force borders on our head buttons
+  &__head .button.wpmoo-repeat__handle {
+    border: none;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  &__body {
+    padding: wpmoo-spacing(sm) wpmoo-spacing(md);
+  }
+
+  &__add {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: wpmoo-color(panel-bg);
+    border: 1px solid wpmoo-color(border);
+    border-radius: wpmoo-radius(field);
+    padding: wpmoo-spacing(md);
+    color: wpmoo-color(primary);
+    box-shadow: none;
   }
 }
 
