@@ -148,7 +148,7 @@ class Page {
 					wp_enqueue_script(
 						'wpmoo',
 						$assets_url . 'js/wpmoo.js',
-						array( 'jquery' ),
+						array( 'jquery', 'jquery-ui-sortable' ),
 						$version,
 						true
 					);
@@ -605,9 +605,10 @@ class Page {
 			$btn = method_exists( $field, 'add_button_text' ) ? (string) $field->add_button_text() : 'Add';
 
 			echo '<div class="wpmoo-repeat" data-repeat-name="' . esc_attr( $name ) . '" data-repeat-min="' . esc_attr( (string) $min ) . '" data-repeat-max="' . esc_attr( (string) $max ) . '">';
-			echo '<div class="wpmoo-repeat__items">';
+				echo '<div class="wpmoo-repeat__items">';
 			foreach ( $items as $item ) {
 				echo '<div class="wpmoo-repeat__item">';
+				echo '<button type="button" class="button wpmoo-repeat__handle" aria-label="' . esc_attr__( 'Move', 'wpmoo' ) . '"><span class="dashicons dashicons-move" aria-hidden="true"></span></button>';
 				echo $field->render( $name . '[]', $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo '<button type="button" class="button wpmoo-repeat__remove" data-repeat-remove aria-label="' . esc_attr__( 'Remove', 'wpmoo' ) . '"><span class="dashicons dashicons-no-alt" aria-hidden="true"></span></button>';
 				echo '</div>';
@@ -677,9 +678,10 @@ class Page {
 			$btn = method_exists( $field, 'add_button_text' ) ? (string) $field->add_button_text() : 'Add';
 
 			echo '<div class="wpmoo-repeat" data-repeat-name="' . esc_attr( $name ) . '" data-repeat-min="' . esc_attr( (string) $min ) . '" data-repeat-max="' . esc_attr( (string) $max ) . '">';
-			echo '<div class="wpmoo-repeat__items">';
+				echo '<div class="wpmoo-repeat__items">';
 			foreach ( $items as $item ) {
 				echo '<div class="wpmoo-repeat__item">';
+				echo '<button type="button" class="button wpmoo-repeat__handle" aria-label="' . esc_attr__( 'Move', 'wpmoo' ) . '"><span class="dashicons dashicons-move" aria-hidden="true"></span></button>';
 				echo $field->render( $name . '[]', $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered field handles escaping internally.
 				echo '<button type="button" class="button wpmoo-repeat__remove" data-repeat-remove aria-label="' . esc_attr__( 'Remove', 'wpmoo' ) . '"><span class="dashicons dashicons-no-alt" aria-hidden="true"></span></button>';
 				echo '</div>';

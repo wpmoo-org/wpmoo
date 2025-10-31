@@ -774,3 +774,26 @@
     }
   }
 })(jQuery);
+  // Repeatable: make items sortable using jQuery UI if available
+  function initRepeatableSorting($root){
+    var $lists = ($root && $root.length ? $root : $(document)).find('.wpmoo-repeat__items');
+    $lists.each(function(){
+      var $list = $(this);
+      if (typeof $list.sortable === 'function'){
+        try {
+          $list.sortable({
+            items: '> .wpmoo-repeat__item',
+            handle: '.wpmoo-repeat__handle',
+            axis: 'y',
+            tolerance: 'pointer'
+          });
+        } catch (e) {}
+      }
+    });
+  }
+
+  $(function(){ initRepeatableSorting($(document)); });
+  $(document).on('click', '[data-repeat-add]', function(){
+    var $wrap = $(this).closest('.wpmoo-repeat');
+    initRepeatableSorting($wrap);
+  });

@@ -189,7 +189,7 @@ class Metabox {
 
 		if ( function_exists( 'wp_enqueue_script' ) ) {
 			wp_enqueue_script( 'postbox' );
-			wp_enqueue_script( 'wpmoo', $assets_url . 'js/wpmoo.js', array( 'jquery' ), $version, true );
+			wp_enqueue_script( 'wpmoo', $assets_url . 'js/wpmoo.js', array( 'jquery', 'jquery-ui-sortable' ), $version, true );
 		}
 	}
 
@@ -558,6 +558,7 @@ class Metabox {
 			echo '<div class="wpmoo-repeat__items">';
 			foreach ( $items as $item ) {
 				echo '<div class="wpmoo-repeat__item">';
+				echo '<button type="button" class="button wpmoo-repeat__handle" aria-label="' . esc_attr__( 'Move', 'wpmoo' ) . '"><span class="dashicons dashicons-move" aria-hidden="true"></span></button>';
 				echo $field->render( $name . '[]', $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo '<button type="button" class="button wpmoo-repeat__remove" data-repeat-remove aria-label="' . esc_attr__( 'Remove', 'wpmoo' ) . '"><span class="dashicons dashicons-no-alt" aria-hidden="true"></span></button>';
 				echo '</div>';
