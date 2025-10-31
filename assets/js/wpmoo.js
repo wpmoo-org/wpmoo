@@ -809,11 +809,11 @@
     }
   }
 })(jQuery);
-  // Repeatable: make items sortable using jQuery UI if available
+  // Repeatable: make items sortable using jQuery UI if available (noConflict-safe)
   function initRepeatableSorting($root){
-    var $lists = ($root && $root.length ? $root : $(document)).find('.wpmoo-repeat__items');
+    var $lists = ($root && $root.length ? $root : jQuery(document)).find('.wpmoo-repeat__items');
     $lists.each(function(){
-      var $list = $(this);
+      var $list = jQuery(this);
       if (typeof $list.sortable === 'function'){
         try {
           $list.sortable({
@@ -830,27 +830,27 @@
     });
   }
 
-  $(function(){
-    initRepeatableSorting($(document));
+  jQuery(function(){
+    initRepeatableSorting(jQuery(document));
     // Initial numbering of all repeaters
-    $('.wpmoo-repeat').each(function(){ renumber($(this)); });
+    jQuery('.wpmoo-repeat').each(function(){ renumber(jQuery(this)); });
   });
-  $(document).on('click', '[data-repeat-add]', function(){
-    var $wrap = $(this).closest('.wpmoo-repeat');
+  jQuery(document).on('click', '[data-repeat-add]', function(){
+    var $wrap = jQuery(this).closest('.wpmoo-repeat');
     initRepeatableSorting($wrap);
     renumber($wrap);
   });
 
   // Move up/down
-  $(document).on('click', '[data-repeat-up]', function(){
-    var $item = $(this).closest('.wpmoo-repeat__item');
-    var $wrap = $(this).closest('.wpmoo-repeat');
+  jQuery(document).on('click', '[data-repeat-up]', function(){
+    var $item = jQuery(this).closest('.wpmoo-repeat__item');
+    var $wrap = jQuery(this).closest('.wpmoo-repeat');
     var $prev = $item.prev('.wpmoo-repeat__item');
     if ($prev.length){ $item.insertBefore($prev); renumber($wrap); }
   });
-  $(document).on('click', '[data-repeat-down]', function(){
-    var $item = $(this).closest('.wpmoo-repeat__item');
-    var $wrap = $(this).closest('.wpmoo-repeat');
+  jQuery(document).on('click', '[data-repeat-down]', function(){
+    var $item = jQuery(this).closest('.wpmoo-repeat__item');
+    var $wrap = jQuery(this).closest('.wpmoo-repeat');
     var $next = $item.next('.wpmoo-repeat__item');
     if ($next.length){ $item.insertAfter($next); renumber($wrap); }
   });
@@ -860,7 +860,7 @@
     var base = $wrap.data('repeat-label') || '';
     var $items = $wrap.find('.wpmoo-repeat__item');
     $items.each(function(idx){
-      var $it = $(this);
+      var $it = jQuery(this);
       var i = idx + 1;
       $it.attr('data-repeat-index', i);
       var title = (base ? i + '. ' + base : '#' + i);

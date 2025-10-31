@@ -281,6 +281,7 @@
     border-radius: wpmoo-radius(field);
     box-shadow: 0 1px 0 rgba(0, 0, 0, .03);
     overflow: hidden;
+    position: relative; // helpful for sortable helper/placeholder
     // Create two columns: main content and a narrow side control rail
     display: grid;
     grid-template-columns: 1fr 56px;
