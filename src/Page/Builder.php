@@ -199,6 +199,7 @@ class Builder {
 	 *
 	 * @param array<int, mixed> $sections Sections array or builders.
 	 * @return $this
+	 * @throws InvalidArgumentException When a section definition is invalid.
 	 */
 	public function sections( array $sections ): self {
 		foreach ( $sections as $section ) {

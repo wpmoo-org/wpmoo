@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name:	WPMoo Framework
- * Plugin URI:	https://wpmoo.org
- * Description:	Core framework utilities for WPMoo-based plugins.
- * Version:		0.1.0
- * Author:		Ahmet Cangir
- * Author URI:	https://wpmoo.org
- * Text Domain:	wpmoo
+ * Plugin Name: WPMoo Framework
+ * Plugin URI:  https://wpmoo.org
+ * Description: Core framework utilities for WPMoo-based plugins.
+ * Version:     0.1.0
+ * Author:      Ahmet Cangir
+ * Author URI:  https://wpmoo.org
+ * Text Domain: wpmoo
  * License:     GPLv2 or later
- * License URI:	https://www.gnu.org/licenses/gpl-2.0.html
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
  * @package WPMoo
  */
