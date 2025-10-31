@@ -184,6 +184,24 @@ class FieldBuilder {
 	}
 
 	/**
+	 * Add an input icon (e.g., dashicons classes) and position.
+	 * Works with fields that support icons (e.g., Text).
+	 *
+	 * @param string $class    Icon CSS classes (e.g., 'dashicons dashicons-email').
+	 * @param string $position Position: 'left' or 'right'.
+	 * @return $this
+	 */
+	public function icon( string $class, string $position = 'left' ): self {
+		if ( ! isset( $this->config['attributes'] ) ) {
+			$this->config['attributes'] = array();
+		}
+		$this->config['attributes']['icon'] = $class;
+		$pos                                = strtolower( $position );
+		$this->config['attributes']['icon_position'] = in_array( $pos, array( 'left', 'right' ), true ) ? $pos : 'left';
+		return $this;
+	}
+
+	/**
 	 * Description displayed under the label.
 	 *
 	 * @param string $text Label description.

@@ -120,6 +120,36 @@
     background: wpmoo-color(field-background);
     color: wpmoo-color(text);
     @include transition(border-color, box-shadow);
+
+    // Placeholder color (plus vendor fallbacks)
+    &::placeholder {
+      color: wpmoo-color(text-muted);
+      opacity: 1;
+    }
+
+    &::-webkit-input-placeholder {
+      color: wpmoo-color(text-muted);
+      opacity: 1;
+    }
+
+    &::-moz-placeholder {
+      color: wpmoo-color(text-muted);
+      opacity: 1;
+    }
+
+    &:-ms-input-placeholder {
+      color: wpmoo-color(text-muted);
+    }
+
+    &::-ms-input-placeholder {
+      color: wpmoo-color(text-muted);
+    }
+
+    &:disabled {
+      background: wpmoo-color(field-background-disabled);
+      cursor: not-allowed;
+      color: wpmoo-color(text-muted);
+    }
   }
 
   input:focus,
@@ -174,7 +204,7 @@
   flex-direction: column;
 }
 
-.wpmoo-fieldset__control > * {
+.wpmoo-fieldset__control>* {
   width: 100%;
 }
 
@@ -193,8 +223,48 @@
   }
 }
 
-.wpmoo-fieldset__control-inner textarea + .wpmoo-field-help,
-.wpmoo-fieldset__control-inner .wp-editor-area + .wpmoo-field-help {
+// Input with icon wrapper (used by fields supporting an inline icon, e.g., Text)
+.wpmoo-input {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+
+  &__control {
+    width: 100%;
+  }
+
+  &__icon {
+    position: absolute;
+    left: 10px; // fallback for LTR
+    inset-inline-start: 10px; // RTL-aware
+    color: wpmoo-color(text-muted);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  &--icon-right {
+    .wpmoo-input__icon {
+      left: auto;
+      right: 10px; // fallback for LTR
+      inset-inline-start: auto; // RTL-aware
+      inset-inline-end: 10px; // RTL-aware
+    }
+
+    .wpmoo-input__control {
+      padding-right: 2rem;
+    }
+  }
+
+  &--icon-left {
+    .wpmoo-input__control {
+      padding-left: 2rem;
+    }
+  }
+}
+
+.wpmoo-fieldset__control-inner textarea+.wpmoo-field-help,
+.wpmoo-fieldset__control-inner .wp-editor-area+.wpmoo-field-help {
   align-self: flex-start;
   margin-top: wpmoo-spacing(xs);
 }
