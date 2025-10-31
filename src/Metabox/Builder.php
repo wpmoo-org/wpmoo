@@ -321,11 +321,4 @@ class Builder {
 
 		return $metabox;
 	}
-
-	/**
-	 * Translate strings while remaining compatible with non-WordPress contexts.
-	 *
-	 * @param string $text Text to translate.
-	 * @return string
-	 */
 }

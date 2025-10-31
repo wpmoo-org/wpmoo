@@ -410,8 +410,27 @@ class Metabox {
 				continue;
 			}
 
-				$sanitized = $field->sanitize( $value );
+			$sanitized = $field->sanitize( $value );
+
+			if ( method_exists( $field, 'is_repeatable' ) && $field->is_repeatable() && is_array( $sanitized ) ) {
+				// Optionally store as multiple rows.
+				if ( method_exists( $field, 'repeatable_as_multiple' ) && $field->repeatable_as_multiple() ) {
+					if ( function_exists( 'delete_post_meta' ) ) {
+						delete_post_meta( $post_id, $key );
+					}
+
+					foreach ( $sanitized as $item ) {
+						if ( '' === (string) $item ) {
+							continue;
+						}
+						add_post_meta( $post_id, $key, $item );
+					}
+				} else {
+					update_post_meta( $post_id, $key, array_values( $sanitized ) );
+				}
+			} else {
 				update_post_meta( $post_id, $key, $sanitized );
+			}
 		}
 	}
 
@@ -460,9 +479,17 @@ class Metabox {
 	 * @return void
 	 */
 	protected function render_field( Field $field, $post ) {
-		$current     = get_post_meta( $post->ID, $field->id(), true );
-		$value       = '' !== $current ? $current : $field->default();
-		$name        = sprintf( 'wpmoo_metabox[%s][%s]', $this->config['id'], $field->id() );
+		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
+		$as_multiple   = $is_repeatable && method_exists( $field, 'repeatable_as_multiple' ) ? $field->repeatable_as_multiple() : false;
+
+		if ( $is_repeatable && $as_multiple ) {
+			$current = get_post_meta( $post->ID, $field->id(), false );
+		} else {
+			$current = get_post_meta( $post->ID, $field->id(), true );
+		}
+
+		$value = '' !== $current ? $current : $field->default();
+		$name  = sprintf( 'wpmoo_metabox[%s][%s]', $this->config['id'], $field->id() );
 		$help_text   = $field->help_text();
 		$help_html   = $field->help_html();
 		$help_button = '';
@@ -515,7 +542,18 @@ class Metabox {
 			echo '<div class="wpmoo-fieldset__control-inner">';
 		}
 
-		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Field render method handles escaping.
+		if ( $is_repeatable ) {
+			$values = is_array( $value ) ? $value : ( ( null !== $value && '' !== $value ) ? array( $value ) : array() );
+			if ( empty( $values ) && is_array( $field->default() ) ) {
+				$values = (array) $field->default();
+			}
+			$values[] = '';
+			foreach ( $values as $item ) {
+				echo $field->render( $name . '[]', $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+		} else {
+			echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Field render method handles escaping.
+		}
 
 		if ( $help_button ) {
 			echo $help_button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

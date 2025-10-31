@@ -431,11 +431,4 @@ class Builder {
 
 		return array_merge( $defaults, $this->labels );
 	}
-
-	/**
-	 * Translate strings while remaining compatible with non-WordPress contexts.
-	 *
-	 * @param string $text Text to translate.
-	 * @return string
-	 */
 }

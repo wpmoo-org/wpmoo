@@ -517,8 +517,9 @@ class Page {
 	 * @return void
 	 */
 	protected function render_field( Field $field, array $values ) {
-		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
-		$name  = $this->field_input_name( $field );
+		$value         = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
+		$name          = $this->field_input_name( $field );
+		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
 
 		$width   = $field->width();
 		$classes = array(
@@ -622,8 +623,9 @@ class Page {
 	 * @return void
 	 */
 	protected function render_field_row( Field $field, array $values ) {
-		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
-		$name  = $this->field_input_name( $field );
+		$value         = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
+		$name          = $this->field_input_name( $field );
+		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
 
 		$args          = $field->args();
 		$desc          = $field->description();
@@ -637,7 +639,19 @@ class Page {
 		}
 		echo '</th>';
 		echo '<td>';
-		echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered field handles escaping internally.
+		if ( $is_repeatable ) {
+			$items = is_array( $value ) ? $value : ( ( null !== $value && '' !== $value ) ? array( $value ) : array() );
+			if ( empty( $items ) && is_array( $field->default() ) ) {
+				$items = (array) $field->default();
+			}
+			$items[] = '';
+			foreach ( $items as $item ) {
+				echo $field->render( $name . '[]', $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+		} else {
+			echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered field handles escaping internally.
+
+		}
 
 		if ( $desc && 'field' === $desc_position ) {
 			echo '<p class="description">' . esc_html( $desc ) . '</p>';

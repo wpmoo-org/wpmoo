@@ -670,11 +670,56 @@ abstract class BaseField {
 			return call_user_func( $this->sanitize_callback, $value, $this );
 		}
 
+		// Repeatable / multiple values: sanitize each item.
+		if ( is_array( $value ) ) {
+			$clean = array();
+			foreach ( $value as $item ) {
+				if ( is_string( $item ) ) {
+					$san = $this->sanitize_string( $item );
+					// Drop empty strings but keep numeric "0".
+					if ( '' === trim( (string) $san ) ) {
+						continue;
+					}
+					$clean[] = $san;
+				} else {
+					$clean[] = $item;
+				}
+			}
+			return $clean;
+		}
+
 		if ( is_string( $value ) ) {
 			return $this->sanitize_string( $value );
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Whether this field is configured as repeatable.
+	 *
+	 * @return bool
+	 */
+	public function is_repeatable(): bool {
+		return (bool) $this->repeatable;
+	}
+
+	/**
+	 * Whether repeatable values should be stored as multiple rows.
+	 *
+	 * @return bool
+	 */
+	public function repeatable_as_multiple(): bool {
+		return (bool) $this->repeatable_as_multiple;
+	}
+
+	/**
+	 * Button label for adding repeatable items.
+	 *
+	 * @return string
+	 */
+	public function add_button_text(): string {
+		return (string) $this->add_button;
 	}
 
 	/**
