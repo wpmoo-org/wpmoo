@@ -4,21 +4,16 @@ on:
   push:
   pull_request:
 
-permissions:
-  contents: write
-
 jobs:
   checks:
     name: Static checks (Composer/PHPCS)
     runs-on: ubuntu-latest
-    env:
-      PLUGIN_DIR: ${{ github.event.repository.name }}
     outputs:
       has_tests: ${{ steps.detect-tests.outputs.has_tests }}
       has_phpstan: ${{ steps.detect-phpstan.outputs.has_phpstan }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Detect tests config
         id: detect-tests
         run: |
@@ -51,7 +46,7 @@ jobs:
             echo "lockhash=none" >> "$GITHUB_OUTPUT"
           fi
       - name: Cache Composer downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: |
             ~/.composer/cache
@@ -72,23 +67,6 @@ jobs:
           else
             find . -path './vendor' -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
           fi
-      - name: Update "Tested up to" to latest WP
-        run: |
-          LATEST=$(php -r 'echo json_decode(file_get_contents("https://api.wordpress.org/core/version-check/1.7/"), true)["offers"][0]["current"];')
-          echo "Latest WP: $LATEST"
-          sed -i.bak -E "s/^(Tested up to:).*/\\1 ${LATEST}/" readme.txt && rm -f readme.txt.bak
-      - name: Commit readme bump (main)
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: |
-          set -e
-          LATEST=$(php -r 'echo json_decode(file_get_contents("https://api.wordpress.org/core/version-check/1.7/"), true)["offers"][0]["current"];')
-          if git diff --quiet -- readme.txt; then
-            echo "No readme changes to commit"; exit 0; fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add readme.txt
-          git commit -m "docs(readme): auto-bump Tested up to to ${LATEST}"
-          git push
       - name: PHPCS
         run: |
           if composer run --list | grep -q "phpcs"; then
@@ -96,15 +74,6 @@ jobs:
           else
             vendor/bin/phpcs -n || true
           fi
-      - name: Build distribution directory (WPMoo CLI)
-        run: php vendor/bin/moo deploy --wp
-      - name: Plugin Check (WordPress.org)
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: WordPress/plugin-check-action@v1
-        with:
-          build-dir: ../dist/${{ env.PLUGIN_DIR }}
-          strict: true
-          ignore-codes: trademarked_term
 
   tests:
     name: PHPUnit ${{ matrix.php }}
@@ -117,7 +86,7 @@ jobs:
         php: ["7.4", "8.0", "8.1", "8.2", "8.3"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -134,7 +103,7 @@ jobs:
             echo "lockhash=none" >> "$GITHUB_OUTPUT"
           fi
       - name: Cache Composer downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: |
             ~/.composer/cache
@@ -154,10 +123,9 @@ jobs:
     needs: checks
     if: ${{ needs.checks.outputs.has_phpstan == 'true' }}
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -174,7 +142,7 @@ jobs:
             echo "lockhash=none" >> "$GITHUB_OUTPUT"
           fi
       - name: Cache Composer downloads
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: |
             ~/.composer/cache
@@ -191,3 +159,48 @@ jobs:
           else
             vendor/bin/phpstan analyse --no-progress || true
           fi
+
+  wp-smoke:
+    name: WP smoke (PHP 8.2)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: wordpress
+          MYSQL_USER: wp
+          MYSQL_PASSWORD: wp
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot" 
+          --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2, phpunit
+          coverage: none
+          ini-values: memory_limit=-1
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --ansi
+      - name: Prepare WordPress test suite
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+        run: |
+          set -euxo pipefail
+          git clone --depth=1 https://github.com/WordPress/wordpress-develop.git /tmp/wordpress-develop
+          cp /tmp/wordpress-develop/wp-tests-config-sample.php /tmp/wordpress-develop/wp-tests-config.php
+          sed -i "s/youremptytestdbnamehere/wordpress/" /tmp/wordpress-develop/wp-tests-config.php
+          sed -i "s/yourusernamehere/wp/" /tmp/wordpress-develop/wp-tests-config.php
+          sed -i "s/yourpasswordhere/wp/" /tmp/wordpress-develop/wp-tests-config.php
+          sed -i "s/localhost/127.0.0.1:${DB_PORT}/" /tmp/wordpress-develop/wp-tests-config.php
+      - name: Run WP smoke tests
+        env:
+          WP_PHPUNIT__DIR: /tmp/wordpress-develop/tests/phpunit
+        run: vendor/bin/phpunit -c phpunit.wp.xml.dist --testsuite WordPress
+

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true" bootstrap="tests-wp/bootstrap.php">
+  <testsuites>
+    <testsuite name="WordPress">
+      <directory>tests-wp</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <env name="WP_PHPUNIT__DIR" value="/tmp/wordpress-develop/tests/phpunit"/>
+  </php>
+</phpunit>
+
