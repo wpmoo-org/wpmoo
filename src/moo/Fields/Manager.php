@@ -261,9 +261,9 @@ class Manager {
 
 				$log_message = sprintf( $debug_template, $type );
 				// Avoid error_log() in production code; expose a debug hook instead.
-				if ( function_exists( 'do_action' ) ) {
-					do_action( 'wpmoo_debug', $log_message, array( 'source' => 'fields-manager' ) );
-				}
+			if ( function_exists( 'do_action' ) ) {
+				do_action( 'wpmoo_debug', $log_message, array( 'source' => 'fields-manager' ) );
+			}
 		}
 
 		$this->missing_notices[ $type ] = true;

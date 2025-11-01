@@ -249,10 +249,10 @@ class Page {
 		$option_key = $this->repository->option_key();
 		$submitted  = array();
 
-			if ( isset( $_POST[ $option_key ] ) && is_array( $_POST[ $option_key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Verified above; unslashed below and sanitized per-field.
+		if ( isset( $_POST[ $option_key ] ) && is_array( $_POST[ $option_key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Verified above; unslashed below and sanitized per-field.
 			$submitted = function_exists( 'wp_unslash' )
-				? wp_unslash( $_POST[ $option_key ] )
-				: $_POST[ $option_key ];
+			? wp_unslash( $_POST[ $option_key ] )
+			: $_POST[ $option_key ];
 		}
 
 		$clean = array();
@@ -306,7 +306,7 @@ class Page {
 		$option_key = $this->repository->option_key();
 		$submitted  = array();
 
-			if ( isset( $_POST[ $option_key ] ) && is_array( $_POST[ $option_key ] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		if ( isset( $_POST[ $option_key ] ) && is_array( $_POST[ $option_key ] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			$submitted = function_exists( 'wp_unslash' ) ? wp_unslash( $_POST[ $option_key ] ) : $_POST[ $option_key ];
 		}
 

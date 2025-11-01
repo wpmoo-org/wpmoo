@@ -35,12 +35,12 @@ class Assets {
 	 * @return string Empty string if not resolvable.
 	 */
 	public static function ui_css_url(): string {
-        $candidates = array(
-            'vendor/wpmoo/wpmoo-ui/css/wpmoo.css',      // Preferred package name
-            'vendor/wpmoo-org/wpmoo-ui/css/wpmoo.css',  // Legacy/vendor-alt (defensive)
-            'assets/css/wpmoo.css',                     // Legacy framework bundle
-            'src/assets/css/wpmoo.css',                 // New unified src assets location
-        );
+		$candidates = array(
+			'vendor/wpmoo/wpmoo-ui/css/wpmoo.css',      // Preferred package name
+			'vendor/wpmoo-org/wpmoo-ui/css/wpmoo.css',  // Legacy/vendor-alt (defensive)
+			'assets/css/wpmoo.css',                     // Legacy framework bundle
+			'src/assets/css/wpmoo.css',                 // New unified src assets location
+		);
 
 		// 1) WordPress-aware resolution (most reliable in plugins):
 		if (
@@ -52,12 +52,12 @@ class Assets {
 			$plugin_dir = str_replace( '\\', '/', plugin_dir_path( WPMOO_FILE ) );
 			$base_url   = self::trail( plugins_url( '/', WPMOO_FILE ) );
 
-            foreach ( $candidates as $rel ) {
-                if ( file_exists( $plugin_dir . $rel ) ) {
-                    $url = $base_url . $rel;
-                    return function_exists( 'apply_filters' ) ? (string) apply_filters( 'wpmoo_ui_css_url', $url, $candidates ) : $url;
-                }
-            }
+			foreach ( $candidates as $rel ) {
+				if ( file_exists( $plugin_dir . $rel ) ) {
+					$url = $base_url . $rel;
+					return function_exists( 'apply_filters' ) ? (string) apply_filters( 'wpmoo_ui_css_url', $url, $candidates ) : $url;
+				}
+			}
 		}
 
 		// 2) Fallback: use App information (may not always map cleanly to URLs).
@@ -80,18 +80,18 @@ class Assets {
 		}
 
 		// 2b) Last resort: use App information (path/url pair as provided at boot time).
-        $app         = App::instance();
-        $plugin_path = self::normalize_path( $app->path() );
-        $plugin_url  = self::trail( $app->url() );
+		$app         = App::instance();
+		$plugin_path = self::normalize_path( $app->path() );
+		$plugin_url  = self::trail( $app->url() );
 
 		if ( '' !== $plugin_path && '' !== $plugin_url ) {
-            foreach ( $candidates as $rel ) {
-                $abs = $plugin_path . '/' . $rel;
-                if ( file_exists( $abs ) ) {
-                    $url = $plugin_url . str_replace( '\\', '/', $rel );
-                    return function_exists( 'apply_filters' ) ? (string) apply_filters( 'wpmoo_ui_css_url', $url, $candidates ) : $url;
-                }
-            }
+			foreach ( $candidates as $rel ) {
+				$abs = $plugin_path . '/' . $rel;
+				if ( file_exists( $abs ) ) {
+					$url = $plugin_url . str_replace( '\\', '/', $rel );
+					return function_exists( 'apply_filters' ) ? (string) apply_filters( 'wpmoo_ui_css_url', $url, $candidates ) : $url;
+				}
+			}
 		}
 
 		$url = '';
@@ -110,52 +110,52 @@ class Assets {
 			return self::$base_url;
 		}
 
-        $app         = App::instance();
-        $plugin_path = $app->path();
-        $plugin_url  = $app->url();
-        if ( ! empty( $plugin_path ) && ! empty( $plugin_url ) ) {
-            $plugin_path        = self::normalize_path( $plugin_path ) . '/';
-            $plugin_url         = self::trail( $plugin_url );
-            $vendor_assets_path = $plugin_path . 'vendor/wpmoo/wpmoo/assets/';
-            $direct_assets_path = $plugin_path . 'assets/';
-            $src_assets_path    = $plugin_path . 'src/assets/';
-            if ( is_dir( $vendor_assets_path ) ) {
-                self::$base_url = self::trail( $plugin_url . 'vendor/wpmoo/wpmoo/assets/' );
-                return self::$base_url;
-            }
-            if ( is_dir( $direct_assets_path ) ) {
-                self::$base_url = self::trail( $plugin_url . 'assets/' );
-                return self::$base_url;
-            }
-            if ( is_dir( $src_assets_path ) ) {
-                self::$base_url = self::trail( $plugin_url . 'src/assets/' );
-                return self::$base_url;
-            }
-        }
+		$app         = App::instance();
+		$plugin_path = $app->path();
+		$plugin_url  = $app->url();
+		if ( ! empty( $plugin_path ) && ! empty( $plugin_url ) ) {
+			$plugin_path        = self::normalize_path( $plugin_path ) . '/';
+			$plugin_url         = self::trail( $plugin_url );
+			$vendor_assets_path = $plugin_path . 'vendor/wpmoo/wpmoo/assets/';
+			$direct_assets_path = $plugin_path . 'assets/';
+			$src_assets_path    = $plugin_path . 'src/assets/';
+			if ( is_dir( $vendor_assets_path ) ) {
+				self::$base_url = self::trail( $plugin_url . 'vendor/wpmoo/wpmoo/assets/' );
+				return self::$base_url;
+			}
+			if ( is_dir( $direct_assets_path ) ) {
+				self::$base_url = self::trail( $plugin_url . 'assets/' );
+				return self::$base_url;
+			}
+			if ( is_dir( $src_assets_path ) ) {
+				self::$base_url = self::trail( $plugin_url . 'src/assets/' );
+				return self::$base_url;
+			}
+		}
 
 		$library_dir = str_replace( '\\', '/', dirname( __DIR__, 2 ) );
 		$assets_path = $library_dir . '/assets/';
 
-        if ( defined( 'WPMOO_FILE' ) && function_exists( 'plugins_url' ) && self::is_within_plugin_directory( WPMOO_FILE ) ) {
-            $plugin_dir         = str_replace( '\\', '/', plugin_dir_path( WPMOO_FILE ) );
-            $direct_assets_path = $plugin_dir . 'assets/';
-            $vendor_assets_path = $plugin_dir . 'vendor/wpmoo/wpmoo/assets/';
-            $src_assets_path    = $plugin_dir . 'src/assets/';
+		if ( defined( 'WPMOO_FILE' ) && function_exists( 'plugins_url' ) && self::is_within_plugin_directory( WPMOO_FILE ) ) {
+			$plugin_dir         = str_replace( '\\', '/', plugin_dir_path( WPMOO_FILE ) );
+			$direct_assets_path = $plugin_dir . 'assets/';
+			$vendor_assets_path = $plugin_dir . 'vendor/wpmoo/wpmoo/assets/';
+			$src_assets_path    = $plugin_dir . 'src/assets/';
 
-            if ( file_exists( $vendor_assets_path ) ) {
-                self::$base_url = self::trail( plugins_url( 'vendor/wpmoo/wpmoo/assets/', WPMOO_FILE ) );
-                return self::$base_url;
-            }
+			if ( file_exists( $vendor_assets_path ) ) {
+				self::$base_url = self::trail( plugins_url( 'vendor/wpmoo/wpmoo/assets/', WPMOO_FILE ) );
+				return self::$base_url;
+			}
 
-            if ( file_exists( $direct_assets_path ) ) {
-                self::$base_url = self::trail( plugins_url( 'assets/', WPMOO_FILE ) );
-                return self::$base_url;
-            }
+			if ( file_exists( $direct_assets_path ) ) {
+				self::$base_url = self::trail( plugins_url( 'assets/', WPMOO_FILE ) );
+				return self::$base_url;
+			}
 
-            if ( file_exists( $src_assets_path ) ) {
-                self::$base_url = self::trail( plugins_url( 'src/assets/', WPMOO_FILE ) );
-                return self::$base_url;
-            }
+			if ( file_exists( $src_assets_path ) ) {
+				self::$base_url = self::trail( plugins_url( 'src/assets/', WPMOO_FILE ) );
+				return self::$base_url;
+			}
 
 			$plugin_real = str_replace( '\\', '/', dirname( WPMOO_FILE ) );
 
@@ -240,17 +240,17 @@ class Assets {
 	 * @param string $asset_path Relative asset path.
 	 * @return bool
 	 */
-    protected static function asset_exists( string $asset_path ): bool {
-        $app = App::instance();
-        if ( file_exists( $app->path( 'assets/' . $asset_path ) ) ) {
-            return true;
-        }
-        if ( file_exists( $app->path( 'src/assets/' . $asset_path ) ) ) {
-            return true;
-        }
+	protected static function asset_exists( string $asset_path ): bool {
+		$app = App::instance();
+		if ( file_exists( $app->path( 'assets/' . $asset_path ) ) ) {
+			return true;
+		}
+		if ( file_exists( $app->path( 'src/assets/' . $asset_path ) ) ) {
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
 	/**
 	 * Normalize a filesystem path to use forward slashes without a trailing slash.
