@@ -469,7 +469,7 @@ class Metabox {
 
 		$nonce_name = $this->nonce_name();
 
-			if ( ! isset( $_POST[ $nonce_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.NoNonceVerification -- Checked here.
+		if ( ! isset( $_POST[ $nonce_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.NoNonceVerification -- Checked here.
 			return false;
 		}
 
