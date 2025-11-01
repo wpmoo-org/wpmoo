@@ -262,6 +262,27 @@
         }
       });
 
+      // Pico details/summary accordion: keep only one open when multi disabled,
+      // and persist the last open section to hidden input + localStorage.
+      $panel.on('toggle', 'details[data-panel-section]', function(){
+        var $details = $(this);
+        var allowMulti =
+          $panel.data("panel-multi") === 1 ||
+          $panel.data("panel-multi") === "1" ||
+          $panel.data("panel-multi") === true;
+
+        if (!allowMulti && this.open){
+          $details.siblings('details[data-panel-section]').prop('open', false);
+        }
+
+        var panelId = $panel.data('panel-id') || '';
+        var targetId = this.open ? ($details.attr('id') || '') : '';
+        if ($hidden && targetId){ $hidden.val(targetId); }
+        if (canStore && panelId){
+          try { window.localStorage.setItem('wpmoo_panel_active_' + panelId, targetId); } catch(e){}
+        }
+      });
+
       function handleAccordionState() {
         var isAccordion = $panel.find(".wpmoo-panel__tabs").is(":hidden");
         $panel.data("wpmoo-accordion", isAccordion);

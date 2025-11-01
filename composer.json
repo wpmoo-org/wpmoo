@@ -36,19 +36,21 @@
   "type": "wordpress-framework",
   "require": {
     "php": ">=7.4",
-    "wpmoo/wpmoo-ui": "dev-dev"
+    "wpmoo/wpmoo-ui": "dev-main"
   },
   "autoload": {
     "psr-4": {
-      "WPMoo\\": "src/"
+      "WPMoo\\": "src/moo/",
+      "WPMoo\\Samples\\": "src/samples/"
     },
     "files": [
-      "wpmoo.php"
+      "src/wpmoo.php"
     ]
   },
   "require-dev": {
     "wpmoo/wpmoo-coding-standards": "dev-main",
     "wpmoo/wpmoo-cli": "dev-dev",
+    "scssphp/scssphp": "^1.12",
     "phpstan/phpstan": "^1.11",
     "szepeviktor/phpstan-wordpress": "^1.3",
     "phpunit/phpunit": "^9.6 || ^10.5"
@@ -74,6 +76,8 @@
       "@phpcbf",
       "@phpcs",
       "@phpstan"
-    ]
+    ],
+    "ui:watch": "sh -lc 'cd vendor/wpmoo/wpmoo-ui && (pnpm i || npm i || yarn) && (pnpm watch || npm run watch || yarn watch)'",
+    "ui:build": "sh -lc 'cd vendor/wpmoo/wpmoo-ui && (pnpm i || npm i || yarn) && (pnpm build || npm run build || yarn build)'"
   }
 }

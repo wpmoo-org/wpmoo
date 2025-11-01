@@ -132,18 +132,27 @@ final class App {
 	 *
 	 * @return void
 	 */
-	public function load_textdomain() {
-		static $loaded = false;
-
-		if ( $loaded ) {
-			return;
-		}
-
-		if ( function_exists( 'load_plugin_textdomain' ) && $this->basename ) {
-			load_plugin_textdomain( $this->textdomain, false, dirname( $this->basename ) . '/languages' );
-			$loaded = true;
-		}
-	}
+    public function load_textdomain() {
+        // Since WP 4.6, translations from WordPress.org are auto‑loaded.
+        // We intentionally avoid calling load_plugin_textdomain() to satisfy
+        // plugin‑check guidelines. Projects that need local MO files can hook
+        // into 'wpmoo_load_textdomain' and perform custom loading.
+        static $loaded = false;
+        if ( $loaded ) {
+            return;
+        }
+        /**
+         * Allow consumers to explicitly load textdomain when needed.
+         *
+         * @param bool $handled Whether the textdomain was handled.
+         */
+        if ( function_exists( 'apply_filters' ) ) {
+            $handled = (bool) apply_filters( 'wpmoo_load_textdomain', false );
+            if ( $handled ) {
+                $loaded = true;
+            }
+        }
+    }
 
 	/**
 	 * Register core hooks for the framework lifecycle.

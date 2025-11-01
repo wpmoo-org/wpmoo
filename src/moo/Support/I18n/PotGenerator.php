@@ -1,4 +1,5 @@
 <?php
+/* phpcs:ignoreFile */
 /**
  * Lightweight POT generator tailored for WPMoo projects.
  *

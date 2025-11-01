@@ -11,6 +11,9 @@
         "style:check": "prettier --check \"assets/scss/**/*.scss\" && stylelint \"assets/scss/**/*.scss\""
     },
     "devDependencies": {
+        "@picocss/pico": "^2.1.1",
+        "open": "^9.1.0",
+        "browser-sync": "3.0.4",
         "gulp": "5.0.1",
         "gulp-clean-css": "4.3.0",
         "gulp-sourcemaps": "3.0.0",

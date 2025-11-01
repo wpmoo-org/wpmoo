@@ -159,64 +159,36 @@ class Panel {
 
 		echo '<div class="wpmoo-panel__layout">';
 
-		if ( $has_multiple_sections ) {
-			echo '<nav class="wpmoo-panel__tabs" role="tablist" aria-label="' . esc_attr__( 'Section navigation', 'wpmoo' ) . '">';
-			foreach ( $this->sections as $index => $section ) {
-				$section_id = $section['id'];
-				$tab_id     = $section_id . '-tab';
-				$is_active  = $section_id === $active_section || ( '' === $active_section && 0 === $index );
-				$classes    = 'wpmoo-panel__tab' . ( $is_active ? ' is-active' : '' );
-				$selected   = $is_active ? 'true' : 'false';
-
-				echo '<button type="button" class="' . esc_attr( $classes ) . '" id="' . esc_attr( $tab_id ) . '" role="tab" aria-selected="' . esc_attr( $selected ) . '" aria-controls="' . esc_attr( $section_id ) . '" data-panel-tab="' . esc_attr( $section_id ) . '">';
-
-				if ( $section['icon'] ) {
-					echo '<span class="wpmoo-panel__tab-icon dashicons ' . esc_attr( $section['icon'] ) . '" aria-hidden="true"></span>';
-				}
-
-				echo '<span class="wpmoo-panel__tab-label">' . esc_html( $section['label'] ) . '</span>';
-				echo '</button>';
-			}
-			echo '</nav>';
-		}
+		// Pico classless: avoid tab bar; rely on native details/summary per-section.
 
 		echo '<div class="wpmoo-panel__content">';
 
 		foreach ( $this->sections as $index => $section ) {
 			$section_id = $section['id'];
-			$tab_id     = $section_id . '-tab';
-			$is_active  = $section_id === $active_section || ( '' === $active_section && 0 === $index );
-			$hidden     = $is_active ? 'false' : 'true';
-			$expanded   = $is_active ? 'true' : 'false';
+			$is_open    = $section_id === $active_section || ( '' === $active_section && 0 === $index );
 
 			$section_classes = array( 'wpmoo-panel__section' );
-
-			if ( $is_active ) {
+			if ( $is_open ) {
 				$section_classes[] = 'is-active';
 			}
-			echo '<section id="' . esc_attr( $section_id ) . '" class="' . esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . esc_attr( $section_id ) . '" role="tabpanel" aria-hidden="' . esc_attr( $hidden ) . '" aria-labelledby="' . esc_attr( $tab_id ) . '">';
 
-			echo '<button type="button" class="wpmoo-panel__section-toggle' . ( $is_active ? ' is-active' : '' ) . '" data-panel-switch="' . esc_attr( $section_id ) . '" aria-expanded="' . esc_attr( $expanded ) . '">';
+			echo '<details id="' . esc_attr( $section_id ) . '" class="' . esc_attr( implode( ' ', $section_classes ) ) . '" data-panel-section="' . esc_attr( $section_id ) . '"' . ( $is_open ? ' open' : '' ) . '>';
 
+			echo '<summary class="wpmoo-panel__section-toggle">';
 			if ( $section['icon'] ) {
 				echo '<span class="wpmoo-panel__section-toggle-icon dashicons ' . esc_attr( $section['icon'] ) . '" aria-hidden="true"></span>';
 			}
-
 			echo '<span class="wpmoo-panel__section-toggle-label">' . esc_html( $section['label'] ) . '</span>';
-			echo '<span class="wpmoo-panel__section-toggle-indicator" aria-hidden="true"></span>';
-			echo '</button>';
+			echo '</summary>';
 
 			echo '<div class="wpmoo-panel__section-body">';
-
 			if ( $section['description'] ) {
 				echo '<p class="wpmoo-panel__section-description">' . esc_html( $section['description'] ) . '</p>';
 			}
+			echo $section['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '</div>';
 
-			echo $section['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Content is pre-escaped by the caller.
-
-			echo '</div>'; // .wpmoo-panel__section-body
-
-			echo '</section>';
+			echo '</details>';
 		}
 
 		echo '</div>'; // .wpmoo-panel__content

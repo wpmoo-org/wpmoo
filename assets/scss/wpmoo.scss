@@ -1,11 +1,233 @@
-/**
- * WPMoo Framework - SCSS entry point.
- */
-@use "variables";
-@use "mixins";
-@use "components/fields";
-@use "components/accordion";
-@use "components/panel";
-@use "components/toast";
-@use "components/utilities";
-@use "layout/responsive";
+/* Pico settings (defaults cloned locally so we can see/override all in one place) */
+@use "sass:map";
+
+// Theme color
+$theme-color: "azure" !default; // amber, azure, blue, cyan, fuchsia, green, grey, indigo, jade, lime, orange, pink, pumpkin, purple, red, sand, slate, violet, yellow, zinc
+
+// Prefix for CSS variables (customized for WPMoo)
+$css-var-prefix: "--wpmoo-" !default; // Must start with "--"
+
+// Define the root element used to target <header>, <main>, <footer>
+// with $enable-semantic-container and $enable-responsive-spacings
+$semantic-root-element: "body" !default;
+
+// Enable <header>, <main>, <footer> inside $semantic-root-element as containers
+$enable-semantic-container: true !default;
+
+// Enable a centered viewport for <header>, <main>, <footer> inside $semantic-root-element
+// Fluid layout if disabled
+$enable-viewport: true !default;
+
+// Enable responsive spacings for <header>, <main>, <footer>, <section>, <article>
+// Fixed spacings by default
+$enable-responsive-spacings: true !default;
+
+// Enable responsive typography
+// Fixed root element size (rem) if disabled
+$enable-responsive-typography: true !default;
+
+// Enable .classes
+// .classless version if disabled
+$enable-classes: true !default;
+
+// Enable transitions
+$enable-transitions: true !default;
+
+// Enable overriding with !important
+$enable-important: true !default;
+
+// Optional parent selector (customized scope name)
+// If defined, all HTML tags are wrapped with this selector
+// :root is not wrapped
+$parent-selector: ".wpmoo" !default;
+
+// Breakpoints, viewports and root font size
+$breakpoints: (
+  ) !default;
+$breakpoints: map.deep-merge((sm: (breakpoint: 576px,
+        viewport: 510px,
+        root-font-size: 120%,
+      ),
+      md: (breakpoint: 768px,
+        viewport: 700px,
+        root-font-size: 120%,
+      ),
+      lg: (breakpoint: 1024px,
+        viewport: 950px,
+        root-font-size: 120%,
+      ),
+      xl: (breakpoint: 1280px,
+        viewport: 1200px,
+        root-font-size: 120%,
+      ),
+      xxl: (breakpoint: 1536px,
+        viewport: 1450px,
+        root-font-size: 120%,
+      )),
+    $breakpoints
+);
+
+// Modules to export
+$modules: (
+  ) !default;
+$modules: map.merge(( // Theme
+      "themes/default": true,
+
+      // Layout
+      "layout/document": true,
+      "layout/landmarks": true,
+      "layout/container": true,
+      "layout/section": true,
+      "layout/grid": true,
+      "layout/overflow-auto": true,
+
+      // Content
+      "content/link": true,
+      "content/typography": true,
+      "content/embedded": true,
+      "content/button": true,
+      "content/table": true,
+      "content/code": true,
+      "content/figure": true,
+      "content/misc": true,
+
+      // Forms
+      "forms/basics": true,
+      "forms/checkbox-radio-switch": true,
+      "forms/input-color": true,
+      "forms/input-date": true,
+      "forms/input-file": true,
+      "forms/input-range": true,
+      "forms/input-search": true,
+
+      // Components
+      "components/accordion": true,
+      "components/card": true,
+      "components/dropdown": true,
+      "components/loading": true,
+      "components/modal": true,
+      "components/nav": true,
+      "components/progress": true,
+      "components/tooltip": true,
+
+      // Utilities
+      "utilities/accessibility": true,
+      "utilities/reduce-motion": true),
+    $modules
+);
+
+/* Import Pico SCSS using the configured settings above */
+@use "@picocss/pico/scss/index" with ($theme-color: $theme-color,
+  $css-var-prefix: $css-var-prefix,
+  $semantic-root-element: $semantic-root-element,
+  $enable-semantic-container: $enable-semantic-container,
+  $enable-viewport: $enable-viewport,
+  $enable-responsive-spacings: $enable-responsive-spacings,
+  $enable-responsive-typography: $enable-responsive-typography,
+  $enable-classes: $enable-classes,
+  $enable-transitions: $enable-transitions,
+  $enable-important: $enable-important,
+  $parent-selector: $parent-selector,
+  $breakpoints: $breakpoints,
+  $modules: $modules);
+
+/* Moo → Pico bridge (maps --moo-* to --wpmoo-* if needed) */
+@use "bridge/pico";
+
+/* Fine-tune control sizing for admin forms (smaller, denser) */
+:where(.wpmoo) {
+  /* Prefer token overrides first (Pico reads these custom properties) */
+  --wpmoo-form-element-spacing-vertical: .35rem;
+  /* tighter than default */
+  --wpmoo-form-element-spacing-horizontal: .55rem;
+  --wpmoo-border-radius: .35rem;
+  /* slightly tighter radius */
+  --wpmoo-spacing: .85rem;
+  /* global spacing scale tweak */
+}
+
+/* Fallback for themes that don’t read the spacing tokens as expected */
+:where(.wpmoo) input:not([type="checkbox"]):not([type="radio"]),
+:where(.wpmoo) select,
+:where(.wpmoo) textarea {
+  padding-block: .375rem;
+  padding-inline: .625rem;
+  border-radius: .375rem;
+}
+
+/* Tweak textarea default height a bit lower than Pico default */
+:where(.wpmoo) textarea {
+  min-height: 7rem;
+}
+
+/* Slightly denser base type in admin scope */
+:where(.wpmoo) {
+  font-size: 0.93rem;
+}
+
+/* Details/summary (accordion) compact header */
+:where(.wpmoo) details>summary {
+  padding-block: .375rem;
+  font-weight: 600;
+}
+
+/* Repeater visual polish (keeps minimal look) */
+:where(.wpmoo) fieldset.wpmoo-repeat__item {
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: .375rem;
+  padding: .5rem .5rem .75rem;
+  background: #fff;
+}
+
+:where(.wpmoo) fieldset.wpmoo-repeat__item>legend {
+  font-weight: 600;
+  font-size: .95em;
+  padding: 0 .25rem;
+}
+
+:where(.wpmoo) .wpmoo-repeat__actions {
+  display: flex;
+  gap: .375rem;
+  margin-top: .5rem;
+}
+
+/* Section layout: simple responsive grid */
+:where(.wpmoo) .wpmoo-section-fields {
+  display: grid;
+  gap: var(--wpmoo-spacing, .85rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1024px) {
+  :where(.wpmoo) .wpmoo-section-fields { grid-template-columns: 1fr 1fr; }
+}
+
+/* Details/summary: compact, with caret */
+:where(.wpmoo) details > summary::-webkit-details-marker { display: none; }
+:where(.wpmoo) details > summary::marker { content: ""; }
+:where(.wpmoo) details > summary {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding-block: .375rem;
+}
+:where(.wpmoo) details > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform .15s ease;
+}
+:where(.wpmoo) details[open] > summary::after { transform: rotate(90deg); }
+
+/* Labels: help/description spacing */
+:where(.wpmoo) label > small {
+  display: block;
+  margin-top: .25rem;
+  color: var(--wpmoo-muted-color, #6b7280);
+}
+
+/* Icon-only buttons (repeater handles/actions) */
+:where(.wpmoo) .wpmoo-repeat__handle,
+:where(.wpmoo) .wpmoo-repeat__actions button {
+  padding: .25rem .375rem;
+  line-height: 1;
+  font-size: .85em;
+}

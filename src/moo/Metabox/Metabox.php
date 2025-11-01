@@ -176,20 +176,24 @@ class Metabox {
 		}
 
 		$assets_url = Assets::url();
+		$ui_css_url = Assets::ui_css_url();
 		$version    = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.1.0';
-
-		if ( empty( $assets_url ) ) {
-			return;
-		}
 
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style( 'dashicons' );
-			wp_enqueue_style( 'wpmoo', $assets_url . 'css/wpmoo.css', array(), $version );
+			// Prefer UI CSS from composer package; fallback to legacy framework CSS.
+			if ( ! empty( $ui_css_url ) ) {
+				wp_enqueue_style( 'wpmoo', $ui_css_url, array(), $version );
+			} elseif ( ! empty( $assets_url ) ) {
+				wp_enqueue_style( 'wpmoo', $assets_url . 'css/wpmoo.css', array(), $version );
+			}
 		}
 
 		if ( function_exists( 'wp_enqueue_script' ) ) {
 			wp_enqueue_script( 'postbox' );
-			wp_enqueue_script( 'wpmoo', $assets_url . 'js/wpmoo.js', array( 'jquery', 'jquery-ui-sortable' ), $version, true );
+			if ( ! empty( $assets_url ) ) {
+				wp_enqueue_script( 'wpmoo', $assets_url . 'js/wpmoo.js', array( 'jquery', 'jquery-ui-sortable' ), $version, true );
+			}
 		}
 	}
 
@@ -278,8 +282,12 @@ class Metabox {
 			wp_nonce_field( $this->nonce_action(), $this->nonce_name() );
 		}
 
+		// Scope UI with .wpmoo so Pico-based styles apply only within WPMoo areas.
+		echo '<div class="wpmoo">';
+
 		if ( 'panel' === $this->config['layout'] || ! empty( $this->sections ) ) {
 			$this->render_panel( $post );
+			echo '</div>';
 			return;
 		}
 
@@ -289,6 +297,7 @@ class Metabox {
 			$this->render_field( $field, $post );
 		}
 
+		echo '</div>';
 		echo '</div>';
 	}
 
@@ -394,8 +403,8 @@ class Metabox {
 			return;
 		}
 
-			$submitted = isset( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) && is_array( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified via nonce in should_handle_save().
-				? $_POST['wpmoo_metabox'][ $this->config['id'] ] // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified via nonce in should_handle_save().
+			$submitted = isset( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) && is_array( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Verified via nonce in should_handle_save(); unslashed below and sanitized per-field.
+				? $_POST['wpmoo_metabox'][ $this->config['id'] ] // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified via nonce in should_handle_save().
 				: array();
 
 		$submitted = function_exists( 'wp_unslash' )
@@ -468,7 +477,8 @@ class Metabox {
 			return true;
 		}
 
-		return (bool) wp_verify_nonce( $_POST[ $nonce_name ], $this->nonce_action() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified here.
+		$nonce_val = isset( $_POST[ $nonce_name ] ) ? ( function_exists( 'sanitize_text_field' ) ? sanitize_text_field( wp_unslash( $_POST[ $nonce_name ] ) ) : (string) $_POST[ $nonce_name ] ) : '';
+		return (bool) wp_verify_nonce( $nonce_val, $this->nonce_action() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified here.
 	}
 
 	/**
@@ -509,37 +519,11 @@ class Metabox {
 			$help_button .= '</button>';
 		}
 
-		$wrapper_classes = array( 'wpmoo-field', 'wpmoo-field-' . $field->type() );
-		$custom_class    = $field->css_class();
-		if ( is_string( $custom_class ) && '' !== $custom_class ) {
-			$extra_classes = preg_split( '/\s+/', trim( $custom_class ) );
-			$extra_classes = is_array( $extra_classes ) ? $extra_classes : array();
-			$wrapper_classes = array_merge( $wrapper_classes, $extra_classes );
-		}
-		echo '<div class="' . esc_attr( implode( ' ', array_unique( $wrapper_classes ) ) ) . '">';
-		echo '<div class="wpmoo-title">';
-
-		if ( $field->label() ) {
-			echo '<div class="wpmoo-title__heading">';
-			echo '<h4>' . esc_html( $field->label() ) . '</h4>';
-			echo '</div>';
-		}
-
-		if ( $field->description() ) {
-			echo '<div class="wpmoo-subtitle-text">' . esc_html( $field->description() ) . '</div>';
-		}
-
-		echo '</div>';
-		echo '<div class="wpmoo-fieldset">';
+		// Pico form semantics: prefer <label> wrapping control + <small> for help.
+		echo '<div class="wpmoo-field">';
 
 		if ( $field->before() ) {
-			echo '<div class="wpmoo-field-before">' . $field->before_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
-
-		echo '<div class="wpmoo-fieldset__control">';
-
-		if ( $help_button ) {
-			echo '<div class="wpmoo-fieldset__control-inner">';
+			echo $field->before_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( $is_repeatable ) {
@@ -559,46 +543,45 @@ class Metabox {
 			$__i = 0;
 			foreach ( $items as $item ) {
 				$__i++;
-				echo '<div class="wpmoo-repeat__item" data-repeat-index="' . esc_attr( (string) $__i ) . '">';
-				echo '<div class="wpmoo-repeat__head">';
-				echo '<button type="button" class="button wpmoo-repeat__handle" aria-label="' . esc_attr__( 'Move', 'wpmoo' ) . '"><span class="dashicons dashicons-menu" aria-hidden="true"></span></button>';
-				echo '<div class="wpmoo-repeat__title">' . esc_html( $__i . '. ' . ( $field->label() ? $field->label() : ( function_exists( '__' ) ? __( 'Item', 'wpmoo' ) : 'Item' ) ) ) . '</div>';
-				echo '<div class="wpmoo-repeat__actions">';
-				echo '<button type="button" class="button wpmoo-repeat__move-up" data-repeat-up aria-label="' . esc_attr__( 'Move up', 'wpmoo' ) . '"><span class="dashicons dashicons-arrow-up-alt2" aria-hidden="true"></span></button>';
-				echo '<button type="button" class="button wpmoo-repeat__move-down" data-repeat-down aria-label="' . esc_attr__( 'Move down', 'wpmoo' ) . '"><span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span></button>';
-				echo '<button type="button" class="button wpmoo-repeat__remove" data-repeat-remove aria-label="' . esc_attr__( 'Remove', 'wpmoo' ) . '"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button>';
-				echo '</div>';
-				echo '</div>';
+				echo '<fieldset class="wpmoo-repeat__item" data-repeat-index="' . esc_attr( (string) $__i ) . '">';
+				echo '<legend>';
+				echo '<button type="button" class="wpmoo-repeat__handle" aria-label="' . esc_attr__( 'Move', 'wpmoo' ) . '"><span class="dashicons dashicons-menu" aria-hidden="true"></span></button>';
+				echo '<span class="wpmoo-repeat__title">' . esc_html( $__i . '. ' . ( $field->label() ? $field->label() : ( function_exists( '__' ) ? __( 'Item', 'wpmoo' ) : 'Item' ) ) ) . '</span>';
+				echo '</legend>';
 				echo '<div class="wpmoo-repeat__body">';
 				echo $field->render( $name . '[]', $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo '</div>';
+				echo '<div class="wpmoo-repeat__actions">';
+				echo '<button type="button" class="wpmoo-repeat__move-up" data-repeat-up aria-label="' . esc_attr__( 'Move up', 'wpmoo' ) . '"><span class="dashicons dashicons-arrow-up-alt2" aria-hidden="true"></span></button>';
+				echo '<button type="button" class="wpmoo-repeat__move-down" data-repeat-down aria-label="' . esc_attr__( 'Move down', 'wpmoo' ) . '"><span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span></button>';
+				echo '<button type="button" class="wpmoo-repeat__remove" data-repeat-remove aria-label="' . esc_attr__( 'Remove', 'wpmoo' ) . '"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button>';
 				echo '</div>';
+				echo '</fieldset>';
 			}
 			echo '</div>';
-			echo '<button type="button" class="button button-secondary wpmoo-repeat__add" data-repeat-add><span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span> ' . esc_html( $btn ) . '</button>';
+			echo '<button type="button" class="wpmoo-repeat__add" data-repeat-add><span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span> ' . esc_html( $btn ) . '</button>';
 			echo '</div>';
 		} else {
-			echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Field render method handles escaping.
+			echo '<label for="' . esc_attr( $field->id() ) . '">';
+			if ( $field->label() ) {
+				echo esc_html( $field->label() );
+			}
+			echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			if ( $field->description() ) {
+				echo '<small>' . esc_html( $field->description() ) . '</small>';
+			}
+			if ( '' !== $help_html ) {
+				echo '<small>' . $help_html . '</small>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+			echo '</label>';
 		}
-
-		if ( $help_button ) {
-			echo $help_button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '</div>';
-		}
-
-		echo '</div>';
 
 		if ( $field->after() ) {
-			echo '<div class="wpmoo-field-after">' . $field->after_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
-
-		if ( '' === $field->label() && '' !== $help_html && '' === $help_button ) {
-			echo '<div class="wpmoo-field-help-text">' . $help_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $field->after_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		echo '</div>';
 		echo '<div class="clear"></div>';
-		echo '</div>';
 	}
 
 	/**
