@@ -469,7 +469,7 @@ class Metabox {
 
 		$nonce_name = $this->nonce_name();
 
-		if ( ! isset( $_POST[ $nonce_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Checked here.
+			if ( ! isset( $_POST[ $nonce_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.NoNonceVerification -- Checked here.
 			return false;
 		}
 
@@ -477,8 +477,10 @@ class Metabox {
 			return true;
 		}
 
-		$nonce_val = isset( $_POST[ $nonce_name ] ) ? ( function_exists( 'sanitize_text_field' ) ? sanitize_text_field( wp_unslash( $_POST[ $nonce_name ] ) ) : (string) $_POST[ $nonce_name ] ) : '';
-		return (bool) wp_verify_nonce( $nonce_val, $this->nonce_action() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified here.
+			$nonce_val = isset( $_POST[ $nonce_name ] )
+				? ( function_exists( 'sanitize_text_field' ) ? sanitize_text_field( wp_unslash( $_POST[ $nonce_name ] ) ) : (string) $_POST[ $nonce_name ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.NoNonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+				: '';
+			return (bool) wp_verify_nonce( $nonce_val, $this->nonce_action() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/**
