@@ -13,12 +13,6 @@ namespace WPMoo\Fields;
 
 use InvalidArgumentException;
 use WPMoo\Fields\BaseField;
-use WPMoo\Fields\Accordion\Accordion;
-use WPMoo\Fields\Checkbox\Checkbox;
-use WPMoo\Fields\Color\Color;
-use WPMoo\Fields\Fieldset\Fieldset;
-use WPMoo\Fields\Text\Text;
-use WPMoo\Fields\Textarea\Textarea;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -339,14 +333,8 @@ class Manager {
 	 * @return array<string, class-string<BaseField>>
 	 */
 	protected function default_type_map(): array {
-		return array(
-			'text'      => Text::class,
-			'textarea'  => Textarea::class,
-			'checkbox'  => Checkbox::class,
-			'color'     => Color::class,
-			'accordion' => Accordion::class,
-			'fieldset'  => Fieldset::class,
-		);
+		// No built-in mappings; projects must register components explicitly.
+		return array();
 	}
 
 	/**
