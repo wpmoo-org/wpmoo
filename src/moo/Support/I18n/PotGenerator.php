@@ -695,9 +695,8 @@ class PotGenerator {
 			$output[] = '"' . $escaped . '"';
 		}
 
-		if ( empty( $output ) ) {
-			$output[] = '""';
-		}
+		// $output will always contain at least one line because explode() returns
+		// an array with one element and the foreach above appends to `$output`.
 
 		return implode( "\n", $output );
 	}
