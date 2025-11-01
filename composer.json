@@ -70,14 +70,13 @@
     "phpcbf": "vendor/bin/phpcbf",
     "phpstan": "vendor/bin/phpstan analyse --no-progress --memory-limit=1G",
     "hooks:install": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit .githooks/pre-push",
+    "watch": "pnpm watch || yarn watch || npm run watch",
     "check": [
       "@check:validate",
       "@lint:php",
       "@phpcbf",
       "@phpcs",
       "@phpstan"
-    ],
-    "ui:watch": "sh -lc 'cd vendor/wpmoo/wpmoo-ui && (pnpm i || npm i || yarn) && (pnpm watch || npm run watch || yarn watch)'",
-    "ui:build": "sh -lc 'cd vendor/wpmoo/wpmoo-ui && (pnpm i || npm i || yarn) && (pnpm build || npm run build || yarn build)'"
+    ]
   }
 }

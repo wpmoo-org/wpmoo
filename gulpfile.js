@@ -224,9 +224,9 @@ function serve() {
 
   const bsConfig = {
     proxy: "https://wp-dev.local",
-    startPath: "/wp-admin/",
+    startPath: "/wp-admin/admin.php?page=wpmoo-samples",
     https: httpsOpt,
-    open: "local", // https://localhost:<port>/wp-admin/ açılır
+    open: "https://wp-dev.local", // https://localhost:<port>/wp-admin/ açılır
     notify: false,
   };
 
