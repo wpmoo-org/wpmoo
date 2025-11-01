@@ -35,7 +35,8 @@
   },
   "type": "wordpress-framework",
   "require": {
-    "php": ">=7.4"
+    "php": ">=7.4",
+    "wpmoo/wpmoo-ui": "dev-dev"
   },
   "autoload": {
     "psr-4": {
