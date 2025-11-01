@@ -6,6 +6,5 @@
 
 $entry = __DIR__ . '/src/wpmoo.php';
 if ( file_exists( $entry ) ) {
-    include_once $entry;
+	include_once $entry;
 }
-
