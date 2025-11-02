@@ -1,0 +1,14 @@
+/* WPMoo CSS custom property defaults (scoped) */
+:where(.wpmoo) {
+  /* Horizontal gutters for containers */
+  --wpmoo-container-x: 2rem;
+  /* Maximum width for containers (none = full-bleed) */
+  --wpmoo-container-max: none;
+  /* Section grid gap */
+  --wpmoo-section-gap: 1rem;
+  /* Label/control gap */
+  --wpmoo-field-gap: .5rem;
+  /* Generic spacing token used in grids if referenced */
+  --wpmoo-spacing: .85rem;
+}
+
