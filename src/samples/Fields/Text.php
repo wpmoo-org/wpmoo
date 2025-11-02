@@ -36,7 +36,7 @@ final class Text {
 	public static function define(): void {
 		$page = \WPMoo\Moo::container(
 			self::PAGE_ID,
-			__( 'WPMoo Samples Test', 'wpmoo' ),
+			__( 'WPMoo Samples', 'wpmoo' ),
 			__( 'Examples of core field types for development.', 'wpmoo' )
 		);
 

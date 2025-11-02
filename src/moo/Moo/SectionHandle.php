@@ -50,7 +50,7 @@ class SectionHandle {
 	protected $icon = '';
 
 	/**
-	 * Recorded column definitions.
+	 * Recorded column definitions (removed, kept for BC).
 	 *
 	 * @var array<int, mixed>
 	 */
@@ -189,14 +189,7 @@ class SectionHandle {
 	 * @return $this
 	 */
 	public function columns( ...$columns ): self {
-		$this->columns = $columns;
-
-		if ( $this->builder && method_exists( $this->builder, 'columns' ) ) {
-			$this->builder->columns( ...$columns );
-		}
-
-		return $this;
-	}
+		return $this; }
 
 	/**
 	 * Alias for columns().
@@ -205,8 +198,7 @@ class SectionHandle {
 	 * @return $this
 	 */
 	public function size( ...$columns ): self {
-		return $this->columns( ...$columns );
-	}
+		return $this; }
 
 	/**
 	 * Attach the section to a parent page.
@@ -327,7 +319,7 @@ class SectionHandle {
 		$this->builder = $page->builder()->section( $this->id, $this->title, $this->description );
 
 		$this->apply_icon();
-		$this->apply_columns();
+		// columns removed
 		$this->flush_fields();
 		$this->attached = true;
 	}
@@ -357,7 +349,7 @@ class SectionHandle {
 		$this->builder    = $metabox->builder()->section( $this->id, $this->title, $this->description );
 
 		$this->apply_icon();
-		$this->apply_columns();
+		// columns removed
 		$this->flush_fields();
 		$this->attached = true;
 	}
@@ -398,13 +390,7 @@ class SectionHandle {
 	 *
 	 * @return void
 	 */
-	protected function apply_columns(): void {
-		if ( empty( $this->columns ) || ! $this->builder || ! method_exists( $this->builder, 'columns' ) ) {
-			return;
-		}
-
-		$this->builder->columns( ...$this->columns );
-	}
+	protected function apply_columns(): void {}
 
 	/**
 	 * Normalise and pass stored fields to the section builder.

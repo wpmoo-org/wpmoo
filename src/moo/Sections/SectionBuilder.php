@@ -19,7 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Holds fields and can build a full section config.
  */
 class SectionBuilder {
-	use HasColumns;
 
 	/**
 	 * Section ID.
@@ -54,10 +53,7 @@ class SectionBuilder {
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected $layout = array(
-		'size'    => 12,
-		'columns' => array( 'default' => 12 ),
-	);
+	// Layout grid removed (PicoCSS-first).
 
 	/**
 	 * Fields in this section (built arrays or FieldBuilder instances).
@@ -119,7 +115,7 @@ class SectionBuilder {
 	 * @return $this
 	 */
 	public function columns( ...$columns ): self {
-		return $this->size( ...$columns );
+		return $this;
 	}
 
 	/**
@@ -129,9 +125,6 @@ class SectionBuilder {
 	 * @return $this
 	 */
 	public function size( ...$columns ): self {
-		$parsed = $this->parseColumnSpans( $columns );
-		$this->layout['columns'] = $parsed;
-		$this->layout['size']    = $parsed['default'];
 		return $this;
 	}
 
@@ -177,8 +170,7 @@ class SectionBuilder {
 	 * @return array<string, mixed>
 	 */
 	public function get_layout(): array {
-		return $this->layout;
-	}
+		return array(); }
 
 	/**
 	 * Build the section configuration.
@@ -202,7 +194,7 @@ class SectionBuilder {
 			'description' => $this->description,
 			'icon'        => $this->icon,
 			'fields'      => $fields,
-			'layout'      => $this->layout,
+			'layout'      => array(),
 		);
 	}
 }

@@ -8,8 +8,6 @@
 
 namespace WPMoo\Fields;
 
-use WPMoo\Support\Concerns\HasColumns;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
@@ -20,7 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Provides a consistent fluent API that Options and Metabox builders can extend.
  */
 class FieldBuilder {
-	use HasColumns;
 
 	/**
 	 * Field configuration.
@@ -354,27 +351,8 @@ class FieldBuilder {
 		if ( ! isset( $this->config['layout'] ) ) {
 			$this->config['layout'] = array();
 		}
-
-		if ( isset( $layout['size'] ) && ! isset( $layout['columns'] ) ) {
-			$layout['columns'] = array(
-				'default' => $this->clampColumnSpan( $layout['size'] ),
-			);
-		}
-
+		// Grid helpers removed. Keep as no-op merger for BC.
 		$this->config['layout'] = array_merge( $this->config['layout'], $layout );
-
-		if ( isset( $this->config['layout']['columns']['default'] ) ) {
-			$span = $this->clampColumnSpan( $this->config['layout']['columns']['default'] );
-			if ( null !== $span ) {
-				$this->config['width'] = (int) round( ( $span / 12 ) * 100 );
-			}
-		} elseif ( isset( $this->config['layout']['size'] ) ) {
-			$span = $this->clampColumnSpan( $this->config['layout']['size'] );
-			if ( null !== $span ) {
-				$this->config['width'] = (int) round( ( $span / 12 ) * 100 );
-			}
-		}
-
 		return $this;
 	}
 
@@ -385,8 +363,7 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function width( int $percentage ): self {
-		$percentage            = max( 0, min( 100, $percentage ) );
-		$this->config['width'] = $percentage;
+		$this->config['width'] = max( 0, min( 100, $percentage ) );
 		return $this;
 	}
 
@@ -397,15 +374,7 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function size( ...$columns ): self {
-		$parsed = $this->parseColumnSpans( $columns );
-		$this->layout(
-			array(
-				'size'    => $parsed['default'],
-				'columns' => $parsed,
-			)
-		);
-		$width = (int) round( ( $parsed['default'] / 12 ) * 100 );
-		return $this->width( $width );
+		return $this;
 	}
 
 	/**
@@ -415,7 +384,7 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function columns( ...$columns ): self {
-		return $this->size( ...$columns );
+		return $this;
 	}
 
 	/**
@@ -425,7 +394,7 @@ class FieldBuilder {
 	 * @return $this
 	 */
 	public function gutter( string $gutter ): self {
-		return $this->layout( array( 'gutter' => $gutter ) );
+		return $this;
 	}
 
 	/**

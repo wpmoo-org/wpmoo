@@ -23,7 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @phpstan-consistent-constructor
  */
 class Section {
-	use HasColumns;
 	use TranslatesStrings;
 
 	/**
@@ -66,12 +65,7 @@ class Section {
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected $layout = array(
-		'size'    => 12,
-		'columns' => array(
-			'default' => 12,
-		),
-	);
+	protected $layout = array();
 
 	/**
 	 * Constructor.
@@ -179,12 +173,7 @@ class Section {
 	 * @return static
 	 */
 	public function size( ...$columns ): static {
-		$parsed       = $this->parseColumnSpans( $columns );
-		$this->layout = array(
-			'size'    => $parsed['default'],
-			'columns' => $parsed,
-		);
-
+		// Grid helpers removed. No-op for BC.
 		return $this;
 	}
 
@@ -195,7 +184,7 @@ class Section {
 	 * @return static
 	 */
 	public function columns( ...$columns ): static {
-		return $this->size( ...$columns );
+		return $this;
 	}
 
 	/**
