@@ -7,6 +7,7 @@
 
 namespace WPMoo\Samples\Fields;
 
+use WPMoo\Moo;
 use WPMoo\Fields\FieldBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -34,7 +35,7 @@ final class Text {
 	 * Define the page/section/field using Moo facade + FieldBuilder.
 	 */
 	public static function define(): void {
-		$page = \WPMoo\Moo::container(
+		$page = Moo::container(
 			self::PAGE_ID,
 			__( 'WPMoo Samples', 'wpmoo' ),
 			__( 'Examples of core field types for development.', 'wpmoo' )
@@ -44,7 +45,7 @@ final class Text {
 			->icon( 'dashicons-editor-textcolor' )
 			->capability( 'manage_options' );
 
-		\WPMoo\Moo::section(
+		Moo::section(
 			self::SECTION_ID,
 			__( 'Text Field', 'wpmoo' ),
 			__( 'A basic text input using the core Text field type.', 'wpmoo' )
