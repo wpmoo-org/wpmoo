@@ -151,11 +151,12 @@ class Container {
 	protected $default_section_title = '';
 
 	/**
-	 * Inline CSS custom properties to apply on the page container element.
+	 * Inline style applied to the page container element.
+	 * Example: "--wpmoo-container-max:none; --wpmoo-container-x:1.25rem;".
 	 *
-	 * @var array<string,string>
+	 * @var string
 	 */
-	protected $css_vars = array();
+	protected $style = '';
 
 	/**
 	 * Additional CSS classes applied to the page <main> element.
@@ -163,6 +164,13 @@ class Container {
 	 * @var string
 	 */
 	protected $classes = '';
+
+	/**
+	 * Page configuration overrides (flat key/value map merged into Page config).
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $options = array();
 
 	/**
 	 * Constructor.
@@ -626,7 +634,7 @@ class Container {
 			}
 		}
 
-		return array(
+		$config = array(
 			'page_title'  => $this->page_title,
 			'menu_title'  => $this->menu_title,
 			'menu_slug'   => $this->menu_slug,
@@ -636,9 +644,15 @@ class Container {
 			'position'    => $this->position,
 			'icon'        => $this->icon,
 			'sections'    => $sections,
-			'css_vars'    => $this->css_vars,
-			'classes'     => $this->classes,
+			'style'       => $this->style,
+			'class'       => $this->classes,
 		);
+
+		if ( ! empty( $this->options ) ) {
+			$config = array_merge( $config, $this->options );
+		}
+
+		return $config;
 	}
 
 	/**
@@ -651,19 +665,26 @@ class Container {
 	 * @return $this
 	 */
 	public function cssVar( string $name, string $value ): self {
-		$name = trim( $name );
+		$name  = trim( $name );
+		$value = (string) $value;
 
-		// Ensure a valid custom property name and keep it scoped.
 		if ( 0 !== strpos( $name, '--' ) ) {
 			$name = '--' . ltrim( $name, '-' );
 		}
-
-		// Optional scope hardening: only allow wpmoo-prefixed custom props.
 		if ( 0 !== strpos( $name, '--wpmoo-' ) ) {
 			$name = '--wpmoo-' . ltrim( substr( $name, 2 ), '-' );
 		}
 
-		$this->css_vars[ $name ] = (string) $value;
+		$declaration = $name . ':' . $value . ';';
+		if ( '' !== $this->style ) {
+			$this->style = rtrim( $this->style );
+			if ( ';' !== substr( $this->style, -1 ) ) {
+				$this->style .= ';';
+			}
+			$this->style .= $declaration;
+		} else {
+			$this->style = $declaration;
+		}
 
 		return $this;
 	}
@@ -719,12 +740,40 @@ class Container {
 		if ( '' === $class ) {
 			return $this;
 		}
-		$existing = preg_split( '/\s+/', (string) $this->classes ) ?: array();
+		$existing = preg_split( '/\s+/', (string) $this->classes );
+		if ( ! is_array( $existing ) ) {
+			$existing = array();
+		}
 		if ( ! in_array( $class, $existing, true ) ) {
 			$existing[] = $class;
 		}
 		$this->classes = trim( implode( ' ', $existing ) );
 		return $this;
+	}
+
+	/**
+	 * Provide framework/UI arguments in bulk (keys per documented list).
+	 *
+	 * @param array<string,mixed> $args Argument map.
+	 * @return $this
+	 */
+	public function options( array $args ): self {
+		// Set arbitrary page options
+		if ( isset( $args['class'] ) && is_string( $args['class'] ) ) {
+			$this->cssClass( $args['class'] );
+		}
+		$this->options = array_merge( $this->options, $args );
+		return $this;
+	}
+
+	/**
+	 * Backward-compatible alias.
+	 *
+	 * @param array<string,mixed> $args Options.
+	 * @return $this
+	 */
+	public function framework( array $args ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return $this->options( $args );
 	}
 
 	/**

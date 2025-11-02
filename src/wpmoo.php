@@ -133,7 +133,7 @@ if ( function_exists( 'add_action' ) ) {
 	add_action(
 		'admin_head',
 		function () {
-			// Do not target [role="switch"] so Pico switch knob pseudo remains intact.
+			// Do not target [role="switch"] so the switch knob pseudo remains intact.
 			$css = '.wpmoo input[type="checkbox"]:not([role="switch"])::before,'
 				. '.wpmoo input[type="checkbox"]:not([role="switch"])::after,'
 				. '.wpmoo input[type="radio"]::before,'

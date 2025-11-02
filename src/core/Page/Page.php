@@ -26,15 +26,63 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Builds a WordPress admin options page from configuration.
  */
+/**
+ * Page configuration shape for static analysis.
+ *
+ * @phpstan-type PageConfig array{
+ *   page_title: string,
+ *   menu_title: string,
+ *   menu_slug: string,
+ *   option_key: string,
+ *   capability: string,
+ *   parent_slug: string,
+ *   position: int|null,
+ *   icon: string,
+ *   sections: array<int, array<string,mixed>>,
+ *   style: string,
+ *   framework_title: string,
+ *   menu_type: string,
+ *   menu_parent: string,
+ *   menu_hidden: bool,
+ *   show_bar_menu: bool,
+ *   show_sub_menu: bool,
+ *   show_in_network: bool,
+ *   show_in_customizer: bool,
+ *   show_search: bool,
+ *   show_reset_all: bool,
+ *   show_reset_section: bool,
+ *   show_all_options: bool,
+ *   show_form_warning: bool,
+ *   sticky_header: bool,
+ *   save_defaults: bool,
+ *   ajax_save: bool,
+ *   admin_bar_menu_icon: string,
+ *   admin_bar_menu_priority: int,
+ *   footer_text: string,
+ *   footer_after: string,
+ *   footer_credit: string,
+ *   database: string,
+ *   transient_time: int,
+ *   contextual_help: array<int,mixed>,
+ *   contextual_help_sidebar: string,
+ *   enqueue_webfont: bool,
+ *   async_webfont: bool,
+ *   output_css: bool,
+ *   nav: string,
+ *   theme: string,
+ *   class: string,
+ *   defaults: array<string,mixed>
+ * }
+ */
 class Page {
 	use TranslatesStrings;
 
 	/**
 	 * Normalized page configuration.
 	 *
-	 * @var array<string, mixed>
+	 * @var PageConfig
 	 */
-	protected $config;
+	 protected $config;
 
 	/**
 	 * Normalized section definitions.
@@ -414,8 +462,11 @@ class Page {
 
 		// Compose classes for the page container.
 		$base_classes = array( 'wpmoo', 'container' );
-		if ( isset( $this->config['classes'] ) && is_string( $this->config['classes'] ) && '' !== trim( $this->config['classes'] ) ) {
-			$extras = preg_split( '/\s+/', trim( (string) $this->config['classes'] ) ) ?: array();
+		if ( isset( $this->config['class'] ) && is_string( $this->config['class'] ) && '' !== trim( $this->config['class'] ) ) {
+			$extras = preg_split( '/\s+/', trim( (string) $this->config['class'] ) );
+			if ( ! is_array( $extras ) ) {
+				$extras = array();
+			}
 			foreach ( $extras as $c ) {
 				$c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c );
 				if ( $c && ! in_array( $c, $base_classes, true ) ) {
@@ -429,7 +480,13 @@ class Page {
         // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Output assembled with proper escaping below.
 		echo '<main' . $class_attr . ' id="wpmoo-options"' . $style_attr . '>';
 		echo '<header>';
-		echo '<h1>' . esc_html( $this->config['page_title'] ) . '</h1>';
+		$heading = '';
+		if ( isset( $this->config['framework_title'] ) && '' !== (string) $this->config['framework_title'] ) {
+			$heading = (string) $this->config['framework_title'];
+		} else {
+			$heading = (string) $this->config['page_title'];
+		}
+		echo '<h1>' . esc_html( $heading ) . '</h1>';
 		echo '</header>';
 
 		if ( function_exists( 'settings_errors' ) ) {
@@ -505,7 +562,10 @@ class Page {
 			$extra = (string) $field->css_class();
 			if ( '' !== trim( $extra ) ) {
 				// Split by whitespace and append.
-				$extras = preg_split( '/\s+/', trim( $extra ) ) ?: array();
+				$extras = preg_split( '/\s+/', trim( $extra ) );
+				if ( ! is_array( $extras ) ) {
+					$extras = array();
+				}
 				foreach ( $extras as $c ) {
 					$c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c );
 					if ( $c && ! in_array( $c, $wrapper_classes, true ) ) {
@@ -659,11 +719,60 @@ class Page {
 	/**
 	 * Normalize the page configuration array.
 	 *
-	 * @param array<string, mixed> $config Raw configuration values.
-	 * @return array<string, mixed>
+	 * @param array<string, mixed>|PageConfig $config Raw configuration values.
+	 * @return PageConfig
 	 */
 	protected function normalize_config( array $config ) {
-		$defaults = array(
+		$defaults = self::defaults();
+		$config   = array_merge( $defaults, $config );
+
+		// Derive required basics when omitted.
+		if ( '' === $config['page_title'] ) {
+			$config['page_title'] = '' !== $config['menu_title'] ? $config['menu_title'] : 'Settings';
+		}
+		if ( '' === $config['menu_title'] ) {
+			$config['menu_title'] = $config['page_title'];
+		}
+		if ( '' === $config['menu_slug'] ) {
+			$config['menu_slug'] = Str::slug( $config['menu_title'] );
+		}
+		if ( '' === $config['option_key'] ) {
+			$config['option_key'] = $config['menu_slug'];
+		}
+
+		if ( ! is_array( $config['sections'] ) ) {
+			$config['sections'] = array();
+		}
+		if ( ! isset( $config['style'] ) || ! is_string( $config['style'] ) ) {
+			$config['style'] = '';
+		}
+
+		// Legacy mappings.
+		if ( isset( $config['menu_capability'] ) && ! isset( $config['capability'] ) ) {
+			$config['capability'] = (string) $config['menu_capability'];
+		}
+		if ( isset( $config['classes'] ) && is_string( $config['classes'] ) ) {
+			$config['class'] = trim( (string) ( $config['class'] ? $config['class'] . ' ' : '' ) . $config['classes'] );
+		}
+
+		// Submenu → adopt parent when provided.
+		if ( '' === $config['parent_slug'] && isset( $config['menu_type'] ) && 'submenu' === $config['menu_type'] && ! empty( $config['menu_parent'] ) ) {
+			$config['parent_slug'] = (string) $config['menu_parent'];
+		}
+
+		return $config;
+	}
+
+	/**
+	 * Default configuration for a page.
+	 *
+	 * Grouped by concern for readability; see PageConfig for schema.
+	 *
+	 * @return PageConfig
+	 */
+	protected static function defaults() {
+		return array(
+			// Basics
 			'page_title'  => '',
 			'menu_title'  => '',
 			'menu_slug'   => '',
@@ -673,36 +782,42 @@ class Page {
 			'position'    => null,
 			'icon'        => '',
 			'sections'    => array(),
-			'css_vars'    => array(),
+			// Appearance
+			'style'       => '',
+			'class'       => '',
+			'theme'       => 'dark',
+			'nav'         => 'normal',
+			// Behavior/UI
+			'framework_title'         => '',
+			'menu_type'               => 'menu',
+			'menu_parent'             => '',
+			'menu_hidden'             => false,
+			'show_bar_menu'           => true,
+			'show_sub_menu'           => true,
+			'show_in_network'         => true,
+			'show_in_customizer'      => false,
+			'show_search'             => true,
+			'show_reset_all'          => true,
+			'show_reset_section'      => true,
+			'show_all_options'        => true,
+			'show_form_warning'       => true,
+			'sticky_header'           => true,
+			'save_defaults'           => true,
+			'ajax_save'               => true,
+			'admin_bar_menu_icon'     => '',
+			'admin_bar_menu_priority' => 80,
+			'footer_text'             => '',
+			'footer_after'            => '',
+			'footer_credit'           => '',
+			'database'                => 'option',
+			'transient_time'          => 0,
+			'contextual_help'         => array(),
+			'contextual_help_sidebar' => '',
+			'enqueue_webfont'         => true,
+			'async_webfont'           => false,
+			'output_css'              => true,
+			'defaults'                => array(),
 		);
-
-		$config = array_merge( $defaults, $config );
-
-		if ( '' === $config['page_title'] ) {
-			$config['page_title'] = '' !== $config['menu_title'] ? $config['menu_title'] : 'Settings';
-		}
-
-		if ( '' === $config['menu_title'] ) {
-			$config['menu_title'] = $config['page_title'];
-		}
-
-		if ( '' === $config['menu_slug'] ) {
-			$config['menu_slug'] = Str::slug( $config['menu_title'] );
-		}
-
-		if ( '' === $config['option_key'] ) {
-			$config['option_key'] = $config['menu_slug'];
-		}
-
-		if ( ! is_array( $config['sections'] ) ) {
-			$config['sections'] = array();
-		}
-
-		if ( ! is_array( $config['css_vars'] ) ) {
-			$config['css_vars'] = array();
-		}
-
-		return $config;
 	}
 
 	/**
