@@ -26,8 +26,48 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Field extends FieldBuilder {
 	/**
-	 * Create a builder via static typed constructor, e.g. Field::text('id').
+	 * Create an 'input' field builder (text-like).
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function input( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'input' );
+	}
 
+	/**
+	 * Create a 'button' pseudo-field builder.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function button( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'button' );
+	}
+
+	/**
+	 * Create a 'textarea' field builder.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function textarea( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'textarea' );
+	}
+
+	/**
+	 * Create a 'select' field builder.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function select( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'select' );
+	}
+
+	/**
+	 * Create a builder via static typed constructor, e.g. Field::text('id').
+	 * 
 	 * @param string $name      Called static method name (used as type).
 	 * @param array  $arguments Arguments passed to the method (expects [ id ]).
 	 * @return static
