@@ -9,7 +9,6 @@ namespace WPMoo\Sections;
 
 use InvalidArgumentException;
 use WPMoo\Fields\FieldBuilder;
-use WPMoo\Support\Concerns\HasColumns;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
 
@@ -60,12 +59,7 @@ class Section {
 	 */
 	protected $fields = array();
 
-	/**
-	 * Layout settings.
-	 *
-	 * @var array<string, mixed>
-	 */
-	protected $layout = array();
+	// Layout helpers removed (grid handled by container renderers).
 
 	/**
 	 * Constructor.
@@ -152,19 +146,7 @@ class Section {
 		return $this->icon( $icon );
 	}
 
-	/**
-	 * Retrieve the section layout configuration.
-	 *
-	 * @param string|null $key Optional key.
-	 * @return mixed
-	 */
-	public function layout( ?string $key = null ) {
-		if ( null === $key ) {
-			return $this->layout;
-		}
-
-		return isset( $this->layout[ $key ] ) ? $this->layout[ $key ] : null;
-	}
+	// public function layout() removed — not used by Pico-first renderers.
 
 	/**
 	 * Define responsive column spans for the section.
@@ -243,7 +225,7 @@ class Section {
 			'description' => $this->description,
 			'icon'        => $this->icon,
 			'fields'      => $this->fields,
-			'layout'      => $this->layout,
+			// 'layout' removed
 		);
 	}
 

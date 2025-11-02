@@ -30,5 +30,8 @@ final class Samples {
 		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Button' ) ) {
 			\WPMoo\Samples\Fields\Button::register();
 		}
+		if ( class_exists( '\\WPMoo\\Samples\\Metabox\\Simple' ) ) {
+			\WPMoo\Samples\Metabox\Simple::register();
+		}
 	}
 }

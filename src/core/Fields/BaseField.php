@@ -12,7 +12,6 @@
 namespace WPMoo\Fields;
 
 use WPMoo\Support\Concerns\EscapesOutput;
-use WPMoo\Support\Concerns\HasColumns;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -23,7 +22,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 abstract class BaseField {
 	use EscapesOutput;
-	use HasColumns;
 
 	/**
 	 * Field identifier.
@@ -102,24 +100,7 @@ abstract class BaseField {
 	 */
 	protected $args = array();
 
-	/**
-	 * Declared width percentage (0-100).
-	 *
-	 * @var int
-	 */
-	protected $width = 0;
-
-	/**
-	 * Layout configuration.
-	 *
-	 * @var array<string, mixed>
-	 */
-	protected $layout = array(
-		'size'    => 12,
-		'columns' => array(
-			'default' => 12,
-		),
-	);
+	// Layout/width helpers removed; rendering uses simple container/grid wrappers.
 
 	/**
 	 * Common boolean flags.
@@ -247,7 +228,7 @@ abstract class BaseField {
 			'after'       => '',
 			'help'        => '',
 			'placeholder' => null,
-			'layout'      => array(),
+			// 'layout' ignored under Pico-first renderers
 			'required'    => false,
 			'disabled'    => false,
 			'readonly'    => false,
@@ -322,24 +303,6 @@ abstract class BaseField {
 			$attributes['multiple'] = true;
 		}
 
-		if ( isset( $config['layout'] ) && is_array( $config['layout'] ) ) {
-			$this->layout = array_merge(
-				$this->layout,
-				$config['layout']
-			);
-		}
-
-		$this->normalise_layout();
-
-		$this->width = isset( $config['width'] ) ? (int) $config['width'] : 0;
-
-		if ( $this->width <= 0 ) {
-			$size        = isset( $this->layout['size'] ) ? (int) $this->layout['size'] : 12;
-			$this->width = (int) round( ( $size / 12 ) * 100 );
-		}
-
-		$this->width = max( 0, min( 100, $this->width ) );
-
 		$this->attributes = $attributes;
 		$this->args       = $attributes;
 	}
@@ -398,14 +361,7 @@ abstract class BaseField {
 		return $this->default;
 	}
 
-	/**
-	 * Returns the preferred width percentage.
-	 *
-	 * @return int
-	 */
-	public function width() {
-		return $this->width;
-	}
+	// public function width() removed — not used by Pico-first renderers.
 
 	/**
 	 * Returns additional HTML attributes.
@@ -416,19 +372,7 @@ abstract class BaseField {
 		return $this->attributes;
 	}
 
-	/**
-	 * Retrieve layout configuration.
-	 *
-	 * @param string|null $key Optional key to retrieve.
-	 * @return mixed
-	 */
-	public function layout( $key = null ) {
-		if ( null === $key ) {
-			return $this->layout;
-		}
-
-		return isset( $this->layout[ $key ] ) ? $this->layout[ $key ] : null;
-	}
+	// public function layout() removed — not used by Pico-first renderers.
 
 	/**
 	 * Retrieve attributes assigned to the control.
@@ -439,48 +383,7 @@ abstract class BaseField {
 		return $this->attributes;
 	}
 
-	/**
-	 * Normalise layout configuration to ensure valid column spans.
-	 *
-	 * @return void
-	 */
-	protected function normalise_layout(): void {
-		if ( isset( $this->layout['columns'] ) && is_array( $this->layout['columns'] ) ) {
-			foreach ( $this->layout['columns'] as $breakpoint => $span ) {
-				$normalised = $this->clampColumnSpan( $span );
-
-				if ( null === $normalised ) {
-					unset( $this->layout['columns'][ $breakpoint ] );
-					continue;
-				}
-
-				$this->layout['columns'][ $breakpoint ] = $normalised;
-			}
-
-			if ( empty( $this->layout['columns'] ) ) {
-				$this->layout['columns'] = array(
-					'default' => 12,
-				);
-			}
-
-			if ( ! isset( $this->layout['columns']['default'] ) ) {
-				$first                              = reset( $this->layout['columns'] );
-				$this->layout['columns']['default'] = false !== $first ? (int) $first : 12;
-			}
-
-			$this->layout['size'] = $this->layout['columns']['default'];
-		} else {
-			$size = isset( $this->layout['size'] ) ? $this->clampColumnSpan( $this->layout['size'] ) : 12;
-			if ( null === $size ) {
-				$size = 12;
-			}
-
-			$this->layout['size']    = $size;
-			$this->layout['columns'] = array(
-				'default' => $size,
-			);
-		}
-	}
+	// normalise_layout() removed — layout helpers no longer used.
 
 	/**
 	 * Retrieve a specific attribute value.

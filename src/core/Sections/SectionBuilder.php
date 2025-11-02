@@ -8,8 +8,6 @@
 
 namespace WPMoo\Sections;
 
-use WPMoo\Support\Concerns\HasColumns;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
