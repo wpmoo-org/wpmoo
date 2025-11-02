@@ -215,16 +215,7 @@ class MetaboxHandle {
 		return $this;
 	}
 
-	/**
-	 * Enable the panel layout (tabbed interface).
-	 *
-	 * @return $this
-	 */
-	public function panel(): self {
-		$this->builder->panel();
-
-		return $this;
-	}
+	// panel() removed under Pico-first UI; use sections without tabs.
 
 	/**
 	 * Convenience for context('normal').

@@ -20,10 +20,13 @@ build/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+composer.lock
 
 # Ignore temporary files
 *.tmp
-# Ignore Composer lock in library repo
-composer.lock
+
 # PHPUnit cache
 .phpunit.result.cache
+
+src/assets/**/*.css
+src/assets/**/*.map

@@ -75,8 +75,7 @@ class Moo {
 			case 'metabox':
 				return self::metabox( $id, $title, $description );
 
-			case 'panel':
-				return self::panel( $id, $title, $description );
+			// 'panel' removed; use metabox() + sections instead.
 		}
 
 		/* phpcs:disable WordPress.Security.EscapeOutput */
@@ -168,20 +167,7 @@ class Moo {
 		return $handle;
 	}
 
-	/**
-	 * Define a metabox with panel layout enabled.
-	 *
-	 * @param string $id          Metabox identifier.
-	 * @param string $title       Optional title.
-	 * @param string $description Optional description.
-	 * @return MetaboxHandle
-	 */
-	public static function panel( string $id, string $title = '', string $description = '' ): MetaboxHandle {
-		$handle = self::metabox( $id, $title, $description );
-		$handle->panel();
-
-		return $handle;
-	}
+	// panel() removed in Pico-first UI; define metabox() and sections instead.
 
 	/**
 	 * Ensure a section is associated with the given page.

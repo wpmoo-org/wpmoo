@@ -12,11 +12,10 @@ const paths = {
   styles: {
     entries: [
       // Köprü/override girişiniz (wpmoo.scss → wpmoo.bridge.css, sonra bundle)
-      "assets/scss/wpmoo.scss",
+      "resources/scss/wpmoo.scss",
     ],
-    src: "assets/scss/**/*.scss",
-    dest: "assets/css",
-    destAlt: "src/assets/css",
+    src: "resources/scss/**/*.scss",
+    dest: "src/assets/css",
     bridgeOut: "wpmoo.bridge.css",
     finalOut: "wpmoo.css",
   },
@@ -26,8 +25,7 @@ const paths = {
   },
   pico: {
     scoped: "vendor/pico/css/pico.conditional.css",
-    dest: "assets",
-    destAlt: "src/assets",
+    dest: "src/assets",
     outFile: "pico-wpmoo.css",
   },
 };
@@ -131,7 +129,6 @@ function styles() {
     }))
     .pipe(sourcemaps.write("."))
     .pipe(dest(paths.styles.dest))
-    .pipe(dest(paths.styles.destAlt))
     .pipe(browserSync.stream({ match: "**/*.css" }));
 }
 
@@ -181,7 +178,6 @@ function picoScope() {
     // .pipe(replaceText(/picocss\.com/g, "wpmoo.org/ui"))
     .pipe(renameTo(paths.pico.outFile))
     .pipe(dest(paths.pico.dest))
-    .pipe(dest(paths.pico.destAlt))
     .pipe(browserSync.stream({ match: "**/*.css" }));
 }
 
@@ -220,7 +216,9 @@ function serve() {
   const httpsOpt = getHttpsOption();
   const loginUser = process.env.WP_DEV_USER || "";
   const loginPass = process.env.WP_DEV_PASS || "";
-  const injectLogin = Boolean(loginUser && loginPass);
+  const autoLoginEnv = String(process.env.BS_AUTO_LOGIN || "1").toLowerCase();
+  const autoLoginOn = ["1", "true", "on", "yes"].includes(autoLoginEnv);
+  const injectLogin = Boolean(loginUser && loginPass && autoLoginOn);
 
   const bsConfig = {
     proxy: "https://wp-dev.local",
