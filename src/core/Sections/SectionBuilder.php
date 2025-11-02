@@ -49,13 +49,6 @@ class SectionBuilder {
 	protected $icon = '';
 
 	/**
-	 * Layout config (size/columns), default full width.
-	 *
-	 * @var array<string, mixed>
-	 */
-	// Layout grid removed (PicoCSS-first).
-
-	/**
 	 * Fields in this section (built arrays or FieldBuilder instances).
 	 *
 	 * @var array<int, mixed>

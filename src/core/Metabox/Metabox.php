@@ -12,7 +12,6 @@
 namespace WPMoo\Metabox;
 
 use WP_Post;
-use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
@@ -285,19 +284,22 @@ class Metabox {
 		// Scope UI with .wpmoo so Pico-based styles apply only within WPMoo areas.
 		echo '<div class="wpmoo">';
 
+		// Render sections with grid; fallback to all fields in a single section.
 		if ( 'panel' === $this->config['layout'] || ! empty( $this->sections ) ) {
-			$this->render_panel( $post );
+			$this->render_sections( $post );
 			echo '</div>';
 			return;
 		}
 
-		echo '<div class="wpmoo-metabox-fields">';
+		echo '<section class="wpmoo-metabox">';
+		echo '<div class="grid">';
 
 		foreach ( $this->fields as $field ) {
 			$this->render_field( $field, $post );
 		}
 
 		echo '</div>';
+		echo '</section>';
 		echo '</div>';
 	}
 
@@ -316,7 +318,7 @@ class Metabox {
 	 * @param WP_Post $post Current post object.
 	 * @return void
 	 */
-	protected function render_panel( $post ) {
+	protected function render_sections( $post ) {
 		$sections = $this->sections;
 		$used_ids = array();
 
@@ -327,7 +329,6 @@ class Metabox {
 		}
 
 		$remaining_fields = array();
-
 		foreach ( $this->fields as $field ) {
 			if ( ! in_array( $field->id(), $used_ids, true ) ) {
 				$remaining_fields[] = $field;
@@ -354,41 +355,27 @@ class Metabox {
 			);
 		}
 
-		$panel_sections = array();
-
 		foreach ( $sections as $section ) {
-			ob_start();
+			$section_id    = $section['id'];
+			$section_title = $section['title'];
+			$section_desc  = $section['description'];
 
+			echo '<section id="' . esc_attr( $section_id ) . '">';
+			echo '<header>';
+			// In metabox context, the box title is already visible; use h3 for sub-sections when multiple.
+			echo '<h3>' . esc_html( $section_title ) . '</h3>';
+			if ( '' !== $section_desc ) {
+				echo '<p>' . esc_html( $section_desc ) . '</p>';
+			}
+			echo '</header>';
+
+			echo '<div class="grid">';
 			foreach ( $section['fields'] as $field ) {
 				$this->render_field( $field, $post );
 			}
-
-			$content = ob_get_clean();
-
-			if ( '' !== trim( $content ) ) {
-				$content = '<div class="wpmoo-section-fields">' . $content . '</div>';
-			}
-
-			$panel_sections[] = array(
-				'id'          => $section['id'],
-				'label'       => $section['title'],
-				'description' => $section['description'],
-				'icon'        => $section['icon'],
-				'content'     => $content,
-			);
+			echo '</div>';
+			echo '</section>';
 		}
-
-		$panel = Panel::make(
-			array(
-				'id'          => 'wpmoo-metabox-panel-' . $this->config['id'],
-				'title'       => $this->config['title'],
-				'sections'    => $panel_sections,
-				'collapsible' => false,
-				'frame'       => false,
-			)
-		);
-
-		echo $panel->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -564,18 +551,11 @@ class Metabox {
 			echo '<button type="button" class="wpmoo-repeat__add" data-repeat-add><span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span> ' . esc_html( $btn ) . '</button>';
 			echo '</div>';
 		} else {
-			echo '<label for="' . esc_attr( $field->id() ) . '">';
-			if ( $field->label() ) {
-				echo esc_html( $field->label() );
-			}
+			// Let the field render its own label/control per PicoCSS; show description outside.
 			echo $field->render( $name, $value ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			if ( $field->description() ) {
-				echo '<small>' . esc_html( $field->description() ) . '</small>';
+				echo '<small class="description">' . esc_html( $field->description() ) . '</small>';
 			}
-			if ( '' !== $help_html ) {
-				echo '<small>' . $help_html . '</small>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			}
-			echo '</label>';
 		}
 
 		if ( $field->after() ) {
