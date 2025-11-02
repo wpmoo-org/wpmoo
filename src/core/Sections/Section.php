@@ -50,14 +50,14 @@ class Section {
 	 *
 	 * @var string
 	 */
-    protected $icon = '';
+	protected $icon = '';
 
-    /**
-     * Optional custom CSS class applied to the <section> wrapper.
-     *
-     * @var string
-     */
-    protected $css_class = '';
+	/**
+	 * Optional custom CSS class applied to the <section> wrapper.
+	 *
+	 * @var string
+	 */
+	protected $css_class = '';
 
 	/**
 	 * Registered field definitions.
@@ -123,22 +123,22 @@ class Section {
 	 * @param string $description Description text.
 	 * @return static
 	 */
-    public function description( string $description ): static {
-        $this->description = $description;
+	public function description( string $description ): static {
+		$this->description = $description;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Set a custom CSS class for the <section> wrapper.
-     *
-     * @param string $class Space-separated class names.
-     * @return static
-     */
-    public function cssClass( string $class ): static { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-        $this->css_class = trim( $class );
-        return $this;
-    }
+	/**
+	 * Set a custom CSS class for the <section> wrapper.
+	 *
+	 * @param string $class Space-separated class names.
+	 * @return static
+	 */
+	public function cssClass( string $class ): static { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		$this->css_class = trim( $class );
+		return $this;
+	}
 
 	/**
 	 * Set section icon (dashicons class).
@@ -236,17 +236,17 @@ class Section {
 	 *
 	 * @return array<string, mixed>
 	 */
-    public function toArray(): array {
-        return array(
-            'id'          => $this->id,
-            'title'       => $this->title,
-            'description' => $this->description,
-            'icon'        => $this->icon,
-            'css_class'   => $this->css_class,
-            'fields'      => $this->fields,
-            // 'layout' removed
-        );
-    }
+	public function toArray(): array {
+		return array(
+			'id'          => $this->id,
+			'title'       => $this->title,
+			'description' => $this->description,
+			'icon'        => $this->icon,
+			'css_class'   => $this->css_class,
+			'fields'      => $this->fields,
+			// 'layout' removed
+		);
+	}
 
 	/**
 	 * Normalize the section identifier.

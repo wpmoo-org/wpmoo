@@ -382,8 +382,8 @@ class Page {
 	 * @param array<string, mixed> $values Current option values.
 	 * @return void
 	 */
-    protected function render_container( array $values ) {
-        $sections = array_values( $this->sections );
+	protected function render_container( array $values ) {
+		$sections = array_values( $this->sections );
 
 		if ( empty( $sections ) && ! empty( $this->fields ) ) {
 			$sections[] = array(
@@ -395,39 +395,39 @@ class Page {
 			);
 		}
 
-        // Compose optional style attribute from configured CSS variables.
-        $style_attr = '';
-        if ( isset( $this->config['css_vars'] ) && is_array( $this->config['css_vars'] ) && ! empty( $this->config['css_vars'] ) ) {
-            $pairs = array();
-            foreach ( $this->config['css_vars'] as $var => $val ) {
-                $name = (string) $var;
-                // Accept only our scoped custom properties for safety.
-                if ( 0 !== strpos( $name, '--wpmoo-' ) ) {
-                    continue;
-                }
-                $pairs[] = $name . ':' . (string) $val;
-            }
-            if ( ! empty( $pairs ) ) {
-                $style_attr = ' style="' . esc_attr( implode( ';', $pairs ) ) . '"';
-            }
-        }
+		// Compose optional style attribute from configured CSS variables.
+		$style_attr = '';
+		if ( isset( $this->config['css_vars'] ) && is_array( $this->config['css_vars'] ) && ! empty( $this->config['css_vars'] ) ) {
+			$pairs = array();
+			foreach ( $this->config['css_vars'] as $var => $val ) {
+				$name = (string) $var;
+				// Accept only our scoped custom properties for safety.
+				if ( 0 !== strpos( $name, '--wpmoo-' ) ) {
+					continue;
+				}
+				$pairs[] = $name . ':' . (string) $val;
+			}
+			if ( ! empty( $pairs ) ) {
+				$style_attr = ' style="' . esc_attr( implode( ';', $pairs ) ) . '"';
+			}
+		}
 
-        // Compose classes for the page container.
-        $base_classes = array( 'wpmoo', 'container' );
-        if ( isset( $this->config['classes'] ) && is_string( $this->config['classes'] ) && '' !== trim( $this->config['classes'] ) ) {
-            $extras = preg_split( '/\s+/', trim( (string) $this->config['classes'] ) ) ?: array();
-            foreach ( $extras as $c ) {
-                $c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c );
-                if ( $c && ! in_array( $c, $base_classes, true ) ) {
-                    $base_classes[] = $c;
-                }
-            }
-        }
+		// Compose classes for the page container.
+		$base_classes = array( 'wpmoo', 'container' );
+		if ( isset( $this->config['classes'] ) && is_string( $this->config['classes'] ) && '' !== trim( $this->config['classes'] ) ) {
+			$extras = preg_split( '/\s+/', trim( (string) $this->config['classes'] ) ) ?: array();
+			foreach ( $extras as $c ) {
+				$c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c );
+				if ( $c && ! in_array( $c, $base_classes, true ) ) {
+					$base_classes[] = $c;
+				}
+			}
+		}
 
-        $class_attr = ' class="' . esc_attr( implode( ' ', $base_classes ) ) . '"';
+		$class_attr = ' class="' . esc_attr( implode( ' ', $base_classes ) ) . '"';
 
         // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Output assembled with proper escaping below.
-        echo '<main' . $class_attr . ' id="wpmoo-options"' . $style_attr . '>';
+		echo '<main' . $class_attr . ' id="wpmoo-options"' . $style_attr . '>';
 		echo '<header>';
 		echo '<h1>' . esc_html( $this->config['page_title'] ) . '</h1>';
 		echo '</header>';
@@ -449,11 +449,11 @@ class Page {
 			$section_title = ! empty( $section['title'] ) ? $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
 			$section_desc  = ! empty( $section['description'] ) ? $section['description'] : '';
 
-            $sec_class = '';
-            if ( isset( $section['css_class'] ) && is_string( $section['css_class'] ) && '' !== trim( $section['css_class'] ) ) {
-                $sec_class = ' class="' . esc_attr( trim( (string) $section['css_class'] ) ) . '"';
-            }
-            echo '<section id="' . esc_attr( $section_id ) . '"' . $sec_class . '>';
+			$sec_class = '';
+			if ( isset( $section['css_class'] ) && is_string( $section['css_class'] ) && '' !== trim( $section['css_class'] ) ) {
+				$sec_class = ' class="' . esc_attr( trim( (string) $section['css_class'] ) ) . '"';
+			}
+			echo '<section id="' . esc_attr( $section_id ) . '"' . $sec_class . '>';
 			echo '<header>';
 			echo '<h2>' . esc_html( $section_title ) . '</h2>';
 			if ( '' !== $section_desc ) {
@@ -500,21 +500,21 @@ class Page {
 		$help_html = $field->help_html();
 
         // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Field rendering handles escaping.
-        $wrapper_classes = array( 'wpmoo-field' );
-        if ( method_exists( $field, 'css_class' ) ) {
-            $extra = (string) $field->css_class();
-            if ( '' !== trim( $extra ) ) {
-                // Split by whitespace and append.
-                $extras = preg_split( '/\s+/', trim( $extra ) ) ?: array();
-                foreach ( $extras as $c ) {
-                    $c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c );
-                    if ( $c && ! in_array( $c, $wrapper_classes, true ) ) {
-                        $wrapper_classes[] = $c;
-                    }
-                }
-            }
-        }
-        echo '<div class="' . esc_attr( implode( ' ', $wrapper_classes ) ) . '">';
+		$wrapper_classes = array( 'wpmoo-field' );
+		if ( method_exists( $field, 'css_class' ) ) {
+			$extra = (string) $field->css_class();
+			if ( '' !== trim( $extra ) ) {
+				// Split by whitespace and append.
+				$extras = preg_split( '/\s+/', trim( $extra ) ) ?: array();
+				foreach ( $extras as $c ) {
+					$c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c );
+					if ( $c && ! in_array( $c, $wrapper_classes, true ) ) {
+						$wrapper_classes[] = $c;
+					}
+				}
+			}
+		}
+		echo '<div class="' . esc_attr( implode( ' ', $wrapper_classes ) ) . '">';
 
 		if ( $field->before() ) {
 			echo $field->before_html();
@@ -663,18 +663,18 @@ class Page {
 	 * @return array<string, mixed>
 	 */
 	protected function normalize_config( array $config ) {
-        $defaults = array(
-            'page_title'  => '',
-            'menu_title'  => '',
-            'menu_slug'   => '',
-            'option_key'  => '',
-            'capability'  => 'manage_options',
-            'parent_slug' => '',
-            'position'    => null,
-            'icon'        => '',
-            'sections'    => array(),
-            'css_vars'    => array(),
-        );
+		$defaults = array(
+			'page_title'  => '',
+			'menu_title'  => '',
+			'menu_slug'   => '',
+			'option_key'  => '',
+			'capability'  => 'manage_options',
+			'parent_slug' => '',
+			'position'    => null,
+			'icon'        => '',
+			'sections'    => array(),
+			'css_vars'    => array(),
+		);
 
 		$config = array_merge( $defaults, $config );
 
@@ -694,13 +694,13 @@ class Page {
 			$config['option_key'] = $config['menu_slug'];
 		}
 
-        if ( ! is_array( $config['sections'] ) ) {
-            $config['sections'] = array();
-        }
+		if ( ! is_array( $config['sections'] ) ) {
+			$config['sections'] = array();
+		}
 
-        if ( ! is_array( $config['css_vars'] ) ) {
-            $config['css_vars'] = array();
-        }
+		if ( ! is_array( $config['css_vars'] ) ) {
+			$config['css_vars'] = array();
+		}
 
 		return $config;
 	}
