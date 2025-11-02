@@ -57,6 +57,8 @@ if ( function_exists( 'add_action' ) ) {
 						if ( is_object( $manager ) && method_exists( $manager, 'register' ) ) {
 							$manager->register( 'input', '\\WPMoo\\Fields\\Input\\Input' );
 							$manager->register( 'button', '\\WPMoo\\Fields\\Button\\Button' );
+							$manager->register( 'textarea', '\\WPMoo\\Fields\\Textarea\\Textarea' );
+							$manager->register( 'select', '\\WPMoo\\Fields\\Select\\Select' );
 						}
 					}
 				);

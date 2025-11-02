@@ -94,6 +94,13 @@ abstract class BaseField {
 	protected $attributes = array();
 
 	/**
+	 * Discrete options for choice-like fields (e.g., select).
+	 *
+	 * @var array<int|string, mixed>
+	 */
+	protected $options = array();
+
+	/**
 	 * Backwards compatible array of attributes.
 	 *
 	 * @var array<string, mixed>
@@ -285,6 +292,10 @@ abstract class BaseField {
 			$attributes = array_merge( $attributes, $config['args'] );
 		}
 
+		if ( isset( $config['options'] ) && is_array( $config['options'] ) ) {
+			$this->options = $config['options'];
+		}
+
 		if ( null !== $config['placeholder'] ) {
 			$attributes['placeholder'] = $config['placeholder'];
 		}
@@ -381,6 +392,15 @@ abstract class BaseField {
 	 */
 	public function attributes() {
 		return $this->attributes;
+	}
+
+	/**
+	 * Retrieve configured options for choice-like fields.
+	 *
+	 * @return array<int|string, mixed>
+	 */
+	public function options(): array {
+		return $this->options;
 	}
 
 	// normalise_layout() removed — layout helpers no longer used.

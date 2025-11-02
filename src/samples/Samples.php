@@ -30,6 +30,12 @@ final class Samples {
 		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Button' ) ) {
 			\WPMoo\Samples\Fields\Button::register();
 		}
+		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Textarea' ) ) {
+			\WPMoo\Samples\Fields\Textarea::register();
+		}
+		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Select' ) ) {
+			\WPMoo\Samples\Fields\Select::register();
+		}
 		if ( class_exists( '\\WPMoo\\Samples\\Metabox\\Simple' ) ) {
 			\WPMoo\Samples\Metabox\Simple::register();
 		}
