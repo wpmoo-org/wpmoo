@@ -138,7 +138,6 @@ class Page {
 
 		// Enqueue JS.
 		if ( function_exists( 'wp_enqueue_script' ) ) {
-			$persist_tabs = ! empty( $_REQUEST['_wpmoo_active_panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Persists UI state only.
 			wp_enqueue_script( 'postbox' );
 
 			if ( $enqueue_framework_assets ) {
@@ -159,7 +158,6 @@ class Page {
 								'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
 								'nonce'       => wp_create_nonce( 'wpmoo_options_save' ),
 								'menuSlug'    => $this->config['menu_slug'],
-								'persistTabs' => (bool) $persist_tabs,
 								'strings'     => array(
 									'saving' => function_exists( '__' ) ? __( 'Saving…', 'wpmoo' ) : 'Saving…',
 									'saved'  => function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.',
@@ -286,7 +284,11 @@ class Page {
 	 */
 	public function ajax_save() {
 		$slug         = $this->config['menu_slug'];
-		$request_slug = isset( $_POST['menu_slug'] ) ? $this->sanitize_panel_target( wp_unslash( $_POST['menu_slug'] ) ) : '';
+		$request_slug = '';
+		if ( isset( $_POST['menu_slug'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$raw = function_exists( 'wp_unslash' ) ? wp_unslash( $_POST['menu_slug'] ) : (string) $_POST['menu_slug']; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$request_slug = function_exists( 'sanitize_key' ) ? sanitize_key( $raw ) : preg_replace( '/[^a-z0-9_\-]/', '', (string) $raw );
+		}
 
 		if ( $slug !== $request_slug ) {
 			return;
@@ -321,21 +323,9 @@ class Page {
 
 		$this->repository->save( $clean );
 
-		$panel_id     = 'wpmoo-options-panel-' . $slug;
-		$active_panel = '';
-
-		if ( isset( $_POST['_wpmoo_active_panel'] ) && is_array( $_POST['_wpmoo_active_panel'] ) && isset( $_POST['_wpmoo_active_panel'][ $panel_id ] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-			$active_panel = $this->sanitize_panel_target( wp_unslash( $_POST['_wpmoo_active_panel'][ $panel_id ] ) );
-		}
-
 		$message = function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.';
 
-		wp_send_json_success(
-			array(
-				'message'     => $message,
-				'activePanel' => $active_panel,
-			)
-		);
+		wp_send_json_success( array( 'message' => $message ) );
 	}
 
 	/**
@@ -432,55 +422,7 @@ class Page {
 		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
-	/**
-	 * Determine which section should be active on render.
-	 *
-	 * @param string                           $panel_id Panel identifier.
-	 * @param array<int, array<string, mixed>> $sections Available sections.
-	 * @return string
-	 */
-	protected function determine_active_section( string $panel_id, array $sections ): string {
-		if ( empty( $sections ) ) {
-			return '';
-		}
-
-		$default   = $sections[0]['id'];
-		$requested = '';
-
-		if ( isset( $_REQUEST['_wpmoo_active_panel'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Maintains UI state only.
-			$data = function_exists( 'wp_unslash' ) ? wp_unslash( $_REQUEST['_wpmoo_active_panel'] ) : $_REQUEST['_wpmoo_active_panel'];
-
-			if ( is_array( $data ) && isset( $data[ $panel_id ] ) ) {
-				$requested = $this->sanitize_panel_target( $data[ $panel_id ] );
-			} elseif ( is_string( $data ) ) {
-				$requested = $this->sanitize_panel_target( $data );
-			}
-		}
-
-		if ( '' === $requested ) {
-			return $default;
-		}
-
-		foreach ( $sections as $section ) {
-			if ( $section['id'] === $requested ) {
-				return $requested;
-			}
-		}
-
-		return $default;
-	}
-
-	/**
-	 * Sanitize a requested panel target value.
-	 *
-	 * @param string $value Raw value.
-	 * @return string
-	 */
-	protected function sanitize_panel_target( string $value ): string {
-		$value = strtolower( $value );
-
-		return preg_replace( '/[^a-z0-9_\-]/', '', $value );
-	}
+	// Panel/tab state helpers removed under Pico-first layout.
 
 	/**
 	 * Render a single field in the layout.
@@ -758,22 +700,7 @@ class Page {
 			'settings-updated' => 'true',
 		);
 
-		if ( isset( $_POST['_wpmoo_active_panel'] ) && is_array( $_POST['_wpmoo_active_panel'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified earlier in submission handler.
-			$panels = array();
-
-			foreach ( $_POST['_wpmoo_active_panel'] as $panel_id => $target ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified earlier in submission handler.
-				$panel_id = $this->sanitize_panel_target( (string) $panel_id );
-				$target   = $this->sanitize_panel_target( (string) $target );
-
-				if ( '' !== $panel_id && '' !== $target ) {
-					$panels[ $panel_id ] = $target;
-				}
-			}
-
-			if ( ! empty( $panels ) ) {
-				$query['_wpmoo_active_panel'] = $panels;
-			}
-		}
+		// Panel state persistence removed.
 
 		if ( function_exists( 'wp_get_referer' ) ) {
 			$referer = wp_get_referer();
