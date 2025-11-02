@@ -148,7 +148,21 @@ class Container {
 	 *
 	 * @var string
 	 */
-	protected $default_section_title = '';
+    protected $default_section_title = '';
+
+    /**
+     * Inline CSS custom properties to apply on the page container element.
+     *
+     * @var array<string,string>
+     */
+    protected $css_vars = array();
+
+    /**
+     * Additional CSS classes applied to the page <main> element.
+     *
+     * @var string
+     */
+    protected $classes = '';
 
 	/**
 	 * Constructor.
@@ -595,7 +609,7 @@ class Container {
 	 *
 	 * @return array<string, mixed>
 	 */
-	protected function to_config(): array {
+    protected function to_config(): array {
 		$sections = array();
 
 		foreach ( $this->sections as $section ) {
@@ -612,18 +626,106 @@ class Container {
 			}
 		}
 
-		return array(
-			'page_title'  => $this->page_title,
-			'menu_title'  => $this->menu_title,
-			'menu_slug'   => $this->menu_slug,
-			'option_key'  => $this->option_key,
-			'capability'  => $this->capability,
-			'parent_slug' => $this->parent_slug,
-			'position'    => $this->position,
-			'icon'        => $this->icon,
-			'sections'    => $sections,
-		);
-	}
+        return array(
+            'page_title'  => $this->page_title,
+            'menu_title'  => $this->menu_title,
+            'menu_slug'   => $this->menu_slug,
+            'option_key'  => $this->option_key,
+            'capability'  => $this->capability,
+            'parent_slug' => $this->parent_slug,
+            'position'    => $this->position,
+            'icon'        => $this->icon,
+            'sections'    => $sections,
+            'css_vars'    => $this->css_vars,
+            'classes'     => $this->classes,
+        );
+    }
+
+    /**
+     * Set a CSS custom property to be applied on the page container element.
+     *
+     * Example: cssVar('--wpmoo-container-max', 'none').
+     *
+     * @param string $name  Custom property name (with leading --).
+     * @param string $value Custom property value.
+     * @return $this
+     */
+    public function cssVar( string $name, string $value ): self {
+        $name = trim( $name );
+
+        // Ensure a valid custom property name and keep it scoped.
+        if ( 0 !== strpos( $name, '--' ) ) {
+            $name = '--' . ltrim( $name, '-' );
+        }
+
+        // Optional scope hardening: only allow wpmoo-prefixed custom props.
+        if ( 0 !== strpos( $name, '--wpmoo-' ) ) {
+            $name = '--wpmoo-' . ltrim( substr( $name, 2 ), '-' );
+        }
+
+        $this->css_vars[ $name ] = (string) $value;
+
+        return $this;
+    }
+
+    /**
+     * Convenience: set maximum container width (e.g., 'none', '1280px').
+     *
+     * @param string $value CSS length or 'none'.
+     * @return $this
+     */
+    public function containerMax( string $value ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+        return $this->cssVar( '--wpmoo-container-max', $value );
+    }
+
+    /**
+     * Convenience: set horizontal container padding (gutters).
+     *
+     * @param string $value CSS length (e.g., '1.25rem').
+     * @return $this
+     */
+    public function containerGutter( string $value ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+        return $this->cssVar( '--wpmoo-container-x', $value );
+    }
+
+    /**
+     * Convenience: full-bleed layout (no max width).
+     *
+     * @return $this
+     */
+    public function fullWidth(): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+        return $this->containerMax( 'none' );
+    }
+
+    /**
+     * Set CSS classes on the page container element.
+     *
+     * @param string $classes Space-separated class names.
+     * @return $this
+     */
+    public function cssClass( string $classes ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+        $this->classes = trim( $classes );
+        return $this;
+    }
+
+    /**
+     * Append a single CSS class to the page container element.
+     *
+     * @param string $class Class name to append.
+     * @return $this
+     */
+    public function addClass( string $class ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+        $class = trim( $class );
+        if ( '' === $class ) {
+            return $this;
+        }
+        $existing = preg_split( '/\s+/', (string) $this->classes ) ?: array();
+        if ( ! in_array( $class, $existing, true ) ) {
+            $existing[] = $class;
+        }
+        $this->classes = trim( implode( ' ', $existing ) );
+        return $this;
+    }
 
 	/**
 	 * Ensure a section exists (creating as needed).
