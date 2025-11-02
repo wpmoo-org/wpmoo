@@ -15,44 +15,16 @@ namespace WPMoo\Fields;
 class Field {
 
 	/**
-	 * Static constructor for a text field.
+	 * Static constructor for an input field.
 	 *
 	 * @return self
 	 */
-	public static function text( string $id ) {}
+	public static function input( string $id ) {}
 
 	/**
-	 * Static constructor for a textarea field.
+	 * Static constructor for a button pseudo-field.
 	 *
 	 * @return self
 	 */
-	public static function textarea( string $id ) {}
-
-	/**
-	 * Static constructor for a color field.
-	 *
-	 * @return self
-	 */
-	public static function color( string $id ) {}
-
-	/**
-	 * Static constructor for a checkbox field.
-	 *
-	 * @return self
-	 */
-	public static function checkbox( string $id ) {}
-
-	/**
-	 * Static constructor for an accordion field.
-	 *
-	 * @return self
-	 */
-	public static function accordion( string $id ) {}
-
-	/**
-	 * Static constructor for a fieldset field.
-	 *
-	 * @return self
-	 */
-	public static function fieldset( string $id ) {}
+	public static function button( string $id ) {}
 }
