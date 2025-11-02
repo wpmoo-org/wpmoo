@@ -4,8 +4,8 @@
   margin-left: 0;
   margin-right: 0;
   width: 100%;
-  max-width: none;
-  /* disable Pico max-width for full-bleed */
+  /* configurable, full-bleed by default */
+  max-width: var(--wpmoo-container-max, none);
   box-sizing: border-box;
   padding-left: var(--wpmoo-container-x, 2rem);
   padding-right: var(--wpmoo-container-x, 2rem);
@@ -19,6 +19,6 @@
   margin-left: 0;
   margin-right: 0;
   width: 100%;
-  max-width: none;
+  max-width: var(--wpmoo-container-max, none);
   box-sizing: border-box;
 }
