@@ -46,15 +46,15 @@ if ( function_exists( 'plugin_basename' ) && class_exists( \WPMoo\Core\App::clas
 
 // Dev-time SCSS compiler for wpmoo-ui (only in admin + debug, and when scssphp is available).
 if ( function_exists( 'add_action' ) ) {
-	add_action(
-		'plugins_loaded',
-		function () {
-			if ( class_exists( '\\WPMoo\\Support\\Dev\\UiCompiler' ) ) {
-				\WPMoo\Support\Dev\UiCompiler::register();
-			}
-		},
-		20
-	);
+    add_action(
+        'plugins_loaded',
+        function () {
+            if ( class_exists( '\\WPMoo\\Support\\Dev\\UiCompiler' ) ) {
+                \WPMoo\Support\Dev\UiCompiler::register();
+            }
+        },
+        20
+    );
 }
 
 // Dev-time samples (Text field demo). Loads only in admin and when debug is on
@@ -75,6 +75,7 @@ if ( function_exists( 'add_action' ) ) {
 				return;
 			}
 
+			// Single sample (Text) registrar
 			if ( class_exists( '\\WPMoo\\Samples\\Fields\\Text' ) ) {
 				\WPMoo\Samples\Fields\Text::register();
 			}
