@@ -27,4 +27,18 @@ class Field {
 	 * @return self
 	 */
 	public static function button( string $id ) {}
+
+	/**
+	 * Static constructor for a textarea field.
+	 *
+	 * @return self
+	 */
+	public static function textarea( string $id ) {}
+
+	/**
+	 * Static constructor for a select field.
+	 *
+	 * @return self
+	 */
+	public static function select( string $id ) {}
 }

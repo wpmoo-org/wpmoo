@@ -8,6 +8,7 @@
 namespace WPMoo\Samples\Fields;
 
 use WPMoo\Moo;
+use WPMoo\Fields\Field;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -32,7 +33,7 @@ final class Select {
 		Moo::section( self::SECTION_ID, __( 'Select', 'wpmoo' ), __( 'Single select dropdown.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(
-				Moo::Field( 'select', 'demo_select' )
+				Field::select( 'demo_select' )
 					->label( __( 'Demo Select', 'wpmoo' ) )
 					->options(
 						array(

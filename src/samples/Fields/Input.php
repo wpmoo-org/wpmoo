@@ -8,6 +8,7 @@
 namespace WPMoo\Samples\Fields;
 
 use WPMoo\Moo;
+use WPMoo\Fields\Field;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -33,7 +34,7 @@ final class Input {
 		Moo::section( self::SECTION_ID, __( 'Input', 'wpmoo' ), __( 'Text input.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(
-				Moo::Field( 'input', 'demo_input' )
+				Field::input( 'demo_input' )
 					->label( __( 'Demo Input', 'wpmoo' ) )
 					->attributes( array( 'placeholder' => __( 'Type…', 'wpmoo' ) ) )
 					->description( __( 'Saved under the samples option set.', 'wpmoo' ) )

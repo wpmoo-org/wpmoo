@@ -19,6 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @method static Field input(string $id)
  * @method static Field button(string $id)
+ * @method static Field textarea(string $id)
+ * @method static Field select(string $id)
  *
  * @phpstan-consistent-constructor
  */

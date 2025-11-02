@@ -8,6 +8,7 @@
 namespace WPMoo\Samples\Fields;
 
 use WPMoo\Moo;
+use WPMoo\Fields\Field;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -32,7 +33,7 @@ final class Button {
 		Moo::section( self::SECTION_ID, __( 'Button', 'wpmoo' ), __( 'Button field type.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(
-				Moo::Field( 'button', 'demo_button' )
+				Field::button( 'demo_button' )
 					->label( __( 'Run', 'wpmoo' ) )
 					->attributes( array( 'class' => 'contrast' ) )
 			);
