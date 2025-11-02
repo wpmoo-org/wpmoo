@@ -286,4 +286,17 @@ class Moo {
         // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 		return function_exists( '__' ) ? \__( $text, 'wpmoo' ) : $text;
 	}
+
+	/**
+	 * Convenience factory for FieldBuilder via Moo facade.
+	 *
+	 * Usage: Moo::Field('input', 'my_id')->label('...');
+	 *
+	 * @param string $type Field type slug (e.g., 'input', 'button').
+	 * @param string $id   Field identifier.
+	 * @return \WPMoo\Fields\FieldBuilder
+	 */
+	public static function Field( string $type, string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new \WPMoo\Fields\FieldBuilder( $id, $type );
+	}
 }

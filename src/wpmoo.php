@@ -49,6 +49,18 @@ if ( function_exists( 'add_action' ) ) {
 	add_action(
 		'plugins_loaded',
 		function () {
+			// Register field primitives on manager init.
+			if ( class_exists( '\\WPMoo\\Fields\\Manager' ) ) {
+				add_action(
+					'wpmoo_register_field_types',
+					static function ( $manager ) {
+						if ( is_object( $manager ) && method_exists( $manager, 'register' ) ) {
+							$manager->register( 'input', '\\WPMoo\\Fields\\Input\\Input' );
+							$manager->register( 'button', '\\WPMoo\\Fields\\Button\\Button' );
+						}
+					}
+				);
+			}
 			if ( class_exists( '\\WPMoo\\Support\\Dev\\UiCompiler' ) ) {
 				\WPMoo\Support\Dev\UiCompiler::register();
 			}
@@ -75,9 +87,20 @@ if ( function_exists( 'add_action' ) ) {
 				return;
 			}
 
-			// Single sample (Text) registrar
-			if ( class_exists( '\\WPMoo\\Samples\\Fields\\Text' ) ) {
-				\WPMoo\Samples\Fields\Text::register();
+			// Register all Samples via the aggregator.
+			if ( class_exists( '\\WPMoo\\Samples\\Samples' ) ) {
+				\WPMoo\Samples\Samples::register();
+			} else {
+				// Fallback: register individual samples when aggregator is unavailable.
+				if ( class_exists( '\\WPMoo\\Samples\\Fields\\Text' ) ) {
+					\WPMoo\Samples\Fields\Text::register();
+				}
+				if ( class_exists( '\\WPMoo\\Samples\\Fields\\Input' ) ) {
+					\WPMoo\Samples\Fields\Input::register();
+				}
+				if ( class_exists( '\\WPMoo\\Samples\\Fields\\Button' ) ) {
+					\WPMoo\Samples\Fields\Button::register();
+				}
 			}
 		},
 		25
