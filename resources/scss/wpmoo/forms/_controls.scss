@@ -55,18 +55,7 @@
   margin-top: .5rem;
 }
 
-/* Section layout: simple responsive grid */
-:where(.wpmoo) .wpmoo-section-fields {
-  display: grid;
-  gap: var(--wpmoo-spacing, .85rem);
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 1024px) {
-  :where(.wpmoo) .wpmoo-section-fields {
-    grid-template-columns: 1fr 1fr;
-  }
-}
+/* Section grid moved to layout/_sections.scss */
 
 /* Details/summary: compact, with caret */
 :where(.wpmoo) details>summary::-webkit-details-marker {
@@ -107,4 +96,42 @@
   padding: .25rem .375rem;
   line-height: 1;
   font-size: .85em;
+}
+
+/* Label baseline: block to stack text, control, help */
+:where(.wpmoo) .wpmoo-field > label,
+:where(.wpmoo) fieldset label {
+  display: block;
+  margin: .25rem 0;
+}
+
+/* Inline align only for checkbox/radio/switch inside label */
+:where(.wpmoo) .wpmoo-field > label > input[type="checkbox"],
+:where(.wpmoo) .wpmoo-field > label > input[type="radio"],
+:where(.wpmoo) .wpmoo-field > label > input[role="switch"],
+:where(.wpmoo) fieldset label > input[type="checkbox"],
+:where(.wpmoo) fieldset label > input[type="radio"],
+:where(.wpmoo) fieldset label > input[role="switch"] {
+  vertical-align: middle;
+  margin: 0 .5rem 0 0;
+  line-height: 1;
+}
+
+/* Reset WP Admin pseudo-injected art on checkbox/radio only */
+.wpmoo input[type="checkbox"]:not([role="switch"])::before,
+.wpmoo input[type="checkbox"]:not([role="switch"])::after,
+.wpmoo input[type="radio"]::before,
+.wpmoo input[type="radio"]::after {
+  content: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+/* Ensure Pico switch knob pseudo is used */
+.wpmoo input[type="checkbox"][role="switch"]::before {
+  content: "";
 }
