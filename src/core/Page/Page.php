@@ -87,8 +87,34 @@ class Page {
 			add_action( 'admin_menu', array( $this, 'register_page' ) );
 			add_action( 'admin_init', array( $this, 'handle_submission' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+			// Add a body class on our pages to scope layout overrides safely.
+			if ( function_exists( 'add_filter' ) ) {
+				add_filter( 'admin_body_class', array( $this, 'filter_admin_body_class' ) );
+			}
 			add_action( 'wp_ajax_wpmoo_save_options', array( $this, 'ajax_save' ) );
 		}
+	}
+
+	/**
+	 * Add a marker CSS class to the admin body when viewing this page.
+	 *
+	 * @param string $classes Existing body classes.
+	 * @return string
+	 */
+	public function filter_admin_body_class( $classes ) {
+		$slug        = isset( $this->config['menu_slug'] ) ? (string) $this->config['menu_slug'] : '';
+		$current     = '';
+		if ( isset( $_GET['page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$raw     = function_exists( 'wp_unslash' ) ? wp_unslash( $_GET['page'] ) : (string) $_GET['page']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$current = function_exists( 'sanitize_key' ) ? sanitize_key( $raw ) : preg_replace( '/[^a-z0-9_\-]/', '', (string) $raw );
+		}
+
+		if ( $slug && $current === $slug ) {
+			$slug_class = function_exists( 'sanitize_html_class' ) ? sanitize_html_class( $slug ) : preg_replace( '/[^A-Za-z0-9_-]/', '', $slug );
+			$classes   .= ' wpmoo-view wpmoo-page-' . $slug_class;
+		}
+
+		return $classes;
 	}
 
 	/**

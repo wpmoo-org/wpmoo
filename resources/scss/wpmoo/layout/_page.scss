@@ -1,0 +1,35 @@
+/* Page wrapper: fill viewport and override WP body background within scope */
+:where(.wpmoo) {
+  position: relative;
+  min-height: 100vh;
+  /* Use framework background var; fallback to white */
+  background: var(--wpmoo-background-color, #fff);
+}
+
+/* On WP admin pages, remove .wrap lateral margins when it contains WPMoo */
+/* Modern browsers */
+:where(.wp-admin) :where(#wpbody-content)>.wrap:has(> .wpmoo) {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: var(--wpmoo-container-x, 1rem);
+  padding-right: var(--wpmoo-container-x, 1rem);
+}
+
+/* Fallback: target WPMoo pages by body class */
+body.wp-admin[class*='wpmoo'] #wpbody-content>.wrap {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: var(--wpmoo-container-x, 1rem);
+  padding-right: var(--wpmoo-container-x, 1rem);
+}
+
+/* Remove #wpcontent lateral paddings on our pages */
+body.wp-admin.wpmoo-view #wpcontent {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+body.wp-admin.wpmoo-view #wpbody-content {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
