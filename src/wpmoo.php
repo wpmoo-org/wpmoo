@@ -126,3 +126,20 @@ if ( function_exists( 'add_action' ) ) {
 		25
 	);
 }
+
+// As a last-resort guard against WP Admin load-styles pseudo-elements overriding
+// form controls, inject a tiny inline reset late in the head within the .wpmoo scope.
+if ( function_exists( 'add_action' ) ) {
+	add_action(
+		'admin_head',
+		function () {
+			$css = '.wpmoo input[type="checkbox"]::before,'
+				. '.wpmoo input[type="checkbox"]::after,'
+				. '.wpmoo input[type="radio"]::before,'
+				. '.wpmoo input[type="radio"]::after{content:none!important;background:none!important;box-shadow:none!important;border:0!important;margin:0!important;height:auto!important;width:auto!important;}';
+
+			echo '<style id="wpmoo-admin-reset">' . $css . '</style>';
+		},
+		100
+	);
+}
