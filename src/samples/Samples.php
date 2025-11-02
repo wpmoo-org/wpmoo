@@ -42,8 +42,8 @@ final class Samples {
 		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Radio' ) ) {
 			\WPMoo\Samples\Fields\Radio::register();
 		}
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\SwitchField' ) ) {
-			\WPMoo\Samples\Fields\SwitchField::register();
+		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Toggle' ) ) {
+			\WPMoo\Samples\Fields\Toggle::register();
 		}
 		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Range' ) ) {
 			\WPMoo\Samples\Fields\Range::register();

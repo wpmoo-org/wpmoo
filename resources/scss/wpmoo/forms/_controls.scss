@@ -99,19 +99,19 @@
 }
 
 /* Label baseline: block to stack text, control, help */
-:where(.wpmoo) .wpmoo-field > label,
+:where(.wpmoo) .wpmoo-field>label,
 :where(.wpmoo) fieldset label {
   display: block;
   margin: .25rem 0;
 }
 
 /* Inline align only for checkbox/radio/switch inside label */
-:where(.wpmoo) .wpmoo-field > label > input[type="checkbox"],
-:where(.wpmoo) .wpmoo-field > label > input[type="radio"],
-:where(.wpmoo) .wpmoo-field > label > input[role="switch"],
-:where(.wpmoo) fieldset label > input[type="checkbox"],
-:where(.wpmoo) fieldset label > input[type="radio"],
-:where(.wpmoo) fieldset label > input[role="switch"] {
+:where(.wpmoo) .wpmoo-field>label>input[type="checkbox"],
+:where(.wpmoo) .wpmoo-field>label>input[type="radio"],
+:where(.wpmoo) .wpmoo-field>label>input[role="switch"],
+:where(.wpmoo) fieldset label>input[type="checkbox"],
+:where(.wpmoo) fieldset label>input[type="radio"],
+:where(.wpmoo) fieldset label>input[role="switch"] {
   vertical-align: middle;
   margin: 0 .5rem 0 0;
   line-height: 1;
@@ -132,6 +132,38 @@
 }
 
 /* Ensure Pico switch knob pseudo is used */
+.wpmoo input[type="checkbox"][role="switch"] {
+  /* Kill any admin SVG check injection */
+  background-image: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  /* Track sizing, border and radius */
+  width: var(--wpmoo-switch-width, 2.25em) !important;
+  height: var(--wpmoo-switch-height, 1.25em) !important;
+  line-height: var(--wpmoo-switch-height, 1.25em) !important;
+  border-radius: var(--wpmoo-switch-height, 1.25em) !important;
+}
+
 .wpmoo input[type="checkbox"][role="switch"]::before {
-  content: "";
+  /* Force knob pseudo to exist; let Pico handle size/motion */
+  content: "" !important;
+  background-image: none !important;
+  /* Knob shape & size */
+  display: block !important;
+  width: var(--wpmoo-switch-knob-size, .85rem) !important;
+  height: var(--wpmoo-switch-knob-size, .85rem) !important;
+  border-radius: 50% !important;
+  margin: 0;
+  box-shadow: var(--wpmoo-switch-thumb-box-shadow, 0 0 0 .0625rem rgba(0, 0, 0, .06)) !important;
+  transition: margin .1s ease-in-out !important;
+}
+
+/* Ensure WP's extra ::after on checkboxes never appears on our toggle */
+.wpmoo input[type="checkbox"][role="switch"]::after {
+  content: none !important;
+}
+
+/* Safety: ensure knob slides right when checked (in case upstream rule is trumped) */
+.wpmoo input[type="checkbox"][role="switch"]:checked::before {
+  margin-inline-start: calc(var(--wpmoo-switch-width, 2.25em) - var(--wpmoo-switch-knob-size, .85rem) - var(--wpmoo-switch-knob-offset, .2rem)) !important;
 }

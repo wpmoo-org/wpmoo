@@ -65,7 +65,7 @@ if ( function_exists( 'add_action' ) ) {
 							'select'   => '\\WPMoo\\Fields\\Select\\Select',
 							'checkbox' => '\\WPMoo\\Fields\\Checkbox\\Checkbox',
 							'radio'    => '\\WPMoo\\Fields\\Radio\\Radio',
-							'switch'   => '\\WPMoo\\Fields\\SwitchField\\SwitchField',
+							'toggle'   => '\\WPMoo\\Fields\\Toggle\\Toggle',
 							'range'    => '\\WPMoo\\Fields\\Range\\Range',
 						);
 
@@ -130,16 +130,18 @@ if ( function_exists( 'add_action' ) ) {
 // As a last-resort guard against WP Admin load-styles pseudo-elements overriding
 // form controls, inject a tiny inline reset late in the head within the .wpmoo scope.
 if ( function_exists( 'add_action' ) ) {
-	add_action(
-		'admin_head',
-		function () {
-			$css = '.wpmoo input[type="checkbox"]::before,'
-				. '.wpmoo input[type="checkbox"]::after,'
-				. '.wpmoo input[type="radio"]::before,'
-				. '.wpmoo input[type="radio"]::after{content:none!important;background:none!important;box-shadow:none!important;border:0!important;margin:0!important;height:auto!important;width:auto!important;}';
+    add_action(
+        'admin_head',
+        function () {
+            // Do not target [role="switch"] so Pico switch knob pseudo remains intact.
+            $css = '.wpmoo input[type="checkbox"]:not([role="switch"])::before,'
+                . '.wpmoo input[type="checkbox"]:not([role="switch"])::after,'
+                . '.wpmoo input[type="radio"]::before,'
+                . '.wpmoo input[type="radio"]::after{content:none!important;background:none!important;box-shadow:none!important;border:0!important;margin:0!important;height:auto!important;width:auto!important;}';
 
-			echo '<style id="wpmoo-admin-reset">' . $css . '</style>';
-		},
-		100
-	);
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Controlled CSS string.
+            echo '<style id="wpmoo-admin-reset">' . $css . '</style>';
+        },
+        100
+    );
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * WPMoo Samples — Switch demo.
+ * WPMoo Samples — Toggle demo.
  *
  * @package WPMoo\\Samples\\Fields
  */
@@ -17,9 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Register a sample section for the Switch field.
  */
-final class SwitchField {
+final class Toggle {
 	private const PAGE_ID    = 'wpmoo_samples';
-	private const SECTION_ID = 'sample_switch';
+	private const SECTION_ID = 'sample_toggle';
 
 	public static function register(): void {
 		if ( function_exists( 'add_action' ) ) {
@@ -30,10 +30,10 @@ final class SwitchField {
 	public static function define(): void {
 		Moo::container( self::PAGE_ID, __( 'WPMoo Samples', 'wpmoo' ), '' )->menuSlug( 'wpmoo-samples' );
 
-		Moo::section( self::SECTION_ID, __( 'Switch', 'wpmoo' ), __( 'Boolean switch with role.', 'wpmoo' ) )
+		Moo::section( self::SECTION_ID, __( 'Toggle', 'wpmoo' ), __( 'Boolean toggle (role="switch").', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(
-				Field::switch( 'demo_switch' )
+				Field::toggle( 'demo_toggle' )
 					->label( __( 'Enable notifications', 'wpmoo' ) )
 			);
 	}

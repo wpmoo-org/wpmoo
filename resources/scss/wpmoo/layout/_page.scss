@@ -33,3 +33,10 @@ body.wp-admin.wpmoo-view #wpbody-content {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
+
+/* Ensure wrapper backgrounds match our page background so body grey doesn't bleed */
+body.wp-admin.wpmoo-view #wpcontent,
+body.wp-admin.wpmoo-view #wpbody-content,
+body.wp-admin.wpmoo-view #wpbody-content > .wrap {
+  background: var(--wpmoo-background-color, #fff) !important;
+}

@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @method static Field select(string $id)
  * @method static Field checkbox(string $id)
  * @method static Field radio(string $id)
- * @method static Field switch(string $id)
+ * @method static Field toggle(string $id)
  * @method static Field range(string $id)
  *
  * @phpstan-consistent-constructor
@@ -85,22 +85,22 @@ final class Field extends FieldBuilder {
 	 * @param string $id Field id.
 	 * @return static
 	 */
-	public static function radio( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		return new self( $id, 'radio' );
-	}
+    public static function radio( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+        return new self( $id, 'radio' );
+    }
 
-	/**
-	 * Create a 'switch' field builder.
-	 *
-	 * @param string $id Field id.
-	 * @return static
-	 */
-	public static function switch( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		return new self( $id, 'switch' );
-	}
+    /**
+     * Create a 'toggle' field builder.
+     *
+     * @param string $id Field id.
+     * @return static
+     */
+    public static function toggle( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+        return new self( $id, 'toggle' );
+    }
 
-	/**
-	 * Create a 'range' field builder.
+    /**
+     * Create a 'range' field builder.
 	 *
 	 * @param string $id Field id.
 	 * @return static

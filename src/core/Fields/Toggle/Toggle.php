@@ -1,11 +1,11 @@
 <?php
 /**
- * Switch control (checkbox with role="switch").
+ * Toggle control (checkbox with role="switch").
  *
- * @package WPMoo\\Fields\\SwitchField
+ * @package WPMoo\\Fields\\Toggle
  */
 
-namespace WPMoo\Fields\SwitchField;
+namespace WPMoo\Fields\Toggle;
 
 use WPMoo\Fields\Checkbox\Checkbox as BaseCheckbox;
 
@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Switch is a semantic variant of checkbox.
+ * Toggle is a semantic variant of checkbox rendered as a switch.
  */
-class SwitchField extends BaseCheckbox {
+class Toggle extends BaseCheckbox {
 	/**
-	 * Render switch (checkbox + role="switch").
+	 * Render toggle (checkbox + role="switch").
 	 *
 	 * @param string $name  Input name.
 	 * @param mixed  $value Current value.
