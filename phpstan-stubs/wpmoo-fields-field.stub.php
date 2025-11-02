@@ -41,4 +41,32 @@ class Field {
 	 * @return self
 	 */
 	public static function select( string $id ) {}
+
+	/**
+	 * Create a checkbox builder.
+	 *
+	 * @return self
+	 */
+	public static function checkbox( string $id ) {}
+
+	/**
+	 * Create a radio builder.
+	 *
+	 * @return self
+	 */
+	public static function radio( string $id ) {}
+
+	/**
+	 * Create a switch builder.
+	 *
+	 * @return self
+	 */
+	public static function switch( string $id ) {}
+
+	/**
+	 * Create a range builder.
+	 *
+	 * @return self
+	 */
+	public static function range( string $id ) {}
 }

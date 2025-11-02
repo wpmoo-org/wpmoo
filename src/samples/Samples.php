@@ -36,6 +36,18 @@ final class Samples {
 		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Select' ) ) {
 			\WPMoo\Samples\Fields\Select::register();
 		}
+		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Checkbox' ) ) {
+			\WPMoo\Samples\Fields\Checkbox::register();
+		}
+		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Radio' ) ) {
+			\WPMoo\Samples\Fields\Radio::register();
+		}
+		if ( class_exists( '\\WPMoo\\Samples\\Fields\\SwitchToggle' ) ) {
+			\WPMoo\Samples\Fields\SwitchToggle::register();
+		}
+		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Range' ) ) {
+			\WPMoo\Samples\Fields\Range::register();
+		}
 		if ( class_exists( '\\WPMoo\\Samples\\Metabox\\Simple' ) ) {
 			\WPMoo\Samples\Metabox\Simple::register();
 		}

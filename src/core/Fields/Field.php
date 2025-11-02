@@ -21,6 +21,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @method static Field button(string $id)
  * @method static Field textarea(string $id)
  * @method static Field select(string $id)
+ * @method static Field checkbox(string $id)
+ * @method static Field radio(string $id)
+ * @method static Field switch(string $id)
+ * @method static Field range(string $id)
  *
  * @phpstan-consistent-constructor
  */
@@ -63,6 +67,46 @@ final class Field extends FieldBuilder {
 	 */
 	public static function select( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		return new self( $id, 'select' );
+	}
+
+	/**
+	 * Create a 'checkbox' field builder.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function checkbox( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'checkbox' );
+	}
+
+	/**
+	 * Create a 'radio' field builder.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function radio( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'radio' );
+	}
+
+	/**
+	 * Create a 'switch' field builder.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function switch( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'switch' );
+	}
+
+	/**
+	 * Create a 'range' field builder.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function range( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'range' );
 	}
 
 	/**

@@ -54,11 +54,26 @@ if ( function_exists( 'add_action' ) ) {
 				add_action(
 					'wpmoo_register_field_types',
 					static function ( $manager ) {
-						if ( is_object( $manager ) && method_exists( $manager, 'register' ) ) {
-							$manager->register( 'input', '\\WPMoo\\Fields\\Input\\Input' );
-							$manager->register( 'button', '\\WPMoo\\Fields\\Button\\Button' );
-							$manager->register( 'textarea', '\\WPMoo\\Fields\\Textarea\\Textarea' );
-							$manager->register( 'select', '\\WPMoo\\Fields\\Select\\Select' );
+						if ( ! is_object( $manager ) || ! method_exists( $manager, 'register' ) ) {
+							return;
+						}
+
+						$types = array(
+							'input'    => '\\WPMoo\\Fields\\Input\\Input',
+							'button'   => '\\WPMoo\\Fields\\Button\\Button',
+							'textarea' => '\\WPMoo\\Fields\\Textarea\\Textarea',
+							'select'   => '\\WPMoo\\Fields\\Select\\Select',
+							'checkbox' => '\\WPMoo\\Fields\\Checkbox\\Checkbox',
+							'radio'    => '\\WPMoo\\Fields\\Radio\\Radio',
+							'switch'   => '\\WPMoo\\Fields\\SwitchToggle\\SwitchToggle',
+							'range'    => '\\WPMoo\\Fields\\Range\\Range',
+						);
+
+						foreach ( $types as $type => $class ) {
+							// Trigger autoload; only register when class is resolvable.
+							if ( class_exists( $class ) ) {
+								$manager->register( $type, $class );
+							}
 						}
 					}
 				);
