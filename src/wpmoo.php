@@ -65,7 +65,7 @@ if ( function_exists( 'add_action' ) ) {
 							'select'   => '\\WPMoo\\Fields\\Select\\Select',
 							'checkbox' => '\\WPMoo\\Fields\\Checkbox\\Checkbox',
 							'radio'    => '\\WPMoo\\Fields\\Radio\\Radio',
-							'switch'   => '\\WPMoo\\Fields\\SwitchToggle\\SwitchToggle',
+							'switch'   => '\\WPMoo\\Fields\\SwitchField\\SwitchField',
 							'range'    => '\\WPMoo\\Fields\\Range\\Range',
 						);
 

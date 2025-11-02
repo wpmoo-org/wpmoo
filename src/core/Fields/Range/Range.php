@@ -33,7 +33,7 @@ class Range extends BaseField {
 		$attributes['type']  = 'range';
 		$attributes['value'] = is_scalar( $value ) ? (string) $value : '0';
 
-		$attr   = $this->render_attributes( $attributes );
+			$attr   = $this->render_attributes( $attributes );
 		$before = $this->before_html();
 		$after  = $this->after_html();
 
@@ -94,7 +94,7 @@ class Range extends BaseField {
 			} elseif ( false === $val || null === $val ) {
 				continue;
 			} else {
-				$pairs[] = sprintf( '%s=\"%s\"', $k, $this->esc_attr( (string) $val ) );
+				$pairs[] = sprintf( '%s="%s"', $k, $this->esc_attr( (string) $val ) );
 			}
 		}
 		return implode( ' ', $pairs );

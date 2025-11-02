@@ -2,10 +2,10 @@
 /**
  * Switch control (checkbox with role="switch").
  *
- * @package WPMoo\\Fields\\SwitchToggle
+ * @package WPMoo\\Fields\\SwitchField
  */
 
-namespace WPMoo\Fields\SwitchToggle;
+namespace WPMoo\Fields\SwitchField;
 
 use WPMoo\Fields\Checkbox\Checkbox as BaseCheckbox;
 
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Switch is a semantic variant of checkbox.
  */
-class SwitchToggle extends BaseCheckbox {
+class SwitchField extends BaseCheckbox {
 	/**
 	 * Render switch (checkbox + role="switch").
 	 *

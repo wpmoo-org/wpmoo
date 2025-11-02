@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Register a sample section for the Switch field.
  */
-final class SwitchToggle {
+final class SwitchField {
 	private const PAGE_ID    = 'wpmoo_samples';
 	private const SECTION_ID = 'sample_switch';
 
