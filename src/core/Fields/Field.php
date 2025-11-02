@@ -85,22 +85,22 @@ final class Field extends FieldBuilder {
 	 * @param string $id Field id.
 	 * @return static
 	 */
-    public static function radio( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-        return new self( $id, 'radio' );
-    }
+	public static function radio( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'radio' );
+	}
 
-    /**
-     * Create a 'toggle' field builder.
-     *
-     * @param string $id Field id.
-     * @return static
-     */
-    public static function toggle( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-        return new self( $id, 'toggle' );
-    }
+	/**
+	 * Create a 'toggle' field builder.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function toggle( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'toggle' );
+	}
 
-    /**
-     * Create a 'range' field builder.
+	/**
+	 * Create a 'range' field builder.
 	 *
 	 * @param string $id Field id.
 	 * @return static
