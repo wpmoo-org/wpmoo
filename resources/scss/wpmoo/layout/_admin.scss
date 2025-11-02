@@ -1,0 +1,20 @@
+/* Admin-specific polishes within .wpmoo scope */
+
+/* Align WP admin notices with container paddings */
+:where(.wpmoo) .notice,
+:where(.wpmoo) .notice.is-dismissible {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 100%;
+}
+
+/* Actions footer spacing */
+:where(.wpmoo) .wpmoo-options-actions {
+  padding-block: 1rem;
+}
+
+/* Prevent horizontal scroll on small screens */
+:where(.wpmoo) {
+  overflow-x: hidden;
+}
+

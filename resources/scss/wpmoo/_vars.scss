@@ -4,8 +4,8 @@
   --wpmoo-background-color: #fff;
   /* Horizontal gutters for containers */
   --wpmoo-container-x: 2rem;
-  /* Maximum width for containers (none = full-bleed) */
-  --wpmoo-container-max: none;
+  /* Maximum width for containers (default: centered, 1280px) */
+  --wpmoo-container-max: 1280px;
   /* Section grid gap */
   --wpmoo-section-gap: 1rem;
   /* Label/control gap */
@@ -14,9 +14,10 @@
   --wpmoo-spacing: .85rem;
 
   /* Toggle (switch) sizing tokens */
-  --wpmoo-switch-height: 1.25em;
-  /* track height */
-  --wpmoo-switch-width: 2.5em;
+  --wpmoo-switch-height: 1.25em; /* track height */
+  --wpmoo-switch-width: 2.25em;  /* track width */
+  --wpmoo-switch-knob-size: .85rem; /* knob size */
+  --wpmoo-switch-knob-offset: calc((var(--wpmoo-switch-height) - var(--wpmoo-switch-knob-size)) / 2);
   /* Fallback thumb shadow token (Pico defines one already) */
   --wpmoo-switch-thumb-box-shadow: 0 0 0 .0625rem rgba(0, 0, 0, .06);
 }

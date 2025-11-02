@@ -2,6 +2,7 @@
 :where(.wpmoo) {
   position: relative;
   min-height: 100vh;
+  overflow-x: hidden;
   /* Use framework background var; fallback to white */
   background: var(--wpmoo-background-color, #fff);
 }
