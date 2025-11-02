@@ -12,7 +12,6 @@
 
 namespace WPMoo\Page;
 
-use WPMoo\Admin\UI\Panel;
 use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
@@ -380,54 +379,11 @@ class Page {
 			);
 		}
 
-		$panel_sections = array();
-
-		foreach ( $sections as $section ) {
-			$section_id    = $section['id'];
-			$section_title = ! empty( $section['title'] ) ? $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
-			$section_desc  = ! empty( $section['description'] ) ? $section['description'] : '';
-			$section_icon  = ! empty( $section['icon'] ) ? $section['icon'] : '';
-
-			ob_start();
-
-			foreach ( $section['fields'] as $field ) {
-				$this->render_field( $field, $values );
-			}
-
-			$content = ob_get_clean();
-
-			if ( '' !== trim( $content ) ) {
-				$content = '<div class="wpmoo-section-fields">' . $content . '</div>';
-			}
-
-			$panel_sections[] = array(
-				'id'          => $section_id,
-				'label'       => $section_title,
-				'description' => $section_desc,
-				'icon'        => $section_icon,
-				'content'     => $content,
-			);
-		}
-
-		$panel_id       = 'wpmoo-options-panel-' . $this->config['menu_slug'];
-		$active_section = $this->determine_active_section( $panel_id, $panel_sections );
-		$persist_tabs   = ! empty( $_REQUEST['_wpmoo_active_panel'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Persists UI state only.
-		$panel          = Panel::make(
-			array(
-				'id'              => $panel_id,
-				'title'           => $this->config['page_title'],
-				'sections'        => $panel_sections,
-				'collapsible'     => false,
-				'accordion_multi' => true,
-				'persist'         => $persist_tabs,
-				'active'          => $active_section,
-				'frame'           => false,
-			)
-		);
-
-		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Render methods ensure inner values are escaped.
-		echo '<div class="wrap wpmoo wpmoo-options">';
-		echo '<h1 class="wp-heading-inline">' . esc_html( $this->config['page_title'] ) . '</h1>';
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Output assembled with proper escaping below.
+		echo '<main class="wpmoo container" id="wpmoo-options">';
+		echo '<header>';
+		echo '<h1>' . esc_html( $this->config['page_title'] ) . '</h1>';
+		echo '</header>';
 
 		if ( function_exists( 'settings_errors' ) ) {
 			settings_errors( $this->repository->option_key() );
@@ -441,22 +397,39 @@ class Page {
 
 		echo '<input type="hidden" name="_wpmoo_options_page" value="' . esc_attr( $this->config['menu_slug'] ) . '" />';
 
-		echo '<input type="hidden" class="wpmoo-active-panel" data-panel-id="' . esc_attr( $panel_id ) . '" name="_wpmoo_active_panel[' . esc_attr( $panel_id ) . ']" value="' . esc_attr( $active_section ) . '" />';
-		echo $panel->render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		foreach ( $sections as $section ) {
+			$section_id    = $section['id'];
+			$section_title = ! empty( $section['title'] ) ? $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
+			$section_desc  = ! empty( $section['description'] ) ? $section['description'] : '';
 
-		echo '<div class="wpmoo-options-actions">';
+			echo '<section id="' . esc_attr( $section_id ) . '">';
+			echo '<header>';
+			echo '<h2>' . esc_html( $section_title ) . '</h2>';
+			if ( '' !== $section_desc ) {
+				echo '<p>' . esc_html( $section_desc ) . '</p>';
+			}
+			echo '</header>';
 
+			echo '<div class="grid">';
+			foreach ( $section['fields'] as $field ) {
+				$this->render_field( $field, $values );
+			}
+			echo '</div>';
+			echo '</section>';
+		}
+
+		// Actions
+		echo '<footer class="wpmoo-options-actions">';
 		if ( function_exists( 'submit_button' ) ) {
 			submit_button( __( 'Save Changes', 'wpmoo' ) );
 		} else {
 			echo '<p class="submit"><button type="submit">' . esc_html( $this->translate( 'Save Changes', 'wpmoo' ) ) . '</button></p>';
 		}
-
-		echo '</div>';
-		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '</footer>';
 
 		echo '</form>';
-		echo '</div>';
+		echo '</main>';
+		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -523,7 +496,7 @@ class Page {
 
 		$help_html = $field->help_html();
 
-		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Field rendering handles escaping.
+        // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Field rendering handles escaping.
 		echo '<div class="wpmoo-field">';
 
 		if ( $field->before() ) {
@@ -565,18 +538,11 @@ class Page {
 			echo '<button type="button" class="wpmoo-repeat__add" data-repeat-add><span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span> ' . esc_html( $btn ) . '</button>';
 			echo '</div>';
 		} else {
-			echo '<label for="' . esc_attr( $field->id() ) . '">';
-			if ( $field->label() ) {
-				echo esc_html( $field->label() );
-			}
+			// Let the field render its own label/control; keep description outside per PicoCSS patterns.
 			echo $field->render( $name, $value );
 			if ( $field->description() ) {
-				echo '<small>' . esc_html( $field->description() ) . '</small>';
+				echo '<small class="description">' . esc_html( $field->description() ) . '</small>';
 			}
-			if ( '' !== $help_html ) {
-				echo '<small>' . $help_html . '</small>';
-			}
-			echo '</label>';
 		}
 
 		if ( $field->after() ) {
@@ -584,7 +550,7 @@ class Page {
 		}
 
 		echo '</div>';
-		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+        // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
