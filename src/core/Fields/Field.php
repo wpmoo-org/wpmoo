@@ -67,7 +67,7 @@ final class Field extends FieldBuilder {
 
 	/**
 	 * Create a builder via static typed constructor, e.g. Field::text('id').
-	 * 
+	 *
 	 * @param string $name      Called static method name (used as type).
 	 * @param array  $arguments Arguments passed to the method (expects [ id ]).
 	 * @return static
