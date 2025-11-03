@@ -53,7 +53,7 @@ final class Samples {
 			->sticky_header()
 			->ajax_save();
 	}
-	
+
 	/**
 	 * Define the Sections.
 	 *
