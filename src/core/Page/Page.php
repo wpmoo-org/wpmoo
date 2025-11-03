@@ -444,37 +444,53 @@ class Page {
 			);
 		}
 
-		// Compose optional style attribute from configured CSS variables.
-		$style_attr = '';
-		if ( isset( $this->config['css_vars'] ) && is_array( $this->config['css_vars'] ) && ! empty( $this->config['css_vars'] ) ) {
-			$pairs = array();
-			foreach ( $this->config['css_vars'] as $var => $val ) {
-				$name = (string) $var;
-				// Accept only our scoped custom properties for safety.
-				if ( 0 !== strpos( $name, '--wpmoo-' ) ) {
-					continue;
-				}
-				$pairs[] = $name . ':' . (string) $val;
-			}
-			if ( ! empty( $pairs ) ) {
-				$style_attr = ' style="' . esc_attr( implode( ';', $pairs ) ) . '"';
-			}
-		}
+        // Compose optional style attribute.
+        // New config key: 'style' (raw style string). Back-compat: 'css_vars' map of --wpmoo-* to values.
+        $style_attr = '';
+        if ( isset( $this->config['style'] ) && is_string( $this->config['style'] ) && '' !== trim( $this->config['style'] ) ) {
+            $style_attr = ' style="' . esc_attr( trim( (string) $this->config['style'] ) ) . '"';
+        } elseif ( isset( $this->config['css_vars'] ) && is_array( $this->config['css_vars'] ) && ! empty( $this->config['css_vars'] ) ) {
+            $pairs = array();
+            foreach ( $this->config['css_vars'] as $var => $val ) {
+                $name = (string) $var;
+                // Accept only our scoped custom properties for safety.
+                if ( 0 !== strpos( $name, '--wpmoo-' ) ) {
+                    continue;
+                }
+                $pairs[] = $name . ':' . (string) $val;
+            }
+            if ( ! empty( $pairs ) ) {
+                $style_attr = ' style="' . esc_attr( implode( ';', $pairs ) ) . '"';
+            }
+        }
 
 		// Compose classes for the page container.
-		$base_classes = array( 'wpmoo', 'container' );
-		if ( isset( $this->config['class'] ) && is_string( $this->config['class'] ) && '' !== trim( $this->config['class'] ) ) {
-			$extras = preg_split( '/\s+/', trim( (string) $this->config['class'] ) );
-			if ( ! is_array( $extras ) ) {
-				$extras = array();
-			}
-			foreach ( $extras as $c ) {
-				$c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c );
-				if ( $c && ! in_array( $c, $base_classes, true ) ) {
-					$base_classes[] = $c;
-				}
-			}
-		}
+        // Base classes with container auto-detection.
+        $base_classes    = array( 'wpmoo' );
+        $has_container   = false;
+        // Sticky header marker class to activate CSS.
+        if ( ! empty( $this->config['sticky_header'] ) ) {
+            $base_classes[] = 'wpmoo--sticky';
+        }
+        if ( isset( $this->config['class'] ) && is_string( $this->config['class'] ) && '' !== trim( $this->config['class'] ) ) {
+            $extras = preg_split( '/\s+/', trim( (string) $this->config['class'] ) );
+            if ( ! is_array( $extras ) ) {
+                $extras = array();
+            }
+            foreach ( $extras as $c ) {
+                $c = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c );
+                if ( $c && ! in_array( $c, $base_classes, true ) ) {
+                    $base_classes[] = $c;
+                }
+                if ( in_array( $c, array( 'container', 'container-fluid' ), true ) ) {
+                    $has_container = true;
+                }
+            }
+        }
+
+        if ( ! $has_container ) {
+            $base_classes[] = 'container';
+        }
 
 		$class_attr = ' class="' . esc_attr( implode( ' ', $base_classes ) ) . '"';
 
