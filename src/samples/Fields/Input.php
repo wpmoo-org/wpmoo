@@ -28,8 +28,7 @@ final class Input {
 	}
 
 	public static function define(): void {
-		// Reuse existing Samples page if present.
-		Moo::container( self::PAGE_ID, __( 'WPMoo Samples', 'wpmoo' ), '' )->menuSlug( 'wpmoo-samples' );
+		// Root Samples container is created once in the aggregator.
 
 		Moo::section( self::SECTION_ID, __( 'Input', 'wpmoo' ), __( 'Text input.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )

@@ -681,6 +681,10 @@
     var $optionsForm = $("#wpmoo-options-form");
 
     if ($optionsForm.length) {
+      // If AJAX save is explicitly disabled, let default submit proceed.
+      if (optionsConfig.ajaxSave === false || optionsConfig.ajaxSave === 0 || optionsConfig.ajaxSave === "0") {
+        return;
+      }
       var $submitButtons = $optionsForm.find(
         'button[type="submit"], input[type="submit"]'
       );
@@ -812,7 +816,12 @@
             }
           })
           .fail(function () {
+            // Show toast and gracefully fallback to normal submit.
             showToast("error", getString("error", "Unable to save settings."));
+            try {
+              $optionsForm.off("submit");
+              $optionsForm.trigger("submit");
+            } catch (e) {}
           })
           .always(function () {
             $submitButtons.prop("disabled", false).removeClass("disabled");

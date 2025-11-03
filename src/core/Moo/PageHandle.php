@@ -148,6 +148,48 @@ class PageHandle {
 	}
 
 	/**
+	 * Enable or disable sticky header for this page.
+	 *
+	 * @param bool $enabled Whether sticky header is enabled.
+	 * @return $this
+	 */
+	public function stickyHeader( bool $enabled = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		$this->builder->config( 'sticky_header', $enabled );
+		return $this;
+	}
+
+	/**
+	 * Snake_case alias of stickyHeader().
+	 *
+	 * @param bool $enabled Whether sticky header is enabled.
+	 * @return $this
+	 */
+	public function sticky_header( bool $enabled = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return $this->stickyHeader( $enabled );
+	}
+
+	/**
+	 * Enable or disable AJAX save for this page.
+	 *
+	 * @param bool $enabled Whether AJAX save is enabled.
+	 * @return $this
+	 */
+	public function ajaxSave( bool $enabled = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		$this->builder->config( 'ajax_save', $enabled );
+		return $this;
+	}
+
+	/**
+	 * Snake_case alias of ajaxSave().
+	 *
+	 * @param bool $enabled Whether AJAX save is enabled.
+	 * @return $this
+	 */
+	public function ajax_save( bool $enabled = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return $this->ajaxSave( $enabled );
+	}
+
+	/**
 	 * Provide a closure to configure the page builder directly.
 	 *
 	 * @param callable $callback Callback receiving the underlying builder.

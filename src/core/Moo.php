@@ -97,11 +97,17 @@ class Moo {
 	 * @return PageHandle|null Returns null when the page has not been created yet and no metadata is supplied.
 	 */
 	public static function page( string $id, ?string $title = null, ?string $description = null ): ?PageHandle {
+		// If metadata provided, (re)create/return the page.
 		if ( null !== $title || null !== $description ) {
 			return self::create_page( $id, $title ?? '', $description ?? '' );
 		}
 
-		return isset( self::$pages[ $id ] ) ? self::$pages[ $id ] : null;
+		// Ensure a handle exists to allow chaining like Moo::page('id')->sticky_header().
+		if ( ! isset( self::$pages[ $id ] ) ) {
+			return self::create_page( $id, '', '' );
+		}
+
+		return self::$pages[ $id ];
 	}
 
 	/**

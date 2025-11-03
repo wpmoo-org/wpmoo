@@ -19,6 +19,10 @@ const paths = {
     bridgeOut: "wpmoo.bridge.css",
     finalOut: "wpmoo.css",
   },
+  scripts: {
+    src: "resources/js/**/*.js",
+    dest: "src/assets/js",
+  },
   html: {
     src: "/*.html",
     base: ".",
@@ -181,6 +185,11 @@ function picoScope() {
     .pipe(browserSync.stream({ match: "**/*.css" }));
 }
 
+function scripts() {
+  // Simple copy of admin JS from resources to assets
+  return src(paths.scripts.src, { allowEmpty: true }).pipe(dest(paths.scripts.dest)).pipe(browserSync.stream({ match: "**/*.js" }));
+}
+
 // Copy third-party licenses into dist
 function copyLicenses() {
   const srcPath = path.resolve("vendor/pico/LICENSE.md");
@@ -244,6 +253,8 @@ function serve() {
 
   // SCSS → CSS akışı ve canlı yenileme
   watch(paths.styles.src, series(styles, copyLicenses));
+  // JS kopyalama ve canlı yenileme
+  watch(paths.scripts.src, scripts);
 
   // PHP/HTML değişikliklerinde tam yenileme
   watch(["**/*.php", paths.html.src]).on("change", browserSync.reload);
@@ -252,6 +263,6 @@ function serve() {
 
 exports.styles = styles;
 exports["pico:scope"] = picoScope;
-exports.watch = series(cleanOut, styles, copyLicenses, serve);
-exports.build = series(cleanOut, styles, copyLicenses);
-exports.default = series(cleanOut, styles, copyLicenses);
+exports.watch = series(cleanOut, styles, scripts, copyLicenses, serve);
+exports.build = series(cleanOut, styles, scripts, copyLicenses);
+exports.default = series(cleanOut, styles, scripts, copyLicenses);

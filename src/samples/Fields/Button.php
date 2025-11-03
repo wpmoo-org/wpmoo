@@ -28,7 +28,7 @@ final class Button {
 	}
 
 	public static function define(): void {
-		Moo::container( self::PAGE_ID, __( 'WPMoo Samples', 'wpmoo' ), '' )->menuSlug( 'wpmoo-samples' );
+		// Root Samples container is created once in the aggregator.
 
 		Moo::section( self::SECTION_ID, __( 'Button', 'wpmoo' ), __( 'Button field type.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
