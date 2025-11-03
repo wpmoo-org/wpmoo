@@ -25,6 +25,10 @@
   z-index: 10;
   background: var(--wpmoo-background-color, #fff);
 }
+/* Extra targeting to survive aggressive admin CSS */
+#wpmoo-options.wpmoo.wpmoo--sticky > header {
+  position: sticky;
+}
 
 /* Account for admin bar heights */
 body.admin-bar :where(.wpmoo.wpmoo--sticky) > header { top: 32px; }

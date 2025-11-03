@@ -27,6 +27,7 @@ final class Samples {
 	 * Root page menu slug.
 	 */
 	public const MENU_SLUG = 'wpmoo-samples';
+
 	/**
 	 * Register all sample modules.
 	 *
@@ -37,64 +38,94 @@ final class Samples {
 	public static function register(): void {
 		// Ensure the root Samples page exists before children define sections.
 		if ( function_exists( 'add_action' ) ) {
-			add_action( 'wpmoo_init', array( self::class, 'create_root' ), 5 );
-		}
-		// Defer to each sample class; they hook into `wpmoo_init` for definition.
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Input' ) ) {
-			\WPMoo\Samples\Fields\Input::register();
-		}
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Button' ) ) {
-			\WPMoo\Samples\Fields\Button::register();
-		}
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Textarea' ) ) {
-			\WPMoo\Samples\Fields\Textarea::register();
-		}
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Select' ) ) {
-			\WPMoo\Samples\Fields\Select::register();
-		}
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Checkbox' ) ) {
-			\WPMoo\Samples\Fields\Checkbox::register();
-		}
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Radio' ) ) {
-			\WPMoo\Samples\Fields\Radio::register();
-		}
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Toggle' ) ) {
-			\WPMoo\Samples\Fields\Toggle::register();
-		}
-		if ( class_exists( '\\WPMoo\\Samples\\Fields\\Range' ) ) {
-			\WPMoo\Samples\Fields\Range::register();
-		}
-		if ( class_exists( '\\WPMoo\\Samples\\Metabox\\Simple' ) ) {
-			\WPMoo\Samples\Metabox\Simple::register();
-		}
-		// Optional: a tiny built-in layout demo.
-		if ( function_exists( 'add_action' ) ) {
-			add_action( 'wpmoo_init', array( self::class, 'add_layout_demo' ), 15 );
+			add_action( 'wpmoo_init', array( self::class, 'page_sample' ), 5 );
+			add_action( 'wpmoo_init', array( self::class, 'sections' ), 5 );
 		}
 	}
 
 	/**
 	 * Create the root Samples page container once.
 	 */
-	public static function create_root(): void {
+	public static function page_sample(): void {
 		Moo::page( self::PAGE_ID )
 			->title( __( 'WPMoo Samples', 'wpmoo' ) )
 			->menuSlug( self::MENU_SLUG )
 			->sticky_header()
 			->ajax_save();
 	}
-
+	
 	/**
-	 * Add a minimal layout/UX demo section under the root page.
+	 * Define the Sections.
+	 *
+	 * @return void
 	 */
-	public static function add_layout_demo(): void {
-		Moo::section( 'layout_sticky', __( 'Layout', 'wpmoo' ), __( 'Sticky header is enabled on this page. Scroll to see it in action.', 'wpmoo' ) )
+	public static function sections(): void {
+		Moo::section( 'sample_input', __( 'Input', 'wpmoo' ), __( 'Text input.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(
-				Field::textarea( 'layout_notes' )
-					->label( __( 'Notes', 'wpmoo' ) )
-					->attributes( array( 'placeholder' => __( 'Add some notes…', 'wpmoo' ) ) )
-					->description( __( 'This is a demo field. Saving uses the current page settings.', 'wpmoo' ) )
+				Field::input( 'demo_input' )
+					->label( __( 'Demo Input', 'wpmoo' ) )
+					->attributes( array( 'placeholder' => __( 'Type…', 'wpmoo' ) ) )
+					->description( __( 'Saved under the samples option set.', 'wpmoo' ) )
+			);
+
+		Moo::section( 'sample_textarea', __( 'Textarea', 'wpmoo' ), __( 'Multiline input field.', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::textarea( 'demo_textarea' )
+					->label( __( 'Demo Textarea', 'wpmoo' ) )
+					->attributes( array( 'placeholder' => __( 'Type multi-line…', 'wpmoo' ) ) )
+					->description( __( 'Saved under the samples option set.', 'wpmoo' ) )
+			);
+
+		Moo::section( 'sample_button', __( 'Button', 'wpmoo' ), __( 'Button field type.', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::button( 'demo_button' )
+					->label( __( 'Run', 'wpmoo' ) )
+					->attributes( array( 'class' => 'contrast' ) )
+			);
+
+		Moo::section( 'sample_checkbox', __( 'Checkbox', 'wpmoo' ), __( 'Boolean switch.', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::checkbox( 'demo_checkbox' )
+					->label( __( 'Enable feature', 'wpmoo' ) )
+			);
+
+		Moo::section( 'sample_radio', __( 'Radio', 'wpmoo' ), __( 'Single choice options.', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::radio( 'demo_radio' )
+					->label( __( 'Pick one', 'wpmoo' ) )
+					->options(
+						array(
+							'a' => __( 'Option A', 'wpmoo' ),
+							'b' => __( 'Option B', 'wpmoo' ),
+							'c' => __( 'Option C', 'wpmoo' ),
+						)
+					)
+			);
+
+		Moo::section( 'sample_toggle', __( 'Toggle', 'wpmoo' ), __( 'Boolean toggle (role="switch").', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::toggle( 'demo_toggle' )
+					->label( __( 'Enable notifications', 'wpmoo' ) )
+			);
+
+		Moo::section( 'sample_range', __( 'Range', 'wpmoo' ), __( 'Range slider.', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::range( 'demo_range' )
+					->label( __( 'Volume', 'wpmoo' ) )
+					->attributes(
+						array(
+							'min' => 0,
+							'max' => 100,
+							'step' => 5,
+						)
+					)
 			);
 	}
 }

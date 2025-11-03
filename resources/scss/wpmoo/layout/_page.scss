@@ -33,6 +33,8 @@ body.wp-admin.wpmoo-view #wpcontent {
 body.wp-admin.wpmoo-view #wpbody-content {
   padding-left: 0 !important;
   padding-right: 0 !important;
+  /* Ensure sticky children inside our page can stick */
+  overflow: visible !important;
 }
 
 /* Ensure wrapper backgrounds match our page background so body grey doesn't bleed */
