@@ -35,14 +35,14 @@ class Assets {
 	 * @return string Empty string if not resolvable.
 	 */
 	public static function ui_css_url(): string {
-        // Prefer local compiled assets in this package during development,
-        // then legacy bundle, and only then external UI packages.
-        $candidates = array(
-            'src/assets/css/wpmoo.css',                 // New unified src assets location (preferred)
-            'assets/css/wpmoo.css',                     // Legacy framework bundle
-            'vendor/wpmoo/wpmoo-ui/css/wpmoo.css',      // External UI package (optional)
-            'vendor/wpmoo-org/wpmoo-ui/css/wpmoo.css',  // Legacy/vendor-alt (defensive)
-        );
+		// Prefer local compiled assets in this package during development,
+		// then legacy bundle, and only then external UI packages.
+		$candidates = array(
+			'src/assets/css/wpmoo.css',                 // New unified src assets location (preferred)
+			'assets/css/wpmoo.css',                     // Legacy framework bundle
+			'vendor/wpmoo/wpmoo-ui/css/wpmoo.css',      // External UI package (optional)
+			'vendor/wpmoo-org/wpmoo-ui/css/wpmoo.css',  // Legacy/vendor-alt (defensive)
+		);
 
 		// 1) WordPress-aware resolution (most reliable in plugins):
 		if (
