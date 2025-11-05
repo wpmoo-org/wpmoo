@@ -162,8 +162,3 @@
 .wpmoo input[type="checkbox"][role="switch"]::after {
   content: none !important;
 }
-
-/* Safety: ensure knob slides right when checked (in case upstream rule is trumped) */
-.wpmoo input[type="checkbox"][role="switch"]:checked::before {
-  margin-inline-start: calc(var(--wpmoo-switch-width, 2.25em) - var(--wpmoo-switch-knob-size, .85rem) - var(--wpmoo-switch-knob-offset, .2rem)) !important;
-}
