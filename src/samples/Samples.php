@@ -60,6 +60,16 @@ final class Samples {
 	 * @return void
 	 */
 	public static function sections(): void {
+		Moo::section('layout_examples', 'Layout Examples')
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::input('first_name')->label('First Name')->width(50),
+				Field::input('last_name')->label('Last Name')->width(50),
+				Field::input('company')->label('Company')->width(50),
+				Field::input('role')->label('Role')->width(50),
+				Field::textarea('bio')->label('Biography')
+			);
+
 		Moo::section( 'sample_input', __( 'Input', 'wpmoo' ), __( 'Text input.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(

@@ -107,6 +107,7 @@ if ( function_exists( 'add_action' ) ) {
 			// Register all Samples via the aggregator.
 			if ( class_exists( '\\WPMoo\\Samples\\Samples' ) ) {
 				\WPMoo\Samples\Samples::register();
+				\WPMoo\Samples\Metabox\Simple::register();
 			} else {
 				// Fallback: register individual samples when aggregator is unavailable.
 				if ( class_exists( '\\WPMoo\\Samples\\Fields\\Text' ) ) {
