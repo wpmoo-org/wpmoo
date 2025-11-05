@@ -1,6 +1,6 @@
 <?php
 /**
- * Carbon Fields inspired container API for WPMoo options.
+ * WPMoo Container — fluent container builder.
  *
  * @package WPMoo\Options
  */
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Fluent container builder mirroring Carbon Fields usage.
+ * Base container class for building admin pages, theme options, etc.
  *
  * @phpstan-consistent-constructor
  */
@@ -589,7 +589,7 @@ class Container {
 	}
 
 	/**
-	 * Convenience alias mirroring Carbon Fields' add_tab().
+	 * Add a tab (section with fields).
 	 *
 	 * @param string           $title  Tab title.
 	 * @param array<int,mixed> $fields Field definitions.

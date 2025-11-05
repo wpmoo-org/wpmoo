@@ -470,7 +470,7 @@ class Page {
 		$has_container   = false;
 		// Sticky header marker class to activate CSS.
 		if ( ! empty( $this->config['sticky_header'] ) ) {
-			$base_classes[] = 'wpmoo--sticky';
+			$base_classes[] = 'wpmoo--sticky-header';
 		}
 		if ( isset( $this->config['class'] ) && is_string( $this->config['class'] ) && '' !== trim( $this->config['class'] ) ) {
 			$extras = preg_split( '/\s+/', trim( (string) $this->config['class'] ) );
@@ -506,6 +506,7 @@ class Page {
 		echo '<h1>' . esc_html( $heading ) . '</h1>';
 		echo '</header>';
 
+		// Show any settings errors.
 		if ( function_exists( 'settings_errors' ) ) {
 			settings_errors( $this->repository->option_key() );
 		}
@@ -535,11 +536,10 @@ class Page {
 			}
 			echo '</header>';
 
-			echo '<div class="grid">';
 			foreach ( $section['fields'] as $field ) {
 				$this->render_field( $field, $values );
 			}
-			echo '</div>';
+
 			echo '</section>';
 		}
 

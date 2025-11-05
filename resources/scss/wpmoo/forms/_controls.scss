@@ -98,6 +98,12 @@
   font-size: .85em;
 }
 
+:where(.wpmoo) .wpmoo-field {
+  padding: 20px;
+  display: block;
+  border-top: 1px solid var(--wpmoo-border-color, rgba(0, 0, 0, .05));
+}
+
 /* Label baseline: block to stack text, control, help */
 :where(.wpmoo) .wpmoo-field>label,
 :where(.wpmoo) fieldset label {

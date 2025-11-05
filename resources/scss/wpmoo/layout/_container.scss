@@ -1,14 +1,12 @@
 /* Container side space via padding (avoid showing body background) */
 /* When .wpmoo is itself the container */
 :where(.wpmoo).container {
-  margin-left: 0;
+  margin-left: 20px;
   margin-right: 0;
   width: 100%;
   /* configurable, full-bleed by default */
   max-width: var(--wpmoo-container-max, none);
   box-sizing: border-box;
-  padding-left: var(--wpmoo-container-x, 2rem);
-  padding-right: var(--wpmoo-container-x, 2rem);
 }
 
 /* When .wpmoo wraps an inner .container (fallback) */
