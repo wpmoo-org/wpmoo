@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "package-name": "wpmoo",
+      "release-type": "node",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "plain-text",
+          "path": "src/wpmoo.php",
+          "search": "(\\* Version:\\s+)([0-9.]+)",
+          "replace": "$1${version}"
+        },
+        {
+          "type": "plain-text",
+          "path": "src/readme.txt",
+          "search": "(Stable tag:\\s+)([0-9.]+)",
+          "replace": "$1${version}"
+        }
+      ]
+    }
+  }
+}
