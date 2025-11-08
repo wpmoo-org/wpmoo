@@ -3,19 +3,30 @@
 /* Align WP admin notices with container paddings */
 :where(.wpmoo) .notice,
 :where(.wpmoo) .notice.is-dismissible {
-  margin-left: 0;
-  margin-right: 0;
-  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--wpmoo-container-x, 1rem);
+  padding-right: var(--wpmoo-container-x, 1rem);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--wpmoo-container-max, 1280px);
 }
 
 /* Actions footer spacing */
 :where(.wpmoo) .wpmoo-options-actions {
   padding-block: 1rem;
+  padding-left: var(--wpmoo-container-x, 1rem);
+  padding-right: var(--wpmoo-container-x, 1rem);
+  border-top: 1px solid var(--wpmoo-border-color, rgba(0, 0, 0, .08));
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: .5rem;
 }
 
 /* Prevent horizontal scroll on small screens */
 :where(.wpmoo) {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Sticky header variant */

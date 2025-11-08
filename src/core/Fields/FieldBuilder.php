@@ -377,36 +377,6 @@ class FieldBuilder {
 	}
 
 	/**
-	 * Set grid column span(s).
-	 *
-	 * @param mixed ...$columns Column definitions (int, string, array).
-	 * @return $this
-	 */
-	public function size( ...$columns ): self {
-		return $this;
-	}
-
-	/**
-	 * Alias for size().
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
-	 */
-	public function columns( ...$columns ): self {
-		return $this;
-	}
-
-	/**
-	 * Set preferred gutter size for grid-based controls.
-	 *
-	 * @param string $gutter Gutter keyword (sm, md, lg, xl, none).
-	 * @return $this
-	 */
-	public function gutter( string $gutter ): self {
-		return $this;
-	}
-
-	/**
 	 * Define nested fields (used by composite controls).
 	 *
 	 * @param array<int, mixed> $fields Field definitions.

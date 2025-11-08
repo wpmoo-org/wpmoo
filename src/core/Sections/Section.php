@@ -167,27 +167,6 @@ class Section {
 	// public function layout() removed — not used by Pico-first renderers.
 
 	/**
-	 * Define responsive column spans for the section.
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return static
-	 */
-	public function size( ...$columns ): static {
-		// Grid helpers removed. No-op for BC.
-		return $this;
-	}
-
-	/**
-	 * Alias for size().
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return static
-	 */
-	public function columns( ...$columns ): static {
-		return $this;
-	}
-
-	/**
 	 * Add a field to the section.
 	 *
 	 * @param FieldBuilder|array<string, mixed> $field Field definition.

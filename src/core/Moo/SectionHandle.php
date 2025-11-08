@@ -50,13 +50,6 @@ class SectionHandle {
 	protected $icon = '';
 
 	/**
-	 * Recorded column definitions (removed, kept for BC).
-	 *
-	 * @var array<int, mixed>
-	 */
-	protected $columns = array();
-
-	/**
 	 * Saved field definitions.
 	 *
 	 * @var array<int, mixed>
@@ -188,24 +181,6 @@ class SectionHandle {
 
 		return $this;
 	}
-
-	/**
-	 * Define column spans for this section.
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
-	 */
-	public function columns( ...$columns ): self {
-		return $this; }
-
-	/**
-	 * Alias for columns().
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
-	 */
-	public function size( ...$columns ): self {
-		return $this; }
 
 	/**
 	 * Attach the section to a parent page.
@@ -353,7 +328,6 @@ class SectionHandle {
 		$this->builder = $page->builder()->section( $this->id, $this->title, $this->description );
 
 		$this->apply_icon();
-		// columns removed
 		$this->flush_fields();
 		$this->flush_layout_groups();
 		$this->attached = true;
@@ -384,7 +358,6 @@ class SectionHandle {
 		$this->builder    = $metabox->builder()->section( $this->id, $this->title, $this->description );
 
 		$this->apply_icon();
-		// columns removed
 		$this->flush_fields();
 		$this->flush_layout_groups();
 		$this->attached = true;
@@ -403,7 +376,6 @@ class SectionHandle {
 			'icon'        => $this->icon,
 			'parent'      => $this->parent_id,
 			'metabox'     => $this->metabox_id,
-			'columns'     => $this->columns,
 			'context'     => $this->context,
 		);
 	}
@@ -420,13 +392,6 @@ class SectionHandle {
 
 		$this->builder->icon( $this->icon );
 	}
-
-	/**
-	 * Apply stored column configuration when supported.
-	 *
-	 * @return void
-	 */
-	protected function apply_columns(): void {}
 
 	/**
 	 * Normalise and pass stored fields to the section builder.

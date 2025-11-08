@@ -107,26 +107,6 @@ class SectionBuilder {
 	}
 
 	/**
-	 * Define column spans (alias for size()).
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
-	 */
-	public function columns( ...$columns ): self {
-		return $this;
-	}
-
-	/**
-	 * Define column spans.
-	 *
-	 * @param mixed ...$columns Column definitions.
-	 * @return $this
-	 */
-	public function size( ...$columns ): self {
-		return $this;
-	}
-
-	/**
 	 * Add a field using the shared Fields\FieldBuilder.
 	 *
 	 * @param string $id   Field ID.

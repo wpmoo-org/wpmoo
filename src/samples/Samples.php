@@ -84,6 +84,7 @@ final class Samples {
 					->label( __( 'I agree to the Privacy Policy', 'wpmoo' ) )
 					->description(
 						sprintf(
+							/* translators: %s is a link to the privacy policy. */
 							__( 'Read the %s', 'wpmoo' ),
 							'<a href="#" target="_blank" rel="noreferrer noopener">' . __( 'Privacy Policy', 'wpmoo' ) . '</a>'
 						)
