@@ -50,6 +50,7 @@ final class Samples {
 		Moo::page( self::PAGE_ID )
 			->title( __( 'WPMoo Samples', 'wpmoo' ) )
 			->menuSlug( self::MENU_SLUG )
+			->fluid()
 			->sticky_header()
 			->ajax_save();
 	}

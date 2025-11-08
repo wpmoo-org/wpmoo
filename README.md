@@ -21,6 +21,7 @@ use WPMoo\Fields\Field;
 Moo::page('demo_settings')
     ->title('Demo Settings')
     ->menuSlug('demo-settings')
+    ->fluid()
     ->sticky_header();
 
 Moo::section('preview', 'Preview form')
@@ -50,7 +51,7 @@ Moo::section('preview', 'Preview form')
     );
 ```
 
-`->grid()` wraps the arguments in a `<div class="grid">` so the framework renders the same responsive layout you see in `src/samples`.
+`->grid()` wraps the arguments in a `<div class="grid">` so the framework renders the same responsive layout you see in `src/samples`. Call `->fluid()` on the page definition when you need Pico’s `container-fluid` class instead of the default fixed-width container.
 
 ## Using Builders Directly
 

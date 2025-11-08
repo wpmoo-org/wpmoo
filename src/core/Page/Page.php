@@ -71,6 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *   nav: string,
  *   theme: string,
  *   class: string,
+ *   fluid: bool,
  *   defaults: array<string,mixed>
  * }
  */
@@ -486,6 +487,13 @@ class Page {
 					$has_container = true;
 				}
 			}
+		}
+
+		if ( ! empty( $this->config['fluid'] ) ) {
+			if ( ! in_array( 'container-fluid', $base_classes, true ) ) {
+				$base_classes[] = 'container-fluid';
+			}
+			$has_container = true;
 		}
 
 		if ( ! $has_container ) {
@@ -976,6 +984,7 @@ class Page {
 			// Appearance
 			'style'       => '',
 			'class'       => '',
+			'fluid'       => false,
 			'theme'       => 'dark',
 			'nav'         => 'normal',
 			// Behavior/UI

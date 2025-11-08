@@ -100,6 +100,28 @@ class PageHandle {
 	}
 
 	/**
+	 * Append CSS classes to the page container.
+	 *
+	 * @param string $class Class name(s).
+	 * @return $this
+	 */
+	public function css_class( string $class ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		$this->builder->cssClass( $class );
+		return $this;
+	}
+
+	/**
+	 * Enable/disable full-width container.
+	 *
+	 * @param bool $enabled Whether fluid layout is enabled.
+	 * @return $this
+	 */
+	public function fluid( bool $enabled = true ): self {
+		$this->builder->fluid( $enabled );
+		return $this;
+	}
+
+	/**
 	 * Specify the parent slug (for sub-menus).
 	 *
 	 * @param string $parent Parent slug.
@@ -200,6 +222,7 @@ class PageHandle {
 
 		return $this;
 	}
+
 
 	/**
 	 * Create and attach a section to this page.

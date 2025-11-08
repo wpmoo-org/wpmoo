@@ -128,6 +128,38 @@ class Builder {
 	}
 
 	/**
+	 * Append a CSS class to the page container.
+	 *
+	 * @param string $class Class name(s).
+	 * @return $this
+	 */
+	public function cssClass( string $class ): self {
+		$current = isset( $this->config['class'] ) ? trim( (string) $this->config['class'] ) : '';
+		$append  = trim( $class );
+
+		if ( '' === $append ) {
+			return $this;
+		}
+
+		$this->config['class'] = trim(
+			'' === $current ? $append : $current . ' ' . $append
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Mark the page container as full-width (container-fluid).
+	 *
+	 * @param bool $enabled Whether fluid layout is enabled.
+	 * @return $this
+	 */
+	public function fluid( bool $enabled = true ): self {
+		$this->config['fluid'] = $enabled;
+		return $this;
+	}
+
+	/**
 	 * Set parent slug (for submenu).
 	 *
 	 * @param string $parent Parent slug.
