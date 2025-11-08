@@ -49,7 +49,7 @@ final class Samples {
 	public static function page_sample(): void {
 		Moo::page( self::PAGE_ID )
 			->title( __( 'WPMoo Samples', 'wpmoo' ) )
-			->menuSlug( self::MENU_SLUG )
+			->menu_slug( self::MENU_SLUG )
 			->fluid()
 			->sticky_header()
 			->ajax_save();

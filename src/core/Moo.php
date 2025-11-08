@@ -233,7 +233,7 @@ class Moo {
 		$builder = Options::create( $id );
 
 		if ( '' !== $title ) {
-			$builder->pageTitle( $title )->menuTitle( $title );
+			$builder->page_title( $title )->menu_title( $title );
 		}
 
 		if ( '' !== $description ) {

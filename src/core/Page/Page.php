@@ -230,10 +230,10 @@ class Page {
 							'wpmoo',
 							'wpmooAdminOptions',
 							array(
-								'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+								'ajax_url'    => admin_url( 'admin-ajax.php' ),
 								'nonce'       => wp_create_nonce( 'wpmoo_options_save' ),
-								'menuSlug'    => $this->config['menu_slug'],
-								'ajaxSave'    => (bool) ( isset( $this->config['ajax_save'] ) ? $this->config['ajax_save'] : false ),
+								'menu_slug'   => $this->config['menu_slug'],
+								'ajax_save'   => (bool) ( isset( $this->config['ajax_save'] ) ? $this->config['ajax_save'] : false ),
 								'strings'     => array(
 									'saving' => function_exists( '__' ) ? __( 'Saving…', 'wpmoo' ) : 'Saving…',
 									'saved'  => function_exists( '__' ) ? __( 'Settings saved.', 'wpmoo' ) : 'Settings saved.',

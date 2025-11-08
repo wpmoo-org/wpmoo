@@ -97,7 +97,7 @@ class Builder {
 	 * @param string $title Page title.
 	 * @return $this
 	 */
-	public function pageTitle( string $title ): self {
+	public function page_title( string $title ): self {
 		$this->config['page_title'] = $title;
 
 		return $this;
@@ -109,7 +109,7 @@ class Builder {
 	 * @param string $title Menu title.
 	 * @return $this
 	 */
-	public function menuTitle( string $title ): self {
+	public function menu_title( string $title ): self {
 		$this->config['menu_title'] = $title;
 
 		return $this;
@@ -121,7 +121,7 @@ class Builder {
 	 * @param string $slug Menu slug.
 	 * @return $this
 	 */
-	public function menuSlug( string $slug ): self {
+	public function menu_slug( string $slug ): self {
 		$this->config['menu_slug'] = $slug;
 
 		return $this;
@@ -133,7 +133,7 @@ class Builder {
 	 * @param string $class Class name(s).
 	 * @return $this
 	 */
-	public function cssClass( string $class ): self {
+	public function css_class( string $class ): self {
 		$current = isset( $this->config['class'] ) ? trim( (string) $this->config['class'] ) : '';
 		$append  = trim( $class );
 
@@ -165,7 +165,7 @@ class Builder {
 	 * @param string $parent Parent slug.
 	 * @return $this
 	 */
-	public function parentSlug( string $parent ): self {
+	public function parent_slug( string $parent ): self {
 		$this->config['parent_slug'] = $parent;
 
 		return $this;

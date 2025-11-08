@@ -135,7 +135,7 @@ class Section {
 	 * @param string $class Space-separated class names.
 	 * @return static
 	 */
-	public function cssClass( string $class ): static { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function css_class( string $class ): static { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->css_class = trim( $class );
 		return $this;
 	}

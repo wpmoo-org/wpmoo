@@ -8,7 +8,7 @@ Modern, lightweight WordPress framework for rapid plugin development with fluent
 
 CI runs linting and compatibility sniffs across PHP 7.4–8.3 and WordPress 6.5+ so the framework stays aligned with its published requirements.
 
-Run `composer check` locally to execute the same validation, lint, and compatibility sniffs before pushing. For a full WordPress.org coding standard pass, run `vendor/bin/phpcs --standard=WordPress --ignore=vendor,node_modules .` manually when you have time to address the broader styling recommendations.
+Run `composer check` locally to execute the same validation, lint, and compatibility sniffs before pushing. For a full WordPress.org coding standard pass, run `vendor/bin/phpcs --standard=WordPress --ignore=vendor,node_modules .` manually when you have time to address the broader styling recommendations. A consolidated checklist lives in `wpmoo-docs/content/05.development/local-qa.md`.
 
 ## Example: Fluent Section Layout
 
@@ -20,7 +20,7 @@ use WPMoo\Fields\Field;
 
 Moo::page('demo_settings')
     ->title('Demo Settings')
-    ->menuSlug('demo-settings')
+    ->menu_slug('demo-settings')
     ->fluid()
     ->sticky_header();
 
@@ -63,8 +63,8 @@ use WPMoo\Fields\FieldBuilder;
 use WPMoo\Sections\SectionBuilder;
 
 $options = Options::create('demo_settings')
-    ->pageTitle('Demo Settings')
-    ->menuTitle('Demo Settings');
+    ->page_title('Demo Settings')
+    ->menu_title('Demo Settings');
 
 $section = ( new SectionBuilder('advanced_inputs', 'Advanced Inputs') )
     ->fields(

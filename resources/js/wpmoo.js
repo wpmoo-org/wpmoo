@@ -677,12 +677,12 @@
 
   var optionsConfig = window.wpmooAdminOptions || null;
 
-  if (optionsConfig && optionsConfig.menuSlug) {
+  if (optionsConfig && optionsConfig.menu_slug) {
     var $optionsForm = $("#wpmoo-options-form");
 
     if ($optionsForm.length) {
       // If AJAX save is explicitly disabled, let default submit proceed.
-      if (optionsConfig.ajaxSave === false || optionsConfig.ajaxSave === 0 || optionsConfig.ajaxSave === "0") {
+      if (optionsConfig.ajax_save === false || optionsConfig.ajax_save === 0 || optionsConfig.ajax_save === "0") {
         return;
       }
       var $submitButtons = $optionsForm.find(
@@ -747,7 +747,7 @@
 
         var payload = $optionsForm.serializeArray();
         payload.push({ name: "action", value: "wpmoo_save_options" });
-        payload.push({ name: "menu_slug", value: optionsConfig.menuSlug });
+        payload.push({ name: "menu_slug", value: optionsConfig.menu_slug });
         payload.push({ name: "nonce", value: optionsConfig.nonce });
 
         var originalLabels = [];
@@ -766,7 +766,7 @@
         $submitButtons.prop("disabled", true).addClass("disabled");
 
         $.ajax({
-          url: optionsConfig.ajaxUrl || window.ajaxurl,
+          url: optionsConfig.ajax_url || window.ajaxurl,
           method: "POST",
           dataType: "json",
           data: payload,
@@ -784,11 +784,11 @@
                   .find('.wpmoo-active-panel')
                   .val(response.data.activePanel);
 
-                if (optionsConfig.menuSlug && response.data.activePanel) {
+                if (optionsConfig.menu_slug && response.data.activePanel) {
                   var storageKey =
                     "wpmoo_panel_active_" +
                     "wpmoo-options-panel-" +
-                    optionsConfig.menuSlug;
+                    optionsConfig.menu_slug;
                   try {
                     window.localStorage.setItem(
                       storageKey,
@@ -798,7 +798,7 @@
                     allowPersistence = true;
                     var $panelElement = $(
                       '[data-panel-id="wpmoo-options-panel-' +
-                        optionsConfig.menuSlug +
+                        optionsConfig.menu_slug +
                         '"]'
                     );
                     $panelElement

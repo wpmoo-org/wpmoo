@@ -213,7 +213,7 @@ class FieldBuilder {
 	 * @param string $text Label description.
 	 * @return $this
 	 */
-	public function labelDescription( string $text ): self {
+	public function label_description( string $text ): self {
 		$this->config['label_description'] = $text;
 		return $this;
 	}
@@ -246,7 +246,7 @@ class FieldBuilder {
 	 * @param bool $readonly Read-only flag.
 	 * @return $this
 	 */
-	public function readOnly( bool $readonly = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function read_only( bool $readonly = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->config['readonly'] = $readonly;
 		return $this;
 	}
@@ -268,7 +268,7 @@ class FieldBuilder {
 	 * @param string $class CSS class name(s).
 	 * @return $this
 	 */
-	public function cssClass( string $class ): self {
+	public function css_class( string $class ): self {
 		$this->config['css_class'] = $class;
 		return $this;
 	}
@@ -279,7 +279,7 @@ class FieldBuilder {
 	 * @param callable|string $callback Callable or the string 'none'.
 	 * @return $this
 	 */
-	public function sanitizeCallback( $callback ): self {
+	public function sanitize_callback( $callback ): self {
 		$this->config['sanitize_callback'] = $callback;
 		return $this;
 	}
@@ -290,7 +290,7 @@ class FieldBuilder {
 	 * @param bool $save Save flag.
 	 * @return $this
 	 */
-	public function saveField( bool $save = true ): self {
+	public function save_field( bool $save = true ): self {
 		$this->config['save_field'] = $save;
 		return $this;
 	}
@@ -312,7 +312,7 @@ class FieldBuilder {
 	 * @param string $text Button text.
 	 * @return $this
 	 */
-	public function addButton( string $text ): self {
+	public function add_button( string $text ): self {
 		$this->config['add_button'] = $text;
 		return $this;
 	}
@@ -325,27 +325,27 @@ class FieldBuilder {
 		return $this;
 	}
 
-	public function sortRepeatable( bool $enabled = true ): self {
+	public function sort_repeatable( bool $enabled = true ): self {
 		$this->config['sort_repeatable'] = $enabled;
 		return $this;
 	}
 
-	public function repeatableDefault( bool $enabled = true ): self {
+	public function repeatable_default( bool $enabled = true ): self {
 		$this->config['repeatable_default'] = $enabled;
 		return $this;
 	}
 
-	public function repeatableAsMultiple( bool $enabled = true ): self {
+	public function repeatable_as_multiple( bool $enabled = true ): self {
 		$this->config['repeatable_as_multiple'] = $enabled;
 		return $this;
 	}
 
-	public function maxRepeatable( int $max ): self {
+	public function max_repeatable( int $max ): self {
 		$this->config['max_repeatable'] = max( 0, $max );
 		return $this;
 	}
 
-	public function minRepeatable( int $min ): self {
+	public function min_repeatable( int $min ): self {
 		$this->config['min_repeatable'] = max( 0, $min );
 		return $this;
 	}
