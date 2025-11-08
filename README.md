@@ -10,52 +10,77 @@ CI runs linting and compatibility sniffs across PHP 7.4–8.3 and WordPress 6.5+
 
 Run `composer check` locally to execute the same validation, lint, and compatibility sniffs before pushing. For a full WordPress.org coding standard pass, run `vendor/bin/phpcs --standard=WordPress --ignore=vendor,node_modules .` manually when you have time to address the broader styling recommendations.
 
-## Field Widths
+## Example: Fluent Section Layout
 
-Every option field can request a share of the row using `width()` (percentage) or the shorthand `size()` helper. Fields lay out in a flex row and stack automatically on smaller screens:
+Sections group fields automatically and expose helpers for grid rows so you can mirror the Pico‑style previews shown in the Samples plugin:
 
 ```php
 use WPMoo\Moo;
 use WPMoo\Fields\Field;
 
-Moo::page('demo_settings', 'Demo Settings');
+Moo::page('demo_settings')
+    ->title('Demo Settings')
+    ->menuSlug('demo-settings')
+    ->sticky_header();
 
-Moo::section('layout_examples', 'Layout Examples')
+Moo::section('preview', 'Preview form')
+    ->description('Small subscription form rendered inside a grid.')
     ->parent('demo_settings')
+    ->grid(
+        Field::input('first_name')
+            ->label('First name')
+            ->placeholder('First name')
+            ->required(),
+        Field::input('email')
+            ->label('Email address')
+            ->attributes(array(
+                'type' => 'email',
+                'autocomplete' => 'email',
+                'required' => true,
+            )),
+        Field::button('subscribe')
+            ->label('Subscribe')
+            ->attributes(array(
+                'class' => 'contrast',
+                'type'  => 'submit',
+            ))
+    )
     ->fields(
-        Field::input('first_name')->label('First Name')->width(50),
-        Field::input('last_name')->label('Last Name')->width(50),
-        Field::input('company')->label('Company')->width(50),
-        Field::input('role')->label('Role')->width(50),
-        Field::textarea('bio')->label('Biography')
+        Field::toggle('terms')->label('Agree to the terms?')
     );
 ```
 
-Fieldsets honour the same width rules so you can build card-style layouts without extra markup.
+`->grid()` wraps the arguments in a `<div class="grid">` so the framework renders the same responsive layout you see in `src/samples`.
 
-## Moo Facade (DSL)
+## Using Builders Directly
 
-You can also register pages and sections procedurally without instantiating builders manually:
+Prefer working with explicit builders? Compose sections by instantiating `SectionBuilder` / `FieldBuilder` manually and passing them to the Options container:
 
-use WPMoo\Moo;
-use WPMoo\Fields\Field;
+```php
+use WPMoo\Options\Options;
+use WPMoo\Fields\FieldBuilder;
+use WPMoo\Sections\SectionBuilder;
 
-Moo::page('demo_settings', 'Demo Settings');
+$options = Options::create('demo_settings')
+    ->pageTitle('Demo Settings')
+    ->menuTitle('Demo Settings');
 
-Moo::section('basic_details', 'Basic Details')
-    ->parent('demo_settings')
+$section = ( new SectionBuilder('advanced_inputs', 'Advanced Inputs') )
     ->fields(
-        Field::input('first_name')->label('First Name')->width(50),
-        Field::input('last_name')->label('Last Name')->placeholder('Surname')->width(50),
+        array(
+            ( new FieldBuilder('api_token', 'input') )
+                ->label('API Token')
+                ->attributes( array( 'type' => 'password' ) ),
+            ( new FieldBuilder('slug', 'input') )
+                ->label('Slug')
+                ->default('demo'),
+            ( new FieldBuilder('beta_features', 'toggle') )
+                ->label('Enable beta features?'),
+        )
     );
 
-Moo::section('advanced_inputs', 'Advanced Inputs')
-    ->parent('demo_settings')
-    ->fields(
-        Field::input('api_token')->label('API Token')->attributes(array('type' => 'password')),
-        Field::input('slug')->label('Slug')->default('demo'),
-        Field::toggle('beta_features')->label('Enable beta features?')
-    );
+$options->sections( array( $section ) );
+$options->register();
 ```
 
-Use `Moo::page()` (alias `Moo::container()`) to define option pages, `Moo::section()` to attach reusable sections, and `Moo::metabox()` / `Moo::panel()` for post edit screens. Sections can be chained anywhere in your codebase—attach them to pages with `->parent('page_id')` or to metaboxes with `->metabox('metabox_id')`.
+Use `Moo::page()` (alias `Moo::container()`) to define option pages, `Moo::section()` to attach reusable sections, and `Moo::metabox()` for post edit screens. Sections can be chained anywhere in your codebase—attach them to pages with `->parent('page_id')` or to metaboxes with `->metabox('metabox_id')`.
