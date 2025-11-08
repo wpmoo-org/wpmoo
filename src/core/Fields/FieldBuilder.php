@@ -145,6 +145,16 @@ class FieldBuilder {
 	}
 
 	/**
+	 * Define structured items (used by composite fields such as accordion).
+	 *
+	 * @param array<int, mixed> $items Items configuration.
+	 * @return $this
+	 */
+	public function items( array $items ): self {
+		return $this->set( 'items', $items );
+	}
+
+	/**
 	 * Generic config setter.
 	 *
 	 * @param string $key   Config key.

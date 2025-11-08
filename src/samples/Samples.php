@@ -159,5 +159,29 @@ final class Samples {
 						)
 					)
 			);
+
+		Moo::section( 'sample_accordion', __( 'Accordion', 'wpmoo' ), __( 'Display collapsible sections.', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::accordion( 'demo_accordion' )
+					->label( __( 'Frequently asked questions', 'wpmoo' ) )
+					->items(
+						array(
+							array(
+								'summary' => __( 'What is WPMoo?', 'wpmoo' ),
+								'content' => '<p>' . esc_html__( 'A lightweight WordPress framework for building elegant admin screens.', 'wpmoo' ) . '</p>',
+								'open'    => true,
+							),
+							array(
+								'summary' => __( 'Can I disable notifications?', 'wpmoo' ),
+								'content' => '<p>' . esc_html__( 'Yes, toggle the notification setting in the section above.', 'wpmoo' ) . '</p>',
+							),
+							array(
+								'summary' => __( 'Where can I learn more?', 'wpmoo' ),
+								'content' => '<p>' . esc_html__( 'Check the README and the wpmoo-docs site for full guides.', 'wpmoo' ) . '</p>',
+							),
+						)
+					)
+			);
 	}
 }

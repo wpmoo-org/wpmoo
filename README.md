@@ -53,6 +53,26 @@ Moo::section('preview', 'Preview form')
 
 `->grid()` wraps the arguments in a `<div class="grid">` so the framework renders the same responsive layout you see in `src/samples`. Call `->fluid()` on the page definition when you need Pico’s `container-fluid` class instead of the default fixed-width container.
 
+### Accordion layout field
+
+Pico’nun accordion bileşenini kullanmak için `Field::accordion()` alanını tanımlayın ve `items()` ile özet/gövde çiftleri ekleyin:
+
+```php
+Field::accordion('faq')
+    ->label('Frequently asked questions')
+    ->items([
+        [
+            'summary' => 'Do I get updates?',
+            'content' => '<p>Yes, we send a monthly summary with new features.</p>',
+            'open'    => true,
+        ],
+        [
+            'summary' => 'Can I disable emails?',
+            'content' => '<p>Of course, just uncheck the notification toggle.</p>',
+        ],
+    ]);
+```
+
 ## Using Builders Directly
 
 Prefer working with explicit builders? Compose sections by instantiating `SectionBuilder` / `FieldBuilder` manually and passing them to the Options container:

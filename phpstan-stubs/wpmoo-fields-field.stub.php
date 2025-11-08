@@ -57,11 +57,11 @@ class Field {
 	public static function radio( string $id ) {}
 
 	/**
-	 * Create a switch builder.
+	 * Create a toggle builder.
 	 *
 	 * @return self
 	 */
-	public static function switch( string $id ) {}
+	public static function toggle( string $id ) {}
 
 	/**
 	 * Create a range builder.
@@ -69,4 +69,11 @@ class Field {
 	 * @return self
 	 */
 	public static function range( string $id ) {}
+
+	/**
+	 * Create an accordion builder.
+	 *
+	 * @return self
+	 */
+	public static function accordion( string $id ) {}
 }

@@ -83,6 +83,34 @@
   transform: rotate(90deg);
 }
 
+:where(.wpmoo) .wpmoo-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+:where(.wpmoo) .wpmoo-accordion__item {
+  background: #fff;
+}
+
+:where(.wpmoo) .wpmoo-accordion__summary {
+  cursor: pointer;
+}
+
+:where(.wpmoo) .wpmoo-accordion__summary-description {
+  margin-left: .5rem;
+  color: var(--wpmoo-muted-color, #6b7280);
+}
+
+:where(.wpmoo) .wpmoo-accordion__content {
+  padding-block: .5rem 0;
+  color: inherit;
+}
+
+:where(.wpmoo) .wpmoo-accordion__intro>*:last-child {
+  margin-bottom: .5rem;
+}
+
 /* Labels: help/description spacing */
 :where(.wpmoo) label>small {
   display: block;
@@ -98,14 +126,7 @@
   font-size: .85em;
 }
 
-:where(.wpmoo) form>section {
-  // padding: var(--wpmoo-spacing);
-  // margin-bottom: 0;
-  // border-top: var(--wpmoo-border);
-}
-
 :where(.wpmoo) .wpmoo-field {
-
   display: block;
 }
 

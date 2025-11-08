@@ -74,8 +74,8 @@ msgstr ""
 msgid "No %s found"
 msgstr ""
 
-#: src/Fields/Accordion/Accordion.php:229
-msgid "No accordion sections have been configured."
+#: src/Fields/Accordion/Accordion.php:114
+msgid "No accordion items have been configured."
 msgstr ""
 
 #: src/Options/Builder.php:78
@@ -154,4 +154,3 @@ msgstr ""
 #: src/Options/Page.php:290
 msgid "You are not allowed to save these settings."
 msgstr ""
-

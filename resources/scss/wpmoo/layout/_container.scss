@@ -1,25 +1,10 @@
-/* Container side space via padding (avoid showing body background) */
-/* When .wpmoo is itself the container */
-:where(.wpmoo).container {
-  width: 100%;
-  max-width: var(--wpmoo-container-max, 1280px);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--wpmoo-container-x, 2rem);
-  padding-right: var(--wpmoo-container-x, 2rem);
-  box-sizing: border-box;
-}
-
 /* When .wpmoo wraps structural children, keep them aligned to the same max width */
 :where(.wpmoo) header,
 :where(.wpmoo) main,
 :where(.wpmoo) footer,
 :where(.wpmoo) .container {
   width: 100%;
-  max-width: var(--wpmoo-container-max, 1280px);
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--wpmoo-container-x, 2rem);
-  padding-right: var(--wpmoo-container-x, 2rem);
   box-sizing: border-box;
 }

@@ -5,11 +5,8 @@
 :where(.wpmoo) .notice.is-dismissible {
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--wpmoo-container-x, 1rem);
-  padding-right: var(--wpmoo-container-x, 1rem);
   box-sizing: border-box;
   width: 100%;
-  max-width: var(--wpmoo-container-max, 1280px);
 }
 
 /* Actions footer spacing */

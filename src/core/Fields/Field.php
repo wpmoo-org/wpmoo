@@ -25,6 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @method static Field radio(string $id)
  * @method static Field toggle(string $id)
  * @method static Field range(string $id)
+ * @method static Field accordion(string $id)
  *
  * @phpstan-consistent-constructor
  */
@@ -107,6 +108,16 @@ final class Field extends FieldBuilder {
 	 */
 	public static function range( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		return new self( $id, 'range' );
+	}
+
+	/**
+	 * Create an accordion layout field.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function accordion( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'accordion' );
 	}
 
 	/**

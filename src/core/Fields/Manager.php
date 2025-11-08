@@ -333,8 +333,9 @@ class Manager {
 	 * @return array<string, class-string<BaseField>>
 	 */
 	protected function default_type_map(): array {
-		// No built-in mappings; projects must register components explicitly.
-		return array();
+		return array(
+			'accordion' => \WPMoo\Fields\Accordion\Accordion::class,
+		);
 	}
 
 	/**
