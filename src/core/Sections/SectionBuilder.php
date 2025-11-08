@@ -54,6 +54,13 @@ class SectionBuilder {
 	protected $fields = array();
 
 	/**
+	 * Layout groups (e.g., grid wrappers) referencing field ids.
+	 *
+	 * @var array<int, array<string, mixed>>
+	 */
+	protected $layout_groups = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $id          Section ID.
@@ -161,7 +168,50 @@ class SectionBuilder {
 	 * @return array<string, mixed>
 	 */
 	public function get_layout(): array {
-		return array(); }
+		return empty( $this->layout_groups )
+			? array()
+			: array(
+				'groups' => $this->layout_groups,
+			);
+	}
+
+	/**
+	 * Register a layout group (grid wrapper, etc).
+	 *
+	 * @param string              $type      Group type identifier.
+	 * @param array<int, string>  $field_ids Field identifiers belonging to the group.
+	 * @return $this
+	 */
+	public function add_layout_group( string $type, array $field_ids ): self {
+		$type = strtolower( trim( $type ) );
+
+		if ( '' === $type ) {
+			return $this;
+		}
+
+		$ids = array();
+
+		foreach ( $field_ids as $field_id ) {
+			$normalized = trim( (string) $field_id );
+
+			if ( '' === $normalized ) {
+				continue;
+			}
+
+			$ids[] = $normalized;
+		}
+
+		if ( empty( $ids ) ) {
+			return $this;
+		}
+
+		$this->layout_groups[] = array(
+			'type'   => $type,
+			'fields' => array_values( array_unique( $ids ) ),
+		);
+
+		return $this;
+	}
 
 	/**
 	 * Build the section configuration.
@@ -185,7 +235,7 @@ class SectionBuilder {
 			'description' => $this->description,
 			'icon'        => $this->icon,
 			'fields'      => $fields,
-			'layout'      => array(),
+			'layout'      => $this->get_layout(),
 		);
 	}
 }

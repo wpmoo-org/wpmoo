@@ -223,8 +223,21 @@ class Builder {
 					$builder->icon( $section['icon'] );
 				}
 
-				if ( isset( $section['layout'] ) && is_array( $section['layout'] ) && isset( $section['layout']['columns'] ) && is_array( $section['layout']['columns'] ) ) {
-					$builder->size( $section['layout']['columns'] );
+				if ( isset( $section['layout'] ) && is_array( $section['layout'] ) ) {
+					if ( isset( $section['layout']['columns'] ) && is_array( $section['layout']['columns'] ) ) {
+						$builder->size( $section['layout']['columns'] );
+					}
+
+					if ( isset( $section['layout']['groups'] ) && is_array( $section['layout']['groups'] ) ) {
+						foreach ( $section['layout']['groups'] as $group ) {
+							if ( ! is_array( $group ) || empty( $group['fields'] ) || ! is_array( $group['fields'] ) ) {
+								continue;
+							}
+
+							$type = isset( $group['type'] ) ? (string) $group['type'] : 'grid';
+							$builder->add_layout_group( $type, $group['fields'] );
+						}
+					}
 				}
 
 				if ( isset( $section['fields'] ) && is_array( $section['fields'] ) ) {

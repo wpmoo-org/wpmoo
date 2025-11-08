@@ -98,10 +98,15 @@
   font-size: .85em;
 }
 
+:where(.wpmoo) form>section {
+  // padding: var(--wpmoo-spacing);
+  // margin-bottom: 0;
+  // border-top: var(--wpmoo-border);
+}
+
 :where(.wpmoo) .wpmoo-field {
-  padding: 20px;
+
   display: block;
-  border-top: 1px solid var(--wpmoo-border-color, rgba(0, 0, 0, .05));
 }
 
 /* Label baseline: block to stack text, control, help */

@@ -1,33 +1,22 @@
 /* WPMoo CSS custom property defaults (scoped) */
 :where(.wpmoo) {
-  /* Background color for page wrapper */
-  --wpmoo-background-color: #fff;
-  /* Background color for headers */
-  --wpmoo-header-background-color: rgba(255, 25, 25, 0.5);
-  /* Horizontal gutters for containers */
-  --wpmoo-container-x: 2rem;
-  /* Maximum width for containers (default: centered, 1280px) */
-  --wpmoo-container-max: 1280px;
-  /* Section grid gap */
-  --wpmoo-section-gap: 1rem;
-  /* Label/control gap */
-  --wpmoo-field-gap: .5rem;
-  /* Generic spacing token used in grids if referenced */
-  --wpmoo-spacing: .85rem;
-  /* Border color for form controls */
-  --wpmoo-border-color: rgba(0, 0, 0, .08);
-  /* Border radius for form controls */
-  --wpmoo-border-radius: .375rem;
 
+  --wpmoo-background-color: #fff;
+  --wpmoo-header-background-color: rgba(255, 25, 25, 0.5);
+  --wpmoo-container-x: 2rem;
+  --wpmoo-container-max: 1280px;
+  --wpmoo-section-gap: 1rem;
+  --wpmoo-section-spacing: 1rem;
+  --wpmoo-field-gap: .5rem;
+  --wpmoo-spacing: 1rem;
+  --wpmoo-border: 1px solid rgba(0, 0, 0, .05);
+  --wpmoo-border-color: rgba(0, 0, 0, .08);
+  --wpmoo-border-radius: .375rem;
 
   /* Toggle (switch) sizing tokens */
   --wpmoo-switch-height: 1.25em;
-  /* track height */
   --wpmoo-switch-width: 2.25em;
-  /* track width */
   --wpmoo-switch-knob-size: .85rem;
-  /* knob size */
   --wpmoo-switch-knob-offset: calc((var(--wpmoo-switch-height) - var(--wpmoo-switch-knob-size)) / 2);
-  /* Fallback thumb shadow token (Pico defines one already) */
   --wpmoo-switch-thumb-box-shadow: 0 0 0 .0625rem rgba(0, 0, 0, .06);
 }

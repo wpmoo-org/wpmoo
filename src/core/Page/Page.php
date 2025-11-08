@@ -530,14 +530,46 @@ class Page {
 			}
 			echo '<section id="' . esc_attr( $section_id ) . '"' . $sec_class . '>';
 			echo '<header>';
-			echo '<h2>' . esc_html( $section_title ) . '</h2>';
+			echo '<h3>' . esc_html( $section_title ) . '</h3>';
 			if ( '' !== $section_desc ) {
 				echo '<p>' . esc_html( $section_desc ) . '</p>';
 			}
 			echo '</header>';
 
+			$layout_meta = $this->prepare_section_layout( $section );
+			$active      = null;
+
 			foreach ( $section['fields'] as $field ) {
+				$field_id    = method_exists( $field, 'id' ) ? (string) $field->id() : '';
+				$group_index = $this->section_layout_group_index( $layout_meta, $field_id );
+
+				if ( null !== $active && ( null === $group_index || $group_index !== $active['index'] ) ) {
+					$this->close_layout_group( $layout_meta, $active['index'] );
+					$active = null;
+				}
+
+				if ( null !== $group_index && ( null === $active || $group_index !== $active['index'] ) ) {
+					$this->open_layout_group( $layout_meta, $group_index );
+					$active = array(
+						'index'     => $group_index,
+						'remaining' => $this->section_layout_group_size( $layout_meta, $group_index ),
+					);
+				}
+
 				$this->render_field( $field, $values );
+
+				if ( null !== $active && null !== $group_index && $group_index === $active['index'] ) {
+					$active['remaining']--;
+
+					if ( $active['remaining'] <= 0 ) {
+						$this->close_layout_group( $layout_meta, $group_index );
+						$active = null;
+					}
+				}
+			}
+
+			if ( null !== $active ) {
+				$this->close_layout_group( $layout_meta, $active['index'] );
 			}
 
 			echo '</section>';
@@ -719,6 +751,148 @@ class Page {
 	}
 
 	/**
+	 * Normalize layout metadata for a section definition.
+	 *
+	 * @param array<string, mixed> $section Section configuration.
+	 * @return array{groups: array<int, array<string,mixed>>, map: array<string,int>}
+	 */
+	protected function prepare_section_layout( array $section ): array {
+		$groups = array();
+		$map    = array();
+
+		if ( empty( $section['layout'] ) || ! is_array( $section['layout'] ) ) {
+			return array(
+				'groups' => $groups,
+				'map'    => $map,
+			);
+		}
+
+		$raw_groups = isset( $section['layout']['groups'] ) && is_array( $section['layout']['groups'] )
+			? $section['layout']['groups']
+			: array();
+
+		foreach ( $raw_groups as $group ) {
+			if ( ! is_array( $group ) || empty( $group['fields'] ) || ! is_array( $group['fields'] ) ) {
+				continue;
+			}
+
+			$type = isset( $group['type'] ) ? strtolower( (string) $group['type'] ) : 'grid';
+
+			if ( '' === $type ) {
+				continue;
+			}
+
+			$field_ids = array();
+
+			foreach ( $group['fields'] as $field_id ) {
+				$id = trim( (string) $field_id );
+
+				if ( '' === $id ) {
+					continue;
+				}
+
+				$field_ids[] = $id;
+			}
+
+			if ( empty( $field_ids ) ) {
+				continue;
+			}
+
+			$index = count( $groups );
+
+			$groups[] = array(
+				'type'   => $type,
+				'fields' => $field_ids,
+			);
+
+			foreach ( $field_ids as $id ) {
+				$map[ $id ] = $index;
+			}
+		}
+
+		return array(
+			'groups' => $groups,
+			'map'    => $map,
+		);
+	}
+
+	/**
+	 * Resolve which layout group (if any) the field belongs to.
+	 *
+	 * @param array<string, mixed> $layout_meta Layout metadata.
+	 * @param string               $field_id    Field identifier.
+	 * @return int|null
+	 */
+	protected function section_layout_group_index( array $layout_meta, string $field_id ): ?int {
+		if ( '' === $field_id || empty( $layout_meta['map'] ) || ! is_array( $layout_meta['map'] ) ) {
+			return null;
+		}
+
+		return isset( $layout_meta['map'][ $field_id ] )
+			? (int) $layout_meta['map'][ $field_id ]
+			: null;
+	}
+
+	/**
+	 * Determine the number of fields inside a group.
+	 *
+	 * @param array<string, mixed> $layout_meta Layout metadata.
+	 * @param int                  $group_index Group index.
+	 * @return int
+	 */
+	protected function section_layout_group_size( array $layout_meta, int $group_index ): int {
+		if ( empty( $layout_meta['groups'] ) || ! isset( $layout_meta['groups'][ $group_index ] ) ) {
+			return 0;
+		}
+
+		$group = $layout_meta['groups'][ $group_index ];
+
+		return isset( $group['fields'] ) && is_array( $group['fields'] ) ? count( $group['fields'] ) : 0;
+	}
+
+	/**
+	 * Open the wrapper element for the given layout group.
+	 *
+	 * @param array<string, mixed> $layout_meta Layout metadata.
+	 * @param int                  $group_index Group index.
+	 * @return void
+	 */
+	protected function open_layout_group( array $layout_meta, int $group_index ): void {
+		if ( empty( $layout_meta['groups'] ) || ! isset( $layout_meta['groups'][ $group_index ] ) ) {
+			return;
+		}
+
+		$group = $layout_meta['groups'][ $group_index ];
+
+		switch ( $group['type'] ) {
+			case 'grid':
+				echo '<div class="grid">';
+				break;
+		}
+	}
+
+	/**
+	 * Close the wrapper element for the given layout group.
+	 *
+	 * @param array<string, mixed> $layout_meta Layout metadata.
+	 * @param int                  $group_index Group index.
+	 * @return void
+	 */
+	protected function close_layout_group( array $layout_meta, int $group_index ): void {
+		if ( empty( $layout_meta['groups'] ) || ! isset( $layout_meta['groups'][ $group_index ] ) ) {
+			return;
+		}
+
+		$group = $layout_meta['groups'][ $group_index ];
+
+		switch ( $group['type'] ) {
+			case 'grid':
+				echo '</div>';
+				break;
+		}
+	}
+
+	/**
 	 * Gather default values across all fields.
 	 *
 	 * @return array<string, mixed>
@@ -853,6 +1027,7 @@ class Page {
 				'description' => '',
 				'icon'        => '',
 				'fields'      => array(),
+				'layout'      => array(),
 			);
 
 			$section = array_merge( $section_defaults, is_array( $section ) ? $section : array() );

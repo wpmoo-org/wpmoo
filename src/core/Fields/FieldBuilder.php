@@ -40,6 +40,15 @@ class FieldBuilder {
 	}
 
 	/**
+	 * Get the field identifier.
+	 *
+	 * @return string
+	 */
+	public function id(): string {
+		return isset( $this->config['id'] ) ? (string) $this->config['id'] : '';
+	}
+
+	/**
 	 * Set field label.
 	 *
 	 * @param string $label Label.

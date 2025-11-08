@@ -60,14 +60,34 @@ final class Samples {
 	 * @return void
 	 */
 	public static function sections(): void {
-		Moo::section('layout_examples', 'Layout Examples')
+		Moo::section( 'layout_examples', __( 'Preview', 'wpmoo' ) )
+			->description( __( 'Sed ultricies dolor non ante vulputate hendrerit. Vivamus sit amet suscipit sapien. Nulla iaculis eros a elit pharetra egestas.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
+			->grid(
+				Field::input( 'sample_preview_first_name' )
+					->label( __( 'First name', 'wpmoo' ) )
+					->placeholder( __( 'First name', 'wpmoo' ) )
+					->required(),
+				Field::input( 'sample_preview_email' )
+					->label( __( 'Email address', 'wpmoo' ) )
+					->placeholder( __( 'Email address', 'wpmoo' ) )
+					->attributes(
+						array(
+							'type'         => 'email',
+							'autocomplete' => 'email',
+							'required'     => true,
+						)
+					)
+			)
 			->fields(
-				Field::input('first_name')->label('First Name')->width(50),
-				Field::input('last_name')->label('Last Name')->width(50),
-				Field::input('company')->label('Company')->width(50),
-				Field::input('role')->label('Role')->width(50),
-				Field::textarea('bio')->label('Biography')
+				Field::toggle( 'sample_preview_terms' )
+					->label( __( 'I agree to the Privacy Policy', 'wpmoo' ) )
+					->description(
+						sprintf(
+							__( 'Read the %s', 'wpmoo' ),
+							'<a href="#" target="_blank" rel="noreferrer noopener">' . __( 'Privacy Policy', 'wpmoo' ) . '</a>'
+						)
+					)
 			);
 
 		Moo::section( 'sample_input', __( 'Input', 'wpmoo' ), __( 'Text input.', 'wpmoo' ) )

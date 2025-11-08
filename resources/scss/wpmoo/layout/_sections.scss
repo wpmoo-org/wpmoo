@@ -3,6 +3,11 @@
     display: grid;
     gap: var(--wpmoo-section-gap, 1rem);
     grid-template-columns: 1fr;
+    padding: var(--wpmoo-section-spacing, 1rem);
+}
+
+:where(.wpmoo) section>h3 {
+    font-size: 0.5rem;
 }
 
 @media (min-width: 1024px) {

@@ -64,6 +64,13 @@ class SectionHandle {
 	protected $pending_fields = array();
 
 	/**
+	 * Pending layout groups (grid wrappers etc).
+	 *
+	 * @var array<int, array<string, mixed>>
+	 */
+	protected $pending_layout_groups = array();
+
+	/**
 	 * Parent page handle.
 	 *
 	 * @var PageHandle|null
@@ -275,6 +282,33 @@ class SectionHandle {
 	}
 
 	/**
+	 * Register a grid wrapper for the provided fields.
+	 *
+	 * @param (\WPMoo\Fields\FieldBuilder|array<string,mixed>) ...$fields Field definitions assigned to the grid.
+	 * @return $this
+	 */
+	public function grid( ...$fields ): self {
+		if ( empty( $fields ) ) {
+			return $this;
+		}
+
+		if ( 1 === count( $fields ) && is_array( $fields[0] ) ) {
+			$fields = $fields[0];
+		}
+
+		$field_ids = array();
+
+		foreach ( $fields as $field ) {
+			$field_ids[] = $this->extract_field_id( $field );
+		}
+
+		$this->fields( ...$fields );
+		$this->queue_layout_group( 'grid', $field_ids );
+
+		return $this;
+	}
+
+	/**
 	 * Helper to add a single field.
 	 *
 	 * @param mixed $field Field definition.
@@ -321,6 +355,7 @@ class SectionHandle {
 		$this->apply_icon();
 		// columns removed
 		$this->flush_fields();
+		$this->flush_layout_groups();
 		$this->attached = true;
 	}
 
@@ -351,6 +386,7 @@ class SectionHandle {
 		$this->apply_icon();
 		// columns removed
 		$this->flush_fields();
+		$this->flush_layout_groups();
 		$this->attached = true;
 	}
 
@@ -413,6 +449,29 @@ class SectionHandle {
 	}
 
 	/**
+	 * Apply any queued layout groups to the builder.
+	 *
+	 * @return void
+	 */
+	protected function flush_layout_groups(): void {
+		if ( ! $this->builder || empty( $this->pending_layout_groups ) ) {
+			return;
+		}
+
+		foreach ( $this->pending_layout_groups as $group ) {
+			if ( ! isset( $group['type'], $group['fields'] ) || ! is_array( $group['fields'] ) ) {
+				continue;
+			}
+
+			if ( method_exists( $this->builder, 'add_layout_group' ) ) {
+				$this->builder->add_layout_group( (string) $group['type'], $group['fields'] );
+			}
+		}
+
+		$this->pending_layout_groups = array();
+	}
+
+	/**
 	 * Convert an incoming field definition into an array.
 	 *
 	 * @param \WPMoo\Fields\FieldBuilder|array<string,mixed> $field Raw field definition.
@@ -433,5 +492,71 @@ class SectionHandle {
 		}
 
 		throw new InvalidArgumentException( 'Unsupported field definition supplied to Moo section.' );
+	}
+
+	/**
+	 * Extract the field identifier from a definition.
+	 *
+	 * @param \WPMoo\Fields\FieldBuilder|array<string,mixed> $field Field definition.
+	 * @return string
+	 * @throws InvalidArgumentException When the id cannot be determined.
+	 */
+	protected function extract_field_id( $field ): string {
+		if ( $field instanceof BaseFieldBuilder ) {
+			$field_id = $field->id();
+
+			if ( '' !== $field_id ) {
+				return $field_id;
+			}
+		} elseif ( is_array( $field ) && isset( $field['id'] ) ) {
+			$field_id = (string) $field['id'];
+
+			if ( '' !== $field_id ) {
+				return $field_id;
+			}
+		}
+
+		throw new InvalidArgumentException( 'Grid layout groups require valid field identifiers.' );
+	}
+
+	/**
+	 * Queue or apply a layout group definition.
+	 *
+	 * @param string             $type      Group type identifier.
+	 * @param array<int, string> $field_ids Field identifiers.
+	 * @return void
+	 */
+	protected function queue_layout_group( string $type, array $field_ids ): void {
+		$type = strtolower( trim( $type ) );
+
+		if ( '' === $type ) {
+			return;
+		}
+
+		$field_ids = array_values(
+			array_filter(
+				array_map(
+					static function ( $field_id ) {
+						$normalized = trim( (string) $field_id );
+						return '' === $normalized ? null : $normalized;
+					},
+					$field_ids
+				)
+			)
+		);
+
+		if ( empty( $field_ids ) ) {
+			return;
+		}
+
+		if ( $this->builder && method_exists( $this->builder, 'add_layout_group' ) ) {
+			$this->builder->add_layout_group( $type, $field_ids );
+			return;
+		}
+
+		$this->pending_layout_groups[] = array(
+			'type'   => $type,
+			'fields' => $field_ids,
+		);
 	}
 }
