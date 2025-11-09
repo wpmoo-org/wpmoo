@@ -55,12 +55,12 @@ Moo::section('preview', 'Preview form')
 
 ### Accordion layout field
 
-`Field::accordion()` artık gerçek form alanlarını barındırabiliyor. `->accordions()` ile her paneli ve içerisine giren alanları tanımlayın:
+`Field::accordion()` artık gerçek form alanlarını barındırabiliyor. `->items()` ile her paneli ve içerisine giren alanları tanımlayın:
 
 ```php
 Field::accordion('faq')
     ->label('Frequently asked questions')
-    ->accordions([
+    ->items([
         [
             'title'  => 'Accordion 1',
             'open'   => true,

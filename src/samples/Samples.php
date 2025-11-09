@@ -166,7 +166,7 @@ final class Samples {
 				Field::accordion( 'demo_accordion' )
 					->label( __( 'Accordion field demo', 'wpmoo' ) )
 					->label_description( __( 'Group related controls inside collapsible panels.', 'wpmoo' ) )
-					->accordions(
+					->items(
 						array(
 							array(
 								'title'  => __( 'Accordion 1', 'wpmoo' ),

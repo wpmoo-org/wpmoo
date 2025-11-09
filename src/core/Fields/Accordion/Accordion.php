@@ -8,7 +8,6 @@
 namespace WPMoo\Fields\Accordion;
 
 use WPMoo\Fields\BaseField;
-use WPMoo\Fields\FieldBuilder;
 use WPMoo\Fields\Manager;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Accordion extends BaseField {
 	/**
-	 * Prepared accordion panels with nested fields.
+	 * Prepared accordion items with nested fields.
 	 *
 	 * @var array<int, array<string, mixed>>
 	 */
-	protected $accordions = array();
+	protected $items = array();
 
 	/**
 	 * Field manager used to instantiate nested fields.
@@ -52,7 +51,7 @@ class Accordion extends BaseField {
 
 		parent::__construct( $config );
 
-		$this->accordions = $this->normalize_accordions( isset( $config['accordions'] ) ? $config['accordions'] : array() );
+		$this->items = $this->normalize_items( isset( $config['items'] ) ? $config['items'] : array() );
 	}
 
 	/**
@@ -67,7 +66,7 @@ class Accordion extends BaseField {
 		$output = $this->before_html();
 		$output .= $this->render_intro_block();
 
-		if ( empty( $this->accordions ) ) {
+		if ( empty( $this->items ) ) {
 			$message = function_exists( '__' )
 				? __( 'No accordion panels have been configured.', 'wpmoo' )
 				: 'No accordion panels have been configured.';
@@ -79,7 +78,7 @@ class Accordion extends BaseField {
 
 		$output .= '<div class="wpmoo-accordion" role="presentation">';
 
-		foreach ( $this->accordions as $accordion ) {
+		foreach ( $this->items as $accordion ) {
 			$open          = $accordion['open'];
 			$open_attr     = $open ? ' open' : '';
 			$aria_expanded = $open ? 'true' : 'false';
@@ -187,31 +186,28 @@ class Accordion extends BaseField {
 	}
 
 	/**
-	 * Normalize accordion definitions with nested fields.
+	 * Normalize accordion item definitions with nested fields.
 	 *
-	 * @param mixed $accordions Raw accordion config.
+	 * @param mixed $items Raw items config.
 	 * @return array<int, array<string, mixed>>
 	 */
-	protected function normalize_accordions( $accordions ): array {
-		if ( ! is_array( $accordions ) ) {
+	protected function normalize_items( $items ): array {
+		if ( ! is_array( $items ) ) {
 			return array();
 		}
 
 		$normalized = array();
 
-		foreach ( $accordions as $index => $accordion ) {
-			if ( $accordion instanceof FieldBuilder ) {
-				$accordion = $accordion->build();
-			}
-
+		foreach ( $items as $index => $accordion ) {
 			if ( ! is_array( $accordion ) ) {
 				continue;
 			}
 
 			$title = isset( $accordion['title'] ) ? (string) $accordion['title'] : '';
 			if ( '' === $title ) {
-				/* translators: %d: Accordion index number. */
+
 				$title = function_exists( '__' )
+					/* translators: %d: Accordion index number. */
 					? sprintf( __( 'Accordion %d', 'wpmoo' ), $index + 1 )
 					: 'Accordion ' . ( $index + 1 );
 			}
@@ -251,10 +247,6 @@ class Accordion extends BaseField {
 	 * @return BaseField|null
 	 */
 	protected function prepare_nested_field( $field ) {
-		if ( $field instanceof FieldBuilder ) {
-			$field = $field->build();
-		}
-
 		if ( ! is_array( $field ) ) {
 			return null;
 		}
@@ -284,7 +276,7 @@ class Accordion extends BaseField {
 	protected function flatten_nested_fields(): array {
 		$fields = array();
 
-		foreach ( $this->accordions as $accordion ) {
+		foreach ( $this->items as $accordion ) {
 			foreach ( $accordion['fields'] as $field ) {
 				$fields[ $field->id() ] = $field;
 			}

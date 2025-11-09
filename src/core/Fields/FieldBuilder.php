@@ -145,13 +145,35 @@ class FieldBuilder {
 	}
 
 	/**
-	 * Define accordion panels along with their nested fields.
+	 * Define structured items/panels that may contain nested fields.
 	 *
-	 * @param array<int, mixed> $accordions Accordion configuration.
+	 * @param array<int, mixed> $items Items configuration.
 	 * @return $this
 	 */
-	public function accordions( array $accordions ): self {
-		return $this->set( 'accordions', $accordions );
+	public function items( array $items ): self {
+		$normalized = array();
+
+		foreach ( $items as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+
+			if ( isset( $item['fields'] ) && is_array( $item['fields'] ) ) {
+				$fields = array();
+				foreach ( $item['fields'] as $field ) {
+					if ( $field instanceof self ) {
+						$fields[] = $field->build();
+					} elseif ( is_array( $field ) ) {
+						$fields[] = $field;
+					}
+				}
+				$item['fields'] = $fields;
+			}
+
+			$normalized[] = $item;
+		}
+
+		return $this->set( 'items', $normalized );
 	}
 
 	/**
