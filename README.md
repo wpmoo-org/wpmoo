@@ -86,6 +86,30 @@ Field::accordion('faq')
 
 Her iç alan kendi `id` değeriyle kaydedilir ve üst alanın değeri dizi olarak saklanır (`faq[faq_text]`, `faq[faq_switch]` gibi).
 
+### Sidebar navigation layout
+
+Codestar benzeri sol menü istiyorsanız `->sidebar_nav()` çağrısı yapın; tüm `Moo::section` başlıkları otomatik nav öğesi olarak listelenir:
+
+```php
+Moo::page('ayarlar')
+    ->title('Ayarlar')
+    ->sidebar_nav();
+
+Moo::section('genel', 'Genel')
+    ->parent('ayarlar')
+    ->fields(Field::input('site_title')->label('Site başlığı'));
+
+Moo::section('api', 'API')
+    ->parent('ayarlar')
+    ->fields(Field::input('api_key')->label('API anahtarı'));
+
+Moo::section('tasarim', 'Tasarım')
+    ->parent('ayarlar')
+    ->fields(Field::select('tema')->label('Tema'));
+```
+
+Sidebar, PicoCSS grid’i ile iki sütuna ayrılır; küçük ekranlarda otomatik olarak üstte nav, altta içerik şeklinde yığılır.
+
 ## Using Builders Directly
 
 Prefer working with explicit builders? Compose sections by instantiating `SectionBuilder` / `FieldBuilder` manually and passing them to the Options container:

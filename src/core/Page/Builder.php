@@ -160,6 +160,17 @@ class Builder {
 	}
 
 	/**
+	 * Enable sidebar navigation layout (sections listed on the left).
+	 *
+	 * @param bool $enabled Whether sidebar navigation is enabled.
+	 * @return $this
+	 */
+	public function sidebar_nav( bool $enabled = true ): self {
+		$this->config['sidebar_nav'] = $enabled;
+		return $this;
+	}
+
+	/**
 	 * Set parent slug (for submenu).
 	 *
 	 * @param string $parent Parent slug.

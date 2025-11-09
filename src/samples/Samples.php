@@ -52,6 +52,7 @@ final class Samples {
 			->menu_slug( self::MENU_SLUG )
 			->fluid()
 			->sticky_header( false )
+			->sidebar_nav()
 			->ajax_save();
 	}
 

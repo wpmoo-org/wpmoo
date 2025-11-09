@@ -72,6 +72,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *   theme: string,
  *   class: string,
  *   fluid: bool,
+ *   sidebar_nav: bool,
  *   defaults: array<string,mixed>
  * }
  */
@@ -519,6 +520,14 @@ class Page {
 			settings_errors( $this->repository->option_key() );
 		}
 
+		$use_sidebar_nav = ! empty( $this->config['sidebar_nav'] ) && count( $sections ) > 0;
+
+		if ( $use_sidebar_nav ) {
+			echo '<div class="wpmoo-layout wpmoo-layout--sidebar" data-wpmoo-sidebar>';
+			$this->render_sidebar_navigation( $sections );
+			echo '<div class="wpmoo-layout__content">';
+		}
+
 		echo '<form method="post" id="wpmoo-options-form" action="" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">';
 
 		if ( function_exists( 'wp_nonce_field' ) ) {
@@ -593,8 +602,57 @@ class Page {
 		echo '</footer>';
 
 		echo '</form>';
+
+		if ( $use_sidebar_nav ) {
+			echo '</div>';
+			echo '</div>';
+		}
+
 		echo '</main>';
 		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Render the sidebar navigation for sections.
+	 *
+	 * @param array<int, array<string, mixed>> $sections Sections array.
+	 * @return void
+	 */
+	protected function render_sidebar_navigation( array $sections ): void {
+		if ( empty( $sections ) ) {
+			return;
+		}
+
+		$nav_label = function_exists( '__' ) ? __( 'Sections menu', 'wpmoo' ) : 'Sections menu';
+
+		echo '<aside class="wpmoo-layout__sidebar" aria-label="' . esc_attr( $nav_label ) . '">';
+		echo '<nav class="wpmoo-layout__nav">';
+		echo '<ul>';
+
+		$index = 0;
+		foreach ( $sections as $section ) {
+			$section_id    = isset( $section['id'] ) ? (string) $section['id'] : '';
+			$section_title = ! empty( $section['title'] ) ? (string) $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
+
+			if ( '' === $section_id ) {
+				$section_id = 'section-' . ( $index + 1 );
+			}
+
+			$is_active    = 0 === $index ? ' is-active' : '';
+			$aria_current = 0 === $index ? ' aria-current="true"' : '';
+
+			echo '<li>';
+			echo '<a class="wpmoo-layout__link' . esc_attr( $is_active ) . '" href="#' . esc_attr( $section_id ) . '"' . $aria_current . '>';
+			echo esc_html( $section_title );
+			echo '</a>';
+			echo '</li>';
+
+			$index++;
+		}
+
+		echo '</ul>';
+		echo '</nav>';
+		echo '</aside>';
 	}
 
 	// Panel/tab state helpers removed under Pico-first layout.
@@ -985,6 +1043,7 @@ class Page {
 			'style'       => '',
 			'class'       => '',
 			'fluid'       => false,
+			'sidebar_nav' => false,
 			'theme'       => 'dark',
 			'nav'         => 'normal',
 			// Behavior/UI
