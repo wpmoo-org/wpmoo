@@ -1,7 +1,7 @@
 /* Sidebar layout mirroring Pico documentation menu */
 :where(.wpmoo) .wpmoo-layout {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 200px minmax(0, 1fr);
   gap: 2rem;
   margin-top: 1.5rem;
 }
@@ -46,16 +46,15 @@
 }
 
 :where(.wpmoo) .wpmoo-nav-group>summary {
-  display: flex;
+  display: block;
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
   list-style: none;
-  background-color: var(--wpmoo-primary-soft, rgba(30, 64, 175, .12));
-  border-radius: .25rem;
   text-decoration: none;
   transition: background-color .15s ease, color .15s ease;
   padding: var(--wpmoo-nav-link-spacing-vertical, .5rem) var(--wpmoo-nav-link-spacing-horizontal, .625rem);
+  background-color: var(--wpmoo-muted-bg, rgba(0, 0, 0, .04));
 }
 
 :where(.wpmoo) .wpmoo-nav-group>summary::-webkit-details-marker,
@@ -75,9 +74,7 @@
   padding: auto;
 }
 
-:where(.wpmoo) .wpmoo-nav-group ul li {
-  padding: 0;
-}
+:where(.wpmoo) .wpmoo-nav-group ul li {}
 
 :where(.wpmoo) .wpmoo-sub-link {
   display: block;
@@ -97,7 +94,6 @@
 :where(.wpmoo) .wpmoo-sub-link.is-active,
 :where(.wpmoo) .wpmoo-sub-link[aria-current="true"] {
   color: var(--wpmoo-primary-color, #1e40af);
-  background-color: var(--wpmoo-primary-soft, rgba(30, 64, 175, .12));
 }
 
 @media (max-width: 960px) {
