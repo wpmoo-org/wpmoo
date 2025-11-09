@@ -145,16 +145,6 @@ class FieldBuilder {
 	}
 
 	/**
-	 * Define structured items (legacy helper for the accordion layout).
-	 *
-	 * @param array<int, mixed> $items Items configuration.
-	 * @return $this
-	 */
-	public function items( array $items ): self {
-		return $this->set( 'items', $items );
-	}
-
-	/**
 	 * Define accordion panels along with their nested fields.
 	 *
 	 * @param array<int, mixed> $accordions Accordion configuration.

@@ -180,7 +180,7 @@ class Metabox {
 
 		if ( function_exists( 'wp_enqueue_style' ) ) {
 			wp_enqueue_style( 'dashicons' );
-			// Prefer UI CSS from composer package; fallback to legacy framework CSS.
+			// Prefer UI CSS bundle; fall back to framework assets when missing.
 			if ( ! empty( $ui_css_url ) ) {
 				wp_enqueue_style( 'wpmoo', $ui_css_url, array(), $version );
 			} elseif ( ! empty( $assets_url ) ) {

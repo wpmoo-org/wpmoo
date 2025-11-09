@@ -76,14 +76,6 @@ class UiCompiler {
 
         $base = rtrim( str_replace( '\\', '/', $plugin_path ), '/' ) . '/vendor/wpmoo/wpmoo-ui/';
 
-        // Allow legacy vendor name as a fallback.
-        if ( ! is_dir( $base ) ) {
-            $alt = rtrim( str_replace( '\\', '/', $plugin_path ), '/' ) . '/vendor/wpmoo-org/wpmoo-ui/';
-            if ( is_dir( $alt ) ) {
-                $base = $alt;
-            }
-        }
-
         if ( ! is_dir( $base ) ) {
             return $url;
         }

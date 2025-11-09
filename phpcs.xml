@@ -9,7 +9,7 @@
 
     <file>.</file>
 
-    <!-- Exclude legacy/in-progress CLI code (now in wpmoo-cli) from framework PHPCS -->
+    <!-- Exclude the CLI shim (lives in wpmoo-cli) from framework PHPCS -->
     <exclude-pattern>src/CLI/*</exclude-pattern>
 
     <!-- Relax line length to reduce false positives on fluent chains -->
