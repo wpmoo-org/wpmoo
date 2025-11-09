@@ -51,7 +51,7 @@ final class Samples {
 			->title( __( 'WPMoo Samples', 'wpmoo' ) )
 			->menu_slug( self::MENU_SLUG )
 			->fluid()
-			->sticky_header()
+			->sticky_header(false)
 			->ajax_save();
 	}
 
@@ -164,21 +164,45 @@ final class Samples {
 			->parent( self::PAGE_ID )
 			->fields(
 				Field::accordion( 'demo_accordion' )
-					->label( __( 'Frequently asked questions', 'wpmoo' ) )
-					->items(
+					->label( __( 'Accordion field demo', 'wpmoo' ) )
+					->label_description( __( 'Group related controls inside collapsible panels.', 'wpmoo' ) )
+					->accordions(
 						array(
 							array(
-								'summary' => __( 'What is WPMoo?', 'wpmoo' ),
-								'content' => '<p>' . esc_html__( 'A lightweight WordPress framework for building elegant admin screens.', 'wpmoo' ) . '</p>',
-								'open'    => true,
+								'title'  => __( 'Accordion 1', 'wpmoo' ),
+								'open'   => true,
+								'fields' => array(
+									Field::input( 'demo_accordion_text' )
+										->label( __( 'Text', 'wpmoo' ) )
+										->default( __( 'Sample value', 'wpmoo' ) ),
+									Field::toggle( 'demo_accordion_switch' )
+										->label( __( 'Switcher', 'wpmoo' ) ),
+									Field::textarea( 'demo_accordion_textarea' )
+										->label( __( 'Textarea', 'wpmoo' ) ),
+								),
 							),
 							array(
-								'summary' => __( 'Can I disable notifications?', 'wpmoo' ),
-								'content' => '<p>' . esc_html__( 'Yes, toggle the notification setting in the section above.', 'wpmoo' ) . '</p>',
-							),
-							array(
-								'summary' => __( 'Where can I learn more?', 'wpmoo' ),
-								'content' => '<p>' . esc_html__( 'Check the README and the wpmoo-docs site for full guides.', 'wpmoo' ) . '</p>',
+								'title'  => __( 'Accordion 2', 'wpmoo' ),
+								'fields' => array(
+									Field::select( 'demo_accordion_select' )
+										->label( __( 'Select an option', 'wpmoo' ) )
+										->options(
+											array(
+												'a' => __( 'Option A', 'wpmoo' ),
+												'b' => __( 'Option B', 'wpmoo' ),
+												'c' => __( 'Option C', 'wpmoo' ),
+											)
+										),
+									Field::button( 'demo_accordion_button' )
+										->label( __( 'Action button', 'wpmoo' ) )
+										->attributes(
+											array(
+												'class' => 'contrast',
+												'type'  => 'button',
+											)
+										)
+										->save_field( false ),
+								),
 							),
 						)
 					)

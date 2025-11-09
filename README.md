@@ -55,23 +55,36 @@ Moo::section('preview', 'Preview form')
 
 ### Accordion layout field
 
-Pico’nun accordion bileşenini kullanmak için `Field::accordion()` alanını tanımlayın ve `items()` ile özet/gövde çiftleri ekleyin:
+`Field::accordion()` artık gerçek form alanlarını barındırabiliyor. `->accordions()` ile her paneli ve içerisine giren alanları tanımlayın:
 
 ```php
 Field::accordion('faq')
     ->label('Frequently asked questions')
-    ->items([
+    ->accordions([
         [
-            'summary' => 'Do I get updates?',
-            'content' => '<p>Yes, we send a monthly summary with new features.</p>',
-            'open'    => true,
+            'title'  => 'Accordion 1',
+            'open'   => true,
+            'fields' => [
+                Field::input('faq_text')->label('Text'),
+                Field::toggle('faq_switch')->label('Switcher'),
+                Field::textarea('faq_details')->label('Textarea'),
+            ],
         ],
         [
-            'summary' => 'Can I disable emails?',
-            'content' => '<p>Of course, just uncheck the notification toggle.</p>',
+            'title'  => 'Accordion 2',
+            'fields' => [
+                Field::select('faq_select')
+                    ->label('Select option')
+                    ->options([
+                        'a' => 'Option A',
+                        'b' => 'Option B',
+                    ]),
+            ],
         ],
     ]);
 ```
+
+Her iç alan kendi `id` değeriyle kaydedilir ve üst alanın değeri dizi olarak saklanır (`faq[faq_text]`, `faq[faq_switch]` gibi).
 
 ## Using Builders Directly
 
