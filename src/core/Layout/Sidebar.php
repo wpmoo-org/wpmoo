@@ -7,27 +7,27 @@ namespace WPMoo\Layout;
 
 use WPMoo\Page\Page;
 
-	class Sidebar {
-		/**
-		 * Whether to open only the active page group.
-		 *
-		 * @var bool
-		 */
-		protected $auto_open_active = true;
+class Sidebar {
+	/**
+	 * Whether to open only the active page group.
+	 *
+	 * @var bool
+	 */
+	protected $auto_open_active = true;
 
-		/**
-		 * Whether the sidebar should stick on scroll.
-		 *
-		 * @var bool
-		 */
-		protected $sticky = true;
+	/**
+	 * Whether the sidebar should stick on scroll.
+	 *
+	 * @var bool
+	 */
+	protected $sticky = true;
 
-		/**
-		 * Sticky offset (CSS length).
-		 *
-		 * @var string
-		 */
-		protected $sticky_offset = '1.5rem';
+	/**
+	 * Sticky offset (CSS length).
+	 *
+	 * @var string
+	 */
+	protected $sticky_offset = '1.5rem';
 
 	/**
 	 * Static constructor.
@@ -39,26 +39,26 @@ use WPMoo\Page\Page;
 	/**
 	 * Control whether only the active page group is opened.
 	 */
-		public function auto_open_active( bool $enabled = true ): self {
-			$this->auto_open_active = $enabled;
-			return $this;
-		}
+	public function auto_open_active( bool $enabled = true ): self {
+		$this->auto_open_active = $enabled;
+		return $this;
+	}
 
-		/**
-		 * Enable/disable sticky behavior.
-		 */
-		public function sticky( bool $enabled = true ): self {
-			$this->sticky = $enabled;
-			return $this;
-		}
+	/**
+	 * Enable/disable sticky behavior.
+	 */
+	public function sticky( bool $enabled = true ): self {
+		$this->sticky = $enabled;
+		return $this;
+	}
 
-		/**
-		 * Customize sticky offset (top).
-		 */
-		public function sticky_offset( string $offset ): self {
-			$this->sticky_offset = $offset;
-			return $this;
-		}
+	/**
+	 * Customize sticky offset (top).
+	 */
+	public function sticky_offset( string $offset ): self {
+		$this->sticky_offset = $offset;
+		return $this;
+	}
 
 	/**
 	 * Render the sidebar markup using the nav registry.
@@ -82,12 +82,12 @@ use WPMoo\Page\Page;
 
 			$classes = array( 'wpmoo-sidebar' );
 			$style   = '';
-			if ( $this->sticky ) {
-				$classes[] = 'wpmoo-sticky';
-				if ( '' !== $this->sticky_offset ) {
-					$style = ' style="--wpmoo-sticky-top:' . \esc_attr( $this->sticky_offset ) . ';"';
-				}
+		if ( $this->sticky ) {
+			$classes[] = 'wpmoo-sticky';
+			if ( '' !== $this->sticky_offset ) {
+				$style = ' style="--wpmoo-sticky-top:' . \esc_attr( $this->sticky_offset ) . ';"';
 			}
+		}
 
 			$html  = '<aside class="' . \esc_attr( implode( ' ', $classes ) ) . '" aria-label="' . \esc_attr( $nav_label ) . '"' . $style . '>';
 			$html .= '<header class="wpmoo-brand">';
