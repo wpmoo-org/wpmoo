@@ -18,11 +18,6 @@ Sections group fields automatically and expose helpers for grid rows so you can 
 use WPMoo\Moo;
 use WPMoo\Fields\Field;
 
-Moo::page('demo_settings')
-    ->title('Demo Settings')
-    ->menu_slug('demo-settings')
-    ->fluid()
-    ->sticky_header();
 
 Moo::section('preview', 'Preview form')
     ->description('Small subscription form rendered inside a grid.')

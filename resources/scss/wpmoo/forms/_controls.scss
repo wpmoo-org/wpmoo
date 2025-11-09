@@ -105,6 +105,82 @@
   padding-right: 1rem;
 }
 
+:where(.wpmoo) .wpmoo-layout__brand {
+  margin-bottom: 1rem;
+}
+
+:where(.wpmoo) .wpmoo-layout__framework {
+  font-size: .9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--wpmoo-muted-color, #6b7280);
+  letter-spacing: .05em;
+  margin: 0;
+}
+
+:where(.wpmoo) .wpmoo-layout__nav-groups {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+:where(.wpmoo) .wpmoo-nav-group {
+  border: 0;
+  padding: 0;
+}
+
+:where(.wpmoo) .wpmoo-nav-group>summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  padding: .35rem 0;
+  margin: 0;
+}
+
+:where(.wpmoo) .wpmoo-nav-group>summary::-webkit-details-marker,
+:where(.wpmoo) .wpmoo-nav-group>summary::marker {
+  display: none;
+  content: "";
+}
+
+:where(.wpmoo) .wpmoo-nav-group[open]>summary {
+  color: var(--wpmoo-primary-color, #1e40af);
+}
+
+:where(.wpmoo) .wpmoo-nav-group ul {
+  list-style: none;
+  margin: 0 0 .5rem;
+  padding: 0 0 0 .5rem;
+  border-left: 1px solid var(--wpmoo-border-color, rgba(0, 0, 0, .08));
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+:where(.wpmoo) .wpmoo-layout__sub-link {
+  display: block;
+  padding: .25rem .5rem;
+  border-radius: .25rem;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+:where(.wpmoo) .wpmoo-layout__sub-link:hover,
+:where(.wpmoo) .wpmoo-layout__sub-link:focus-visible {
+  background-color: var(--wpmoo-muted-bg, rgba(0, 0, 0, .04));
+}
+
+:where(.wpmoo) .wpmoo-layout__sub-link.is-active,
+:where(.wpmoo) .wpmoo-layout__sub-link[aria-current="true"] {
+  color: var(--wpmoo-primary-color, #1e40af);
+  background-color: var(--wpmoo-primary-soft, rgba(30, 64, 175, .12));
+}
+
 @media (max-width: 960px) {
   :where(.wpmoo) .wpmoo-layout__sidebar {
     border-right: 0;
@@ -112,37 +188,6 @@
     padding-right: 0;
     padding-bottom: 1rem;
   }
-}
-
-:where(.wpmoo) .wpmoo-layout__nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: .25rem;
-}
-
-:where(.wpmoo) .wpmoo-layout__link {
-  display: flex;
-  align-items: center;
-  padding: .4rem .6rem;
-  border-radius: .35rem;
-  text-decoration: none;
-  color: inherit;
-  transition: background-color .15s ease, color .15s ease;
-}
-
-:where(.wpmoo) .wpmoo-layout__link:hover,
-:where(.wpmoo) .wpmoo-layout__link:focus-visible {
-  background-color: var(--wpmoo-muted-bg, rgba(0, 0, 0, .04));
-}
-
-:where(.wpmoo) .wpmoo-layout__link.is-active,
-:where(.wpmoo) .wpmoo-layout__link[aria-current="true"] {
-  background-color: var(--wpmoo-primary-soft, rgba(30, 64, 175, .15));
-  color: var(--wpmoo-primary-color, #1e40af);
-  font-weight: 600;
 }
 
 :where(.wpmoo) .wpmoo-accordion {

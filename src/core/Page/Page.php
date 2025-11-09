@@ -80,6 +80,13 @@ class Page {
 	use TranslatesStrings;
 
 	/**
+	 * Registry of pages and their sections for sidebar navigation.
+	 *
+	 * @var array<int|string, array<string, mixed>>
+	 */
+	protected static $nav_registry = array();
+
+	/**
 	 * Normalized page configuration.
 	 *
 	 * @var PageConfig
@@ -125,6 +132,7 @@ class Page {
 		$this->config        = $this->normalize_config( $config );
 		$this->sections      = $this->normalize_sections( $this->config['sections'] );
 		$this->repository    = new OptionRepository( $this->config['option_key'], $this->collect_defaults() );
+		$this->register_nav_entry();
 	}
 
 	/**
@@ -510,7 +518,9 @@ class Page {
 		if ( isset( $this->config['framework_title'] ) && '' !== (string) $this->config['framework_title'] ) {
 			$heading = (string) $this->config['framework_title'];
 		} else {
-			$heading = (string) $this->config['page_title'];
+			$heading = function_exists( '__' )
+				? __( 'WPMoo Framework', 'wpmoo' )
+				: 'WPMoo Framework';
 		}
 		echo '<h1>' . esc_html( $heading ) . '</h1>';
 		echo '</header>';
@@ -619,38 +629,69 @@ class Page {
 	 * @return void
 	 */
 	protected function render_sidebar_navigation( array $sections ): void {
-		if ( empty( $sections ) ) {
+		if ( empty( self::$nav_registry ) ) {
 			return;
 		}
 
-		$nav_label = function_exists( '__' ) ? __( 'Sections menu', 'wpmoo' ) : 'Sections menu';
+		$nav_label       = function_exists( '__' ) ? __( 'Sections menu', 'wpmoo' ) : 'Sections menu';
 
 		echo '<aside class="wpmoo-layout__sidebar" aria-label="' . esc_attr( $nav_label ) . '">';
-		echo '<nav class="wpmoo-layout__nav">';
-		echo '<ul>';
+		echo '<nav class="wpmoo-layout__nav-groups">';
 
-		$index = 0;
-		foreach ( $sections as $section ) {
-			$section_id    = isset( $section['id'] ) ? (string) $section['id'] : '';
-			$section_title = ! empty( $section['title'] ) ? (string) $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
+		foreach ( self::$nav_registry as $slug => $page ) {
+			$is_current_page = isset( $this->config['menu_slug'] ) && $slug === $this->config['menu_slug'];
+			$page_title      = isset( $page['title'] ) ? (string) $page['title'] : ucfirst( str_replace( '-', ' ', $slug ) );
+			$sections_list   = isset( $page['sections'] ) && is_array( $page['sections'] ) ? $page['sections'] : array();
 
-			if ( '' === $section_id ) {
-				$section_id = 'section-' . ( $index + 1 );
+			$details_attr = $is_current_page ? ' open' : '';
+			$summary_attr = $is_current_page ? ' aria-current="page"' : '';
+
+			echo '<details class="wpmoo-nav-group"' . $details_attr . '>';
+			echo '<summary' . $summary_attr . '>' . esc_html( $page_title ) . '</summary>';
+
+			if ( ! empty( $sections_list ) ) {
+				echo '<ul>';
+				$section_index = 0;
+				$base_url = '#';
+				if ( ! $is_current_page ) {
+					if ( function_exists( 'admin_url' ) ) {
+						$base_url = admin_url( 'admin.php?page=' . $slug );
+					} else {
+						$base_url = 'admin.php?page=' . $slug;
+					}
+				}
+
+				foreach ( $sections_list as $section ) {
+					$section_id    = isset( $section['id'] ) ? (string) $section['id'] : '';
+					$section_title = isset( $section['title'] ) ? (string) $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
+
+					if ( '' === $section_id ) {
+						$section_id = 'section-' . ( $section_index + 1 );
+					}
+
+					$link_class = 'wpmoo-layout__sub-link';
+					$aria_current = '';
+					if ( $is_current_page && 0 === $section_index ) {
+						$link_class   .= ' is-active';
+						$aria_current = ' aria-current="true"';
+					}
+
+					$target = $is_current_page ? '#' . $section_id : $base_url . '#' . $section_id;
+
+					echo '<li>';
+					echo '<a class="' . esc_attr( $link_class ) . '" href="' . esc_url( $target ) . '"' . $aria_current . '>';
+					echo esc_html( $section_title );
+					echo '</a>';
+					echo '</li>';
+
+					$section_index++;
+				}
+				echo '</ul>';
 			}
 
-			$is_active    = 0 === $index ? ' is-active' : '';
-			$aria_current = 0 === $index ? ' aria-current="true"' : '';
-
-			echo '<li>';
-			echo '<a class="wpmoo-layout__link' . esc_attr( $is_active ) . '" href="#' . esc_attr( $section_id ) . '"' . $aria_current . '>';
-			echo esc_html( $section_title );
-			echo '</a>';
-			echo '</li>';
-
-			$index++;
+			echo '</details>';
 		}
 
-		echo '</ul>';
 		echo '</nav>';
 		echo '</aside>';
 	}
@@ -1124,6 +1165,40 @@ class Page {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Register the page and its sections for sidebar navigation.
+	 *
+	 * @return void
+	 */
+	protected function register_nav_entry(): void {
+		$slug = isset( $this->config['menu_slug'] ) ? (string) $this->config['menu_slug'] : '';
+
+		if ( '' === $slug ) {
+			return;
+		}
+
+		$page_title = isset( $this->config['page_title'] ) && '' !== (string) $this->config['page_title']
+			? (string) $this->config['page_title']
+			: ucfirst( str_replace( array( '-', '_' ), ' ', $slug ) );
+
+		$sections = array();
+
+		foreach ( $this->sections as $section ) {
+			$section_id    = isset( $section['id'] ) ? (string) $section['id'] : '';
+			$section_title = ! empty( $section['title'] ) ? (string) $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
+
+			$sections[] = array(
+				'id'    => $section_id,
+				'title' => $section_title,
+			);
+		}
+
+		self::$nav_registry[ $slug ] = array(
+			'title'    => $page_title,
+			'sections' => $sections,
+		);
 	}
 
 	/**
