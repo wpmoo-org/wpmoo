@@ -571,9 +571,9 @@ class Page {
 		$use_sidebar_nav = ! empty( $this->config['sidebar_nav'] ) && count( $sections ) > 0;
 
 		if ( $use_sidebar_nav ) {
-			echo '<div class="wpmoo-layout wpmoo-layout--sidebar" data-wpmoo-sidebar>';
+			echo '<div class="wpmoo-layout wpmoo-sidebar" data-wpmoo-sidebar>';
 			echo $this->sidebar_component->render( $this, self::$nav_registry );
-			echo '<div class="wpmoo-layout__content">';
+			echo '<div class="wpmoo-content">';
 		}
 
 		echo '<form method="post" id="wpmoo-options-form" action="" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">';

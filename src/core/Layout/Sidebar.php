@@ -50,11 +50,11 @@ class Sidebar {
 		$nav_label = \function_exists( '__' ) ? \__( 'Sections menu', 'wpmoo' ) : 'Sections menu';
 		$current_slug = (string) $page->config( 'menu_slug' );
 
-		$html  = '<aside class="wpmoo-layout__sidebar" aria-label="' . \esc_attr( $nav_label ) . '">';
-		$html .= '<header class="wpmoo-layout__brand">';
-		$html .= '<p class="wpmoo-layout__framework">' . \esc_html( $framework_title ) . '</p>';
+		$html  = '<aside class="wpmoo-sidebar" aria-label="' . \esc_attr( $nav_label ) . '">';
+		$html .= '<header class="wpmoo-brand">';
+		$html .= '<p class="wpmoo-framework">' . \esc_html( $framework_title ) . '</p>';
 		$html .= '</header>';
-		$html .= '<nav class="wpmoo-layout__nav-groups">';
+		$html .= '<nav class="wpmoo-nav-groups">';
 
 		foreach ( $nav_registry as $slug => $entry ) {
 			$is_current_page = (string) $slug === $current_slug;
@@ -91,7 +91,7 @@ class Sidebar {
 						$section_id = 'section-' . ( $section_index + 1 );
 					}
 
-					$link_class   = 'wpmoo-layout__sub-link';
+					$link_class   = 'wpmoo-sub-link';
 					$aria_current = '';
 					if ( $is_current_page && 0 === $section_index ) {
 						$link_class   .= ' is-active';

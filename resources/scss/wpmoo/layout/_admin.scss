@@ -12,8 +12,6 @@
 /* Actions footer spacing */
 :where(.wpmoo) .wpmoo-options-actions {
   padding-block: 1rem;
-  padding-left: var(--wpmoo-container-x, 1rem);
-  padding-right: var(--wpmoo-container-x, 1rem);
   border-top: 1px solid var(--wpmoo-border-color, rgba(0, 0, 0, .08));
   display: flex;
   justify-content: flex-start;
