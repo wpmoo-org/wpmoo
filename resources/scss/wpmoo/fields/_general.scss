@@ -1,0 +1,45 @@
+/* Shared form element sizing/spacing */
+:where(.wpmoo) {
+  --wpmoo-form-element-spacing-vertical: .35rem;
+  --wpmoo-form-element-spacing-horizontal: .55rem;
+  --wpmoo-border-radius: .35rem;
+  --wpmoo-spacing: .85rem;
+  font-size: .93rem;
+}
+
+/* Fallback padding/radius for themes that ignore Pico tokens */
+:where(.wpmoo) input:not([type="checkbox"]):not([type="radio"]),
+:where(.wpmoo) select,
+:where(.wpmoo) textarea {
+  padding-block: .375rem;
+  padding-inline: .625rem;
+  border-radius: .375rem;
+}
+
+/* Labels and helper text */
+:where(.wpmoo) label>small {
+  display: block;
+  margin-top: .25rem;
+  color: var(--wpmoo-muted-color, #6b7280);
+}
+
+:where(.wpmoo) .wpmoo-field {
+  display: block;
+}
+
+:where(.wpmoo) .wpmoo-field>label,
+:where(.wpmoo) fieldset label {
+  display: block;
+  margin: .25rem 0;
+}
+
+:where(.wpmoo) .wpmoo-field>label>input[type="checkbox"],
+:where(.wpmoo) .wpmoo-field>label>input[type="radio"],
+:where(.wpmoo) .wpmoo-field>label>input[role="switch"],
+:where(.wpmoo) fieldset label>input[type="checkbox"],
+:where(.wpmoo) fieldset label>input[type="radio"],
+:where(.wpmoo) fieldset label>input[role="switch"] {
+  vertical-align: middle;
+  margin: 0 .5rem 0 0;
+  line-height: 1;
+}

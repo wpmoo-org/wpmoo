@@ -1,6 +1,19 @@
 @use "vars";
-@use "forms/controls";
-@use "layout/sections";
-@use "layout/page";
-@use "layout/container";
+
+/* Fields General */
+@use "fields/base";
+@use "fields/general";
+
+/* Fields */
+@use "fields/accordion";
+@use "fields/repeatable";
+@use "fields/switch";
+@use "fields/textarea";
+
+/* Layout */
 @use "layout/admin";
+@use "layout/container";
+@use "layout/page";
+@use "layout/sections";
+@use "layout/sidebar";
+@use "layout/toast";

@@ -1,0 +1,4 @@
+/* Textareas slightly shorter by default */
+:where(.wpmoo) textarea {
+    min-height: 7rem;
+}

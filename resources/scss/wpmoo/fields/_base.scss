@@ -1,0 +1,13 @@
+/* Reset WP-admin pseudo art on native checkbox/radio */
+.wpmoo input[type="checkbox"]:not([role="switch"])::before,
+.wpmoo input[type="checkbox"]:not([role="switch"])::after,
+.wpmoo input[type="radio"]::before,
+.wpmoo input[type="radio"]::after {
+  content: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+  width: auto !important;
+}

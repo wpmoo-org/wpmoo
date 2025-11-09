@@ -1,0 +1,25 @@
+.wpmoo input[type="checkbox"][role="switch"] {
+  background-image: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: var(--wpmoo-switch-width, 2.25em) !important;
+  height: var(--wpmoo-switch-height, 1.25em) !important;
+  line-height: var(--wpmoo-switch-height, 1.25em) !important;
+  border-radius: var(--wpmoo-switch-height, 1.25em) !important;
+}
+
+.wpmoo input[type="checkbox"][role="switch"]::before {
+  content: "" !important;
+  background-image: none !important;
+  display: block !important;
+  width: var(--wpmoo-switch-knob-size, .85rem) !important;
+  height: var(--wpmoo-switch-knob-size, .85rem) !important;
+  border-radius: 50% !important;
+  margin: 0;
+  box-shadow: var(--wpmoo-switch-thumb-box-shadow, 0 0 0 .0625rem rgba(0, 0, 0, .06)) !important;
+  transition: margin .1s ease-in-out !important;
+}
+
+.wpmoo input[type="checkbox"][role="switch"]::after {
+  content: none !important;
+}

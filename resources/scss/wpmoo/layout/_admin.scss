@@ -28,17 +28,18 @@
 
 /* Sticky header variant */
 :where(.wpmoo.wpmoo--sticky-header)>header {
-  position: fixed;
-  z-index: 10;
   background-color: var(--wpmoo-header-background-color, #fff);
   backdrop-filter: blur(1rem);
   transition: border-top-color .4s ease-in-out, box-shadow .4s ease-in-out;
   width: 100%
 }
 
-/* Extra targeting to survive aggressive admin CSS */
+/* Sticky header variant */
+:where(.wpmoo.wpmoo--sticky-header)>header,
 #wpmoo-options.wpmoo.wpmoo--sticky-header>header {
-  position: fixed;
+  // position: sticky;
+  // top: 50px;
+  // z-index: 10;
 }
 
 /* Account for admin bar heights */
@@ -50,44 +51,4 @@ body.admin-bar :where(.wpmoo.wpmoo--sticky-header)>header {
   body.admin-bar :where(.wpmoo.wpmoo--sticky-header)>header {
     top: 46px;
   }
-}
-
-/* Toasts (lightweight notifications) */
-.wpmoo-toast-container {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 100000;
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-}
-
-.wpmoo-toast {
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity .18s ease, transform .18s ease;
-  background: #111827;
-  color: #fff;
-  padding: .5rem .75rem;
-  border-radius: .375rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .18);
-  font-size: .875rem;
-}
-
-.wpmoo-toast.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.wpmoo-toast--success {
-  background: #065f46;
-}
-
-.wpmoo-toast--error {
-  background: #7f1d1d;
-}
-
-.wpmoo-toast--info {
-  background: #1f2937;
 }

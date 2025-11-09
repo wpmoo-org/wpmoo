@@ -1,0 +1,39 @@
+/* Toasts (lightweight notifications) */
+.wpmoo-toast-container {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.wpmoo-toast {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .18s ease, transform .18s ease;
+    background: #111827;
+    color: #fff;
+    padding: .5rem .75rem;
+    border-radius: .375rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .18);
+    font-size: .875rem;
+}
+
+.wpmoo-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.wpmoo-toast--success {
+    background: #065f46;
+}
+
+.wpmoo-toast--error {
+    background: #7f1d1d;
+}
+
+.wpmoo-toast--info {
+    background: #1f2937;
+}
