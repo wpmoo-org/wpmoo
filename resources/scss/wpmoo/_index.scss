@@ -11,6 +11,8 @@
 @use "fields/textarea";
 
 /* Layout */
+@use "layout/sticky";
+@use "layout/notices";
 @use "layout/admin";
 @use "layout/container";
 @use "layout/page";

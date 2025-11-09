@@ -51,7 +51,6 @@ final class Samples {
 			->title( __( 'WPMoo Samples', 'wpmoo' ) )
 			->menu_slug( self::MENU_SLUG )
 			->fluid()
-			->sticky_header( false )
 			->sidebar_nav()
 			->ajax_save();
 	}

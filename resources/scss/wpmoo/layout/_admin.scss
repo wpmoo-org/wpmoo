@@ -1,14 +1,5 @@
 /* Admin-specific polishes within .wpmoo scope */
 
-/* Align WP admin notices with container paddings */
-:where(.wpmoo) .notice,
-:where(.wpmoo) .notice.is-dismissible {
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-  width: 100%;
-}
-
 /* Actions footer spacing */
 :where(.wpmoo) .wpmoo-options-actions {
   padding-block: 1rem;
@@ -17,36 +8,4 @@
   justify-content: flex-start;
   flex-wrap: wrap;
   gap: .5rem;
-}
-
-/* Prevent horizontal scroll on small screens */
-:where(.wpmoo) {
-  overflow-x: clip;
-}
-
-/* Sticky header variant */
-:where(.wpmoo.wpmoo--sticky-header)>header {
-  background-color: var(--wpmoo-header-background-color, #fff);
-  backdrop-filter: blur(1rem);
-  transition: border-top-color .4s ease-in-out, box-shadow .4s ease-in-out;
-  width: 100%
-}
-
-/* Sticky header variant */
-:where(.wpmoo.wpmoo--sticky-header)>header,
-#wpmoo-options.wpmoo.wpmoo--sticky-header>header {
-  // position: sticky;
-  // top: 50px;
-  // z-index: 10;
-}
-
-/* Account for admin bar heights */
-body.admin-bar :where(.wpmoo.wpmoo--sticky-header)>header {
-  top: 32px;
-}
-
-@media (max-width: 782px) {
-  body.admin-bar :where(.wpmoo.wpmoo--sticky-header)>header {
-    top: 46px;
-  }
 }

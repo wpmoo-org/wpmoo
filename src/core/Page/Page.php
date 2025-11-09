@@ -111,6 +111,13 @@ class Page {
 	protected static $default_footer_component = null;
 
 	/**
+	 * Tracks whether smooth scroll script has been printed.
+	 *
+	 * @var bool
+	 */
+	protected static $smooth_scroll_script_printed = false;
+
+	/**
 	 * Normalized page configuration.
 	 *
 	 * @var PageConfig
@@ -571,7 +578,7 @@ class Page {
 		$use_sidebar_nav = ! empty( $this->config['sidebar_nav'] ) && count( $sections ) > 0;
 
 		if ( $use_sidebar_nav ) {
-			echo '<div class="wpmoo-layout wpmoo-sidebar" data-wpmoo-sidebar>';
+			echo '<div class="wpmoo-layout" data-wpmoo-sidebar>';
 			echo $this->sidebar_component->render( $this, self::$nav_registry );
 			echo '<div class="wpmoo-content">';
 		}
@@ -651,6 +658,7 @@ class Page {
 		}
 
 		echo '</main>';
+		$this->maybe_print_smooth_scroll_script();
 		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
@@ -662,6 +670,56 @@ class Page {
 	 */
 	protected function render_sidebar_navigation( array $sections ): void {
 		echo $this->sidebar_component->render( $this, self::$nav_registry );
+	}
+
+	/**
+	 * Print the smooth scroll helper script once per request.
+	 *
+	 * @return void
+	 */
+	protected function maybe_print_smooth_scroll_script(): void {
+		if ( self::$smooth_scroll_script_printed ) {
+			return;
+		}
+
+		$script = <<<'JS'
+(function () {
+	var root = document.querySelector('.wpmoo');
+	if (!root) {
+		return;
+	}
+
+	root.addEventListener('click', function (event) {
+		var anchor = event.target.closest('a[href^="#"]');
+		if (!anchor) {
+			return;
+		}
+
+		var href = anchor.getAttribute('href');
+		if (!href || href.charAt(0) !== '#' || href.length <= 1) {
+			return;
+		}
+
+		var target = root.querySelector(href);
+		if (!target) {
+			return;
+		}
+
+		event.preventDefault();
+		target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+		if (window.history && window.history.replaceState) {
+			window.history.replaceState(null, '', href);
+		} else {
+			window.location.hash = href.substring(1);
+		}
+	}, true);
+})();
+JS;
+
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<script id="wpmoo-smooth-scroll">' . $script . '</script>';
+		self::$smooth_scroll_script_printed = true;
 	}
 
 	// Panel/tab state helpers removed under Pico-first layout.
@@ -1180,14 +1238,18 @@ class Page {
 	 */
 	protected function resolve_header_component( array $config ): Header {
 		if ( isset( $config['header_component'] ) && $config['header_component'] instanceof Header ) {
-			return clone $config['header_component'];
+			$component = clone $config['header_component'];
+		} elseif ( self::$default_header_component instanceof Header ) {
+			$component = clone self::$default_header_component;
+		} else {
+			$component = Header::make();
 		}
 
-		if ( self::$default_header_component instanceof Header ) {
-			return clone self::$default_header_component;
+		if ( isset( $config['sticky_header'] ) ) {
+			$component->sticky( (bool) $config['sticky_header'] );
 		}
 
-		return Header::make();
+		return $component;
 	}
 
 	/**

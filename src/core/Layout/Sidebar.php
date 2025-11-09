@@ -7,13 +7,27 @@ namespace WPMoo\Layout;
 
 use WPMoo\Page\Page;
 
-class Sidebar {
-	/**
-	 * Whether to open only the active page group.
-	 *
-	 * @var bool
-	 */
-	protected $auto_open_active = true;
+	class Sidebar {
+		/**
+		 * Whether to open only the active page group.
+		 *
+		 * @var bool
+		 */
+		protected $auto_open_active = true;
+
+		/**
+		 * Whether the sidebar should stick on scroll.
+		 *
+		 * @var bool
+		 */
+		protected $sticky = true;
+
+		/**
+		 * Sticky offset (CSS length).
+		 *
+		 * @var string
+		 */
+		protected $sticky_offset = '1.5rem';
 
 	/**
 	 * Static constructor.
@@ -25,10 +39,26 @@ class Sidebar {
 	/**
 	 * Control whether only the active page group is opened.
 	 */
-	public function auto_open_active( bool $enabled = true ): self {
-		$this->auto_open_active = $enabled;
-		return $this;
-	}
+		public function auto_open_active( bool $enabled = true ): self {
+			$this->auto_open_active = $enabled;
+			return $this;
+		}
+
+		/**
+		 * Enable/disable sticky behavior.
+		 */
+		public function sticky( bool $enabled = true ): self {
+			$this->sticky = $enabled;
+			return $this;
+		}
+
+		/**
+		 * Customize sticky offset (top).
+		 */
+		public function sticky_offset( string $offset ): self {
+			$this->sticky_offset = $offset;
+			return $this;
+		}
 
 	/**
 	 * Render the sidebar markup using the nav registry.
@@ -50,11 +80,20 @@ class Sidebar {
 		$nav_label = \function_exists( '__' ) ? \__( 'Sections menu', 'wpmoo' ) : 'Sections menu';
 		$current_slug = (string) $page->config( 'menu_slug' );
 
-		$html  = '<aside class="wpmoo-sidebar" aria-label="' . \esc_attr( $nav_label ) . '">';
-		$html .= '<header class="wpmoo-brand">';
-		$html .= '<p class="wpmoo-framework">' . \esc_html( $framework_title ) . '</p>';
-		$html .= '</header>';
-		$html .= '<nav class="wpmoo-nav-groups">';
+			$classes = array( 'wpmoo-sidebar' );
+			$style   = '';
+			if ( $this->sticky ) {
+				$classes[] = 'wpmoo-sticky';
+				if ( '' !== $this->sticky_offset ) {
+					$style = ' style="--wpmoo-sticky-top:' . \esc_attr( $this->sticky_offset ) . ';"';
+				}
+			}
+
+			$html  = '<aside class="' . \esc_attr( implode( ' ', $classes ) ) . '" aria-label="' . \esc_attr( $nav_label ) . '"' . $style . '>';
+			$html .= '<header class="wpmoo-brand">';
+			$html .= '<p class="wpmoo-framework">' . \esc_html( $framework_title ) . '</p>';
+			$html .= '</header>';
+			$html .= '<nav class="wpmoo-nav-groups">';
 
 		foreach ( $nav_registry as $slug => $entry ) {
 			$is_current_page = (string) $slug === $current_slug;

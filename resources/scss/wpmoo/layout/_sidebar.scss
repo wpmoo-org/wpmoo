@@ -1,4 +1,4 @@
-/* Sidebar layout mirroring Pico documentation menu */
+/* Sidebar menu */
 :where(.wpmoo) .wpmoo-layout {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
@@ -19,6 +19,9 @@
 :where(.wpmoo) .wpmoo-sidebar {
   border-right: 1px solid var(--wpmoo-border-color, rgba(0, 0, 0, .08));
   padding-right: 1rem;
+  align-self: flex-start;
+  max-height: calc(100vh - var(--wpmoo-sticky-top, 0px));
+  overflow: auto;
 }
 
 :where(.wpmoo) .wpmoo-brand {
@@ -47,8 +50,6 @@
 
 :where(.wpmoo) .wpmoo-nav-group>summary {
   display: block;
-  align-items: center;
-  justify-content: space-between;
   font-weight: 600;
   list-style: none;
   text-decoration: none;
@@ -71,10 +72,9 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  padding: auto;
+  padding: 0;
+  margin: 0 0 .25rem;
 }
-
-:where(.wpmoo) .wpmoo-nav-group ul li {}
 
 :where(.wpmoo) .wpmoo-sub-link {
   display: block;
@@ -104,3 +104,4 @@
     padding-bottom: 1rem;
   }
 }
+:where(.wpmoo) { scroll-behavior: smooth; }

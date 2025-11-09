@@ -23,6 +23,20 @@ class Header {
 	protected $show_page_title = false;
 
 	/**
+	 * Whether the header is sticky.
+	 *
+	 * @var bool
+	 */
+	protected $sticky = true;
+
+	/**
+	 * Sticky offset (CSS length).
+	 *
+	 * @var string
+	 */
+	protected $sticky_offset = '0px';
+
+	/**
 	 * Static constructor.
 	 */
 	public static function make(): self {
@@ -46,6 +60,28 @@ class Header {
 	}
 
 	/**
+	 * Enable/disable sticky behavior.
+	 *
+	 * @param bool $enabled Sticky flag.
+	 * @return $this
+	 */
+	public function sticky( bool $enabled = true ): self {
+		$this->sticky = $enabled;
+		return $this;
+	}
+
+	/**
+	 * Set sticky offset (top).
+	 *
+	 * @param string $offset CSS length value.
+	 * @return $this
+	 */
+	public function sticky_offset( string $offset ): self {
+		$this->sticky_offset = $offset;
+		return $this;
+	}
+
+	/**
 	 * Render the header markup.
 	 */
 	public function render( Page $page ): string {
@@ -56,7 +92,16 @@ class Header {
 
 		$page_title = $page->page_title();
 
-		$html  = '<header class="wpmoo-header">';
+		$classes = array( 'wpmoo-header' );
+		$style   = '';
+		if ( $this->sticky ) {
+			$classes[] = 'wpmoo-sticky';
+			if ( '' !== $this->sticky_offset ) {
+				$style = ' style="--wpmoo-sticky-top:' . \esc_attr( $this->sticky_offset ) . ';"';
+			}
+		}
+
+		$html  = '<header class="' . \esc_attr( implode( ' ', $classes ) ) . '"' . $style . '>';
 		$html .= '<h1>' . \esc_html( $title ) . '</h1>';
 		if ( $this->show_page_title && '' !== $page_title ) {
 			$html .= '<p class="wpmoo-header__subtitle">' . \esc_html( $page_title ) . '</p>';
