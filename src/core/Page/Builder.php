@@ -14,6 +14,9 @@ namespace WPMoo\Page;
 use InvalidArgumentException;
 use WPMoo\Fields\Manager;
 use WPMoo\Sections\SectionBuilder;
+use WPMoo\Layout\Header;
+use WPMoo\Layout\Sidebar;
+use WPMoo\Layout\Footer;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Options\Options;
 
@@ -167,6 +170,39 @@ class Builder {
 	 */
 	public function sidebar_nav( bool $enabled = true ): self {
 		$this->config['sidebar_nav'] = $enabled;
+		return $this;
+	}
+
+	/**
+	 * Assign a custom header component for this page.
+	 *
+	 * @param Header $header Header component instance.
+	 * @return $this
+	 */
+	public function header_component( Header $header ): self {
+		$this->config['header_component'] = clone $header;
+		return $this;
+	}
+
+	/**
+	 * Assign a custom sidebar component for this page.
+	 *
+	 * @param Sidebar $sidebar Sidebar component instance.
+	 * @return $this
+	 */
+	public function sidebar_component( Sidebar $sidebar ): self {
+		$this->config['sidebar_component'] = clone $sidebar;
+		return $this;
+	}
+
+	/**
+	 * Assign a custom footer component for this page.
+	 *
+	 * @param Footer $footer Footer component instance.
+	 * @return $this
+	 */
+	public function footer_component( Footer $footer ): self {
+		$this->config['footer_component'] = clone $footer;
 		return $this;
 	}
 

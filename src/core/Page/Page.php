@@ -15,6 +15,9 @@ namespace WPMoo\Page;
 use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager;
 use WPMoo\Support\Assets;
+use WPMoo\Layout\Header;
+use WPMoo\Layout\Sidebar;
+use WPMoo\Layout\Footer;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Options\OptionRepository;
 use WPMoo\Support\Str;
@@ -87,6 +90,27 @@ class Page {
 	protected static $nav_registry = array();
 
 	/**
+	 * Default header component.
+	 *
+	 * @var Header|null
+	 */
+	protected static $default_header_component = null;
+
+	/**
+	 * Default sidebar component.
+	 *
+	 * @var Sidebar|null
+	 */
+	protected static $default_sidebar_component = null;
+
+	/**
+	 * Default footer component.
+	 *
+	 * @var Footer|null
+	 */
+	protected static $default_footer_component = null;
+
+	/**
 	 * Normalized page configuration.
 	 *
 	 * @var PageConfig
@@ -122,6 +146,27 @@ class Page {
 	protected $repository;
 
 	/**
+	 * Header component instance.
+	 *
+	 * @var Header
+	 */
+	protected $header_component;
+
+	/**
+	 * Sidebar component instance.
+	 *
+	 * @var Sidebar
+	 */
+	protected $sidebar_component;
+
+	/**
+	 * Footer component instance.
+	 *
+	 * @var Footer
+	 */
+	protected $footer_component;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array<string, mixed> $config        Raw page configuration.
@@ -132,6 +177,9 @@ class Page {
 		$this->config        = $this->normalize_config( $config );
 		$this->sections      = $this->normalize_sections( $this->config['sections'] );
 		$this->repository    = new OptionRepository( $this->config['option_key'], $this->collect_defaults() );
+		$this->header_component  = $this->resolve_header_component( $this->config );
+		$this->sidebar_component = $this->resolve_sidebar_component( $this->config );
+		$this->footer_component  = $this->resolve_footer_component( $this->config );
 		$this->register_nav_entry();
 	}
 
@@ -513,17 +561,7 @@ class Page {
 
         // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Output assembled with proper escaping below.
 		echo '<main' . $class_attr . ' id="wpmoo-options"' . $style_attr . '>';
-		echo '<header>';
-		$heading = '';
-		if ( isset( $this->config['framework_title'] ) && '' !== (string) $this->config['framework_title'] ) {
-			$heading = (string) $this->config['framework_title'];
-		} else {
-			$heading = function_exists( '__' )
-				? __( 'WPMoo Framework', 'wpmoo' )
-				: 'WPMoo Framework';
-		}
-		echo '<h1>' . esc_html( $heading ) . '</h1>';
-		echo '</header>';
+		echo $this->header_component->render( $this );
 
 		// Show any settings errors.
 		if ( function_exists( 'settings_errors' ) ) {
@@ -534,7 +572,7 @@ class Page {
 
 		if ( $use_sidebar_nav ) {
 			echo '<div class="wpmoo-layout wpmoo-layout--sidebar" data-wpmoo-sidebar>';
-			$this->render_sidebar_navigation( $sections );
+			echo $this->sidebar_component->render( $this, self::$nav_registry );
 			echo '<div class="wpmoo-layout__content">';
 		}
 
@@ -603,13 +641,7 @@ class Page {
 		}
 
 		// Actions
-		echo '<footer class="wpmoo-options-actions">';
-		if ( function_exists( 'submit_button' ) ) {
-			submit_button( __( 'Save Changes', 'wpmoo' ) );
-		} else {
-			echo '<p class="submit"><button type="submit">' . esc_html( $this->translate( 'Save Changes', 'wpmoo' ) ) . '</button></p>';
-		}
-		echo '</footer>';
+		echo $this->footer_component->render( $this );
 
 		echo '</form>';
 
@@ -629,71 +661,7 @@ class Page {
 	 * @return void
 	 */
 	protected function render_sidebar_navigation( array $sections ): void {
-		if ( empty( self::$nav_registry ) ) {
-			return;
-		}
-
-		$nav_label       = function_exists( '__' ) ? __( 'Sections menu', 'wpmoo' ) : 'Sections menu';
-
-		echo '<aside class="wpmoo-layout__sidebar" aria-label="' . esc_attr( $nav_label ) . '">';
-		echo '<nav class="wpmoo-layout__nav-groups">';
-
-		foreach ( self::$nav_registry as $slug => $page ) {
-			$is_current_page = isset( $this->config['menu_slug'] ) && $slug === $this->config['menu_slug'];
-			$page_title      = isset( $page['title'] ) ? (string) $page['title'] : ucfirst( str_replace( '-', ' ', $slug ) );
-			$sections_list   = isset( $page['sections'] ) && is_array( $page['sections'] ) ? $page['sections'] : array();
-
-			$details_attr = $is_current_page ? ' open' : '';
-			$summary_attr = $is_current_page ? ' aria-current="page"' : '';
-
-			echo '<details class="wpmoo-nav-group"' . $details_attr . '>';
-			echo '<summary' . $summary_attr . '>' . esc_html( $page_title ) . '</summary>';
-
-			if ( ! empty( $sections_list ) ) {
-				echo '<ul>';
-				$section_index = 0;
-				$base_url = '#';
-				if ( ! $is_current_page ) {
-					if ( function_exists( 'admin_url' ) ) {
-						$base_url = admin_url( 'admin.php?page=' . $slug );
-					} else {
-						$base_url = 'admin.php?page=' . $slug;
-					}
-				}
-
-				foreach ( $sections_list as $section ) {
-					$section_id    = isset( $section['id'] ) ? (string) $section['id'] : '';
-					$section_title = isset( $section['title'] ) ? (string) $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
-
-					if ( '' === $section_id ) {
-						$section_id = 'section-' . ( $section_index + 1 );
-					}
-
-					$link_class = 'wpmoo-layout__sub-link';
-					$aria_current = '';
-					if ( $is_current_page && 0 === $section_index ) {
-						$link_class   .= ' is-active';
-						$aria_current = ' aria-current="true"';
-					}
-
-					$target = $is_current_page ? '#' . $section_id : $base_url . '#' . $section_id;
-
-					echo '<li>';
-					echo '<a class="' . esc_attr( $link_class ) . '" href="' . esc_url( $target ) . '"' . $aria_current . '>';
-					echo esc_html( $section_title );
-					echo '</a>';
-					echo '</li>';
-
-					$section_index++;
-				}
-				echo '</ul>';
-			}
-
-			echo '</details>';
-		}
-
-		echo '</nav>';
-		echo '</aside>';
+		echo $this->sidebar_component->render( $this, self::$nav_registry );
 	}
 
 	// Panel/tab state helpers removed under Pico-first layout.
@@ -1116,6 +1084,9 @@ class Page {
 			'enqueue_webfont'         => true,
 			'async_webfont'           => false,
 			'output_css'              => true,
+			'header_component'        => null,
+			'sidebar_component'       => null,
+			'footer_component'        => null,
 			'defaults'                => array(),
 		);
 	}
@@ -1199,6 +1170,60 @@ class Page {
 			'title'    => $page_title,
 			'sections' => $sections,
 		);
+	}
+
+	/**
+	 * Resolve header component for this page.
+	 *
+	 * @param array<string, mixed> $config Page config.
+	 * @return Header
+	 */
+	protected function resolve_header_component( array $config ): Header {
+		if ( isset( $config['header_component'] ) && $config['header_component'] instanceof Header ) {
+			return clone $config['header_component'];
+		}
+
+		if ( self::$default_header_component instanceof Header ) {
+			return clone self::$default_header_component;
+		}
+
+		return Header::make();
+	}
+
+	/**
+	 * Resolve sidebar component.
+	 *
+	 * @param array<string, mixed> $config Page config.
+	 * @return Sidebar
+	 */
+	protected function resolve_sidebar_component( array $config ): Sidebar {
+		if ( isset( $config['sidebar_component'] ) && $config['sidebar_component'] instanceof Sidebar ) {
+			return clone $config['sidebar_component'];
+		}
+
+		if ( self::$default_sidebar_component instanceof Sidebar ) {
+			return clone self::$default_sidebar_component;
+		}
+
+		return Sidebar::make();
+	}
+
+	/**
+	 * Resolve footer component.
+	 *
+	 * @param array<string, mixed> $config Page config.
+	 * @return Footer
+	 */
+	protected function resolve_footer_component( array $config ): Footer {
+		if ( isset( $config['footer_component'] ) && $config['footer_component'] instanceof Footer ) {
+			return clone $config['footer_component'];
+		}
+
+		if ( self::$default_footer_component instanceof Footer ) {
+			return clone self::$default_footer_component;
+		}
+
+		return Footer::make();
 	}
 
 	/**
@@ -1286,6 +1311,63 @@ class Page {
 	 */
 	public function config( $key ) {
 		return isset( $this->config[ $key ] ) ? $this->config[ $key ] : null;
+	}
+
+	/**
+	 * Retrieve the current page title.
+	 *
+	 * @return string
+	 */
+	public function page_title(): string {
+		return isset( $this->config['page_title'] ) ? (string) $this->config['page_title'] : '';
+	}
+
+	/**
+	 * Retrieve the menu slug.
+	 *
+	 * @return string
+	 */
+	public function menu_slug(): string {
+		return isset( $this->config['menu_slug'] ) ? (string) $this->config['menu_slug'] : '';
+	}
+
+	/**
+	 * Provide read-only access to the nav registry.
+	 *
+	 * @return array<int|string, array<string, mixed>>
+	 */
+	public static function nav_registry(): array {
+		return self::$nav_registry;
+	}
+
+	/**
+	 * Override the default header component for all pages.
+	 *
+	 * @param Header $header Header component instance.
+	 * @return void
+	 */
+	public static function default_header_component( Header $header ): void {
+		self::$default_header_component = clone $header;
+	}
+
+	/**
+	 * Override the default sidebar component for all pages.
+	 *
+	 * @param Sidebar $sidebar Sidebar component instance.
+	 * @return void
+	 */
+	public static function default_sidebar_component( Sidebar $sidebar ): void {
+		self::$default_sidebar_component = clone $sidebar;
+	}
+
+	/**
+	 * Override the default footer component for all pages.
+	 *
+	 * @param Footer $footer Footer component instance.
+	 * @return void
+	 */
+	public static function default_footer_component( Footer $footer ): void {
+		self::$default_footer_component = clone $footer;
 	}
 
 	/**
