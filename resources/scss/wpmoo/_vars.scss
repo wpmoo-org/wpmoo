@@ -1,6 +1,9 @@
+@import "../config/_settings.scss";
+
 /* WPMoo CSS custom property defaults (scoped) */
 :where(.wpmoo) {
 
+  --wpmoo-theme-color: $theme-color;
   --wpmoo-background-color: #fff;
   --wpmoo-header-background-color: rgba(255, 255, 255, 0.9);
   --wpmoo-header-spacing: .5rem;
