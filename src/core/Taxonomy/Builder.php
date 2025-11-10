@@ -369,11 +369,18 @@ class Builder {
 						return;
 					}
 
-					if ( ! isset( $_GET['orderby'] ) || ! $columns_manager->isSortable( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) ) ) {
+					$order_param = filter_input( \INPUT_GET, 'orderby', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+					if ( ! is_string( $order_param ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only request context.
 						return;
 					}
 
-					$meta = $columns_manager->sortableMeta( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) );
+					$order_key = sanitize_text_field( $order_param );
+
+					if ( '' === $order_key || ! $columns_manager->isSortable( $order_key ) ) {
+						return;
+					}
+
+					$meta = $columns_manager->sortableMeta( $order_key );
 
 					if ( is_string( $meta ) ) {
 						$meta_key = $meta;
@@ -384,7 +391,7 @@ class Builder {
 					}
 
 					$query->query_vars['orderby']  = $orderby;
-					$query->query_vars['meta_key'] = $meta_key;
+					$query->query_vars['meta_key'] = $meta_key; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Sorting by custom columns requires meta_key ordering.
 				}
 			);
 		}

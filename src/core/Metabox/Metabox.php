@@ -390,12 +390,14 @@ class Metabox {
 			return;
 		}
 
-			$submitted = isset( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) && is_array( $_POST['wpmoo_metabox'][ $this->config['id'] ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Verified via nonce in should_handle_save(); unslashed below and sanitized per-field.
-				? $_POST['wpmoo_metabox'][ $this->config['id'] ] // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified via nonce in should_handle_save().
-				: array();
+		$submitted = array();
+		$metabox_payload = filter_input( \INPUT_POST, 'wpmoo_metabox', FILTER_DEFAULT, \FILTER_REQUIRE_ARRAY );
+		if ( is_array( $metabox_payload ) && isset( $metabox_payload[ $this->config['id'] ] ) && is_array( $metabox_payload[ $this->config['id'] ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified via nonce in should_handle_save().
+			$submitted = $metabox_payload[ $this->config['id'] ];
+		}
 
 		$submitted = function_exists( 'wp_unslash' )
-			? wp_unslash( $submitted ) // phpcs:ignore WordPress.Security.SafeInput.NotSanitizedInput
+			? wp_unslash( $submitted )
 			: $submitted;
 
 		foreach ( $this->fields as $field ) {

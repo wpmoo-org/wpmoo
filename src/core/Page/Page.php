@@ -214,11 +214,12 @@ class Page {
 	 * @return string
 	 */
 	public function filter_admin_body_class( $classes ) {
-		$slug        = isset( $this->config['menu_slug'] ) ? (string) $this->config['menu_slug'] : '';
-		$current     = '';
-		if ( isset( $_GET['page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$raw     = function_exists( 'wp_unslash' ) ? wp_unslash( $_GET['page'] ) : (string) $_GET['page']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$current = function_exists( 'sanitize_key' ) ? sanitize_key( $raw ) : preg_replace( '/[^a-z0-9_\-]/', '', (string) $raw );
+		$slug    = isset( $this->config['menu_slug'] ) ? (string) $this->config['menu_slug'] : '';
+		$current = '';
+
+		$page_param = filter_input( \INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		if ( is_string( $page_param ) ) {
+			$current = function_exists( 'sanitize_key' ) ? sanitize_key( $page_param ) : preg_replace( '/[^a-z0-9_\-]/', '', $page_param );
 		}
 
 		if ( $slug && $current === $slug ) {
@@ -363,14 +364,19 @@ class Page {
 		}
 
 		if ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) {
-			if ( isset( $_POST['action'] ) && 'wpmoo_save_options' === $_POST['action'] ) {
+			$post_action = filter_input( \INPUT_POST, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+			if ( 'wpmoo_save_options' === $post_action ) {
 				return;
 			}
 		}
 
-		$slug = $this->config['menu_slug'];
+		$slug        = $this->config['menu_slug'];
+		$posted_slug = filter_input( \INPUT_POST, '_wpmoo_options_page', FILTER_UNSAFE_RAW );
+		if ( is_string( $posted_slug ) && function_exists( 'wp_unslash' ) ) {
+			$posted_slug = wp_unslash( $posted_slug );
+		}
 
-		if ( ! isset( $_POST['_wpmoo_options_page'] ) || $slug !== $_POST['_wpmoo_options_page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified below.
+		if ( ! is_string( $posted_slug ) || $slug !== $posted_slug ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified below.
 			return;
 		}
 
@@ -383,13 +389,7 @@ class Page {
 		}
 
 		$option_key = $this->repository->option_key();
-		$submitted  = array();
-
-		if ( isset( $_POST[ $option_key ] ) && is_array( $_POST[ $option_key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Verified above; unslashed below and sanitized per-field.
-			$submitted = function_exists( 'wp_unslash' )
-			? wp_unslash( $_POST[ $option_key ] )
-			: $_POST[ $option_key ];
-		}
+		$submitted  = $this->read_input_array( \INPUT_POST, $option_key );
 
 		$clean = array();
 
@@ -423,10 +423,11 @@ class Page {
 	 */
 	public function ajax_save() {
 		$slug         = $this->config['menu_slug'];
-		$request_slug = '';
-		if ( isset( $_POST['menu_slug'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$raw = function_exists( 'wp_unslash' ) ? wp_unslash( $_POST['menu_slug'] ) : (string) $_POST['menu_slug']; // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$request_slug = function_exists( 'sanitize_key' ) ? sanitize_key( $raw ) : preg_replace( '/[^a-z0-9_\-]/', '', (string) $raw );
+		$request_slug = filter_input( \INPUT_POST, 'menu_slug', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		if ( is_string( $request_slug ) ) {
+			$request_slug = function_exists( 'sanitize_key' ) ? sanitize_key( $request_slug ) : preg_replace( '/[^a-z0-9_\-]/', '', $request_slug );
+		} else {
+			$request_slug = '';
 		}
 
 		if ( $slug !== $request_slug ) {
@@ -444,11 +445,7 @@ class Page {
 		}
 
 		$option_key = $this->repository->option_key();
-		$submitted  = array();
-
-		if ( isset( $_POST[ $option_key ] ) && is_array( $_POST[ $option_key ] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-			$submitted = function_exists( 'wp_unslash' ) ? wp_unslash( $_POST[ $option_key ] ) : $_POST[ $option_key ];
-		}
+		$submitted  = $this->read_input_array( \INPUT_POST, $option_key );
 
 		$clean = array();
 
@@ -647,7 +644,7 @@ class Page {
 		}
 
 		// Actions
-		echo $this->footer_component->render( $this );
+		echo \wp_kses_post( $this->footer_component->render( $this ) );
 
 		echo '</form>';
 
@@ -668,7 +665,7 @@ class Page {
 	 * @return void
 	 */
 	protected function render_sidebar_navigation( array $sections ): void {
-		echo $this->sidebar_component->render( $this, self::$nav_registry );
+		echo \wp_kses_post( $this->sidebar_component->render( $this, self::$nav_registry ) );
 	}
 
 	/**
@@ -681,42 +678,44 @@ class Page {
 			return;
 		}
 
-		$script = <<<'JS'
-(function () {
-	var root = document.querySelector('.wpmoo');
-	if (!root) {
-		return;
-	}
+		$script_lines = array(
+			'(function () {',
+			'	var root = document.querySelector(\'.wpmoo\');',
+			'	if (!root) {',
+			'		return;',
+			'	}',
+			'',
+			'	root.addEventListener(\'click\', function (event) {',
+			'		var anchor = event.target.closest(\'a[href^="#"]\');',
+			'		if (!anchor) {',
+			'			return;',
+			'		}',
+			'',
+			'		var href = anchor.getAttribute(\'href\');',
+			'		if (!href || href.charAt(0) !== \'#\' || href.length <= 1) {',
+			'			return;',
+			'		}',
+			'',
+			'		var target = root.querySelector(href);',
+			'		if (!target) {',
+			'			return;',
+			'		}',
+			'',
+			'		event.preventDefault();',
+			'		target.scrollIntoView({ behavior: \'smooth\', block: \'start\' });',
+			'',
+			'		if (window.history && window.history.replaceState) {',
+			'			window.history.replaceState(null, \'\', href);',
+			'		} else {',
+			'			window.location.hash = href.substring(1);',
+			'		}',
+			'	}, true);',
+			'})();',
+		);
 
-	root.addEventListener('click', function (event) {
-		var anchor = event.target.closest('a[href^="#"]');
-		if (!anchor) {
-			return;
-		}
+		$script = implode( "\n", $script_lines );
 
-		var href = anchor.getAttribute('href');
-		if (!href || href.charAt(0) !== '#' || href.length <= 1) {
-			return;
-		}
-
-		var target = root.querySelector(href);
-		if (!target) {
-			return;
-		}
-
-		event.preventDefault();
-		target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-		if (window.history && window.history.replaceState) {
-			window.history.replaceState(null, '', href);
-		} else {
-			window.location.hash = href.substring(1);
-		}
-	}, true);
-})();
-JS;
-
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '<script id="wpmoo-smooth-scroll">' . $script . '</script>';
 		self::$smooth_scroll_script_printed = true;
 	}
@@ -1457,5 +1456,22 @@ JS;
 	 */
 	public function field_input_name( Field $field ) {
 		return $this->repository->option_key() . '[' . $field->id() . ']';
+	}
+
+	/**
+	 * Safely retrieve an array value from request input.
+	 *
+	 * @param int    $input_type One of PHP's INPUT_* constants.
+	 * @param string $key        Input key.
+	 * @return array<string|int, mixed>
+	 */
+	protected function read_input_array( int $input_type, string $key ): array {
+		$value = filter_input( $input_type, $key, FILTER_DEFAULT, \FILTER_REQUIRE_ARRAY );
+
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+
+		return function_exists( 'wp_unslash' ) ? wp_unslash( $value ) : $value;
 	}
 }
