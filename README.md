@@ -114,10 +114,12 @@ Field::fieldset('profile')
 
 ### Tabs layout field
 
-`Field::tabs()` PicoCSS’in nav bileşenini kullanarak sekmeli içerik oluşturur:
+Tabs live in the optional `WPMoo\Extensions\Tabs` package. Import the builder and instantiate it like any field:
 
 ```php
-Field::tabs('settings_tabs')
+use WPMoo\Extensions\Tabs;
+
+Tabs::make('settings_tabs')
     ->items([
         [
             'title'  => 'Account',
@@ -136,7 +138,7 @@ Field::tabs('settings_tabs')
     ]);
 ```
 
-Sekme başlıklarına tıklandığında içerik alanı yumuşak geçişle güncellenir; her sekmenin değerleri `settings_tabs[account][username]` şeklinde saklanır. Yapı tamamen CSS ile çalışır, ilave JavaScript gerekmez.
+Panels are rendered with pure CSS; each panel’s values are stored under `settings_tabs[account][username]`.
 
 ### Sidebar navigation layout
 

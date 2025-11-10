@@ -13,6 +13,7 @@ namespace WPMoo\Samples;
 
 use WPMoo\Moo;
 use WPMoo\Fields\Field;
+use WPMoo\Extensions\Tabs;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -253,7 +254,7 @@ final class Samples {
 		Moo::section( 'sample_tabs', __( 'Tabs', 'wpmoo' ), __( 'Switch between grouped fields.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(
-				Field::tabs( 'demo_tabs' )
+				Tabs::make( 'demo_tabs' )
 					->label( __( 'Tabbed settings', 'wpmoo' ) )
 					->items(
 						array(

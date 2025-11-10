@@ -31,7 +31,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @method static Field range(string $id)
  * @method static Field accordion(string $id)
  * @method static Field fieldset(string $id)
- * @method static Field tabs(string $id)
  *
  * @phpstan-consistent-constructor
  */
@@ -137,15 +136,11 @@ final class Field extends FieldBuilder {
 	}
 
 	/**
-	 * Create a tabs layout field.
+	 * Create a tabs layout field via the extension builder.
 	 *
 	 * @param string $id Field id.
-	 * @return static
+	 * @return \WPMoo\Extensions\Tabs\Builder
 	 */
-	public static function tabs( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		return new self( $id, 'tabs' );
-	}
-
 	/**
 	 * Create a builder via static typed constructor, e.g. Field::text('id').
 	 *

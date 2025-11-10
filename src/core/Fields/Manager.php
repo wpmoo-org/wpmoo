@@ -336,6 +336,7 @@ class Manager {
 		return array(
 			'accordion' => \WPMoo\Fields\Accordion\Accordion::class,
 			'fieldset'  => \WPMoo\Fields\Fieldset\Fieldset::class,
+			'tabs'      => \WPMoo\Extensions\Tabs\Tabs::class,
 		);
 	}
 

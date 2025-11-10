@@ -77,6 +77,10 @@ if ( function_exists( 'add_action' ) ) {
 						}
 					}
 				);
+
+				if ( class_exists( '\\WPMoo\\Extensions\\Tabs\\ServiceProvider' ) ) {
+					\WPMoo\Extensions\Tabs\ServiceProvider::register();
+				}
 			}
 			if ( class_exists( '\\WPMoo\\Support\\Dev\\UiCompiler' ) ) {
 				\WPMoo\Support\Dev\UiCompiler::register();
