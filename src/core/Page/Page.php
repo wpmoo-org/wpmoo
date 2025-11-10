@@ -655,7 +655,6 @@ class Page {
 		}
 
 		echo '</main>';
-		$this->maybe_print_smooth_scroll_script();
 		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
@@ -668,58 +667,6 @@ class Page {
 	protected function render_sidebar_navigation( array $sections ): void {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sidebar component outputs sanitized nav markup.
 		echo $this->sidebar_component->render( $this, self::$nav_registry );
-	}
-
-	/**
-	 * Print the smooth scroll helper script once per request.
-	 *
-	 * @return void
-	 */
-	protected function maybe_print_smooth_scroll_script(): void {
-		if ( self::$smooth_scroll_script_printed ) {
-			return;
-		}
-
-		$script_lines = array(
-			'(function () {',
-			'	var root = document.querySelector(\'.wpmoo\');',
-			'	if (!root) {',
-			'		return;',
-			'	}',
-			'',
-			'	root.addEventListener(\'click\', function (event) {',
-			'		var anchor = event.target.closest(\'a[href^="#"]\');',
-			'		if (!anchor) {',
-			'			return;',
-			'		}',
-			'',
-			'		var href = anchor.getAttribute(\'href\');',
-			'		if (!href || href.charAt(0) !== \'#\' || href.length <= 1) {',
-			'			return;',
-			'		}',
-			'',
-			'		var target = root.querySelector(href);',
-			'		if (!target) {',
-			'			return;',
-			'		}',
-			'',
-			'		event.preventDefault();',
-			'		target.scrollIntoView({ behavior: \'smooth\', block: \'start\' });',
-			'',
-			'		if (window.history && window.history.replaceState) {',
-			'			window.history.replaceState(null, \'\', href);',
-			'		} else {',
-			'			window.location.hash = href.substring(1);',
-			'		}',
-			'	}, true);',
-			'})();',
-		);
-
-		$script = implode( "\n", $script_lines );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo '<script id="wpmoo-smooth-scroll">' . $script . '</script>';
-		self::$smooth_scroll_script_printed = true;
 	}
 
 	// Panel/tab state helpers removed under Pico-first layout.

@@ -18,6 +18,44 @@
 
   $(document).ready(function () {
     var canStore = storageAvailable("localStorage");
+    initSmoothScroll();
+
+    function initSmoothScroll() {
+      var root = document.querySelector(".wpmoo");
+      if (!root) {
+        return;
+      }
+
+      root.addEventListener(
+        "click",
+        function (event) {
+          var anchor = event.target.closest('a[href^="#"]');
+          if (!anchor) {
+            return;
+          }
+
+          var href = anchor.getAttribute("href");
+          if (!href || href.charAt(0) !== "#" || href.length <= 1) {
+            return;
+          }
+
+          var target = root.querySelector(href);
+          if (!target) {
+            return;
+          }
+
+          event.preventDefault();
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, "", href);
+          } else {
+            window.location.hash = href.substring(1);
+          }
+        },
+        true
+      );
+    }
 
     // Enhance Accordion field toggling (defensive JS in case native <details> is blocked by theme/JS)
     (function initAccordions() {
