@@ -20,7 +20,8 @@ const paths = {
     finalOut: "wpmoo.css",
   },
   scripts: {
-    src: "resources/js/**/*.js",
+    entry: "resources/js/wpmoo.js",
+    watch: "resources/js/**/*.js",
     dest: "src/assets/js",
   },
   html: {
@@ -33,6 +34,8 @@ const paths = {
     outFile: "pico-wpmoo.css",
   },
 };
+
+const MODULE_PLACEHOLDER = "/* @wpmoo-modules */";
 
 function changeExtension(filePath, newExt) {
   const parsed = path.parse(filePath);
@@ -160,6 +163,51 @@ function replaceText(find, replaceWith) {
   });
 }
 
+function injectModules() {
+  const modulesDir = path.resolve("resources/js/wpmoo");
+
+  return new Transform({
+    objectMode: true,
+    transform(file, enc, cb) {
+      if (file.isNull()) {
+        return cb(null, file);
+      }
+
+      if (file.isStream()) {
+        return cb(new Error("Streaming not supported"));
+      }
+
+      if (path.basename(file.path) !== "wpmoo.js") {
+        return cb(null, file);
+      }
+
+      let modulesCode = "";
+      if (fs.existsSync(modulesDir)) {
+        const files = fs
+          .readdirSync(modulesDir)
+          .filter((filename) => filename.endsWith(".js"))
+          .sort();
+
+        modulesCode = files
+          .map((filename) => fs.readFileSync(path.join(modulesDir, filename), "utf8"))
+          .join("\n\n");
+      }
+
+      const placeholder = MODULE_PLACEHOLDER;
+      let content = file.contents.toString(enc || "utf8");
+
+      if (content.indexOf(placeholder) !== -1) {
+        content = content.replace(placeholder, modulesCode);
+      } else {
+        content = modulesCode + "\n" + content;
+      }
+
+      file.contents = Buffer.from(content);
+      cb(null, file);
+    },
+  });
+}
+
 function renameTo(newBaseName) {
   return new Transform({
     objectMode: true,
@@ -186,8 +234,13 @@ function picoScope() {
 }
 
 function scripts() {
-  // Simple copy of admin JS from resources to assets
-  return src(paths.scripts.src, { allowEmpty: true }).pipe(dest(paths.scripts.dest)).pipe(browserSync.stream({ match: "**/*.js" }));
+  // Clean destination to avoid stale copies of individual module files.
+  fs.rmSync(paths.scripts.dest, { recursive: true, force: true });
+
+  return src(paths.scripts.entry, { allowEmpty: true })
+    .pipe(injectModules())
+    .pipe(dest(paths.scripts.dest))
+    .pipe(browserSync.stream({ match: "**/*.js" }));
 }
 
 // Copy third-party licenses into dist
@@ -253,8 +306,8 @@ function serve() {
 
   // SCSS → CSS akışı ve canlı yenileme
   watch(paths.styles.src, series(styles, copyLicenses));
-  // JS kopyalama ve canlı yenileme
-  watch(paths.scripts.src, scripts);
+  // JS izleme: tüm kaynak dosyalar değiştiğinde tek bundle yeniden oluşturulur
+  watch(paths.scripts.watch, scripts);
 
   // PHP/HTML değişikliklerinde tam yenileme
   watch(["**/*.php", paths.html.src]).on("change", browserSync.reload);

@@ -1,538 +1,95 @@
-/**
- * WPMoo Framework - Admin Panel Scripts
+/*!
+ * WPMoo Framework – Admin panel bootstrap + module loader.
+ * Each behaviour lives under resources/js/wpmoo/* and is injected here at build time.
+ * @license GPL-2.0-or-later
+ * @link https://github.com/wpmoo/wpmoo
  */
-(function ($) {
+/*!
+ * WPMoo Framework – Accordion fallback.
+ * Keeps pico <details> accordions in sync and enforces aria state when themes interfere.
+ * @license GPL-2.0-or-later
+ * @link https://github.com/wpmoo/wpmoo
+ */
+(function (root) {
   "use strict";
 
-  function storageAvailable(type) {
-    try {
-      var storage = window[type];
-      var testKey = "__wpmoo_panel_test__";
-      storage.setItem(testKey, testKey);
-      storage.removeItem(testKey);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
+  root.WPMooModuleRegistry = root.WPMooModuleRegistry || [];
 
-  $(document).ready(function () {
-    var canStore = storageAvailable("localStorage");
-    initSmoothScroll();
+  root.WPMooModuleRegistry.push(function (ctx) {
+    var $ = ctx.$;
+    var $document = $(ctx.document);
 
-    function initSmoothScroll() {
-      var root = document.querySelector(".wpmoo");
-      if (!root) {
+    function syncSummaryState($details) {
+      if ( !$details || !$details.length ) {
         return;
       }
 
-      root.addEventListener(
-        "click",
-        function (event) {
-          var anchor = event.target.closest('a[href^="#"]');
-          if (!anchor) {
-            return;
-          }
+      var $summary = $details.children(".wpmoo-accordion__summary");
+      var $content = $details.children(".wpmoo-accordion__content");
+      var isOpen = !!$details.prop("open");
 
-          var href = anchor.getAttribute("href");
-          if (!href || href.charAt(0) !== "#" || href.length <= 1) {
-            return;
-          }
+      if ($summary.length) {
+        $summary.attr("aria-expanded", isOpen ? "true" : "false");
+      }
 
-          var target = root.querySelector(href);
-          if (!target) {
-            return;
-          }
-
-          event.preventDefault();
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-
-          if (window.history && window.history.replaceState) {
-            window.history.replaceState(null, "", href);
-          } else {
-            window.location.hash = href.substring(1);
-          }
-        },
-        true
-      );
+      if ($content && $content.length) {
+        if (isOpen) {
+          $content.stop(true, true).slideDown(180).css("display", "block").attr("aria-hidden", "false");
+        } else {
+          $content.stop(true, true).slideUp(180).css("display", "none").attr("aria-hidden", "true");
+        }
+      }
     }
 
-    // Enhance Accordion field toggling (defensive JS in case native <details> is blocked by theme/JS)
-    (function initAccordions() {
-      var DOC = $(document);
+    $(".wpmoo-accordion details.wpmoo-accordion__item").each(function () {
+      syncSummaryState($(this));
+    });
 
-      function syncSummaryState($details) {
-        if (!$details || !$details.length) return;
-        var $summary = $details.children('.wpmoo-accordion__summary');
-        var $content = $details.children('.wpmoo-accordion__content');
-        var isOpen = !!$details.prop('open');
-        if ($summary.length) {
-          $summary.attr('aria-expanded', isOpen ? 'true' : 'false');
-        }
-        if ($content && $content.length) {
-          if (isOpen) {
-            // Force visibility in case external CSS applied a stronger rule.
-            $content.stop(true, true).slideDown(180).css('display', 'block').attr('aria-hidden', 'false');
-          } else {
-            $content.stop(true, true).slideUp(180).css('display', 'none').attr('aria-hidden', 'true');
-          }
-        }
-      }
-
-      // Initialize current states
-      $('.wpmoo-accordion details.wpmoo-accordion__item').each(function () {
-        syncSummaryState($(this));
-      });
-
-      // Click/keyboard handlers (prevent double-toggle by taking control)
-      DOC.on('click', '.wpmoo-accordion__summary', function (e) {
-        var $details = $(this).closest('details.wpmoo-accordion__item');
-        if (!$details.length) return;
-        e.preventDefault();
-        $details.prop('open', !$details.prop('open'));
-        syncSummaryState($details);
-      });
-
-      DOC.on('keydown', '.wpmoo-accordion__summary', function (e) {
-        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
-          var $details = $(this).closest('details.wpmoo-accordion__item');
-          if (!$details.length) return;
-          e.preventDefault();
-          $details.prop('open', !$details.prop('open'));
-          syncSummaryState($details);
-        }
-      });
-    })();
-
-  $("[data-wpmoo-panel]").each(function () {
-      var $panel = $(this);
-      var panelId = $panel.data("panel-id") || $panel.attr("id") || "";
-      var storageKey = panelId ? "wpmoo_panel_active_" + panelId : "";
-      var $tabs = $panel.find("[data-panel-tab]");
-      var $sections = $panel.find("[data-panel-section]");
-      var initialTarget = $panel.data("panel-active") || "";
-      var $form = $panel.closest("form");
-      var $hidden = null;
-      var activeInputName = panelId
-        ? "_wpmoo_active_panel[" + panelId + "]"
-        : "_wpmoo_active_panel";
-
-      if ($form.length) {
-        $hidden = $form
-          .find('input[type="hidden"][name="' + activeInputName + '"]')
-          .first();
-
-        if (!$hidden.length) {
-          $hidden = $("<input>", {
-            type: "hidden",
-            name: activeInputName,
-          }).appendTo($form);
-        }
-
-        if (panelId) {
-          $hidden.data("panel-id", panelId);
-        }
-      }
-
-      function activate(target, skipStore) {
-        if (!target) {
-          if ($tabs.length) {
-            target = $tabs.first().data("panel-tab");
-          } else if ($sections.length) {
-            target = $sections.first().data("panel-section");
-          } else {
-            return;
-          }
-        }
-
-        var isAccordionMode = $panel.find(".wpmoo-panel__tabs").is(":hidden");
-        var allowMulti =
-          $panel.data("panel-multi") === 1 ||
-          $panel.data("panel-multi") === "1" ||
-          $panel.data("panel-multi") === true;
-
-        var $targetTab = $tabs.filter('[data-panel-tab="' + target + '"]');
-        if (!$targetTab.length && $tabs.length) {
-          $targetTab = $tabs.first();
-          target = $targetTab.data("panel-tab");
-        }
-
-        var $targetSection = $sections.filter(
-          '[data-panel-section="' + target + '"]'
-        );
-        if (!$targetSection.length && $sections.length) {
-          $targetSection = $sections.first();
-          target = $targetSection.data("panel-section");
-        }
-
-        if ($tabs.length) {
-          $tabs.removeClass("is-active").attr("aria-selected", "false");
-          if ($targetTab.length) {
-            $targetTab.addClass("is-active").attr("aria-selected", "true");
-          }
-        }
-
-        var $switches = $panel.find('[data-panel-switch]');
-
-        if (isAccordionMode && allowMulti) {
-          if ($targetSection.length) {
-            $targetSection.addClass("is-active").attr("aria-hidden", "false");
-          }
-
-          $switches.each(function () {
-            var $btn = $(this);
-            var sectionId = $btn.data("panel-switch");
-            var $section = $sections.filter(
-              '[data-panel-section="' + sectionId + '"]'
-            );
-            var isOpen = $section.hasClass("is-active");
-            $btn.toggleClass("is-active", isOpen);
-            $btn.attr("aria-expanded", isOpen ? "true" : "false");
-          });
-        } else {
-          $switches.each(function () {
-            var $btn = $(this);
-            var isTarget = $btn.data("panel-switch") === target;
-            $btn.toggleClass("is-active", isTarget);
-            $btn.attr("aria-expanded", isTarget ? "true" : "false");
-          });
-
-          $sections.removeClass("is-active").attr("aria-hidden", "true");
-          if ($targetSection.length) {
-            $targetSection.addClass("is-active").attr("aria-hidden", "false");
-          }
-
-          if (!isAccordionMode) {
-            // Ensure hidden inline styles from accordion mode don't stop tab content from showing.
-            $sections.each(function () {
-              var $section = $(this);
-              var $body = $section.find(".wpmoo-panel__section-body");
-
-              if (!$body.length) {
-                return;
-              }
-
-              if ($section.is($targetSection)) {
-                $body.stop(true, true).show();
-              } else {
-                $body.stop(true, true).hide();
-              }
-            });
-          }
-        }
-
-        if ($hidden) {
-          $hidden.val(target);
-        }
-
-        if (!skipStore && canStore && storageKey) {
-          try {
-            window.localStorage.setItem(storageKey, target);
-          } catch (error) {
-            // Ignore storage failures.
-          }
-        }
-      }
-
-      if (!$tabs.length) {
-        $sections.addClass("is-active").attr("aria-hidden", "false");
-        if ($hidden && $sections.length) {
-          $hidden.val($sections.first().data("panel-section"));
-        }
+    $document.on("click", ".wpmoo-accordion__summary", function (event) {
+      var $details = $(this).closest("details.wpmoo-accordion__item");
+      if ( ! $details.length ) {
         return;
       }
+      event.preventDefault();
+      $details.prop("open", !$details.prop("open"));
+      syncSummaryState($details);
+    });
 
-      var stored = "";
-      if (canStore && storageKey) {
-        try {
-          stored = window.localStorage.getItem(storageKey) || "";
-        } catch (error) {
-          stored = "";
-        }
-      }
-
-      var panelPersistAttr = $panel.data("panel-persist");
-      var allowPersistence =
-        panelPersistAttr === undefined ||
-        panelPersistAttr === true ||
-        panelPersistAttr === 1 ||
-        panelPersistAttr === "1";
-
-      if (
-        allowPersistence &&
-        stored &&
-        $tabs.filter('[data-panel-tab="' + stored + '"]').length
-      ) {
-        initialTarget = stored;
-      }
-
-      var currentTarget = $tabs.filter('.is-active').first().data('panel-tab');
-      if (!currentTarget) {
-        currentTarget = $sections
-          .filter('.is-active')
-          .first()
-          .data('panel-section');
-      }
-
-      if (!initialTarget && currentTarget) {
-        initialTarget = currentTarget;
-      }
-
-      if ($hidden && currentTarget) {
-        $hidden.val(currentTarget);
-      }
-
-      if (initialTarget && initialTarget !== currentTarget) {
-        setTimeout(function () {
-          activate(initialTarget, true);
-        }, 0);
-      }
-
-      $tabs.on("click", function (event) {
-        event.preventDefault();
-        activate($(this).data("panel-tab"));
-      });
-
-      $tabs.on("keydown", function (event) {
-        if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
-          event.preventDefault();
-          activate($(this).data("panel-tab"));
-        }
-      });
-
-      // Pico details/summary accordion: keep only one open when multi disabled,
-      // and persist the last open section to hidden input + localStorage.
-      $panel.on('toggle', 'details[data-panel-section]', function(){
-        var $details = $(this);
-        var allowMulti =
-          $panel.data("panel-multi") === 1 ||
-          $panel.data("panel-multi") === "1" ||
-          $panel.data("panel-multi") === true;
-
-        if (!allowMulti && this.open){
-          $details.siblings('details[data-panel-section]').prop('open', false);
-        }
-
-        var panelId = $panel.data('panel-id') || '';
-        var targetId = this.open ? ($details.attr('id') || '') : '';
-        if ($hidden && targetId){ $hidden.val(targetId); }
-        if (canStore && panelId){
-          try { window.localStorage.setItem('wpmoo_panel_active_' + panelId, targetId); } catch(e){}
-        }
-      });
-
-      function handleAccordionState() {
-        var isAccordion = $panel.find(".wpmoo-panel__tabs").is(":hidden");
-        $panel.data("wpmoo-accordion", isAccordion);
-
-        var allowMulti =
-          $panel.data("panel-multi") === 1 ||
-          $panel.data("panel-multi") === "1" ||
-          $panel.data("panel-multi") === true;
-
-        if (isAccordion) {
-          if (!allowMulti) {
-            var target = $hidden ? $hidden.val() : "";
-
-            if (!target) {
-              var $activeDesktop = $sections.filter(".is-active").first();
-              if ($activeDesktop.length) {
-                target = $activeDesktop.data("panel-section");
-              }
-            }
-
-            if (!target && $sections.length) {
-              target = $sections.first().data("panel-section");
-            }
-
-            activate(target, true);
-          }
-
-          $sections.each(function () {
-            var $section = $(this);
-            var $body = $section.find(".wpmoo-panel__section-body");
-
-            if ($section.hasClass("is-active")) {
-              $body.show();
-            } else {
-              $body.hide();
-            }
-          });
-
-          $panel.find("[data-panel-switch]").each(function () {
-            var $btn = $(this);
-            var sectionId = $btn.data("panel-switch");
-            var $section = $sections.filter(
-              '[data-panel-section="' + sectionId + '"]'
-            );
-            var isOpen = $section.hasClass("is-active");
-            $btn.toggleClass("is-active", isOpen);
-            $btn.attr("aria-expanded", isOpen ? "true" : "false");
-          });
-        } else {
-          var target = $hidden ? $hidden.val() : "";
-
-          if (!target) {
-            var $activeSection = $sections.filter(".is-active").last();
-            if ($activeSection.length) {
-              target = $activeSection.data("panel-section");
-            }
-          }
-
-          if (!target && $sections.length) {
-            target = $sections.first().data("panel-section");
-          }
-
-          activate(target, true);
-          $sections.find(".wpmoo-panel__section-body").show();
-        }
-      }
-
-      handleAccordionState();
-
-      $(window).on("resize", function () {
-        handleAccordionState();
-      });
-
-      $panel.on("click", "[data-panel-switch]", function (event) {
-        event.preventDefault();
-        var target = $(this).data("panel-switch");
-        var isAccordion = $panel.find(".wpmoo-panel__tabs").is(":hidden");
-        var allowMulti =
-          $panel.data("panel-multi") === 1 ||
-          $panel.data("panel-multi") === "1" ||
-          $panel.data("panel-multi") === true;
-        var $section = $panel.find('[data-panel-section="' + target + '"]');
-
-        if (isAccordion && allowMulti && $section.hasClass("is-active")) {
-          $section.removeClass("is-active").attr("aria-hidden", "true");
-          $(this).removeClass("is-active").attr("aria-expanded", "false");
-
-          var $body = $section.find(".wpmoo-panel__section-body");
-          if ($body.length) {
-            $body.stop(true, true).slideUp(180);
-          }
-
-          if ($hidden && $hidden.val() === target) {
-            var $remaining = $sections
-              .filter(".is-active")
-              .not($section);
-
-            if ($remaining.length) {
-              $hidden.val($remaining.last().data("panel-section"));
-            } else {
-              $hidden.val("");
-            }
-          }
-
+    $document.on("keydown", ".wpmoo-accordion__summary", function (event) {
+      if ( event.key === "Enter" || event.key === " " || event.key === "Spacebar" ) {
+        var $details = $(this).closest("details.wpmoo-accordion__item");
+        if ( ! $details.length ) {
           return;
         }
-
-        activate(target);
-
-        if (isAccordion && $section.length) {
-          var $body = $section.find(".wpmoo-panel__section-body");
-
-          if ($body.length) {
-            $body.stop(true, true).slideDown(180);
-          }
-        }
-      });
-    });
-  });
-
-  // Repeatable fields: add button handler (clone last item, clear values)
-  $(document).on('click', '[data-repeat-add]', function () {
-    var $wrap = $(this).closest('.wpmoo-repeat');
-    if (!$wrap.length) return;
-    var $items = $wrap.find('.wpmoo-repeat__items');
-    if (!$items.length) return;
-    var max = parseInt($wrap.data('repeat-max') || 0, 10) || 0;
-    var count = $items.children().length;
-    if (max > 0 && count >= max) {
-      return; // respect max
-    }
-    var $last = $items.children().last();
-    var $clone = $last.clone(true, true);
-    $clone.find('input, select, textarea').each(function () {
-      var $el = $(this);
-      if ($el.is(':checkbox') || $el.is(':radio')) {
-        $el.prop('checked', false);
-      } else {
-        $el.val('');
+        event.preventDefault();
+        $details.prop("open", !$details.prop("open"));
+        syncSummaryState($details);
       }
     });
-    $items.append($clone);
-    // Focus the first control in the new clone.
-    var $first = $clone.find('input, select, textarea').first();
-    if ($first.length) { $first.trigger('focus'); }
   });
+})(window);
 
-  // Repeatable fields: remove button handler
-  $(document).on('click', '[data-repeat-remove]', function () {
-    var $item = $(this).closest('.wpmoo-repeat__item');
-    var $wrap = $(this).closest('.wpmoo-repeat');
-    var $itemsWrap = $wrap.find('.wpmoo-repeat__items');
-    var min = parseInt($wrap.data('repeat-min') || 0, 10) || 0;
-    var count = $itemsWrap.children('.wpmoo-repeat__item').length;
-    if (count <= Math.max(min, 1)) {
-      // Clear values instead of removing if at min
-      $item.find('input, select, textarea').each(function () {
-        var $el = $(this);
-        if ($el.is(':checkbox') || $el.is(':radio')) {
-          $el.prop('checked', false);
-        } else {
-          $el.val('');
-        }
-      });
-      return;
-    }
-    $item.remove();
-  });
 
-  // Repeatable fields: clone current item (duplicate structure, clear values), insert after
-  $(document).on('click', '[data-repeat-clone]', function () {
-    var $item = $(this).closest('.wpmoo-repeat__item');
-    var $wrap = $(this).closest('.wpmoo-repeat');
-    if (!$item.length || !$wrap.length) return;
-    var $itemsWrap = $wrap.find('.wpmoo-repeat__items');
-    if (!$itemsWrap.length) return;
+/*!
+ * WPMoo Framework – Contextual field help popovers.
+ * Renders accessible tooltip dialogs for .wpmoo-field-help triggers.
+ * @license GPL-2.0-or-later
+ * @link https://github.com/wpmoo/wpmoo
+ */
+(function (root) {
+  "use strict";
 
-    var max = parseInt($wrap.data('repeat-max') || 0, 10) || 0;
-    var count = $itemsWrap.children('.wpmoo-repeat__item').length;
-    if (max > 0 && count >= max) {
-      return; // respect max
-    }
+  root.WPMooModuleRegistry = root.WPMooModuleRegistry || [];
 
-    var $clone = $item.clone(true, true);
-    $clone.find('input, select, textarea').each(function () {
-      var $el = $(this);
-      if ($el.is(':checkbox') || $el.is(':radio')) {
-        $el.prop('checked', false);
-      } else {
-        $el.val('');
-      }
-    });
-
-    $clone.insertAfter($item);
-
-    // Focus the first control in the cloned item.
-    var $first = $clone.find('input, select, textarea').first();
-    if ($first.length) { $first.trigger('focus'); }
-
-    // Re-init sorting + renumber titles and controls.
-    initRepeatableSorting($wrap);
-    renumber($wrap);
-  });
-
-  (function registerFieldHelp() {
+  root.WPMooModuleRegistry.push(function (ctx) {
+    var $ = ctx.$;
+    var $document = $(ctx.document);
+    var $window = $(ctx.window);
     var HELP_SELECTOR = ".wpmoo-field-help";
     var helpPopoverId = "wpmoo-help-popover";
     var $activeButton = null;
     var $popover = null;
-    var $document = $(document);
-    var $window = $(window);
-    var decoder = document.createElement("textarea");
+    var decoder = ctx.document.createElement("textarea");
 
     function decodeEntities(value) {
       if (!value) {
@@ -562,68 +119,7 @@
         .append('<div class="wpmoo-help-popover__arrow"></div>');
 
       $("body").append($popover);
-
       return $popover;
-    }
-
-    function getPopoverContent($button) {
-      var htmlAttr = $button.attr("data-help-html");
-      if (htmlAttr) {
-        return decodeEntities(htmlAttr);
-      }
-
-      var text = $button.attr("data-help-text") || $button.attr("data-tooltip") || "";
-      if (text) {
-        return "<p>" + escapeHtml(text) + "</p>";
-      }
-
-      return "";
-    }
-
-    function positionPopover($button, popover) {
-      if (!popover || !popover.length || !$button || !$button.length) {
-        return;
-      }
-
-      var buttonNode = $button[0];
-      if (!buttonNode.getBoundingClientRect) {
-        return;
-      }
-
-      var rect = buttonNode.getBoundingClientRect();
-      var gap = 12;
-      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
-      var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft || 0;
-
-      popover.css({ top: 0, left: 0, transform: "none" });
-      var popoverWidth = popover.outerWidth();
-      var popoverHeight = popover.outerHeight();
-
-      var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-      var availableRight = viewportWidth - rect.right;
-      var availableLeft = rect.left;
-      var placement = "right";
-
-      if (availableRight < popoverWidth + gap && availableLeft > availableRight) {
-        placement = "left";
-      }
-
-      var top = scrollTop + rect.top + rect.height / 2 - popoverHeight / 2;
-      var minTop = scrollTop + 12;
-      var maxTop = scrollTop + (window.innerHeight || document.documentElement.clientHeight || popoverHeight) - popoverHeight - 12;
-      top = Math.max(minTop, Math.min(top, maxTop));
-
-      var left =
-        placement === "right"
-          ? scrollLeft + rect.right + gap
-          : scrollLeft + rect.left - popoverWidth - gap;
-
-      popover
-        .attr("data-side", placement)
-        .css({
-          top: Math.round(top) + "px",
-          left: Math.round(left) + "px",
-        });
     }
 
     function closePopover() {
@@ -631,42 +127,45 @@
         return;
       }
 
-      var popover = ensurePopover();
-      popover.removeClass("is-visible").attr("aria-hidden", "true").attr("data-side", "");
-      popover.find(".wpmoo-help-popover__content").empty();
-
-      $activeButton.removeClass("is-active").attr("aria-expanded", "false");
+      var $panel = ensurePopover();
+      $panel.attr("aria-hidden", "true").removeClass("is-visible");
+      $panel.find(".wpmoo-help-popover__content").empty();
+      $activeButton.attr("aria-expanded", "false");
       $activeButton = null;
     }
 
     function openPopover($button) {
-      if (!$button || !$button.length) {
-        return;
-      }
-
-      var content = getPopoverContent($button);
+      var content = $button.data("help") || $button.attr("data-help");
       if (!content) {
-        closePopover();
         return;
       }
 
-      if ($activeButton && $button.is($activeButton)) {
-        closePopover();
-        return;
-      }
+      content = decodeEntities(content);
 
-      closePopover();
-
-      var popover = ensurePopover();
-      popover.find(".wpmoo-help-popover__content").html(content);
-      popover.attr("aria-hidden", "false");
-
+      var $panel = ensurePopover();
+      $panel.find(".wpmoo-help-popover__content").html(escapeHtml(content));
+      positionPopover($button, $panel);
+      $panel.attr("aria-hidden", "false").addClass("is-visible");
+      $button.attr("aria-expanded", "true");
       $activeButton = $button;
-      $button.addClass("is-active").attr("aria-expanded", "true").attr("aria-controls", helpPopoverId);
+    }
 
-      positionPopover($button, popover);
-      requestAnimationFrame(function () {
-        popover.addClass("is-visible");
+    function positionPopover($button, $panel) {
+      if (!$button || !$button.length || !$panel || !$panel.length) {
+        return;
+      }
+
+      var offset = $button.offset();
+      var height = $button.outerHeight();
+      var width = $button.outerWidth();
+      var panelWidth = $panel.outerWidth();
+      var scrollTop = $window.scrollTop() || 0;
+      var top = offset.top + height + 12;
+      var left = offset.left + width / 2 - panelWidth / 2;
+
+      $panel.css({
+        top: top,
+        left: Math.max(12, left),
       });
     }
 
@@ -711,229 +210,770 @@
 
       positionPopover($activeButton, ensurePopover());
     });
-  })();
+  });
+})(window);
 
-  var optionsConfig = window.wpmooAdminOptions || null;
 
-  if (optionsConfig && optionsConfig.menu_slug) {
+/*!
+ * WPMoo Framework – Options page AJAX save + toast feedback.
+ * Hijacks the options form to post via AJAX, display toasts and persist active panels.
+ * @license GPL-2.0-or-later
+ * @link https://github.com/wpmoo/wpmoo
+ */
+(function (root) {
+  "use strict";
+
+  root.WPMooModuleRegistry = root.WPMooModuleRegistry || [];
+
+  root.WPMooModuleRegistry.push(function (ctx) {
+    var $ = ctx.$;
+    var windowObj = ctx.window;
+    var optionsConfig = windowObj.wpmooAdminOptions || null;
+
+    if ( ! optionsConfig || ! optionsConfig.menu_slug ) {
+      return;
+    }
+
     var $optionsForm = $("#wpmoo-options-form");
+    if ( ! $optionsForm.length ) {
+      return;
+    }
 
-    if ($optionsForm.length) {
-      // If AJAX save is explicitly disabled, let default submit proceed.
-      if (optionsConfig.ajax_save === false || optionsConfig.ajax_save === 0 || optionsConfig.ajax_save === "0") {
-        return;
+    if (optionsConfig.ajax_save === false || optionsConfig.ajax_save === 0 || optionsConfig.ajax_save === "0") {
+      return;
+    }
+
+    var $submitButtons = $optionsForm.find('button[type="submit"], input[type="submit"]');
+    var toastContainer = $(".wpmoo-toast-container");
+
+    if ( ! toastContainer.length ) {
+      toastContainer = $("<div>", { class: "wpmoo-toast-container" });
+      $("body").append(toastContainer);
+    }
+
+    var allowPersistence =
+      optionsConfig.persistTabs === true ||
+      optionsConfig.persistTabs === 1 ||
+      optionsConfig.persistTabs === "1";
+
+    function getString(key, fallback) {
+      if (optionsConfig.strings && Object.prototype.hasOwnProperty.call(optionsConfig.strings, key)) {
+        return optionsConfig.strings[key];
       }
-      var $submitButtons = $optionsForm.find(
-        'button[type="submit"], input[type="submit"]'
-      );
+      return fallback;
+    }
 
-      var toastContainer = $(".wpmoo-toast-container");
-
-      if (!toastContainer.length) {
-        toastContainer = $("<div>", { class: "wpmoo-toast-container" });
-        $("body").append(toastContainer);
+    function showToast(type, message) {
+      var toastClass = "wpmoo-toast";
+      if (type === "success") {
+        toastClass += " wpmoo-toast--success";
+      } else if (type === "error") {
+        toastClass += " wpmoo-toast--error";
+      } else {
+        toastClass += " wpmoo-toast--info";
       }
 
-      var allowPersistence =
-        optionsConfig.persistTabs === true ||
-        optionsConfig.persistTabs === 1 ||
-        optionsConfig.persistTabs === "1";
+      var $toast = $("<div>", {
+        class: toastClass,
+        text: message,
+      });
 
-      function getString(key, fallback) {
-        if (
-          optionsConfig.strings &&
-          Object.prototype.hasOwnProperty.call(optionsConfig.strings, key)
-        ) {
-          return optionsConfig.strings[key];
-        }
+      toastContainer.append($toast);
 
-        return fallback;
-      }
+      requestAnimationFrame(function () {
+        $toast.addClass("is-visible");
+      });
 
-      function showToast(type, message) {
-        var toastClass = "wpmoo-toast";
-
-        if (type === "success") {
-          toastClass += " wpmoo-toast--success";
-        } else if (type === "error") {
-          toastClass += " wpmoo-toast--error";
-        } else {
-          toastClass += " wpmoo-toast--info";
-        }
-
-        var $toast = $("<div>", {
-          class: toastClass,
-          text: message,
-        });
-
-        toastContainer.append($toast);
-
-        requestAnimationFrame(function () {
-          $toast.addClass("is-visible");
-        });
-
+      setTimeout(function () {
+        $toast.removeClass("is-visible");
         setTimeout(function () {
-          $toast.removeClass("is-visible");
-          setTimeout(function () {
-            $toast.remove();
-          }, 200);
-        }, 4000);
-      }
+          $toast.remove();
+        }, 200);
+      }, 4000);
+    }
 
-      $optionsForm.on("submit", function (event) {
-        event.preventDefault();
+    $optionsForm.on("submit", function (event) {
+      event.preventDefault();
 
-        var payload = $optionsForm.serializeArray();
-        payload.push({ name: "action", value: "wpmoo_save_options" });
-        payload.push({ name: "menu_slug", value: optionsConfig.menu_slug });
-        payload.push({ name: "nonce", value: optionsConfig.nonce });
+      var payload = $optionsForm.serializeArray();
+      payload.push({ name: "action", value: "wpmoo_save_options" });
+      payload.push({ name: "menu_slug", value: optionsConfig.menu_slug });
+      payload.push({ name: "nonce", value: optionsConfig.nonce });
 
-        var originalLabels = [];
+      var originalLabels = [];
 
-        $submitButtons.each(function (index, button) {
-          var $button = $(button);
-          if ($button.is("button")) {
-            originalLabels[index] = $button.text();
-            $button.text(getString("saving", "Saving…"));
-          } else {
-            originalLabels[index] = $button.val();
-            $button.val(getString("saving", "Saving…"));
-          }
-        });
+      $submitButtons.each(function (index, button) {
+        var $button = $(button);
+        if ($button.is("button")) {
+          originalLabels[index] = $button.text();
+          $button.text(getString("saving", "Saving…"));
+        } else {
+          originalLabels[index] = $button.val();
+          $button.val(getString("saving", "Saving…"));
+        }
+      });
 
-        $submitButtons.prop("disabled", true).addClass("disabled");
+      $submitButtons.prop("disabled", true).addClass("disabled");
 
-        $.ajax({
-          url: optionsConfig.ajax_url || window.ajaxurl,
-          method: "POST",
-          dataType: "json",
-          data: payload,
-        })
-          .done(function (response) {
-            if (response && response.success) {
-              var message =
-                (response.data && response.data.message) ||
-                getString("saved", "Settings saved.");
+      $.ajax({
+        url: optionsConfig.ajax_url || windowObj.ajaxurl,
+        method: "POST",
+        dataType: "json",
+        data: payload,
+      })
+        .done(function (response) {
+          if (response && response.success) {
+            var message =
+              (response.data && response.data.message) ||
+              getString("saved", "Settings saved.");
 
-              showToast("success", message);
+            showToast("success", message);
 
-              if (response.data && response.data.activePanel) {
-                $optionsForm
-                  .find('.wpmoo-active-panel')
-                  .val(response.data.activePanel);
+            if (response.data && response.data.activePanel) {
+              $optionsForm.find(".wpmoo-active-panel").val(response.data.activePanel);
 
-                if (optionsConfig.menu_slug && response.data.activePanel) {
-                  var storageKey =
-                    "wpmoo_panel_active_" +
-                    "wpmoo-options-panel-" +
-                    optionsConfig.menu_slug;
-                  try {
-                    window.localStorage.setItem(
-                      storageKey,
-                      response.data.activePanel
-                    );
-                    optionsConfig.persistTabs = true;
-                    allowPersistence = true;
-                    var $panelElement = $(
-                      '[data-panel-id="wpmoo-options-panel-' +
-                        optionsConfig.menu_slug +
-                        '"]'
-                    );
-                    $panelElement
-                      .data('panel-persist', true)
-                      .attr('data-panel-persist', '1');
-                  } catch (error) {}
+              if (optionsConfig.menu_slug && response.data.activePanel) {
+                var storageKey = "wpmoo_panel_active_wpmoo-options-panel-" + optionsConfig.menu_slug;
+                try {
+                  windowObj.localStorage.setItem(storageKey, response.data.activePanel);
+                  optionsConfig.persistTabs = true;
+                  allowPersistence = true;
+                  var $panelElement = $('[data-panel-id="wpmoo-options-panel-' + optionsConfig.menu_slug + '"]');
+                  $panelElement.data("panel-persist", true).attr("data-panel-persist", "1");
+                } catch (error) {
+                  // Ignore storage errors.
                 }
               }
-            } else {
-              var errorMessage =
-                (response && response.data && response.data.message) ||
-                getString("error", "Unable to save settings.");
-
-              showToast("error", errorMessage);
             }
-          })
-          .fail(function () {
-            // Show toast and gracefully fallback to normal submit.
-            showToast("error", getString("error", "Unable to save settings."));
-            try {
-              $optionsForm.off("submit");
-              $optionsForm.trigger("submit");
-            } catch (e) {}
-          })
-          .always(function () {
-            $submitButtons.prop("disabled", false).removeClass("disabled");
+          } else {
+            var errorMessage =
+              (response && response.data && response.data.message) ||
+              getString("error", "Unable to save settings.");
 
-            $submitButtons.each(function (index, button) {
-              var $button = $(button);
-              if ($button.is("button")) {
-                $button.text(originalLabels[index]);
+            showToast("error", errorMessage);
+          }
+        })
+        .fail(function () {
+          showToast("error", getString("error", "Unable to save settings."));
+          try {
+            $optionsForm.off("submit");
+            $optionsForm.trigger("submit");
+          } catch (error) {}
+        })
+        .always(function () {
+          $submitButtons.prop("disabled", false).removeClass("disabled");
+
+          $submitButtons.each(function (index, button) {
+            var $button = $(button);
+            if ($button.is("button")) {
+              $button.text(originalLabels[index]);
+            } else {
+              $button.val(originalLabels[index]);
+            }
+          });
+        });
+    });
+  });
+})(window);
+
+
+/*!
+ * WPMoo Framework – Panel/tabs controller.
+ * Manages tab ↔ accordion layouts, persistence and aria states for grouped sections.
+ * @license GPL-2.0-or-later
+ * @link https://github.com/wpmoo/wpmoo
+ */
+(function (root) {
+  "use strict";
+
+  root.WPMooModuleRegistry = root.WPMooModuleRegistry || [];
+
+  root.WPMooModuleRegistry.push(function (ctx) {
+    var $ = ctx.$;
+    var canStore = ctx.canStore;
+    var windowObj = ctx.window;
+    var $panels = $("[data-wpmoo-panel]");
+
+    if ( ! $panels.length ) {
+      return;
+    }
+
+    $panels.each(function () {
+      var $panel = $(this);
+      var panelId = $panel.data("panel-id") || $panel.attr("id") || "";
+      var storageKey = panelId ? "wpmoo_panel_active_" + panelId : "";
+      var $tabs = $panel.find("[data-panel-tab]");
+      var $sections = $panel.find("[data-panel-section]");
+      var initialTarget = $panel.data("panel-active") || "";
+      var $form = $panel.closest("form");
+      var $hidden = null;
+      var activeInputName = panelId ? "_wpmoo_active_panel[" + panelId + "]" : "_wpmoo_active_panel";
+
+      if ($form.length) {
+        $hidden = $form.find('input[type="hidden"][name="' + activeInputName + '"]').first();
+        if ( ! $hidden.length ) {
+          $hidden = $("<input>", { type: "hidden", name: activeInputName }).appendTo($form);
+        }
+
+        if (panelId) {
+          $hidden.data("panel-id", panelId);
+        }
+      }
+
+      function activate(target, skipStore) {
+        if (!target) {
+          if ($tabs.length) {
+            target = $tabs.first().data("panel-tab");
+          } else if ($sections.length) {
+            target = $sections.first().data("panel-section");
+          } else {
+            return;
+          }
+        }
+
+        var isAccordionMode = $panel.find(".wpmoo-panel__tabs").is(":hidden");
+        var allowMulti =
+          $panel.data("panel-multi") === 1 ||
+          $panel.data("panel-multi") === "1" ||
+          $panel.data("panel-multi") === true;
+
+        var $targetTab = $tabs.filter('[data-panel-tab="' + target + '"]');
+        if ( ! $targetTab.length && $tabs.length ) {
+          $targetTab = $tabs.first();
+          target = $targetTab.data("panel-tab");
+        }
+
+        var $targetSection = $sections.filter('[data-panel-section="' + target + '"]');
+        if ( ! $targetSection.length && $sections.length ) {
+          $targetSection = $sections.first();
+          target = $targetSection.data("panel-section");
+        }
+
+        if ($tabs.length) {
+          $tabs.removeClass("is-active").attr("aria-selected", "false");
+          if ($targetTab.length) {
+            $targetTab.addClass("is-active").attr("aria-selected", "true");
+          }
+        }
+
+        var $switches = $panel.find("[data-panel-switch]");
+
+        if (isAccordionMode && allowMulti) {
+          if ($targetSection.length) {
+            $targetSection.addClass("is-active").attr("aria-hidden", "false");
+          }
+
+          $switches.each(function () {
+            var $btn = $(this);
+            var sectionId = $btn.data("panel-switch");
+            var $section = $sections.filter('[data-panel-section="' + sectionId + '"]');
+            var isOpen = $section.hasClass("is-active");
+            $btn.toggleClass("is-active", isOpen);
+            $btn.attr("aria-expanded", isOpen ? "true" : "false");
+          });
+        } else {
+          $switches.each(function () {
+            var $btn = $(this);
+            var isTarget = $btn.data("panel-switch") === target;
+            $btn.toggleClass("is-active", isTarget);
+            $btn.attr("aria-expanded", isTarget ? "true" : "false");
+          });
+
+          $sections.removeClass("is-active").attr("aria-hidden", "true");
+          if ($targetSection.length) {
+            $targetSection.addClass("is-active").attr("aria-hidden", "false");
+          }
+
+          if ( ! isAccordionMode ) {
+            $sections.each(function () {
+              var $section = $(this);
+              var $body = $section.find(".wpmoo-panel__section-body");
+              if ( ! $body.length ) {
+                return;
+              }
+              if ($section.is($targetSection)) {
+                $body.stop(true, true).show();
               } else {
-                $button.val(originalLabels[index]);
+                $body.stop(true, true).hide();
               }
             });
-          });
-      });
-    }
-  }
-})(jQuery);
-  // Repeatable: make items sortable using jQuery UI if available (noConflict-safe)
-  function initRepeatableSorting($root){
-    var $lists = ($root && $root.length ? $root : jQuery(document)).find('.wpmoo-repeat__items');
-    $lists.each(function(){
-      var $list = jQuery(this);
-      if (typeof $list.sortable === 'function'){
+          }
+        }
+
+        if ($hidden) {
+          $hidden.val(target);
+        }
+
+        if ( ! skipStore && canStore && storageKey ) {
+          try {
+            windowObj.localStorage.setItem(storageKey, target);
+          } catch (error) {
+            // Ignore storage failures.
+          }
+        }
+      }
+
+      if ( ! $tabs.length ) {
+        $sections.addClass("is-active").attr("aria-hidden", "false");
+        if ($hidden && $sections.length) {
+          $hidden.val($sections.first().data("panel-section"));
+        }
+        return;
+      }
+
+      var stored = "";
+      if (canStore && storageKey) {
         try {
-          $list.sortable({
-            items: '> .wpmoo-repeat__item',
-            handle: '.wpmoo-repeat__handle',
-            axis: 'y',
-            tolerance: 'pointer',
-            update: function(){
-              renumber($list.closest('.wpmoo-repeat'));
+          stored = windowObj.localStorage.getItem(storageKey) || "";
+        } catch (error) {
+          stored = "";
+        }
+      }
+
+      var panelPersistAttr = $panel.data("panel-persist");
+      var allowPersistence =
+        panelPersistAttr === undefined ||
+        panelPersistAttr === true ||
+        panelPersistAttr === 1 ||
+        panelPersistAttr === "1";
+
+      if (
+        allowPersistence &&
+        stored &&
+        $tabs.filter('[data-panel-tab="' + stored + '"]').length
+      ) {
+        initialTarget = stored;
+      }
+
+      var currentTarget = $tabs.filter(".is-active").first().data("panel-tab");
+      if ( ! currentTarget ) {
+        currentTarget = $sections.filter(".is-active").first().data("panel-section");
+      }
+
+      if ( ! initialTarget && currentTarget ) {
+        initialTarget = currentTarget;
+      }
+
+      if ($hidden && currentTarget) {
+        $hidden.val(currentTarget);
+      }
+
+      if ( initialTarget && initialTarget !== currentTarget ) {
+        setTimeout(function () {
+          activate(initialTarget, true);
+        }, 0);
+      }
+
+      $tabs.on("click", function (event) {
+        event.preventDefault();
+        activate($(this).data("panel-tab"));
+      });
+
+      $tabs.on("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+          event.preventDefault();
+          activate($(this).data("panel-tab"));
+        }
+      });
+
+      $panel.on("toggle", "details[data-panel-section]", function () {
+        var $details = $(this);
+        var allowMulti =
+          $panel.data("panel-multi") === 1 ||
+          $panel.data("panel-multi") === "1" ||
+          $panel.data("panel-multi") === true;
+
+        if ( ! allowMulti && this.open ) {
+          $details.siblings("details[data-panel-section]").prop("open", false);
+        }
+
+        var targetId = this.open ? ($details.attr("id") || "") : "";
+        if ($hidden && targetId) {
+          $hidden.val(targetId);
+        }
+        if (canStore && panelId) {
+          try {
+            windowObj.localStorage.setItem("wpmoo_panel_active_" + panelId, targetId);
+          } catch (error) {}
+        }
+      });
+
+      function handleAccordionState() {
+        var isAccordion = $panel.find(".wpmoo-panel__tabs").is(":hidden");
+        $panel.data("wpmoo-accordion", isAccordion);
+
+        var allowMulti =
+          $panel.data("panel-multi") === 1 ||
+          $panel.data("panel-multi") === "1" ||
+          $panel.data("panel-multi") === true;
+
+        if (isAccordion) {
+          if ( ! allowMulti ) {
+            var target = $hidden ? $hidden.val() : "";
+
+            if ( ! target ) {
+              var $activeDesktop = $sections.filter(".is-active").first();
+              if ($activeDesktop.length) {
+                target = $activeDesktop.data("panel-section");
+              }
+            }
+
+            if ( ! target && $sections.length ) {
+              target = $sections.first().data("panel-section");
+            }
+
+            activate(target, true);
+          }
+
+          $sections.each(function () {
+            var $section = $(this);
+            var $body = $section.find(".wpmoo-panel__section-body");
+
+            if ($section.hasClass("is-active")) {
+              $body.show();
+            } else {
+              $body.hide();
             }
           });
-        } catch (e) {}
+
+          $panel.find("[data-panel-switch]").each(function () {
+            var $btn = $(this);
+            var sectionId = $btn.data("panel-switch");
+            var $section = $sections.filter('[data-panel-section="' + sectionId + '"]');
+            var isOpen = $section.hasClass("is-active");
+            $btn.toggleClass("is-active", isOpen);
+            $btn.attr("aria-expanded", isOpen ? "true" : "false");
+          });
+        } else {
+          var targetDesktop = $hidden ? $hidden.val() : "";
+
+          if ( ! targetDesktop ) {
+            var $activeSection = $sections.filter(".is-active").last();
+            if ($activeSection.length) {
+              targetDesktop = $activeSection.data("panel-section");
+            }
+          }
+
+          if ( ! targetDesktop && $sections.length ) {
+            targetDesktop = $sections.first().data("panel-section");
+          }
+
+          activate(targetDesktop, true);
+          $sections.find(".wpmoo-panel__section-body").show();
+        }
+      }
+
+      handleAccordionState();
+      $(ctx.window).on("resize", handleAccordionState);
+
+      $panel.on("click", "[data-panel-switch]", function (event) {
+        event.preventDefault();
+        var target = $(this).data("panel-switch");
+        var isAccordion = $panel.find(".wpmoo-panel__tabs").is(":hidden");
+        var allowMulti =
+          $panel.data("panel-multi") === 1 ||
+          $panel.data("panel-multi") === "1" ||
+          $panel.data("panel-multi") === true;
+        var $section = $panel.find('[data-panel-section="' + target + '"]');
+
+        if (isAccordion && allowMulti && $section.hasClass("is-active")) {
+          $section.removeClass("is-active").attr("aria-hidden", "true");
+          $(this).removeClass("is-active").attr("aria-expanded", "false");
+
+          var $body = $section.find(".wpmoo-panel__section-body");
+          if ($body.length) {
+            $body.stop(true, true).slideUp(180);
+          }
+
+          if ($hidden && $hidden.val() === target) {
+            var $remaining = $sections.filter(".is-active").not($section);
+            if ($remaining.length) {
+              $hidden.val($remaining.last().data("panel-section"));
+            } else {
+              $hidden.val("");
+            }
+          }
+
+          return;
+        }
+
+        activate(target);
+
+        if (isAccordion && $section.length) {
+          var $bodyAccordion = $section.find(".wpmoo-panel__section-body");
+          if ($bodyAccordion.length) {
+            $bodyAccordion.stop(true, true).slideDown(180);
+          }
+        }
+      });
+    });
+  });
+})(window);
+
+
+/*!
+ * WPMoo Framework – Repeatable field controls.
+ * Handles add/clone/remove/sort actions and numbering for .wpmoo-repeat blocks.
+ * @license GPL-2.0-or-later
+ * @link https://github.com/wpmoo/wpmoo
+ */
+(function (root) {
+  "use strict";
+
+  root.WPMooModuleRegistry = root.WPMooModuleRegistry || [];
+
+  root.WPMooModuleRegistry.push(function (ctx) {
+    var $ = ctx.$;
+    var $document = $(ctx.document);
+
+    function initRepeatableSorting($root) {
+      var $lists = ($root && $root.length ? $root : $document).find(".wpmoo-repeat__items");
+      $lists.each(function () {
+        var $list = $(this);
+        if (typeof $list.sortable === "function") {
+          try {
+            $list.sortable({
+              items: "> .wpmoo-repeat__item",
+              handle: ".wpmoo-repeat__handle",
+              axis: "y",
+              tolerance: "pointer",
+              update: function () {
+                renumber($list.closest(".wpmoo-repeat"));
+              },
+            });
+          } catch (error) {
+            // Silently ignore sortable errors (jQuery UI missing, etc.)
+          }
+        }
+      });
+    }
+
+    function renumber($wrap) {
+      if (!$wrap || !$wrap.length) {
+        return;
+      }
+
+      var base = $wrap.data("repeat-label") || "";
+      var $items = $wrap.find(".wpmoo-repeat__item");
+
+      $items.each(function (index) {
+        var $item = $(this);
+        var number = index + 1;
+        $item.attr("data-repeat-index", number);
+        var title = base ? number + ". " + base : "#" + number;
+        $item.find(".wpmoo-repeat__title").text(title);
+        $item.find("[data-repeat-up]").prop("disabled", index === 0);
+        $item.find("[data-repeat-down]").prop("disabled", index === $items.length - 1);
+      });
+    }
+
+    function resetFields($scope) {
+      $scope.find("input, select, textarea").each(function () {
+        var $field = $(this);
+        if ($field.is(":checkbox") || $field.is(":radio")) {
+          $field.prop("checked", false);
+        } else {
+          $field.val("");
+        }
+      });
+    }
+
+    $document.on("click", "[data-repeat-add]", function () {
+      var $wrap = $(this).closest(".wpmoo-repeat");
+      if (!$wrap.length) {
+        return;
+      }
+
+      var $items = $wrap.find(".wpmoo-repeat__items");
+      if (!$items.length) {
+        return;
+      }
+
+      var max = parseInt($wrap.data("repeat-max") || 0, 10) || 0;
+      var count = $items.children().length;
+      if (max > 0 && count >= max) {
+        return;
+      }
+
+      var $last = $items.children().last();
+      var $clone = $last.clone(true, true);
+      resetFields($clone);
+      $items.append($clone);
+
+      var $first = $clone.find("input, select, textarea").first();
+      if ($first.length) {
+        $first.trigger("focus");
+      }
+
+      initRepeatableSorting($wrap);
+      renumber($wrap);
+    });
+
+    $document.on("click", "[data-repeat-remove]", function () {
+      var $item = $(this).closest(".wpmoo-repeat__item");
+      var $wrap = $(this).closest(".wpmoo-repeat");
+      var $itemsWrap = $wrap.find(".wpmoo-repeat__items");
+      var min = parseInt($wrap.data("repeat-min") || 0, 10) || 0;
+      var count = $itemsWrap.children(".wpmoo-repeat__item").length;
+
+      if (count <= Math.max(min, 1)) {
+        resetFields($item);
+        return;
+      }
+
+      $item.remove();
+      renumber($wrap);
+    });
+
+    $document.on("click", "[data-repeat-clone]", function () {
+      var $item = $(this).closest(".wpmoo-repeat__item");
+      var $wrap = $(this).closest(".wpmoo-repeat");
+      if (!$item.length || !$wrap.length) {
+        return;
+      }
+
+      var $itemsWrap = $wrap.find(".wpmoo-repeat__items");
+      if (!$itemsWrap.length) {
+        return;
+      }
+
+      var max = parseInt($wrap.data("repeat-max") || 0, 10) || 0;
+      var count = $itemsWrap.children(".wpmoo-repeat__item").length;
+      if (max > 0 && count >= max) {
+        return;
+      }
+
+      var $clone = $item.clone(true, true);
+      resetFields($clone);
+      $clone.insertAfter($item);
+
+      var $first = $clone.find("input, select, textarea").first();
+      if ($first.length) {
+        $first.trigger("focus");
+      }
+
+      initRepeatableSorting($wrap);
+      renumber($wrap);
+    });
+
+    $document.on("click", "[data-repeat-up]", function () {
+      var $item = $(this).closest(".wpmoo-repeat__item");
+      var $wrap = $(this).closest(".wpmoo-repeat");
+      var $prev = $item.prev(".wpmoo-repeat__item");
+      if ($prev.length) {
+        $item.insertBefore($prev);
+        renumber($wrap);
       }
     });
-  }
 
-  jQuery(function(){
-    initRepeatableSorting(jQuery(document));
-    // Initial numbering of all repeaters
-    jQuery('.wpmoo-repeat').each(function(){ renumber(jQuery(this)); });
-  });
-  jQuery(document).on('click', '[data-repeat-add]', function(){
-    var $wrap = jQuery(this).closest('.wpmoo-repeat');
-    initRepeatableSorting($wrap);
-    renumber($wrap);
-  });
-
-  // Move up/down
-  jQuery(document).on('click', '[data-repeat-up]', function(){
-    var $item = jQuery(this).closest('.wpmoo-repeat__item');
-    var $wrap = jQuery(this).closest('.wpmoo-repeat');
-    var $prev = $item.prev('.wpmoo-repeat__item');
-    if ($prev.length){ $item.insertBefore($prev); renumber($wrap); }
-  });
-  jQuery(document).on('click', '[data-repeat-down]', function(){
-    var $item = jQuery(this).closest('.wpmoo-repeat__item');
-    var $wrap = jQuery(this).closest('.wpmoo-repeat');
-    var $next = $item.next('.wpmoo-repeat__item');
-    if ($next.length){ $item.insertAfter($next); renumber($wrap); }
-  });
-
-  function renumber($wrap){
-    if(!$wrap || !$wrap.length) return;
-    var base = $wrap.data('repeat-label') || '';
-    var $items = $wrap.find('.wpmoo-repeat__item');
-    $items.each(function(idx){
-      var $it = jQuery(this);
-      var i = idx + 1;
-      $it.attr('data-repeat-index', i);
-      var title = (base ? i + '. ' + base : '#' + i);
-      $it.find('.wpmoo-repeat__title').text(title);
-      $it.find('[data-repeat-up]').prop('disabled', idx === 0);
-      $it.find('[data-repeat-down]').prop('disabled', idx === $items.length - 1);
+    $document.on("click", "[data-repeat-down]", function () {
+      var $item = $(this).closest(".wpmoo-repeat__item");
+      var $wrap = $(this).closest(".wpmoo-repeat");
+      var $next = $item.next(".wpmoo-repeat__item");
+      if ($next.length) {
+        $item.insertAfter($next);
+        renumber($wrap);
+      }
     });
+
+    initRepeatableSorting($document);
+    $(".wpmoo-repeat").each(function () {
+      renumber($(this));
+    });
+  });
+})(window);
+
+
+/*!
+ * WPMoo Framework – Smooth scroll helper for sidebar/menu anchor jumps.
+ * Intercepts in-page links inside .wpmoo layout and scrolls smoothly.
+ * @license GPL-2.0-or-later
+ * @link https://github.com/wpmoo/wpmoo
+ */
+(function (root) {
+  "use strict";
+
+  root.WPMooModuleRegistry = root.WPMooModuleRegistry || [];
+
+  root.WPMooModuleRegistry.push(function (ctx) {
+    var documentRef = ctx.document;
+    var rootEl = documentRef.querySelector(".wpmoo");
+
+    if (!rootEl) {
+      return;
+    }
+
+    rootEl.addEventListener(
+      "click",
+      function (event) {
+        var anchor = event.target.closest('a[href^="#"]');
+        if (!anchor) {
+          return;
+        }
+
+        var href = anchor.getAttribute("href");
+        if (!href || href.charAt(0) !== "#" || href.length <= 1) {
+          return;
+        }
+
+        var target = rootEl.querySelector(href);
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        if (ctx.window.history && ctx.window.history.replaceState) {
+          ctx.window.history.replaceState(null, "", href);
+        } else {
+          ctx.window.location.hash = href.substring(1);
+        }
+      },
+      true
+    );
+  });
+})(window);
+
+
+(function (windowObj, documentObj, $) {
+  "use strict";
+
+  windowObj.WPMooModuleRegistry = windowObj.WPMooModuleRegistry || [];
+
+  function storageAvailable(type) {
+    try {
+      var storage = windowObj[type];
+      var testKey = "__wpmoo_panel_test__";
+      storage.setItem(testKey, testKey);
+      storage.removeItem(testKey);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
+
+  $(documentObj).ready(function () {
+    var context = {
+      window: windowObj,
+      document: documentObj,
+      $: $,
+      storageAvailable: storageAvailable,
+      canStore: storageAvailable("localStorage"),
+    };
+
+    (windowObj.WPMooModuleRegistry || []).forEach(function (initializer) {
+      if (typeof initializer !== "function") {
+        return;
+      }
+
+      try {
+        initializer(context);
+      } catch (error) {
+        if (windowObj.console && typeof windowObj.console.error === "function") {
+          windowObj.console.error("WPMoo module error:", error);
+        }
+      }
+    });
+  });
+})(window, document, jQuery);
