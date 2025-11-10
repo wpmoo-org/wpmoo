@@ -644,7 +644,8 @@ class Page {
 		}
 
 		// Actions
-		echo \wp_kses_post( $this->footer_component->render( $this ) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Footer component renders trusted admin markup (submit button).
+		echo $this->footer_component->render( $this );
 
 		echo '</form>';
 
@@ -665,7 +666,8 @@ class Page {
 	 * @return void
 	 */
 	protected function render_sidebar_navigation( array $sections ): void {
-		echo \wp_kses_post( $this->sidebar_component->render( $this, self::$nav_registry ) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sidebar component outputs sanitized nav markup.
+		echo $this->sidebar_component->render( $this, self::$nav_registry );
 	}
 
 	/**
