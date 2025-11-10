@@ -1,12 +1,21 @@
 <?php
 /**
- * Layout sidebar component (Pico-style accordion nav).
+ * Sidebar layout for admin pages.
+ *
+ * @package WPMoo\Layout
+ * @since 0.1.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
+ * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
 namespace WPMoo\Layout;
 
 use WPMoo\Page\Page;
 
+/**
+ * Sidebar layout builder for admin navigation accordion.
+ */
 class Sidebar {
 	/**
 	 * Whether to open only the active page group.

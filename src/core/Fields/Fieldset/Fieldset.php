@@ -1,8 +1,12 @@
 <?php
 /**
- * Fieldset layout groups multiple fields under shared headings.
+ * Fieldset layout groups related controls inside stacked sections.
  *
- * @package WPMoo\Fields\Fieldset
+ * @package WPMoo\Fields
+ * @since 0.1.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
+ * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
 namespace WPMoo\Fields\Fieldset;
@@ -15,6 +19,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Fieldset layout field that renders grouped sections of nested fields.
+ */
 class Fieldset extends BaseField {
 	/**
 	 * Prepared fieldset items.
@@ -150,6 +157,7 @@ class Fieldset extends BaseField {
 
 			$title = isset( $item['title'] ) ? (string) $item['title'] : '';
 			if ( '' === $title ) {
+				/* translators: %d: Fieldset index starting from 1. */
 				$title = function_exists( '__' ) ? sprintf( __( 'Fieldset %d', 'wpmoo' ), $index + 1 ) : 'Fieldset ' . ( $index + 1 );
 			}
 

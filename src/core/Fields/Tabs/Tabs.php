@@ -1,6 +1,12 @@
 <?php
 /**
- * Tabs layout field built on top of Pico nav component.
+ * Tabs layout groups multiple fields under tabbed navigation.
+ *
+ * @package WPMoo\Fields
+ * @since 0.1.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
+ * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
 namespace WPMoo\Fields\Tabs;
@@ -13,6 +19,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Tabbed layout field built with Pico-inspired radio controls.
+ */
 class Tabs extends BaseField {
 	/**
 	 * Tabs registry (items with nested fields).
@@ -147,6 +156,7 @@ class Tabs extends BaseField {
 
 			$title = isset( $item['title'] ) ? (string) $item['title'] : '';
 			if ( '' === $title ) {
+				/* translators: %d: Tab index starting from 1. */
 				$title = function_exists( '__' ) ? sprintf( __( 'Tab %d', 'wpmoo' ), $index + 1 ) : 'Tab ' . ( $index + 1 );
 			}
 

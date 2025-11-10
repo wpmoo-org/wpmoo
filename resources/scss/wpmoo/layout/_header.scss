@@ -1,0 +1,4 @@
+:where(.wpmoo) .wpmoo-header {
+    background-color: var(--wpmoo-header-background-color, rgba(255, 255, 255, 0.8));
+    padding: var(--wpmoo-header-spacing, 1rem) 0;
+}
