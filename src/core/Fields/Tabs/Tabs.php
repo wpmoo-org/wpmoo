@@ -223,5 +223,4 @@ class Tabs extends BaseField {
 
 		return $base . '[' . $section_id . '][' . $field_id . ']';
 	}
-
 }
