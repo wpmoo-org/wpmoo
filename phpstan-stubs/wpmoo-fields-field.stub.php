@@ -76,4 +76,11 @@ class Field {
 	 * @return self
 	 */
 	public static function accordion( string $id ) {}
+
+	/**
+	 * Create a tabs builder.
+	 *
+	 * @return self
+	 */
+	public static function tabs( string $id ) {}
 }

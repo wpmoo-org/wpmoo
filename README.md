@@ -81,6 +81,63 @@ Field::accordion('faq')
 
 Her iç alan kendi `id` değeriyle kaydedilir ve üst alanın değeri dizi olarak saklanır (`faq[faq_text]`, `faq[faq_switch]` gibi).
 
+### Fieldset layout field
+
+`Field::fieldset()` alanları kart benzeri bölümlerde gruplayabilir:
+
+```php
+Field::fieldset('profile')
+    ->label('Profile sections')
+    ->items([
+        [
+            'title'       => 'Basic info',
+            'description' => 'Contact details.',
+            'fields'      => [
+                Field::input('display_name')->label('Display name'),
+                Field::input('email')->label('Email')->attributes(['type' => 'email']),
+            ],
+        ],
+        [
+            'title'  => 'Preferences',
+            'fields' => [
+                Field::toggle('newsletter')->label('Receive newsletter'),
+                Field::select('language')
+                    ->label('Language')
+                    ->options([
+                        'en' => 'English',
+                        'tr' => 'Türkçe',
+                    ]),
+            ],
+        ],
+    ]);
+```
+
+### Tabs layout field
+
+`Field::tabs()` PicoCSS’in nav bileşenini kullanarak sekmeli içerik oluşturur:
+
+```php
+Field::tabs('settings_tabs')
+    ->items([
+        [
+            'title'  => 'Account',
+            'fields' => [
+                Field::input('username')->label('Username'),
+                Field::toggle('two_factor')->label('Enable 2FA'),
+            ],
+        ],
+        [
+            'title'  => 'Notifications',
+            'fields' => [
+                Field::checkbox('email_alerts')->label('Email alerts'),
+                Field::checkbox('sms_alerts')->label('SMS alerts'),
+            ],
+        ],
+    ]);
+```
+
+Sekme başlıklarına tıklandığında içerik alanı yumuşak geçişle güncellenir; her sekmenin değerleri `settings_tabs[account][username]` şeklinde saklanır. Yapı tamamen CSS ile çalışır, ilave JavaScript gerekmez.
+
 ### Sidebar navigation layout
 
 Codestar benzeri sol menü istiyorsanız `->sidebar_nav()` çağrısı yapın; tüm `Moo::section` başlıkları otomatik nav öğesi olarak listelenir:

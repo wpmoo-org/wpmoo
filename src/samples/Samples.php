@@ -245,5 +245,48 @@ final class Samples {
 						)
 					)
 			);
+
+		Moo::section( 'sample_tabs', __( 'Tabs', 'wpmoo' ), __( 'Switch between grouped fields.', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::tabs( 'demo_tabs' )
+					->label( __( 'Tabbed settings', 'wpmoo' ) )
+					->items(
+						array(
+							array(
+								'title'       => __( 'Account', 'wpmoo' ),
+								'description' => __( 'General account options.', 'wpmoo' ),
+								'fields'      => array(
+									Field::input( 'tabs_username' )
+										->label( __( 'Username', 'wpmoo' ) ),
+									Field::toggle( 'tabs_two_factor' )
+										->label( __( 'Enable 2FA', 'wpmoo' ) ),
+								),
+							),
+							array(
+								'title'       => __( 'Notifications', 'wpmoo' ),
+								'fields'      => array(
+									Field::checkbox( 'tabs_email_notifications' )
+										->label( __( 'Email alerts', 'wpmoo' ) ),
+									Field::checkbox( 'tabs_sms_notifications' )
+										->label( __( 'SMS alerts', 'wpmoo' ) ),
+								),
+							),
+							array(
+								'title'       => __( 'Display', 'wpmoo' ),
+								'fields'      => array(
+									Field::select( 'tabs_theme' )
+										->label( __( 'Theme', 'wpmoo' ) )
+										->options(
+											array(
+												'light' => __( 'Light', 'wpmoo' ),
+												'dark'  => __( 'Dark', 'wpmoo' ),
+											)
+										),
+								),
+							),
+						)
+					)
+			);
 	}
 }
