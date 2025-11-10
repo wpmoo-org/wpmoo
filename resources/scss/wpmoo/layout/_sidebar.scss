@@ -22,6 +22,7 @@
   align-self: flex-start;
   max-height: calc(100vh - var(--wpmoo-sticky-top, 0px));
   overflow: auto;
+  top: calc(var(--wpmoo-sticky-top, 0px) + 68px) !important;
 }
 
 :where(.wpmoo) .wpmoo-brand {
@@ -104,4 +105,3 @@
     padding-bottom: 1rem;
   }
 }
-:where(.wpmoo) { scroll-behavior: smooth; }

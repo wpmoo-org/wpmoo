@@ -50,7 +50,7 @@ final class Samples {
 		Moo::page( self::PAGE_ID )
 			->title( __( 'WPMoo Samples', 'wpmoo' ) )
 			->menu_slug( self::MENU_SLUG )
-			->fluid()
+			// ->fluid()
 			->sidebar_nav()
 			->ajax_save();
 	}
@@ -202,6 +202,44 @@ final class Samples {
 											)
 										)
 										->save_field( false ),
+								),
+							),
+						)
+					)
+			);
+
+		Moo::section( 'sample_fieldset', __( 'Fieldset', 'wpmoo' ), __( 'Group fields under sections.', 'wpmoo' ) )
+			->parent( self::PAGE_ID )
+			->fields(
+				Field::fieldset( 'demo_fieldset' )
+					->label( __( 'Profile configuration', 'wpmoo' ) )
+					->items(
+						array(
+							array(
+								'title'       => __( 'Basic info', 'wpmoo' ),
+								'description' => __( 'Contact details.', 'wpmoo' ),
+								'fields'      => array(
+									Field::input( 'fieldset_name' )
+										->label( __( 'Full name', 'wpmoo' ) ),
+									Field::input( 'fieldset_email' )
+										->label( __( 'Email', 'wpmoo' ) )
+										->attributes( array( 'type' => 'email' ) ),
+								),
+							),
+							array(
+								'title'       => __( 'Preferences', 'wpmoo' ),
+								'description' => __( 'Contact details.', 'wpmoo' ),
+								'fields'      => array(
+									Field::toggle( 'fieldset_newsletter' )
+										->label( __( 'Receive newsletter', 'wpmoo' ) ),
+									Field::select( 'fieldset_language' )
+										->label( __( 'Language', 'wpmoo' ) )
+										->options(
+											array(
+												'en' => __( 'English', 'wpmoo' ),
+												'tr' => __( 'Turkish', 'wpmoo' ),
+											)
+										),
 								),
 							),
 						)

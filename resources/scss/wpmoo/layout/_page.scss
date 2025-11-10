@@ -40,3 +40,7 @@ body.wp-admin.wpmoo-view #wpbody-content,
 body.wp-admin.wpmoo-view #wpbody-content>.wrap {
   background: var(--wpmoo-background-color, #fff) !important;
 }
+
+body.wpmoo-view {
+  scroll-behavior: smooth;
+}

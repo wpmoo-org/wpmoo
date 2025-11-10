@@ -26,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @method static Field toggle(string $id)
  * @method static Field range(string $id)
  * @method static Field accordion(string $id)
+ * @method static Field fieldset(string $id)
  *
  * @phpstan-consistent-constructor
  */
@@ -118,6 +119,16 @@ final class Field extends FieldBuilder {
 	 */
 	public static function accordion( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		return new self( $id, 'accordion' );
+	}
+
+	/**
+	 * Create a fieldset layout field.
+	 *
+	 * @param string $id Field id.
+	 * @return static
+	 */
+	public static function fieldset( string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+		return new self( $id, 'fieldset' );
 	}
 
 	/**

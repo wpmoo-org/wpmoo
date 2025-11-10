@@ -16,10 +16,3 @@ body.admin-bar :where(.wpmoo) .wpmoo-sticky {
     top: calc(var(--wpmoo-sticky-top, 0px) + 46px);
   }
 }
-
-:where(.wpmoo) .wpmoo-header.wpmoo-sticky {
-  background-color: var(--wpmoo-header-background-color, #fff);
-  backdrop-filter: blur(1rem);
-  transition: border-top-color .4s ease-in-out, box-shadow .4s ease-in-out;
-  box-shadow: 0 .25rem .75rem rgba(15, 23, 42, .08);
-}
