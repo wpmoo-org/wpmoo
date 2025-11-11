@@ -12,7 +12,7 @@
 namespace WPMoo\Options;
 
 use WPMoo\Fields\Manager as FieldManager;
-use WPMoo\Layout\Manager;
+use WPMoo\Layout\Manager as LayoutManager;
 use WPMoo\Options\Builder as PageBuilder;
 use WPMoo\Page\Page;
 use WPMoo\Options\OptionRepository;
@@ -43,7 +43,7 @@ class Options {
 	/**
 	 * Shared layout manager instance.
 	 *
-	 * @var Manager
+	 * @var LayoutManager
 	 */
 	protected static $layout_manager;
 
@@ -285,7 +285,7 @@ class Options {
 		}
 
 		self::$field_manager = FieldManager::instance();
-		self::$layout_manager = Manager::instance();
+		self::$layout_manager = LayoutManager::instance();
 
 		self::$booted = true;
 	}

@@ -11,7 +11,7 @@
 
 namespace WPMoo\Layout;
 
-use WPMoo\Fields\Manager;
+use WPMoo\Fields\Manager as FieldManager;
 use WPMoo\Support\Concerns\EscapesOutput;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -118,7 +118,7 @@ abstract class Component {
 	/**
 	 * Field manager (used for nested fields).
 	 *
-	 * @var Manager|null
+	 * @var FieldManager|null
 	 */
 	protected $field_manager = null;
 
@@ -141,7 +141,7 @@ abstract class Component {
 		$this->attributes         = isset( $config['attributes'] ) && is_array( $config['attributes'] ) ? $config['attributes'] : array();
 		$this->args               = isset( $config['args'] ) && is_array( $config['args'] ) ? $config['args'] : array();
 		$this->sanitize_callback  = isset( $config['sanitize'] ) ? $config['sanitize'] : null;
-		$this->field_manager      = isset( $config['field_manager'] ) && $config['field_manager'] instanceof Manager ? $config['field_manager'] : null;
+		$this->field_manager      = isset( $config['field_manager'] ) && $config['field_manager'] instanceof FieldManager ? $config['field_manager'] : null;
 
 		if ( '' === $this->label && isset( $config['title'] ) ) {
 			$this->label = (string) $config['title'];
@@ -290,8 +290,8 @@ abstract class Component {
 	/**
 	 * Retrieve the field manager (fallback to singleton).
 	 */
-	protected function field_manager(): Manager {
-		return $this->field_manager instanceof Manager ? $this->field_manager : Manager::instance();
+	protected function field_manager(): FieldManager {
+		return $this->field_manager instanceof FieldManager ? $this->field_manager : FieldManager::instance();
 	}
 
 	/**

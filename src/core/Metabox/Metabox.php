@@ -15,7 +15,7 @@ use WP_Post;
 use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager as FieldManager;
 use WPMoo\Layout\Component;
-use WPMoo\Layout\Manager;
+use WPMoo\Layout\Manager as LayoutManager;
 use WPMoo\Support\Assets;
 use WPMoo\Support\Str;
 
@@ -45,7 +45,7 @@ class Metabox {
 	/**
 	 * Shared layout manager instance.
 	 *
-	 * @var Manager
+	 * @var LayoutManager
 	 */
 	protected static $shared_layout_manager;
 
@@ -94,7 +94,7 @@ class Metabox {
 	/**
 	 * Layout manager dependency.
 	 *
-	 * @var Manager
+	 * @var LayoutManager
 	 */
 	protected $layout_manager;
 
@@ -103,13 +103,13 @@ class Metabox {
 	 *
 	 * @param array<string, mixed> $config         Raw configuration.
 	 * @param FieldManager|null    $field_manager  Field manager instance.
-	 * @param Manager|null         $layout_manager Layout manager instance.
+	 * @param LayoutManager|null   $layout_manager Layout manager instance.
 	 */
-	public function __construct( array $config, ?FieldManager $field_manager = null, ?Manager $layout_manager = null ) {
+	public function __construct( array $config, ?FieldManager $field_manager = null, ?LayoutManager $layout_manager = null ) {
 		if ( null === $field_manager || null === $layout_manager ) {
 			self::ensure_booted();
 			$field_manager  = $field_manager instanceof FieldManager ? $field_manager : self::$shared_manager;
-			$layout_manager = $layout_manager instanceof Manager ? $layout_manager : self::$shared_layout_manager;
+			$layout_manager = $layout_manager instanceof LayoutManager ? $layout_manager : self::$shared_layout_manager;
 		}
 
 		$this->field_manager  = $field_manager;
@@ -246,7 +246,7 @@ class Metabox {
 		}
 
 		self::$shared_manager        = FieldManager::instance();
-		self::$shared_layout_manager = Manager::instance();
+		self::$shared_layout_manager = LayoutManager::instance();
 
 		if ( function_exists( 'add_action' ) ) {
 			add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );

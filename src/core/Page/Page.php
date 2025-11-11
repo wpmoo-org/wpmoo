@@ -18,7 +18,7 @@ use WPMoo\Layout\Footer\Footer;
 use WPMoo\Layout\Header\Header;
 use WPMoo\Layout\Sidebar\Sidebar;
 use WPMoo\Layout\Component;
-use WPMoo\Layout\Manager;
+use WPMoo\Layout\Manager as LayoutManager;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Options\OptionRepository;
 use WPMoo\Support\Str;
@@ -149,7 +149,7 @@ class Page {
 	/**
 	 * Layout manager instance.
 	 *
-	 * @var Manager
+	 * @var LayoutManager
 	 */
 	protected $layout_manager;
 
@@ -186,9 +186,9 @@ class Page {
 	 *
 	 * @param array<string, mixed> $config        Raw page configuration.
 	 * @param FieldManager         $field_manager Field manager dependency.
-	 * @param Manager              $layout_manager Layout manager dependency.
+	 * @param LayoutManager        $layout_manager Layout manager dependency.
 	 */
-	public function __construct( array $config, FieldManager $field_manager, Manager $layout_manager ) {
+	public function __construct( array $config, FieldManager $field_manager, LayoutManager $layout_manager ) {
 		$this->field_manager  = $field_manager;
 		$this->layout_manager = $layout_manager;
 		$this->config        = $this->normalize_config( $config );

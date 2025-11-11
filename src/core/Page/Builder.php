@@ -16,7 +16,7 @@ use WPMoo\Fields\Manager as FieldManager;
 use WPMoo\Layout\Footer\Footer;
 use WPMoo\Layout\Header\Header;
 use WPMoo\Sections\Builder as SectionBuilder;
-use WPMoo\Layout\Manager;
+use WPMoo\Layout\Manager as LayoutManager;
 use WPMoo\Layout\Sidebar\Sidebar;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Options\Options;
@@ -62,7 +62,7 @@ class Builder {
 	/**
 	 * Layout manager instance.
 	 *
-	 * @var Manager
+	 * @var LayoutManager
 	 */
 	protected $layout_manager;
 
@@ -85,10 +85,10 @@ class Builder {
 	 *
 	 * @param string        $option_key     Option key.
 	 * @param FieldManager  $field_manager  Field manager.
-	 * @param Manager       $layout_manager Layout manager.
+	 * @param LayoutManager $layout_manager Layout manager.
 	 * @throws InvalidArgumentException When option key is empty.
 	 */
-	public function __construct( string $option_key, FieldManager $field_manager, Manager $layout_manager ) {
+	public function __construct( string $option_key, FieldManager $field_manager, LayoutManager $layout_manager ) {
 		if ( empty( $option_key ) ) {
 			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Option key cannot be empty.' ) );

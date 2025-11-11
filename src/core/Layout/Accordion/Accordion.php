@@ -12,7 +12,7 @@
 namespace WPMoo\Layout\Accordion;
 
 use WPMoo\Fields\BaseField;
-use WPMoo\Fields\Manager;
+use WPMoo\Fields\Manager as FieldManager;
 use WPMoo\Layout\Component;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -44,7 +44,7 @@ class Accordion extends Component {
 	/**
 	 * Field manager for nested fields.
 	 *
-	 * @var Manager
+	 * @var FieldManager
 	 */
 	protected $field_manager;
 
@@ -63,9 +63,9 @@ class Accordion extends Component {
 	public function __construct( array $config ) {
 		parent::__construct( $config );
 
-		$this->field_manager = isset( $config['field_manager'] ) && $config['field_manager'] instanceof Manager
+		$this->field_manager = isset( $config['field_manager'] ) && $config['field_manager'] instanceof FieldManager
 			? $config['field_manager']
-			: Manager::instance();
+			: FieldManager::instance();
 
 		$this->items = $this->normalize_items( isset( $config['items'] ) ? $config['items'] : array() );
 	}
