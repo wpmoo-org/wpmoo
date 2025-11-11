@@ -333,11 +333,7 @@ class Manager {
 	 * @return array<string, class-string<BaseField>>
 	 */
 	protected function default_type_map(): array {
-		return array(
-			'accordion' => \WPMoo\Fields\Accordion\Accordion::class,
-			'fieldset'  => \WPMoo\Fields\Fieldset\Fieldset::class,
-			'tabs'      => \WPMoo\Extensions\Tabs\Tabs::class,
-		);
+		return array();
 	}
 
 	/**

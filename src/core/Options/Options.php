@@ -12,6 +12,7 @@
 namespace WPMoo\Options;
 
 use WPMoo\Fields\Manager;
+use WPMoo\Layout\LayoutManager;
 use WPMoo\Options\Builder as PageBuilder;
 use WPMoo\Page\Page;
 use WPMoo\Options\OptionRepository;
@@ -40,6 +41,13 @@ class Options {
 	protected static $field_manager;
 
 	/**
+	 * Shared layout manager instance.
+	 *
+	 * @var LayoutManager
+	 */
+	protected static $layout_manager;
+
+	/**
 	 * Registered option pages.
 	 *
 	 * @var Page[]
@@ -63,7 +71,7 @@ class Options {
 	public static function create( string $option_key, ?callable $callback = null ): PageBuilder {
 		self::boot();
 
-		$builder = new PageBuilder( $option_key, self::$field_manager );
+		$builder = new PageBuilder( $option_key, self::$field_manager, self::$layout_manager );
 
 		$register_callback = static function () use ( $builder ) {
 			$builder->register();
@@ -113,7 +121,7 @@ class Options {
 	 * @return Page
 	 */
 	protected static function registerFromArray( array $config ): Page {
-		$page = new Page( $config, self::$field_manager );
+		$page = new Page( $config, self::$field_manager, self::$layout_manager );
 
 		self::$pages[] = $page;
 		$page->boot();
@@ -277,6 +285,7 @@ class Options {
 		}
 
 		self::$field_manager = Manager::instance();
+		self::$layout_manager = LayoutManager::instance();
 
 		self::$booted = true;
 	}

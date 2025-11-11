@@ -50,10 +50,10 @@ Moo::section('preview', 'Preview form')
 
 ### Accordion layout field
 
-`Field::accordion()` artık gerçek form alanlarını barındırabiliyor. `->items()` ile her paneli ve içerisine giren alanları tanımlayın:
+`use WPMoo\Layout\Accordion;` diyerek `Accordion::make()` kullanın. `->items()` ile her paneli ve içerisine giren alanları tanımlayın:
 
 ```php
-Field::accordion('faq')
+Accordion::make('faq')
     ->label('Frequently asked questions')
     ->items([
         [
@@ -83,10 +83,10 @@ Her iç alan kendi `id` değeriyle kaydedilir ve üst alanın değeri dizi olara
 
 ### Fieldset layout field
 
-`Field::fieldset()` alanları kart benzeri bölümlerde gruplayabilir:
+`use WPMoo\Layout\Fieldset;` ile `Fieldset::make()` çağırarak kart benzeri bölümler oluşturabilirsiniz:
 
 ```php
-Field::fieldset('profile')
+Fieldset::make('profile')
     ->label('Profile sections')
     ->items([
         [
@@ -114,10 +114,10 @@ Field::fieldset('profile')
 
 ### Tabs layout field
 
-Tabs live in the optional `WPMoo\Extensions\Tabs` package. Import the builder and instantiate it like any field:
+Tabs artık çekirdek `WPMoo\Layout\Tabs` isim alanında bulunuyor. Builder'ı import edip doğrudan kullanın:
 
 ```php
-use WPMoo\Extensions\Tabs;
+use WPMoo\Layout\Tabs;
 
 Tabs::make('settings_tabs')
     ->items([

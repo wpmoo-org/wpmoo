@@ -1,43 +1,45 @@
 <?php
 /**
- * Accordion layout field that hosts nested WPMoo fields.
+ * Accordion layout component for grouping nested fields.
  *
- * @package WPMoo\Fields
+ * @package WPMoo\Layout
  * @since 0.1.0
  * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
  * @link https://github.com/wpmoo/wpmoo GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Fields\Accordion;
+namespace WPMoo\Layout\Accordion;
 
 use WPMoo\Fields\BaseField;
 use WPMoo\Fields\Manager;
+use WPMoo\Layout\LayoutComponent;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
 /**
- * Renders collapsible panels containing fully fledged fields.
+ * Pico-styled accordion that hosts nested fields.
  */
-class Accordion extends BaseField {
+class Accordion extends LayoutComponent {
+
 	/**
-	 * Prepared accordion items with nested fields.
+	 * Prepared items.
 	 *
 	 * @var array<int, array<string, mixed>>
 	 */
 	protected $items = array();
 
 	/**
-	 * Field manager used to instantiate nested fields.
+	 * Field manager for nested fields.
 	 *
 	 * @var Manager
 	 */
 	protected $field_manager;
 
 	/**
-	 * Forbidden nested field types (avoid recursion).
+	 * Disallowed nested types (avoid recursion).
 	 *
 	 * @var string[]
 	 */
@@ -46,22 +48,22 @@ class Accordion extends BaseField {
 	/**
 	 * Constructor.
 	 *
-	 * @param array<string, mixed> $config Field configuration.
+	 * @param array<string, mixed> $config Component configuration.
 	 */
 	public function __construct( array $config ) {
+		parent::__construct( $config );
+
 		$this->field_manager = isset( $config['field_manager'] ) && $config['field_manager'] instanceof Manager
 			? $config['field_manager']
 			: Manager::instance();
-
-		parent::__construct( $config );
 
 		$this->items = $this->normalize_items( isset( $config['items'] ) ? $config['items'] : array() );
 	}
 
 	/**
-	 * Render the accordion markup.
+	 * Render the accordion with nested fields.
 	 *
-	 * @param string $name  Field name (used when storing nested values).
+	 * @param string $name  Input name root.
 	 * @param mixed  $value Stored value.
 	 * @return string
 	 */
@@ -76,8 +78,7 @@ class Accordion extends BaseField {
 				: 'No accordion panels have been configured.';
 
 			$output .= '<div class="wpmoo-accordion wpmoo-accordion--empty"><p>' . esc_html( $message ) . '</p></div>';
-			$output .= $this->after_html();
-			return $output;
+			return $output . $this->after_html();
 		}
 
 		$output .= '<div class="wpmoo-accordion" role="presentation">';
@@ -129,16 +130,14 @@ class Accordion extends BaseField {
 			$output .= '<small>' . $help . '</small>';
 		}
 
-		$output .= $this->after_html();
-
-		return $output;
+		return $output . $this->after_html();
 	}
 
 	/**
-	 * Sanitize nested field values.
+	 * Sanitize nested values.
 	 *
 	 * @param mixed $value Raw submitted value.
-	 * @return mixed
+	 * @return array<string, mixed>
 	 */
 	public function sanitize( $value ) {
 		$value = is_array( $value ) ? $value : array();
@@ -149,7 +148,7 @@ class Accordion extends BaseField {
 				continue;
 			}
 
-			$submitted         = array_key_exists( $field_id, $value ) ? $value[ $field_id ] : null;
+			$submitted          = array_key_exists( $field_id, $value ) ? $value[ $field_id ] : null;
 			$clean[ $field_id ] = $field->sanitize( $submitted );
 		}
 
@@ -157,7 +156,7 @@ class Accordion extends BaseField {
 	}
 
 	/**
-	 * Render the introductory block with labels/descriptions.
+	 * Render the intro block (label + descriptions).
 	 *
 	 * @return string
 	 */
@@ -190,9 +189,9 @@ class Accordion extends BaseField {
 	}
 
 	/**
-	 * Normalize accordion item definitions with nested fields.
+	 * Normalize accordion items.
 	 *
-	 * @param mixed $items Raw items config.
+	 * @param mixed $items Items definition.
 	 * @return array<int, array<string, mixed>>
 	 */
 	protected function normalize_items( $items ): array {
@@ -209,9 +208,7 @@ class Accordion extends BaseField {
 
 			$title = isset( $accordion['title'] ) ? (string) $accordion['title'] : '';
 			if ( '' === $title ) {
-
 				$title = function_exists( '__' )
-					/* translators: %d: Accordion index number. */
 					? sprintf( __( 'Accordion %d', 'wpmoo' ), $index + 1 )
 					: 'Accordion ' . ( $index + 1 );
 			}
@@ -245,7 +242,7 @@ class Accordion extends BaseField {
 	}
 
 	/**
-	 * Prepare a nested field definition.
+	 * Prepare nested field definition.
 	 *
 	 * @param mixed $field Field definition.
 	 * @return BaseField|null
@@ -273,7 +270,7 @@ class Accordion extends BaseField {
 	}
 
 	/**
-	 * Build the flattened list of nested fields keyed by id.
+	 * Flatten nested fields keyed by id.
 	 *
 	 * @return array<string, BaseField>
 	 */
@@ -290,9 +287,9 @@ class Accordion extends BaseField {
 	}
 
 	/**
-	 * Build a proper nested input name.
+	 * Build nested input name.
 	 *
-	 * @param string $base     Base input name.
+	 * @param string $base     Base name.
 	 * @param string $field_id Nested field id.
 	 * @return string
 	 */

@@ -12,6 +12,9 @@
 
 namespace WPMoo\Sections;
 
+use WPMoo\Fields\FieldBuilder;
+use WPMoo\Layout\LayoutBuilder;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
@@ -206,7 +209,9 @@ class SectionBuilder {
 		$fields = array();
 
 		foreach ( $this->fields as $field ) {
-			if ( $field instanceof \WPMoo\Fields\FieldBuilder ) {
+			if ( $field instanceof FieldBuilder ) {
+				$fields[] = $field->build();
+			} elseif ( $field instanceof LayoutBuilder ) {
 				$fields[] = $field->build();
 			} else {
 				$fields[] = $field;

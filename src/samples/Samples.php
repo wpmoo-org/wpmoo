@@ -13,7 +13,9 @@ namespace WPMoo\Samples;
 
 use WPMoo\Moo;
 use WPMoo\Fields\Field;
-use WPMoo\Extensions\Tabs;
+use WPMoo\Layout\Accordion;
+use WPMoo\Layout\Fieldset;
+use WPMoo\Layout\Tabs;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -168,7 +170,7 @@ final class Samples {
 		Moo::section( 'sample_accordion', __( 'Accordion', 'wpmoo' ), __( 'Display collapsible sections.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(
-				Field::accordion( 'demo_accordion' )
+				Accordion::make( 'demo_accordion' )
 					->label( __( 'Accordion field demo', 'wpmoo' ) )
 					->label_description( __( 'Group related controls inside collapsible panels.', 'wpmoo' ) )
 					->items(
@@ -216,7 +218,7 @@ final class Samples {
 		Moo::section( 'sample_fieldset', __( 'Fieldset', 'wpmoo' ), __( 'Group fields under sections.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
 			->fields(
-				Field::fieldset( 'demo_fieldset' )
+				Fieldset::make( 'demo_fieldset' )
 					->label( __( 'Profile configuration', 'wpmoo' ) )
 					->items(
 						array(

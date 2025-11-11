@@ -1,44 +1,46 @@
 <?php
 /**
- * Fieldset layout groups related controls inside stacked sections.
+ * Fieldset layout component (stacked grouped sections).
  *
- * @package WPMoo\Fields
+ * @package WPMoo\Layout
  * @since 0.1.0
  * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
  * @link https://github.com/wpmoo/wpmoo GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Fields\Fieldset;
+namespace WPMoo\Layout\Fieldset;
 
 use WPMoo\Fields\BaseField;
 use WPMoo\Fields\FieldBuilder;
 use WPMoo\Fields\Manager;
+use WPMoo\Layout\LayoutComponent;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
 /**
- * Fieldset layout field that renders grouped sections of nested fields.
+ * Fieldset layout component.
  */
-class Fieldset extends BaseField {
+class Fieldset extends LayoutComponent {
+
 	/**
-	 * Prepared fieldset items.
+	 * Prepared sections.
 	 *
 	 * @var array<int, array<string, mixed>>
 	 */
 	protected $items = array();
 
 	/**
-	 * Field manager used for nested fields.
+	 * Field manager for nested fields.
 	 *
 	 * @var Manager
 	 */
 	protected $field_manager;
 
 	/**
-	 * Disallowed nested types to prevent infinite loops.
+	 * Restricted nested types.
 	 *
 	 * @var string[]
 	 */
@@ -47,14 +49,14 @@ class Fieldset extends BaseField {
 	/**
 	 * Constructor.
 	 *
-	 * @param array<string, mixed> $config Field configuration.
+	 * @param array<string, mixed> $config Layout configuration.
 	 */
 	public function __construct( array $config ) {
+		parent::__construct( $config );
+
 		$this->field_manager = isset( $config['field_manager'] ) && $config['field_manager'] instanceof Manager
 			? $config['field_manager']
 			: Manager::instance();
-
-		parent::__construct( $config );
 
 		$this->items = $this->normalize_items( isset( $config['items'] ) ? $config['items'] : array() );
 	}
@@ -62,7 +64,7 @@ class Fieldset extends BaseField {
 	/**
 	 * Render the fieldset sections.
 	 *
-	 * @param string $name  Field name (unused since children own their names).
+	 * @param string $name  Input name.
 	 * @param mixed  $value Current value.
 	 * @return string
 	 */
@@ -128,7 +130,7 @@ class Fieldset extends BaseField {
 			$clean[ $item_id ] = array();
 
 			foreach ( $item['fields'] as $field_id => $field ) {
-				$submitted = isset( $value[ $item_id ][ $field_id ] ) ? $value[ $item_id ][ $field_id ] : null;
+				$submitted               = isset( $value[ $item_id ][ $field_id ] ) ? $value[ $item_id ][ $field_id ] : null;
 				$clean[ $item_id ][ $field_id ] = $field->sanitize( $submitted );
 			}
 		}
@@ -138,6 +140,9 @@ class Fieldset extends BaseField {
 
 	/**
 	 * Normalize configuration.
+	 *
+	 * @param mixed $items Raw config.
+	 * @return array<int, array<string, mixed>>
 	 */
 	protected function normalize_items( $items ): array {
 		if ( ! is_array( $items ) ) {
@@ -157,8 +162,9 @@ class Fieldset extends BaseField {
 
 			$title = isset( $item['title'] ) ? (string) $item['title'] : '';
 			if ( '' === $title ) {
-				/* translators: %d: Fieldset index starting from 1. */
-				$title = function_exists( '__' ) ? sprintf( __( 'Fieldset %d', 'wpmoo' ), $index + 1 ) : 'Fieldset ' . ( $index + 1 );
+				$title = function_exists( '__' )
+					? sprintf( __( 'Fieldset %d', 'wpmoo' ), $index + 1 )
+					: 'Fieldset ' . ( $index + 1 );
 			}
 
 			$section_id = isset( $item['id'] ) && '' !== (string) $item['id']
@@ -192,7 +198,10 @@ class Fieldset extends BaseField {
 	}
 
 	/**
-	 * Prepare nested field.
+	 * Instantiate nested field.
+	 *
+	 * @param mixed $field Field definition.
+	 * @return BaseField|null
 	 */
 	protected function prepare_nested_field( $field ) {
 		if ( $field instanceof FieldBuilder ) {
@@ -221,7 +230,12 @@ class Fieldset extends BaseField {
 	}
 
 	/**
-	 * Build nested input names.
+	 * Build nested input name.
+	 *
+	 * @param string $base       Base input name.
+	 * @param string $section_id Section identifier.
+	 * @param string $field_id   Field identifier.
+	 * @return string
 	 */
 	protected function build_nested_input_name( string $base, string $section_id, string $field_id ): string {
 		if ( '' === $field_id ) {

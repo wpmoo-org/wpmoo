@@ -17,6 +17,8 @@ use WPMoo\Support\Assets;
 use WPMoo\Layout\Header;
 use WPMoo\Layout\Sidebar;
 use WPMoo\Layout\Footer;
+use WPMoo\Layout\LayoutComponent;
+use WPMoo\Layout\LayoutManager;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Options\OptionRepository;
 use WPMoo\Support\Str;
@@ -121,7 +123,7 @@ class Page {
 	 *
 	 * @var PageConfig
 	 */
-	 protected $config;
+	protected $config;
 
 	/**
 	 * Normalized section definitions.
@@ -131,9 +133,9 @@ class Page {
 	protected $sections = array();
 
 	/**
-	 * Map of registered fields keyed by id.
+	 * Map of registered fields/components keyed by id.
 	 *
-	 * @var array<string, Field>
+	 * @var array<string, Field|LayoutComponent>
 	 */
 	protected $fields = array();
 
@@ -143,6 +145,13 @@ class Page {
 	 * @var Manager
 	 */
 	protected $field_manager;
+
+	/**
+	 * Layout manager instance.
+	 *
+	 * @var LayoutManager
+	 */
+	protected $layout_manager;
 
 	/**
 	 * Option repository.
@@ -175,11 +184,13 @@ class Page {
 	/**
 	 * Constructor.
 	 *
-	 * @param array<string, mixed> $config        Raw page configuration.
-	 * @param Manager              $field_manager Field manager dependency.
+	 * @param array<string, mixed> $config         Raw page configuration.
+	 * @param Manager              $field_manager  Field manager dependency.
+	 * @param LayoutManager        $layout_manager Layout manager dependency.
 	 */
-	public function __construct( array $config, Manager $field_manager ) {
-		$this->field_manager = $field_manager;
+	public function __construct( array $config, Manager $field_manager, LayoutManager $layout_manager ) {
+		$this->field_manager  = $field_manager;
+		$this->layout_manager = $layout_manager;
 		$this->config        = $this->normalize_config( $config );
 		$this->sections      = $this->normalize_sections( $this->config['sections'] );
 		$this->repository    = new OptionRepository( $this->config['option_key'], $this->collect_defaults() );
@@ -674,11 +685,11 @@ class Page {
 	/**
 	 * Render a single field in the layout.
 	 *
-	 * @param Field                $field  Field instance.
+	 * @param Field|LayoutComponent $field Field instance.
 	 * @param array<string, mixed> $values Current option values.
 	 * @return void
 	 */
-	protected function render_field( Field $field, array $values ) {
+	protected function render_field( Field|LayoutComponent $field, array $values ) {
 		$value         = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name          = $this->field_input_name( $field );
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
@@ -762,11 +773,11 @@ class Page {
 	/**
 	 * Render a single field row inside the form table.
 	 *
-	 * @param Field                $field  Field instance.
+	 * @param Field|LayoutComponent $field Field instance.
 	 * @param array<string, mixed> $values Option values.
 	 * @return void
 	 */
-	protected function render_field_row( Field $field, array $values ) {
+	protected function render_field_row( Field|LayoutComponent $field, array $values ) {
 		$value         = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name          = $this->field_input_name( $field );
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
@@ -1125,6 +1136,13 @@ class Page {
 			$fields = array();
 
 			foreach ( $section['fields'] as $field_config ) {
+				if ( $this->is_layout_definition( $field_config ) ) {
+					$component = $this->layout_manager->make( $field_config, $this->field_manager );
+					$fields[]  = $component;
+					$this->fields[ $component->id() ] = $component;
+					continue;
+				}
+
 				if ( empty( $field_config['id'] ) ) {
 					continue;
 				}
@@ -1141,6 +1159,18 @@ class Page {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Determine whether the provided definition describes a layout component.
+	 *
+	 * @param mixed $definition Potential layout definition.
+	 * @return bool
+	 */
+	protected function is_layout_definition( $definition ): bool {
+		return is_array( $definition )
+			&& ! empty( $definition['__layout_component'] )
+			&& ! empty( $definition['component'] );
 	}
 
 	/**
@@ -1400,10 +1430,10 @@ class Page {
 	/**
 	 * Build field input name for custom renderers.
 	 *
-	 * @param Field $field Field instance.
+	 * @param Field|LayoutComponent $field Field instance.
 	 * @return string
 	 */
-	public function field_input_name( Field $field ) {
+	public function field_input_name( Field|LayoutComponent $field ) {
 		return $this->repository->option_key() . '[' . $field->id() . ']';
 	}
 

@@ -13,6 +13,7 @@ namespace WPMoo\Metabox;
 
 use InvalidArgumentException;
 use WPMoo\Fields\Manager;
+use WPMoo\Layout\LayoutManager;
 use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
 use WPMoo\Sections\SectionBuilder;
 use WPMoo\Support\Concerns\TranslatesStrings;
@@ -63,21 +64,30 @@ class Builder {
 	protected $field_manager;
 
 	/**
+	 * Layout manager instance.
+	 *
+	 * @var LayoutManager
+	 */
+	protected $layout_manager;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param string  $id            Metabox ID.
-	 * @param Manager $field_manager Field manager.
+	 * @param string         $id             Metabox ID.
+	 * @param Manager        $field_manager  Field manager.
+	 * @param LayoutManager  $layout_manager Layout manager.
 	 * @throws InvalidArgumentException When id is empty.
 	 */
-	public function __construct( string $id, Manager $field_manager ) {
+	public function __construct( string $id, Manager $field_manager, LayoutManager $layout_manager ) {
 		if ( empty( $id ) ) {
 			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Metabox ID cannot be empty.' ) );
 			/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
-		$this->id            = $id;
-		$this->field_manager = $field_manager;
+		$this->id             = $id;
+		$this->field_manager  = $field_manager;
+		$this->layout_manager = $layout_manager;
 		$this->config        = array(
 			'id'      => $id,
 			'screens' => array( 'post' ),
@@ -313,7 +323,7 @@ class Builder {
 
 		// Create metabox instance.
 		Metabox::ensure_booted();
-		$metabox = new Metabox( $this->config, $this->field_manager );
+		$metabox = new Metabox( $this->config, $this->field_manager, $this->layout_manager );
 		$metabox->boot();
 
 		// Register in static cache.

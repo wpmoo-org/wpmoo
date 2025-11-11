@@ -1,52 +1,46 @@
 <?php
 /**
- * Tabs layout groups multiple fields under tabbed navigation.
+ * Tabs layout component rendered via Pico-inspired radio controls.
  *
- * @package WPMoo\Extensions\Tabs
+ * @package WPMoo\Layout
  * @since 0.1.0
  * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
  * @link https://github.com/wpmoo/wpmoo GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Extensions\Tabs;
+namespace WPMoo\Layout\Tabs;
 
+use WPMoo\Fields\BaseField;
 use WPMoo\Fields\FieldBuilder;
-use WPMoo\Fields\LayoutComponent;
 use WPMoo\Fields\Manager;
+use WPMoo\Layout\LayoutComponent;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
 /**
- * Tabbed layout field built with Pico-inspired radio controls.
- *
- * Supported tab item arguments:
- * - title (string): Visible text inside the tab (alias: label).
- * - id (string): Unique slug for the tab control (auto-generated when omitted).
- * - description (string): Optional helper text rendered above the fields.
- * - fields (Field[]): Nested field definitions rendered inside the panel.
- * - icon_type (string): dashicons (default), fontawesome, or url.
- * - icon (string): Icon slug/class/URL depending on icon_type.
+ * Tabbed layout hosting nested fields per panel.
  */
 class Tabs extends LayoutComponent {
+
 	/**
-	 * Tabs registry (items with nested fields).
+	 * Tab items.
 	 *
 	 * @var array<int, array<string, mixed>>
 	 */
 	protected $items = array();
 
 	/**
-	 * Field manager.
+	 * Field manager reference.
 	 *
 	 * @var Manager
 	 */
 	protected $field_manager;
 
 	/**
-	 * Disallowed nested types.
+	 * Forbidden nested types.
 	 *
 	 * @var string[]
 	 */
@@ -55,20 +49,24 @@ class Tabs extends LayoutComponent {
 	/**
 	 * Constructor.
 	 *
-	 * @param array<string, mixed> $config Config.
+	 * @param array<string, mixed> $config Component configuration.
 	 */
 	public function __construct( array $config ) {
+		parent::__construct( $config );
+
 		$this->field_manager = isset( $config['field_manager'] ) && $config['field_manager'] instanceof Manager
 			? $config['field_manager']
 			: Manager::instance();
-
-		parent::__construct( $config );
 
 		$this->items = $this->normalize_items( isset( $config['items'] ) ? $config['items'] : array() );
 	}
 
 	/**
 	 * Render tab navigation and panels.
+	 *
+	 * @param string $name  Input name.
+	 * @param mixed  $value Stored value.
+	 * @return string
 	 */
 	public function render( $name, $value ) {
 		$value = is_array( $value ) ? $value : array();
@@ -127,6 +125,9 @@ class Tabs extends LayoutComponent {
 
 	/**
 	 * Sanitize nested values.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return array<string, mixed>
 	 */
 	public function sanitize( $value ) {
 		$value = is_array( $value ) ? $value : array();
@@ -146,6 +147,9 @@ class Tabs extends LayoutComponent {
 
 	/**
 	 * Normalize items configuration.
+	 *
+	 * @param mixed $items Raw items.
+	 * @return array<int, array<string, mixed>>
 	 */
 	protected function normalize_items( $items ): array {
 		if ( ! is_array( $items ) ) {
@@ -163,10 +167,9 @@ class Tabs extends LayoutComponent {
 				continue;
 			}
 
-			// Support both "label" and legacy "title" keys.
-			$title = isset( $item['label'] ) ? (string) $item['label'] : '';
-			if ( '' === $title ) {
-				$title = isset( $item['title'] ) ? (string) $item['title'] : '';
+			$title = isset( $item['title'] ) ? (string) $item['title'] : '';
+			if ( '' === $title && isset( $item['label'] ) ) {
+				$title = (string) $item['label'];
 			}
 			if ( '' === $title ) {
 				/* translators: %d: Tab index starting from 1. */
@@ -216,6 +219,9 @@ class Tabs extends LayoutComponent {
 
 	/**
 	 * Prepare nested field definition.
+	 *
+	 * @param mixed $field Field definition.
+	 * @return BaseField|null
 	 */
 	protected function prepare_nested_field( $field ) {
 		if ( $field instanceof FieldBuilder ) {
@@ -245,6 +251,11 @@ class Tabs extends LayoutComponent {
 
 	/**
 	 * Build nested input name.
+	 *
+	 * @param string $base       Base input name.
+	 * @param string $section_id Section identifier.
+	 * @param string $field_id   Field identifier.
+	 * @return string
 	 */
 	protected function build_nested_input_name( string $base, string $section_id, string $field_id ): string {
 		if ( '' === $field_id ) {
@@ -257,10 +268,11 @@ class Tabs extends LayoutComponent {
 
 		return $base . '[' . $section_id . '][' . $field_id . ']';
 	}
+
 	/**
-	 * Render the icon markup for a tab.
+	 * Render icon markup if configured.
 	 *
-	 * @param array<string, mixed> $item Tab configuration.
+	 * @param array<string, mixed> $item Tab definition.
 	 * @return string
 	 */
 	protected function render_icon_markup( array $item ): string {

@@ -13,6 +13,7 @@ namespace WPMoo\Page;
 
 use InvalidArgumentException;
 use WPMoo\Fields\Manager;
+use WPMoo\Layout\LayoutManager;
 use WPMoo\Sections\SectionBuilder;
 use WPMoo\Layout\Header;
 use WPMoo\Layout\Sidebar;
@@ -59,6 +60,13 @@ class Builder {
 	protected $field_manager;
 
 	/**
+	 * Layout manager instance.
+	 *
+	 * @var LayoutManager
+	 */
+	protected $layout_manager;
+
+	/**
 	 * Whether the builder has been registered.
 	 *
 	 * @var bool
@@ -75,19 +83,21 @@ class Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @param string  $option_key    Option key.
-	 * @param Manager $field_manager Field manager.
+	 * @param string         $option_key     Option key.
+	 * @param Manager        $field_manager  Field manager.
+	 * @param LayoutManager  $layout_manager Layout manager.
 	 * @throws InvalidArgumentException When option key is empty.
 	 */
-	public function __construct( string $option_key, Manager $field_manager ) {
+	public function __construct( string $option_key, Manager $field_manager, LayoutManager $layout_manager ) {
 		if ( empty( $option_key ) ) {
 			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Option key cannot be empty.' ) );
 			/* phpcs:enable WordPress.Security.EscapeOutput */
 		}
 
-		$this->option_key    = $option_key;
-		$this->field_manager = $field_manager;
+		$this->option_key     = $option_key;
+		$this->field_manager  = $field_manager;
+		$this->layout_manager = $layout_manager;
 		$this->config        = array(
 			'option_key' => $option_key,
 			'menu_slug'  => $option_key,
@@ -366,7 +376,7 @@ class Builder {
 			}
 		}
 
-		$this->page = new Page( $this->config, $this->field_manager );
+		$this->page = new Page( $this->config, $this->field_manager, $this->layout_manager );
 		$this->page->boot();
 
 		// Register in Options static cache.

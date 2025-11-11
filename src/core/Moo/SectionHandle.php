@@ -13,6 +13,7 @@ namespace WPMoo\Moo;
 use InvalidArgumentException;
 use WPMoo\Moo\PageHandle;
 use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
+use WPMoo\Layout\LayoutBuilder as BaseLayoutBuilder;
 use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -242,7 +243,7 @@ class SectionHandle {
 	/**
 	 * Define multiple fields.
 	 *
-	 * @param (\WPMoo\Fields\FieldBuilder|array<string,mixed>) ...$fields Field definitions or an array of field definitions.
+	 * @param (\WPMoo\Fields\FieldBuilder|\WPMoo\Layout\LayoutBuilder|array<string,mixed>) ...$fields Field definitions or an array of definitions.
 	 * @return $this
 	 */
 	public function fields( ...$fields ): self {
@@ -451,6 +452,10 @@ class SectionHandle {
 			return $field->build();
 		}
 
+		if ( $field instanceof BaseLayoutBuilder ) {
+			return $field->build();
+		}
+
 		if ( is_array( $field ) ) {
 			if ( empty( $field['id'] ) || empty( $field['type'] ) ) {
 				throw new InvalidArgumentException( 'Field arrays require both "id" and "type" keys.' );
@@ -470,7 +475,7 @@ class SectionHandle {
 	 * @throws InvalidArgumentException When the id cannot be determined.
 	 */
 	protected function extract_field_id( $field ): string {
-		if ( $field instanceof BaseFieldBuilder ) {
+		if ( $field instanceof BaseFieldBuilder || $field instanceof BaseLayoutBuilder ) {
 			$field_id = $field->id();
 
 			if ( '' !== $field_id ) {

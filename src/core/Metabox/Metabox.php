@@ -14,6 +14,8 @@ namespace WPMoo\Metabox;
 use WP_Post;
 use WPMoo\Fields\BaseField as Field;
 use WPMoo\Fields\Manager;
+use WPMoo\Layout\LayoutComponent;
+use WPMoo\Layout\LayoutManager;
 use WPMoo\Support\Assets;
 use WPMoo\Support\Str;
 
@@ -41,6 +43,13 @@ class Metabox {
 	protected static $shared_manager;
 
 	/**
+	 * Shared layout manager instance.
+	 *
+	 * @var LayoutManager
+	 */
+	protected static $shared_layout_manager;
+
+	/**
 	 * Whether panel assets are required on admin screens.
 	 *
 	 * @var bool
@@ -64,7 +73,7 @@ class Metabox {
 	/**
 	 * Field instances keyed by field id.
 	 *
-	 * @var array<string, Field>
+	 * @var array<string, Field|LayoutComponent>
 	 */
 	protected $fields = array();
 
@@ -83,18 +92,28 @@ class Metabox {
 	protected $field_manager;
 
 	/**
+	 * Layout manager dependency.
+	 *
+	 * @var LayoutManager
+	 */
+	protected $layout_manager;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param array<string, mixed> $config        Raw configuration.
-	 * @param Manager|null         $field_manager Field manager instance.
+	 * @param array<string, mixed> $config          Raw configuration.
+	 * @param Manager|null         $field_manager   Field manager instance.
+	 * @param LayoutManager|null   $layout_manager  Layout manager instance.
 	 */
-	public function __construct( array $config, ?Manager $field_manager = null ) {
-		if ( null === $field_manager ) {
+	public function __construct( array $config, ?Manager $field_manager = null, ?LayoutManager $layout_manager = null ) {
+		if ( null === $field_manager || null === $layout_manager ) {
 			self::ensure_booted();
-			$field_manager = self::$shared_manager;
+			$field_manager  = $field_manager instanceof Manager ? $field_manager : self::$shared_manager;
+			$layout_manager = $layout_manager instanceof LayoutManager ? $layout_manager : self::$shared_layout_manager;
 		}
 
-		$this->field_manager = $field_manager;
+		$this->field_manager  = $field_manager;
+		$this->layout_manager = $layout_manager;
 		$this->config        = $this->normalize_config( $config );
 		$this->fields        = $this->instantiate_fields( $this->config['fields'] );
 		$this->sections      = $this->prepare_sections( $this->config['sections'] );
@@ -109,7 +128,7 @@ class Metabox {
 	public static function create( string $id ): Builder {
 		self::ensure_booted();
 
-		return new Builder( $id, self::$shared_manager );
+		return new Builder( $id, self::$shared_manager, self::$shared_layout_manager );
 	}
 
 	/**
@@ -137,7 +156,7 @@ class Metabox {
 	 * @return Metabox
 	 */
 	protected static function registerFromArray( array $config ): Metabox {
-		$metabox           = new self( $config, self::$shared_manager );
+		$metabox           = new self( $config, self::$shared_manager, self::$shared_layout_manager );
 		self::$metaboxes[] = $metabox;
 
 		$metabox->boot();
@@ -226,7 +245,8 @@ class Metabox {
 			return;
 		}
 
-		self::$shared_manager = Manager::instance();
+		self::$shared_manager        = Manager::instance();
+		self::$shared_layout_manager = LayoutManager::instance();
 
 		if ( function_exists( 'add_action' ) ) {
 			add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
@@ -475,11 +495,11 @@ class Metabox {
 	/**
 	 * Render a single field wrapper.
 	 *
-	 * @param Field   $field Field instance.
-	 * @param WP_Post $post  Current post object.
+	 * @param Field|LayoutComponent $field Field instance.
+	 * @param WP_Post               $post  Current post object.
 	 * @return void
 	 */
-	protected function render_field( Field $field, $post ) {
+	protected function render_field( Field|LayoutComponent $field, $post ) {
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
 		$as_multiple   = $is_repeatable && method_exists( $field, 'repeatable_as_multiple' ) ? $field->repeatable_as_multiple() : false;
 
@@ -621,12 +641,18 @@ class Metabox {
 	 * Instantiate field objects.
 	 *
 	 * @param array<int, array<string, mixed>> $field_configs Raw field definitions.
-	 * @return array<string, Field>
+	 * @return array<string, Field|LayoutComponent>
 	 */
 	protected function instantiate_fields( array $field_configs ) {
 		$fields = array();
 
 		foreach ( $field_configs as $field_config ) {
+			if ( $this->is_layout_definition( $field_config ) ) {
+				$component                       = $this->layout_manager->make( $field_config, $this->field_manager );
+				$fields[ $component->id() ] = $component;
+				continue;
+			}
+
 			if ( empty( $field_config['id'] ) ) {
 				continue;
 			}
@@ -687,6 +713,18 @@ class Metabox {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Determine whether a definition represents a layout component.
+	 *
+	 * @param mixed $definition Definition to inspect.
+	 * @return bool
+	 */
+	protected function is_layout_definition( $definition ): bool {
+		return is_array( $definition )
+			&& ! empty( $definition['__layout_component'] )
+			&& ! empty( $definition['component'] );
 	}
 
 	/**
