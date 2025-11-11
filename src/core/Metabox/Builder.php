@@ -12,10 +12,10 @@
 namespace WPMoo\Metabox;
 
 use InvalidArgumentException;
-use WPMoo\Fields\Manager;
-use WPMoo\Layout\LayoutManager;
-use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
-use WPMoo\Sections\SectionBuilder;
+use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Layout\Manager as LayoutManager;
+use WPMoo\Fields\Builder as FieldBuilder;
+use WPMoo\Sections\Builder as SectionBuilder;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -59,7 +59,7 @@ class Builder {
 	/**
 	 * Field manager instance.
 	 *
-	 * @var Manager
+	 * @var FieldManager
 	 */
 	protected $field_manager;
 
@@ -73,12 +73,12 @@ class Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @param string         $id             Metabox ID.
-	 * @param Manager        $field_manager  Field manager.
-	 * @param LayoutManager  $layout_manager Layout manager.
+	 * @param string        $id             Metabox ID.
+	 * @param FieldManager  $field_manager  Field manager.
+	 * @param LayoutManager $layout_manager Layout manager.
 	 * @throws InvalidArgumentException When id is empty.
 	 */
-	public function __construct( string $id, Manager $field_manager, LayoutManager $layout_manager ) {
+	public function __construct( string $id, FieldManager $field_manager, LayoutManager $layout_manager ) {
 		if ( empty( $id ) ) {
 			/* phpcs:disable WordPress.Security.EscapeOutput */
 			throw new InvalidArgumentException( $this->translate( 'Metabox ID cannot be empty.' ) );
@@ -159,10 +159,10 @@ class Builder {
 	 *
 	 * @param string $id   Field ID.
 	 * @param string $type Field type.
-	 * @return BaseFieldBuilder
+	 * @return FieldBuilder
 	 */
-	public function field( string $id, string $type ): BaseFieldBuilder {
-		$field = new BaseFieldBuilder( $id, $type );
+	public function field( string $id, string $type ): FieldBuilder {
+		$field = new FieldBuilder( $id, $type );
 
 		$this->fields[] = $field;
 
@@ -287,7 +287,7 @@ class Builder {
 		$built_fields = array();
 
 		foreach ( $this->fields as $field ) {
-			if ( $field instanceof BaseFieldBuilder ) {
+			if ( $field instanceof FieldBuilder ) {
 				$built_fields[] = $field->build();
 			} else {
 				$built_fields[] = $field;

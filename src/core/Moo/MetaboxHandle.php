@@ -14,9 +14,9 @@ namespace WPMoo\Moo;
 use InvalidArgumentException;
 use Traversable;
 use WPMoo\Metabox\Builder as MetaboxBuilder;
-use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
+use WPMoo\Fields\Builder as BaseFieldBuilder;
 use WPMoo\Metabox\Metabox as MetaboxInstance;
-use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
+use WPMoo\Sections\Builder as BaseSectionBuilder;
 
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -12,9 +12,9 @@ namespace WPMoo\Moo;
 
 use InvalidArgumentException;
 use WPMoo\Moo\PageHandle;
-use WPMoo\Fields\FieldBuilder as BaseFieldBuilder;
+use WPMoo\Fields\Builder as BaseFieldBuilder;
 use WPMoo\Layout\LayoutBuilder as BaseLayoutBuilder;
-use WPMoo\Sections\SectionBuilder as BaseSectionBuilder;
+use WPMoo\Sections\Builder as BaseSectionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -243,7 +243,7 @@ class SectionHandle {
 	/**
 	 * Define multiple fields.
 	 *
-	 * @param (\WPMoo\Fields\FieldBuilder|\WPMoo\Layout\LayoutBuilder|array<string,mixed>) ...$fields Field definitions or an array of definitions.
+	 * @param (\WPMoo\Fields\Builder|\WPMoo\Layout\LayoutBuilder|array<string,mixed>) ...$fields Field definitions or an array of definitions.
 	 * @return $this
 	 */
 	public function fields( ...$fields ): self {
@@ -263,7 +263,7 @@ class SectionHandle {
 	/**
 	 * Register a grid wrapper for the provided fields.
 	 *
-	 * @param (\WPMoo\Fields\FieldBuilder|array<string,mixed>) ...$fields Field definitions assigned to the grid.
+	 * @param (\WPMoo\Fields\Builder|array<string,mixed>) ...$fields Field definitions assigned to the grid.
 	 * @return $this
 	 */
 	public function grid( ...$fields ): self {
@@ -443,7 +443,7 @@ class SectionHandle {
 	/**
 	 * Convert an incoming field definition into an array.
 	 *
-	 * @param \WPMoo\Fields\FieldBuilder|array<string,mixed> $field Raw field definition.
+	 * @param \WPMoo\Fields\Builder|array<string,mixed> $field Raw field definition.
 	 * @return array<string, mixed>
 	 * @throws InvalidArgumentException When the field definition is invalid.
 	 */
@@ -470,7 +470,7 @@ class SectionHandle {
 	/**
 	 * Extract the field identifier from a definition.
 	 *
-	 * @param \WPMoo\Fields\FieldBuilder|array<string,mixed> $field Field definition.
+	 * @param \WPMoo\Fields\Builder|array<string,mixed> $field Field definition.
 	 * @return string
 	 * @throws InvalidArgumentException When the id cannot be determined.
 	 */

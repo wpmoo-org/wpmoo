@@ -13,7 +13,7 @@ namespace WPMoo\Layout\Accordion;
 
 use WPMoo\Fields\BaseField;
 use WPMoo\Fields\Manager;
-use WPMoo\Layout\LayoutComponent;
+use WPMoo\Layout\Component;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Pico-styled accordion that hosts nested fields.
  */
-class Accordion extends LayoutComponent {
+class Accordion extends Component {
 
 	/**
 	 * Create a builder instance via static helper.

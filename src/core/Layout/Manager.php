@@ -21,19 +21,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Keeps track of layout components and instantiates them on demand.
  */
-class LayoutManager {
+class Manager {
 
 	/**
 	 * Shared singleton instance.
 	 *
-	 * @var LayoutManager|null
+	 * @var Manager|null
 	 */
 	protected static $instance = null;
 
 	/**
 	 * Registered components map.
 	 *
-	 * @var array<string, class-string<LayoutComponent>>
+	 * @var array<string, class-string<Component>>
 	 */
 	protected $components = array();
 
@@ -47,9 +47,9 @@ class LayoutManager {
 	/**
 	 * Retrieve the singleton instance.
 	 *
-	 * @return LayoutManager
+	 * @return Manager
 	 */
-	public static function instance(): LayoutManager {
+	public static function instance(): Manager {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -80,13 +80,13 @@ class LayoutManager {
 			);
 		}
 
-		if ( ! is_subclass_of( $class, LayoutComponent::class ) ) {
+		if ( ! is_subclass_of( $class, Component::class ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
 					/* translators: %1$s is the class name, %2$s is the parent class name. */
 					'Layout component class "%1$s" must extend %2$s.',
 					\esc_html( $class ),
-					LayoutComponent::class
+					Component::class
 				)
 			);
 		}
@@ -99,10 +99,10 @@ class LayoutManager {
 	 *
 	 * @param array<string, mixed> $definition   Normalized definition.
 	 * @param FieldManager         $field_manager Field manager for nested fields.
-	 * @return LayoutComponent
+	 * @return Component
 	 * @throws InvalidArgumentException When the definition is invalid.
 	 */
-	public function make( array $definition, FieldManager $field_manager ): LayoutComponent {
+	public function make( array $definition, FieldManager $field_manager ): Component {
 		$component = isset( $definition['component'] ) ? strtolower( (string) $definition['component'] ) : '';
 
 		if ( '' === $component || ! isset( $this->components[ $component ] ) ) {
@@ -137,7 +137,7 @@ class LayoutManager {
 	/**
 	 * Default component map.
 	 *
-	 * @return array<string, class-string<LayoutComponent>>
+	 * @return array<string, class-string<Component>>
 	 */
 	protected function default_components(): array {
 		return array(
@@ -147,3 +147,6 @@ class LayoutManager {
 		);
 	}
 }
+
+// Backwards compatibility alias.
+\class_alias( __NAMESPACE__ . '\Manager', __NAMESPACE__ . '\LayoutManager' );

@@ -284,15 +284,15 @@ class Moo {
 	}
 
 	/**
-	 * Convenience factory for FieldBuilder via Moo facade.
+	 * Convenience factory for the shared field builder via Moo facade.
 	 *
 	 * Usage: Moo::Field('input', 'my_id')->label('...');
 	 *
 	 * @param string $type Field type slug (e.g., 'input', 'button').
 	 * @param string $id   Field identifier.
-	 * @return \WPMoo\Fields\FieldBuilder
+	 * @return \WPMoo\Fields\Builder
 	 */
 	public static function Field( string $type, string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		return new \WPMoo\Fields\FieldBuilder( $id, $type );
+		return new \WPMoo\Fields\Builder( $id, $type );
 	}
 }

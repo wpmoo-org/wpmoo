@@ -12,9 +12,9 @@
 namespace WPMoo\Layout\Tabs;
 
 use WPMoo\Fields\BaseField;
-use WPMoo\Fields\FieldBuilder;
+use WPMoo\Fields\Builder as FieldBuilder;
 use WPMoo\Fields\Manager;
-use WPMoo\Layout\LayoutComponent;
+use WPMoo\Layout\Component;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Tabbed layout hosting nested fields per panel.
  */
-class Tabs extends LayoutComponent {
+class Tabs extends Component {
 
 	/**
 	 * Static helper for building tab layouts fluently.

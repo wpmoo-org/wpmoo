@@ -12,9 +12,9 @@
 namespace WPMoo\Layout\Fieldset;
 
 use WPMoo\Fields\BaseField;
-use WPMoo\Fields\FieldBuilder;
+use WPMoo\Fields\Builder as FieldBuilder;
 use WPMoo\Fields\Manager;
-use WPMoo\Layout\LayoutComponent;
+use WPMoo\Layout\Component;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Fieldset layout component.
  */
-class Fieldset extends LayoutComponent {
+class Fieldset extends Component {
 
 	/**
 	 * Build a new fieldset definition fluently.

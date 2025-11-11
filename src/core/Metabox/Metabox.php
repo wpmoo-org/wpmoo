@@ -13,9 +13,9 @@ namespace WPMoo\Metabox;
 
 use WP_Post;
 use WPMoo\Fields\BaseField as Field;
-use WPMoo\Fields\Manager;
-use WPMoo\Layout\LayoutComponent;
-use WPMoo\Layout\LayoutManager;
+use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Layout\Component;
+use WPMoo\Layout\Manager;
 use WPMoo\Support\Assets;
 use WPMoo\Support\Str;
 
@@ -38,14 +38,14 @@ class Metabox {
 	/**
 	 * Shared field manager instance.
 	 *
-	 * @var Manager
+	 * @var FieldManager
 	 */
 	protected static $shared_manager;
 
 	/**
 	 * Shared layout manager instance.
 	 *
-	 * @var LayoutManager
+	 * @var Manager
 	 */
 	protected static $shared_layout_manager;
 
@@ -73,7 +73,7 @@ class Metabox {
 	/**
 	 * Field instances keyed by field id.
 	 *
-	 * @var array<string, Field|LayoutComponent>
+	 * @var array<string, Field|Component>
 	 */
 	protected $fields = array();
 
@@ -87,29 +87,29 @@ class Metabox {
 	/**
 	 * Field manager dependency.
 	 *
-	 * @var Manager
+	 * @var FieldManager
 	 */
 	protected $field_manager;
 
 	/**
 	 * Layout manager dependency.
 	 *
-	 * @var LayoutManager
+	 * @var Manager
 	 */
 	protected $layout_manager;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param array<string, mixed> $config          Raw configuration.
-	 * @param Manager|null         $field_manager   Field manager instance.
-	 * @param LayoutManager|null   $layout_manager  Layout manager instance.
+	 * @param array<string, mixed> $config         Raw configuration.
+	 * @param FieldManager|null    $field_manager  Field manager instance.
+	 * @param Manager|null         $layout_manager Layout manager instance.
 	 */
-	public function __construct( array $config, ?Manager $field_manager = null, ?LayoutManager $layout_manager = null ) {
+	public function __construct( array $config, ?FieldManager $field_manager = null, ?Manager $layout_manager = null ) {
 		if ( null === $field_manager || null === $layout_manager ) {
 			self::ensure_booted();
-			$field_manager  = $field_manager instanceof Manager ? $field_manager : self::$shared_manager;
-			$layout_manager = $layout_manager instanceof LayoutManager ? $layout_manager : self::$shared_layout_manager;
+			$field_manager  = $field_manager instanceof FieldManager ? $field_manager : self::$shared_manager;
+			$layout_manager = $layout_manager instanceof Manager ? $layout_manager : self::$shared_layout_manager;
 		}
 
 		$this->field_manager  = $field_manager;
@@ -227,7 +227,7 @@ class Metabox {
 	/**
 	 * Return the shared field manager.
 	 *
-	 * @return Manager
+	 * @return FieldManager
 	 */
 	public static function field_manager() {
 		self::ensure_booted();
@@ -245,8 +245,8 @@ class Metabox {
 			return;
 		}
 
-		self::$shared_manager        = Manager::instance();
-		self::$shared_layout_manager = LayoutManager::instance();
+		self::$shared_manager        = FieldManager::instance();
+		self::$shared_layout_manager = Manager::instance();
 
 		if ( function_exists( 'add_action' ) ) {
 			add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
@@ -495,11 +495,11 @@ class Metabox {
 	/**
 	 * Render a single field wrapper.
 	 *
-	 * @param Field|LayoutComponent $field Field instance.
+	 * @param Field|Component $field Field instance.
 	 * @param WP_Post               $post  Current post object.
 	 * @return void
 	 */
-	protected function render_field( Field|LayoutComponent $field, $post ) {
+	protected function render_field( Field|Component $field, $post ) {
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
 		$as_multiple   = $is_repeatable && method_exists( $field, 'repeatable_as_multiple' ) ? $field->repeatable_as_multiple() : false;
 
@@ -641,7 +641,7 @@ class Metabox {
 	 * Instantiate field objects.
 	 *
 	 * @param array<int, array<string, mixed>> $field_configs Raw field definitions.
-	 * @return array<string, Field|LayoutComponent>
+	 * @return array<string, Field|Component>
 	 */
 	protected function instantiate_fields( array $field_configs ) {
 		$fields = array();

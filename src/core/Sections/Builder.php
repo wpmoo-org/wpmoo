@@ -12,7 +12,7 @@
 
 namespace WPMoo\Sections;
 
-use WPMoo\Fields\FieldBuilder;
+use WPMoo\Fields\Builder as FieldBuilder;
 use WPMoo\Layout\LayoutBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Provides common section properties and layout helpers.
  * Holds fields and can build a full section config.
  */
-class SectionBuilder {
+class Builder {
 
 	/**
 	 * Section ID.
@@ -114,14 +114,14 @@ class SectionBuilder {
 	}
 
 	/**
-	 * Add a field using the shared Fields\FieldBuilder.
+	 * Add a field using the shared Fields\Builder.
 	 *
 	 * @param string $id   Field ID.
 	 * @param string $type Field type.
-	 * @return \WPMoo\Fields\FieldBuilder
+	 * @return \WPMoo\Fields\Builder
 	 */
-	public function field( string $id, string $type ): \WPMoo\Fields\FieldBuilder {
-		$field           = new \WPMoo\Fields\FieldBuilder( $id, $type );
+	public function field( string $id, string $type ): \WPMoo\Fields\Builder {
+		$field           = new \WPMoo\Fields\Builder( $id, $type );
 		$this->fields[]  = $field;
 		return $field;
 	}

@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Field builder (alias for FieldBuilder).
+ * Field builder (alias for Builder).
  *
  * Magic static constructors are provided via __callStatic.
  * These are declared here for static analysers (PHPStan, Psalm).
@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @phpstan-consistent-constructor
  */
-final class Field extends FieldBuilder {
+final class Field extends Builder {
 	/**
 	 * Create an 'input' field builder (text-like).
 	 *

@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Provides a consistent fluent API that Options and Metabox builders can extend.
  */
-class FieldBuilder {
+class Builder {
 
 	/**
 	 * Field configuration.

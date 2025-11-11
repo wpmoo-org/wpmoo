@@ -12,13 +12,13 @@
 namespace WPMoo\Page;
 
 use WPMoo\Fields\BaseField as Field;
-use WPMoo\Fields\Manager;
+use WPMoo\Fields\Manager as FieldManager;
 use WPMoo\Support\Assets;
 use WPMoo\Layout\Footer\Footer;
 use WPMoo\Layout\Header\Header;
 use WPMoo\Layout\Sidebar\Sidebar;
-use WPMoo\Layout\LayoutComponent;
-use WPMoo\Layout\LayoutManager;
+use WPMoo\Layout\Component;
+use WPMoo\Layout\Manager;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Options\OptionRepository;
 use WPMoo\Support\Str;
@@ -135,21 +135,21 @@ class Page {
 	/**
 	 * Map of registered fields/components keyed by id.
 	 *
-	 * @var array<string, Field|LayoutComponent>
+	 * @var array<string, Field|Component>
 	 */
 	protected $fields = array();
 
 	/**
 	 * Field manager instance.
 	 *
-	 * @var Manager
+	 * @var FieldManager
 	 */
 	protected $field_manager;
 
 	/**
 	 * Layout manager instance.
 	 *
-	 * @var LayoutManager
+	 * @var Manager
 	 */
 	protected $layout_manager;
 
@@ -184,11 +184,11 @@ class Page {
 	/**
 	 * Constructor.
 	 *
-	 * @param array<string, mixed> $config         Raw page configuration.
-	 * @param Manager              $field_manager  Field manager dependency.
-	 * @param LayoutManager        $layout_manager Layout manager dependency.
+	 * @param array<string, mixed> $config        Raw page configuration.
+	 * @param FieldManager         $field_manager Field manager dependency.
+	 * @param Manager              $layout_manager Layout manager dependency.
 	 */
-	public function __construct( array $config, Manager $field_manager, LayoutManager $layout_manager ) {
+	public function __construct( array $config, FieldManager $field_manager, Manager $layout_manager ) {
 		$this->field_manager  = $field_manager;
 		$this->layout_manager = $layout_manager;
 		$this->config        = $this->normalize_config( $config );
@@ -685,11 +685,11 @@ class Page {
 	/**
 	 * Render a single field in the layout.
 	 *
-	 * @param Field|LayoutComponent $field Field instance.
+	 * @param Field|Component $field Field instance.
 	 * @param array<string, mixed> $values Current option values.
 	 * @return void
 	 */
-	protected function render_field( Field|LayoutComponent $field, array $values ) {
+	protected function render_field( Field|Component $field, array $values ) {
 		$value         = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name          = $this->field_input_name( $field );
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
@@ -773,11 +773,11 @@ class Page {
 	/**
 	 * Render a single field row inside the form table.
 	 *
-	 * @param Field|LayoutComponent $field Field instance.
+	 * @param Field|Component $field Field instance.
 	 * @param array<string, mixed> $values Option values.
 	 * @return void
 	 */
-	protected function render_field_row( Field|LayoutComponent $field, array $values ) {
+	protected function render_field_row( Field|Component $field, array $values ) {
 		$value         = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
 		$name          = $this->field_input_name( $field );
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
@@ -1430,10 +1430,10 @@ class Page {
 	/**
 	 * Build field input name for custom renderers.
 	 *
-	 * @param Field|LayoutComponent $field Field instance.
+	 * @param Field|Component $field Field instance.
 	 * @return string
 	 */
-	public function field_input_name( Field|LayoutComponent $field ) {
+	public function field_input_name( Field|Component $field ) {
 		return $this->repository->option_key() . '[' . $field->id() . ']';
 	}
 

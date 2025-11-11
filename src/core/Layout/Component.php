@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Provides shared state/behaviour for Layout components.
  */
-abstract class LayoutComponent {
+abstract class Component {
 	use EscapesOutput;
 
 	/**
@@ -339,3 +339,6 @@ abstract class LayoutComponent {
 		return $this->esc_html( $value );
 	}
 }
+
+// Backwards compatibility: allow referencing the old class name.
+\class_alias( __NAMESPACE__ . '\Component', __NAMESPACE__ . '\LayoutComponent' );
