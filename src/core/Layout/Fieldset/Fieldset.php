@@ -26,6 +26,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Fieldset extends LayoutComponent {
 
 	/**
+	 * Build a new fieldset definition fluently.
+	 *
+	 * @param string $id Fieldset identifier.
+	 * @return Builder
+	 */
+	public static function make( string $id ): Builder {
+		return new Builder( $id );
+	}
+
+	/**
 	 * Prepared sections.
 	 *
 	 * @var array<int, array<string, mixed>>

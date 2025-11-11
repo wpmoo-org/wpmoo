@@ -26,6 +26,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Tabs extends LayoutComponent {
 
 	/**
+	 * Static helper for building tab layouts fluently.
+	 *
+	 * @param string $id Tabs identifier.
+	 * @return Builder
+	 */
+	public static function make( string $id ): Builder {
+		return new Builder( $id );
+	}
+
+	/**
 	 * Tab items.
 	 *
 	 * @var array<int, array<string, mixed>>

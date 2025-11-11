@@ -25,6 +25,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Accordion extends LayoutComponent {
 
 	/**
+	 * Create a builder instance via static helper.
+	 *
+	 * @param string $id Accordion identifier.
+	 * @return Builder
+	 */
+	public static function make( string $id ): Builder {
+		return new Builder( $id );
+	}
+
+	/**
 	 * Prepared items.
 	 *
 	 * @var array<int, array<string, mixed>>

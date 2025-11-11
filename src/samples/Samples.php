@@ -11,11 +11,11 @@
 
 namespace WPMoo\Samples;
 
-use WPMoo\Moo;
 use WPMoo\Fields\Field;
-use WPMoo\Layout\Accordion;
-use WPMoo\Layout\Fieldset;
-use WPMoo\Layout\Tabs;
+use WPMoo\Layout\Accordion\Accordion;
+use WPMoo\Layout\Fieldset\Fieldset;
+use WPMoo\Layout\Tabs\Tabs;
+use WPMoo\Moo;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -57,7 +57,7 @@ final class Samples {
 		Moo::page( self::PAGE_ID )
 			->title( __( 'WPMoo Samples', 'wpmoo' ) )
 			->menu_slug( self::MENU_SLUG )
-			// ->fluid()
+			->fluid()
 			->sidebar_nav()
 			->ajax_save();
 	}
