@@ -9,7 +9,7 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Layout;
+namespace WPMoo\Layout\Footer;
 
 use WPMoo\Page\Page;
 

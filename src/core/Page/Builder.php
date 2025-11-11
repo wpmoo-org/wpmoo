@@ -13,11 +13,11 @@ namespace WPMoo\Page;
 
 use InvalidArgumentException;
 use WPMoo\Fields\Manager;
-use WPMoo\Layout\LayoutManager;
+use WPMoo\Layout\Footer\Footer;
+use WPMoo\Layout\Header\Header;
 use WPMoo\Sections\SectionBuilder;
-use WPMoo\Layout\Header;
-use WPMoo\Layout\Sidebar;
-use WPMoo\Layout\Footer;
+use WPMoo\Layout\LayoutManager;
+use WPMoo\Layout\Sidebar\Sidebar;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Options\Options;
 

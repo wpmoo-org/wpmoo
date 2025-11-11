@@ -9,7 +9,7 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Layout;
+namespace WPMoo\Layout\Sidebar;
 
 use WPMoo\Page\Page;
 
@@ -86,11 +86,11 @@ class Sidebar {
 			$framework_title = \function_exists( '__' ) ? \__( 'WPMoo Framework', 'wpmoo' ) : 'WPMoo Framework';
 		}
 
-		$nav_label = \function_exists( '__' ) ? \__( 'Sections menu', 'wpmoo' ) : 'Sections menu';
+		$nav_label    = \function_exists( '__' ) ? \__( 'Sections menu', 'wpmoo' ) : 'Sections menu';
 		$current_slug = (string) $page->config( 'menu_slug' );
 
-			$classes = array( 'wpmoo-sidebar' );
-			$style   = '';
+		$classes = array( 'wpmoo-sidebar' );
+		$style   = '';
 		if ( $this->sticky ) {
 			$classes[] = 'wpmoo-sticky';
 			if ( '' !== $this->sticky_offset ) {
@@ -98,11 +98,11 @@ class Sidebar {
 			}
 		}
 
-			$html  = '<aside class="' . \esc_attr( implode( ' ', $classes ) ) . '" aria-label="' . \esc_attr( $nav_label ) . '"' . $style . '>';
-			$html .= '<header class="wpmoo-brand">';
-			$html .= '<p class="wpmoo-framework">' . \esc_html( $framework_title ) . '</p>';
-			$html .= '</header>';
-			$html .= '<nav class="wpmoo-nav-groups">';
+		$html  = '<aside class="' . \esc_attr( implode( ' ', $classes ) ) . '" aria-label="' . \esc_attr( $nav_label ) . '"' . $style . '>';
+		$html .= '<header class="wpmoo-brand">';
+		$html .= '<p class="wpmoo-framework">' . \esc_html( $framework_title ) . '</p>';
+		$html .= '</header>';
+		$html .= '<nav class="wpmoo-nav-groups">';
 
 		foreach ( $nav_registry as $slug => $entry ) {
 			$is_current_page = (string) $slug === $current_slug;
