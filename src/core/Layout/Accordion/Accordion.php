@@ -209,6 +209,7 @@ class Accordion extends LayoutComponent {
 			$title = isset( $accordion['title'] ) ? (string) $accordion['title'] : '';
 			if ( '' === $title ) {
 				$title = function_exists( '__' )
+				/* translators: %d is the accordion index starting from 1. */
 					? sprintf( __( 'Accordion %d', 'wpmoo' ), $index + 1 )
 					: 'Accordion ' . ( $index + 1 );
 			}

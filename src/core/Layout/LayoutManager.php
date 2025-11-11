@@ -71,14 +71,21 @@ class LayoutManager {
 		}
 
 		if ( ! class_exists( $class ) ) {
-			throw new InvalidArgumentException( sprintf( 'Layout component class "%s" does not exist.', $class ) );
+			throw new InvalidArgumentException(
+				sprintf(
+					/* translators: %s is the class name. */
+					'Layout component class "%s" does not exist.',
+					\esc_html( $class )
+				)
+			);
 		}
 
 		if ( ! is_subclass_of( $class, LayoutComponent::class ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
+					/* translators: %1$s is the class name, %2$s is the parent class name. */
 					'Layout component class "%1$s" must extend %2$s.',
-					$class,
+					\esc_html( $class ),
 					LayoutComponent::class
 				)
 			);
@@ -99,7 +106,12 @@ class LayoutManager {
 		$component = isset( $definition['component'] ) ? strtolower( (string) $definition['component'] ) : '';
 
 		if ( '' === $component || ! isset( $this->components[ $component ] ) ) {
-			throw new InvalidArgumentException( sprintf( 'Unknown layout component "%s".', $component ) );
+			throw new InvalidArgumentException(
+				sprintf(
+					'Unknown layout component "%s".',
+					\esc_html( $component )
+				)
+			);
 		}
 
 		$class  = $this->components[ $component ];

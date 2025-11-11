@@ -163,6 +163,7 @@ class Fieldset extends LayoutComponent {
 			$title = isset( $item['title'] ) ? (string) $item['title'] : '';
 			if ( '' === $title ) {
 				$title = function_exists( '__' )
+				/* translators: %d is the section index starting from 1. */
 					? sprintf( __( 'Fieldset %d', 'wpmoo' ), $index + 1 )
 					: 'Fieldset ' . ( $index + 1 );
 			}
