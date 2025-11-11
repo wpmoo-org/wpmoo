@@ -11,8 +11,8 @@
 
 namespace WPMoo\Extensions\Tabs;
 
-use WPMoo\Fields\BaseField;
 use WPMoo\Fields\FieldBuilder;
+use WPMoo\Fields\LayoutComponent;
 use WPMoo\Fields\Manager;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,8 +21,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Tabbed layout field built with Pico-inspired radio controls.
+ *
+ * Supported tab item arguments:
+ * - title (string): Visible text inside the tab (alias: label).
+ * - id (string): Unique slug for the tab control (auto-generated when omitted).
+ * - description (string): Optional helper text rendered above the fields.
+ * - fields (Field[]): Nested field definitions rendered inside the panel.
+ * - icon_type (string): dashicons (default), fontawesome, or url.
+ * - icon (string): Icon slug/class/URL depending on icon_type.
  */
-class Tabs extends BaseField {
+class Tabs extends LayoutComponent {
 	/**
 	 * Tabs registry (items with nested fields).
 	 *
@@ -85,6 +93,7 @@ class Tabs extends BaseField {
 
 			$output .= '<input type="radio" class="wpmoo-tabs__control" name="' . esc_attr( $control_name ) . '" id="' . esc_attr( $input_id ) . '"' . $is_checked . ' />';
 			$output .= '<label class="wpmoo-tabs__label" for="' . esc_attr( $input_id ) . '">';
+			$output .= $this->render_icon_markup( $item );
 			$output .= esc_html( $item['title'] );
 			$output .= '</label>';
 
@@ -154,15 +163,28 @@ class Tabs extends BaseField {
 				continue;
 			}
 
-			$title = isset( $item['title'] ) ? (string) $item['title'] : '';
+			// Support both "label" and legacy "title" keys.
+			$title = isset( $item['label'] ) ? (string) $item['label'] : '';
+			if ( '' === $title ) {
+				$title = isset( $item['title'] ) ? (string) $item['title'] : '';
+			}
 			if ( '' === $title ) {
 				/* translators: %d: Tab index starting from 1. */
 				$title = function_exists( '__' ) ? sprintf( __( 'Tab %d', 'wpmoo' ), $index + 1 ) : 'Tab ' . ( $index + 1 );
 			}
 
+			$tab_type = isset( $item['type'] ) ? strtolower( (string) $item['type'] ) : 'tab';
+			if ( 'tab' !== $tab_type ) {
+				continue;
+			}
+
 			$section_id = isset( $item['id'] ) && '' !== (string) $item['id']
 				? sanitize_title( (string) $item['id'] )
 				: sanitize_title( $title . '-' . $index );
+
+			$icon_type = isset( $item['icon_type'] ) ? strtolower( (string) $item['icon_type'] ) : 'dashicons';
+			$icon_type = in_array( $icon_type, array( 'dashicons', 'fontawesome', 'url' ), true ) ? $icon_type : 'dashicons';
+			$icon_value = isset( $item['icon'] ) ? (string) $item['icon'] : '';
 
 			$fields = array();
 			if ( isset( $item['fields'] ) && is_array( $item['fields'] ) ) {
@@ -184,6 +206,8 @@ class Tabs extends BaseField {
 				'title'       => $title,
 				'description' => isset( $item['description'] ) ? (string) $item['description'] : '',
 				'fields'      => $fields,
+				'icon_type'   => $icon_type,
+				'icon'        => $icon_value,
 			);
 		}
 
@@ -232,5 +256,29 @@ class Tabs extends BaseField {
 		}
 
 		return $base . '[' . $section_id . '][' . $field_id . ']';
+	}
+	/**
+	 * Render the icon markup for a tab.
+	 *
+	 * @param array<string, mixed> $item Tab configuration.
+	 * @return string
+	 */
+	protected function render_icon_markup( array $item ): string {
+		$icon = isset( $item['icon'] ) ? (string) $item['icon'] : '';
+		if ( '' === $icon ) {
+			return '';
+		}
+
+		$icon_type = isset( $item['icon_type'] ) ? $item['icon_type'] : 'dashicons';
+
+		switch ( $icon_type ) {
+			case 'fontawesome':
+				return '<i class="' . esc_attr( $icon ) . '" aria-hidden="true"></i>';
+			case 'url':
+				return '<img src="' . esc_url( $icon ) . '" alt="" class="wpmoo-tabs__icon" />';
+			case 'dashicons':
+			default:
+				return '<span class="dashicons ' . esc_attr( $icon ) . '" aria-hidden="true"></span>';
+		}
 	}
 }

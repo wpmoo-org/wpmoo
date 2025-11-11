@@ -122,21 +122,38 @@ use WPMoo\Extensions\Tabs;
 Tabs::make('settings_tabs')
     ->items([
         [
-            'title'  => 'Account',
-            'fields' => [
+            'title'     => 'Account',
+            'id'        => 'tab-account',
+            'type'      => 'tab',
+            'icon_type' => 'dashicons',
+            'icon'      => 'dashicons-admin-users',
+            'fields'    => [
                 Field::input('username')->label('Username'),
                 Field::toggle('two_factor')->label('Enable 2FA'),
             ],
         ],
         [
-            'title'  => 'Notifications',
-            'fields' => [
+            'title'     => 'Notifications',
+            'id'        => 'tab-notifications',
+            'icon_type' => 'fontawesome',
+            'icon'      => 'fas fa-bell',
+            'fields'    => [
                 Field::checkbox('email_alerts')->label('Email alerts'),
                 Field::checkbox('sms_alerts')->label('SMS alerts'),
             ],
         ],
     ]);
 ```
+
+Tab item arguments you can pass to `items()`:
+
+- `title` (`label` alias) – tab text.
+- `id` – unique fragment/slug (auto-generated when omitted).
+- `type` – should remain `tab` for compatibility.
+- `description` – optional helper text rendered above the panel.
+- `fields` – nested field definitions (required).
+- `icon_type` – `dashicons` (default), `fontawesome`, or `url`.
+- `icon` – clasname/slug/URL matching the chosen `icon_type`.
 
 Panels are rendered with pure CSS; each panel’s values are stored under `settings_tabs[account][username]`.
 

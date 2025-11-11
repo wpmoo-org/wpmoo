@@ -260,6 +260,10 @@ final class Samples {
 						array(
 							array(
 								'title'       => __( 'Account', 'wpmoo' ),
+								'id'          => 'tab-account',
+								'type'        => 'tab',
+								'icon_type'   => 'dashicons',
+								'icon'        => 'dashicons-admin-users',
 								'description' => __( 'General account options.', 'wpmoo' ),
 								'fields'      => array(
 									Field::input( 'tabs_username' )
@@ -270,6 +274,9 @@ final class Samples {
 							),
 							array(
 								'title'       => __( 'Notifications', 'wpmoo' ),
+								'id'          => 'tab-notifications',
+								'icon_type'   => 'fontawesome',
+								'icon'        => 'fas fa-bell',
 								'fields'      => array(
 									Field::checkbox( 'tabs_email_notifications' )
 										->label( __( 'Email alerts', 'wpmoo' ) ),
@@ -279,6 +286,9 @@ final class Samples {
 							),
 							array(
 								'title'       => __( 'Display', 'wpmoo' ),
+								'id'          => 'tab-display',
+								'icon_type'   => 'url',
+								'icon'        => plugins_url( 'assets/img/sample-tab-icon.svg', WPMOO_FILE ),
 								'fields'      => array(
 									Field::select( 'tabs_theme' )
 										->label( __( 'Theme', 'wpmoo' ) )
