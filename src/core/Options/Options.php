@@ -163,7 +163,7 @@ class Options {
 	/**
 	 * Return the shared field manager.
 	 *
-	 * @return Manager
+	 * @return FieldManager
 	 */
 	public static function field_manager() {
 		self::boot();
