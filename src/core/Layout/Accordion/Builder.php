@@ -11,7 +11,7 @@
 
 namespace WPMoo\Layout\Accordion;
 
-use WPMoo\Layout\LayoutBuilder;
+use WPMoo\Layout\Builder as BaseBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Accordion builder.
  */
-class Builder extends LayoutBuilder {
+class Builder extends BaseBuilder {
 
 	/**
 	 * Constructor.

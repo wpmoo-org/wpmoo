@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Base configuration builder for layout components.
  */
-abstract class LayoutBuilder {
+abstract class Builder {
 
 	/**
 	 * Layout identifier.
