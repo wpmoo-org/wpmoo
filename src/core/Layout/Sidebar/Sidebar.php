@@ -11,7 +11,7 @@
 
 namespace WPMoo\Layout\Sidebar;
 
-use WPMoo\Page\Page;
+use WPMoo\Options\Page;
 
 /**
  * Sidebar layout builder for admin navigation accordion.

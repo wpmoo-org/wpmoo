@@ -14,7 +14,6 @@ namespace WPMoo\Options;
 use WPMoo\Fields\Manager as FieldManager;
 use WPMoo\Layout\Manager as LayoutManager;
 use WPMoo\Options\Builder as PageBuilder;
-use WPMoo\Page\Page;
 use WPMoo\Options\OptionRepository;
 
 if ( ! defined( 'ABSPATH' ) ) {

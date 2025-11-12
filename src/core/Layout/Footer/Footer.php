@@ -11,7 +11,7 @@
 
 namespace WPMoo\Layout\Footer;
 
-use WPMoo\Page\Page;
+use WPMoo\Options\Page;
 
 /**
  * Footer layout component for framework admin pages.

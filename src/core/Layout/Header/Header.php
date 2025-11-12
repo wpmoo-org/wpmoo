@@ -10,7 +10,7 @@
  */
 namespace WPMoo\Layout\Header;
 
-use WPMoo\Page\Page;
+use WPMoo\Options\Page;
 
 /**
  * Header layout component for framework admin pages.
