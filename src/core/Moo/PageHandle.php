@@ -132,7 +132,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function sidebar_nav( bool $enabled = true ): self {
-		if ( method_exists( $this->builder, 'sidebar_nav' ) ) {
+		if ( method_exists( $this->page_builder, 'sidebar_nav' ) ) {
 			$this->page_builder->sidebar_nav( $enabled );
 		} else {
 			$this->page_builder->config( 'sidebar_nav', $enabled );
@@ -218,7 +218,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function tap( callable $callback ): self {
-		$callback( $this->builder );
+		$callback( $this->page_builder );
 
 		return $this;
 	}
