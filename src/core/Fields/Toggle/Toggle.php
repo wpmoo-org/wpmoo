@@ -11,7 +11,7 @@
 
 namespace WPMoo\Fields\Toggle;
 
-use WPMoo\Fields\Checkbox\Checkbox as BaseCheckbox;
+use WPMoo\Fields\Checkbox\Checkbox as FieldCheckbox;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Toggle is a semantic variant of checkbox rendered as a switch.
  */
-class Toggle extends BaseCheckbox {
+class Toggle extends FieldCheckbox {
 	/**
 	 * Render toggle (checkbox + role="switch").
 	 *
