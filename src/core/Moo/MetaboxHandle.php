@@ -73,8 +73,8 @@ class MetaboxHandle {
 	/**
 	 * Constructor.
 	 *
-	 * @param string         $id               Metabox identifier.
-	 * @param MetaboxBuilder $metabox_builder  Builder instance.
+	 * @param string         $id              Metabox identifier.
+	 * @param MetaboxBuilder $metabox_builder Builder instance.
 	 */
 	public function __construct( string $id, MetaboxBuilder $metabox_builder ) {
 		$this->id      = $id;
@@ -261,7 +261,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function tap( callable $callback ): self {
-		$callback( $this->builder );
+		$callback( $this->metabox_builder );
 
 		return $this;
 	}
