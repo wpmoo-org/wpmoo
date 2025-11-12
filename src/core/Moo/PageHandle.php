@@ -223,6 +223,17 @@ class PageHandle {
 		return $this;
 	}
 
+	/**
+	 * Register a custom renderer for this page.
+	 *
+	 * @param callable $callback Callback receiving the options Page instance and values.
+	 * @return $this
+	 */
+	public function render_callback( callable $callback ): self {
+		$this->page_builder->config( 'render', $callback );
+		return $this;
+	}
+
 
 	/**
 	 * Create and attach a section to this page.

@@ -19,6 +19,7 @@ use WPMoo\Layout\Header\Header;
 use WPMoo\Layout\Sidebar\Sidebar;
 use WPMoo\Layout\Component;
 use WPMoo\Layout\Manager as LayoutManager;
+use WPMoo\Options\OptionRepository;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
 
@@ -153,11 +154,18 @@ class Page {
 	protected $layout_manager;
 
 	/**
-	 * Option repository.
+	 * Option repository when options are enabled.
 	 *
-	 * @var OptionRepository
+	 * @var OptionRepository|null
 	 */
 	protected $repository;
+
+	/**
+	 * Whether any sections declare option fields.
+	 *
+	 * @var bool
+	 */
+	protected $options_enabled = false;
 
 	/**
 	 * Header component instance.
@@ -192,7 +200,8 @@ class Page {
 		$this->layout_manager = $layout_manager;
 		$this->config        = $this->normalize_config( $config );
 		$this->sections      = $this->normalize_sections( $this->config['sections'] );
-		$this->repository    = new OptionRepository( $this->config['option_key'], $this->collect_defaults() );
+		$this->options_enabled = $this->sections_require_options( $this->sections );
+		$this->repository      = $this->options_enabled ? new OptionRepository( $this->config['option_key'], $this->collect_defaults() ) : null;
 		$this->header_component  = $this->resolve_header_component( $this->config );
 		$this->sidebar_component = $this->resolve_sidebar_component( $this->config );
 		$this->footer_component  = $this->resolve_footer_component( $this->config );
@@ -207,13 +216,15 @@ class Page {
 	public function boot() {
 		if ( function_exists( 'add_action' ) ) {
 			add_action( 'admin_menu', array( $this, 'register_page' ) );
-			add_action( 'admin_init', array( $this, 'handle_submission' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 			// Add a body class on our pages to scope layout overrides safely.
 			if ( function_exists( 'add_filter' ) ) {
 				add_filter( 'admin_body_class', array( $this, 'filter_admin_body_class' ) );
 			}
-			add_action( 'wp_ajax_wpmoo_save_options', array( $this, 'ajax_save' ) );
+			if ( $this->options_enabled ) {
+				add_action( 'admin_init', array( $this, 'handle_submission' ) );
+				add_action( 'wp_ajax_wpmoo_save_options', array( $this, 'ajax_save' ) );
+			}
 		}
 	}
 
@@ -369,6 +380,10 @@ class Page {
 	 * @return void
 	 */
 	public function handle_submission() {
+		if ( ! $this->options_enabled || null === $this->repository ) {
+			return;
+		}
+
 		if ( ! function_exists( 'current_user_can' ) ) {
 			return;
 		}
@@ -432,6 +447,10 @@ class Page {
 	 * @return void
 	 */
 	public function ajax_save() {
+		if ( ! $this->options_enabled || null === $this->repository ) {
+			return;
+		}
+
 		$slug         = $this->config['menu_slug'];
 		$request_slug = filter_input( \INPUT_POST, 'menu_slug', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		if ( is_string( $request_slug ) ) {
@@ -484,7 +503,7 @@ class Page {
 			return;
 		}
 
-		$values = $this->repository->all();
+		$values = ( $this->options_enabled && $this->repository ) ? $this->repository->all() : array();
 
 		// Check if custom renderer is configured.
 		if ( isset( $this->config['render'] ) && is_callable( $this->config['render'] ) ) {
@@ -576,8 +595,10 @@ class Page {
 		echo '<main' . $class_attr . ' id="wpmoo-options"' . $style_attr . '>';
 		echo $this->header_component->render( $this );
 
-		// Show any settings errors.
-		if ( function_exists( 'settings_errors' ) ) {
+		$use_form = $this->options_enabled && $this->repository;
+
+		// Show any settings errors when options are enabled.
+		if ( $use_form && function_exists( 'settings_errors' ) ) {
 			settings_errors( $this->repository->option_key() );
 		}
 
@@ -589,13 +610,17 @@ class Page {
 			echo '<div class="wpmoo-content">';
 		}
 
-		echo '<form method="post" id="wpmoo-options-form" action="" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">';
+		if ( $use_form ) {
+			echo '<form method="post" id="wpmoo-options-form" action="" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">';
 
-		if ( function_exists( 'wp_nonce_field' ) ) {
-			wp_nonce_field( $this->nonce_action(), $this->nonce_name() );
+			if ( function_exists( 'wp_nonce_field' ) ) {
+				wp_nonce_field( $this->nonce_action(), $this->nonce_name() );
+			}
+
+			echo '<input type="hidden" name="_wpmoo_options_page" value="' . esc_attr( $this->config['menu_slug'] ) . '" />';
+		} else {
+			echo '<div class="wpmoo-sections" data-wpmoo-section-wrapper="true">';
 		}
-
-		echo '<input type="hidden" name="_wpmoo_options_page" value="' . esc_attr( $this->config['menu_slug'] ) . '" />';
 
 		foreach ( $sections as $section ) {
 			$section_id    = $section['id'];
@@ -653,11 +678,14 @@ class Page {
 			echo '</section>';
 		}
 
-		// Actions
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Footer component renders trusted admin markup (submit button).
-		echo $this->footer_component->render( $this );
-
-		echo '</form>';
+		if ( $use_form ) {
+			// Actions
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Footer component renders trusted admin markup (submit button).
+			echo $this->footer_component->render( $this );
+			echo '</form>';
+		} else {
+			echo '</div>';
+		}
 
 		if ( $use_sidebar_nav ) {
 			echo '</div>';
@@ -689,8 +717,8 @@ class Page {
 	 * @return void
 	 */
 	protected function render_field( Field|Component $field, array $values ) {
-		$value         = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
-		$name          = $this->field_input_name( $field );
+		$value = array_key_exists( $field->id(), $values ) ? $values[ $field->id() ] : $field->default();
+		$name  = $this->options_enabled ? $this->field_input_name( $field ) : $field->id();
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
 
 		$help_html = $field->help_html();
@@ -1123,6 +1151,7 @@ class Page {
 				'icon'        => '',
 				'fields'      => array(),
 				'layout'      => array(),
+				'options_enabled' => false,
 			);
 
 			$section = array_merge( $section_defaults, is_array( $section ) ? $section : array() );
@@ -1158,6 +1187,22 @@ class Page {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Determine whether any sections require options handling.
+	 *
+	 * @param array<int, array<string, mixed>> $sections Sections array.
+	 * @return bool
+	 */
+	protected function sections_require_options( array $sections ): bool {
+		foreach ( $sections as $section ) {
+			if ( ! empty( $section['options_enabled'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1317,7 +1362,7 @@ class Page {
 	/**
 	 * Provide access to the repository instance.
 	 *
-	 * @return OptionRepository
+	 * @return OptionRepository|null
 	 */
 	public function repository() {
 		return $this->repository;
@@ -1329,7 +1374,11 @@ class Page {
 	 * @return string
 	 */
 	public function option_key() {
-		return $this->repository->option_key();
+		if ( $this->repository ) {
+			return $this->repository->option_key();
+		}
+
+		return isset( $this->config['option_key'] ) ? (string) $this->config['option_key'] : '';
 	}
 
 	/**
@@ -1433,6 +1482,10 @@ class Page {
 	 * @return string
 	 */
 	public function field_input_name( Field|Component $field ) {
+		if ( null === $this->repository ) {
+			return $field->id();
+		}
+
 		return $this->repository->option_key() . '[' . $field->id() . ']';
 	}
 

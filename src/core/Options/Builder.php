@@ -326,6 +326,11 @@ class Builder {
 
 				if ( isset( $section['fields'] ) && is_array( $section['fields'] ) ) {
 					$builder->fields( $section['fields'] );
+					$builder->enable_options();
+				}
+
+				if ( ! empty( $section['options_enabled'] ) ) {
+					$builder->enable_options();
 				}
 
 				$this->sections[] = $builder;
@@ -373,6 +378,10 @@ class Builder {
 			foreach ( $this->sections as $section_builder ) {
 				$this->config['sections'][] = $section_builder->build();
 			}
+		}
+
+		if ( empty( $this->config['sections'] ) ) {
+			throw new InvalidArgumentException( 'Options pages require at least one section.' );
 		}
 
 		$this->page = new Page( $this->config, $this->field_manager, $this->layout_manager );

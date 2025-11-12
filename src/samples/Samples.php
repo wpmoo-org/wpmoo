@@ -16,6 +16,7 @@ use WPMoo\Layout\Accordion\Accordion;
 use WPMoo\Layout\Fieldset\Fieldset;
 use WPMoo\Layout\Tabs\Tabs;
 use WPMoo\Moo;
+use WPMoo\Samples\Html\Demo as HtmlDemo;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -47,6 +48,7 @@ final class Samples {
 		if ( function_exists( 'add_action' ) ) {
 			add_action( 'wpmoo_init', array( self::class, 'page_sample' ), 5 );
 			add_action( 'wpmoo_init', array( self::class, 'sections' ), 5 );
+			HtmlDemo::register();
 		}
 	}
 
@@ -61,6 +63,7 @@ final class Samples {
 			->sidebar_nav()
 			->ajax_save();
 	}
+
 
 	/**
 	 * Define the Sections.
@@ -87,7 +90,7 @@ final class Samples {
 						)
 					)
 			)
-			->fields(
+			->options(
 				Field::toggle( 'sample_preview_terms' )
 					->label( __( 'I agree to the Privacy Policy', 'wpmoo' ) )
 					->description(
@@ -101,7 +104,7 @@ final class Samples {
 
 		Moo::section( 'sample_input', __( 'Input', 'wpmoo' ), __( 'Text input.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Field::input( 'demo_input' )
 					->label( __( 'Demo Input', 'wpmoo' ) )
 					->attributes( array( 'placeholder' => __( 'Type…', 'wpmoo' ) ) )
@@ -110,7 +113,7 @@ final class Samples {
 
 		Moo::section( 'sample_textarea', __( 'Textarea', 'wpmoo' ), __( 'Multiline input field.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Field::textarea( 'demo_textarea' )
 					->label( __( 'Demo Textarea', 'wpmoo' ) )
 					->attributes( array( 'placeholder' => __( 'Type multi-line…', 'wpmoo' ) ) )
@@ -119,7 +122,7 @@ final class Samples {
 
 		Moo::section( 'sample_button', __( 'Button', 'wpmoo' ), __( 'Button field type.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Field::button( 'demo_button' )
 					->label( __( 'Run', 'wpmoo' ) )
 					->attributes( array( 'class' => 'contrast' ) )
@@ -127,14 +130,14 @@ final class Samples {
 
 		Moo::section( 'sample_checkbox', __( 'Checkbox', 'wpmoo' ), __( 'Boolean switch.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Field::checkbox( 'demo_checkbox' )
 					->label( __( 'Enable feature', 'wpmoo' ) )
 			);
 
 		Moo::section( 'sample_radio', __( 'Radio', 'wpmoo' ), __( 'Single choice options.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Field::radio( 'demo_radio' )
 					->label( __( 'Pick one', 'wpmoo' ) )
 					->options(
@@ -148,14 +151,14 @@ final class Samples {
 
 		Moo::section( 'sample_toggle', __( 'Toggle', 'wpmoo' ), __( 'Boolean toggle (role="switch").', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Field::toggle( 'demo_toggle' )
 					->label( __( 'Enable notifications', 'wpmoo' ) )
 			);
 
 		Moo::section( 'sample_range', __( 'Range', 'wpmoo' ), __( 'Range slider.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Field::range( 'demo_range' )
 					->label( __( 'Volume', 'wpmoo' ) )
 					->attributes(
@@ -169,7 +172,7 @@ final class Samples {
 
 		Moo::section( 'sample_accordion', __( 'Accordion', 'wpmoo' ), __( 'Display collapsible sections.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Accordion::make( 'demo_accordion' )
 					->label( __( 'Accordion field demo', 'wpmoo' ) )
 					->label_description( __( 'Group related controls inside collapsible panels.', 'wpmoo' ) )
@@ -217,7 +220,7 @@ final class Samples {
 
 		Moo::section( 'sample_fieldset', __( 'Fieldset', 'wpmoo' ), __( 'Group fields under sections.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Fieldset::make( 'demo_fieldset' )
 					->label( __( 'Profile configuration', 'wpmoo' ) )
 					->items(
@@ -255,7 +258,7 @@ final class Samples {
 
 		Moo::section( 'sample_tabs', __( 'Tabs', 'wpmoo' ), __( 'Switch between grouped fields.', 'wpmoo' ) )
 			->parent( self::PAGE_ID )
-			->fields(
+			->options(
 				Tabs::make( 'demo_tabs' )
 					->label( __( 'Tabbed settings', 'wpmoo' ) )
 					->items(
