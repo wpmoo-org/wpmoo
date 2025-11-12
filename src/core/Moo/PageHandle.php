@@ -154,6 +154,18 @@ class PageHandle {
 	}
 
 	/**
+	 * Alias for parent() to match configure_page() usage.
+	 *
+	 * @param string $parent Parent slug.
+	 * @return $this
+	 */
+	public function parent_slug( string $parent ): self {
+		$this->page_builder->parent_slug( $parent );
+
+		return $this;
+	}
+
+	/**
 	 * Set required capability.
 	 *
 	 * @param string $capability Capability string.

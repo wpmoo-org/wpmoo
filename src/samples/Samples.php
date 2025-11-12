@@ -1,312 +1,133 @@
 <?php
 /**
- * WPMoo Samples — aggregator/registrar for sample demos.
- *
- * @package WPMoo\Samples
- * @since 0.1.0
- * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
- * @link https://github.com/wpmoo/wpmoo GitHub Repository.
- * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
+ * WPMoo Samples aggregator.
  */
 
 namespace WPMoo\Samples;
 
-use WPMoo\Fields\Field;
-use WPMoo\Layout\Accordion\Accordion;
-use WPMoo\Layout\Fieldset\Fieldset;
-use WPMoo\Layout\Tabs\Tabs;
 use WPMoo\Moo;
-use WPMoo\Samples\Html\Demo as HtmlDemo;
+use WPMoo\Samples\Metabox\Simple as MetaboxSimple;
+use WPMoo\Samples\Options\Html\HtmlDemo;
+use WPMoo\Samples\Options\Inputs\Button;
+use WPMoo\Samples\Options\Inputs\Checkbox;
+use WPMoo\Samples\Options\Inputs\Input;
+use WPMoo\Samples\Options\Inputs\Preview;
+use WPMoo\Samples\Options\Inputs\Radio;
+use WPMoo\Samples\Options\Inputs\Range;
+use WPMoo\Samples\Options\Inputs\Textarea;
+use WPMoo\Samples\Options\Inputs\Toggle;
+use WPMoo\Samples\Options\Layout\Accordion;
+use WPMoo\Samples\Options\Layout\Fieldset;
+use WPMoo\Samples\Options\Layout\Tabs;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
-/**
- * Central registrar that wires up all sample demos in one place.
- */
 final class Samples {
-	/**
-	 * Root page identifier for all Samples sections.
-	 */
-	public const PAGE_ID = 'wpmoo_samples';
+	public const PAGE_ID           = 'wpmoo_samples';
+	public const PAGE_INPUTS       = 'wpmoo_samples_inputs';
+	public const PAGE_LAYOUTS      = 'wpmoo_samples_layouts';
+	public const PAGE_HTML         = 'wpmoo_samples_html';
+	public const MENU_SLUG         = 'wpmoo-samples';
+	public const MENU_SLUG_INPUTS  = 'wpmoo-samples-inputs';
+	public const MENU_SLUG_LAYOUTS = 'wpmoo-samples-layouts';
+	public const MENU_SLUG_HTML    = 'wpmoo-samples-html';
 
-	/**
-	 * Root page menu slug.
-	 */
-	public const MENU_SLUG = 'wpmoo-samples';
-
-	/**
-	 * Register all sample modules.
-	 *
-	 * Intended to be called once from the framework loader in dev/admin.
-	 *
-	 * @return void
-	 */
 	public static function register(): void {
-		// Ensure the root Samples page exists before children define sections.
 		if ( function_exists( 'add_action' ) ) {
-			add_action( 'wpmoo_init', array( self::class, 'page_sample' ), 5 );
-			add_action( 'wpmoo_init', array( self::class, 'sections' ), 5 );
-			HtmlDemo::register();
+			add_action( 'wpmoo_init', array( self::class, 'register_pages' ), 5 );
+			add_action( 'wpmoo_init', array( self::class, 'register_modules' ), 6 );
 		}
 	}
 
-	/**
-	 * Create the root Samples page container once.
-	 */
-	public static function page_sample(): void {
-		Moo::page( self::PAGE_ID )
-			->title( __( 'WPMoo Samples', 'wpmoo' ) )
-			->menu_slug( self::MENU_SLUG )
-			->fluid()
-			->sidebar_nav()
-			->ajax_save();
+	public static function register_pages(): void {
+		self::configure_page(
+			self::PAGE_ID,
+			__( 'WPMoo Samples', 'wpmoo' ),
+			self::MENU_SLUG,
+			true,
+			null
+		);
+
+		self::configure_page(
+			self::PAGE_INPUTS,
+			__( 'Inputs Demo', 'wpmoo' ),
+			self::MENU_SLUG_INPUTS,
+			true,
+			self::MENU_SLUG
+		);
+
+		self::configure_page(
+			self::PAGE_LAYOUTS,
+			__( 'Layouts Demo', 'wpmoo' ),
+			self::MENU_SLUG_LAYOUTS,
+			true,
+			self::MENU_SLUG
+		);
+
+		self::configure_page(
+			self::PAGE_HTML,
+			__( 'HTML Demo', 'wpmoo' ),
+			self::MENU_SLUG_HTML,
+			false,
+			self::MENU_SLUG
+		);
 	}
 
+	protected static function configure_page( string $id, string $title, string $slug, bool $options, ?string $parent_slug ): void {
+		$page = Moo::page( $id )
+			->title( $title )
+			->menu_slug( $slug )
+			->sidebar_nav();
 
-	/**
-	 * Define the Sections.
-	 *
-	 * @return void
-	 */
-	public static function sections(): void {
-		Moo::section( 'layout_examples', __( 'Preview', 'wpmoo' ) )
-			->description( __( 'Sed ultricies dolor non ante vulputate hendrerit. Vivamus sit amet suscipit sapien. Nulla iaculis eros a elit pharetra egestas.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->grid(
-				Field::input( 'sample_preview_first_name' )
-					->label( __( 'First name', 'wpmoo' ) )
-					->placeholder( __( 'First name', 'wpmoo' ) )
-					->required(),
-				Field::input( 'sample_preview_email' )
-					->label( __( 'Email address', 'wpmoo' ) )
-					->placeholder( __( 'Email address', 'wpmoo' ) )
-					->attributes(
-						array(
-							'type'         => 'email',
-							'autocomplete' => 'email',
-							'required'     => true,
-						)
-					)
-			)
-			->options(
-				Field::toggle( 'sample_preview_terms' )
-					->label( __( 'I agree to the Privacy Policy', 'wpmoo' ) )
-					->description(
-						sprintf(
-							/* translators: %s is a link to the privacy policy. */
-							__( 'Read the %s', 'wpmoo' ),
-							'<a href="#" target="_blank" rel="noreferrer noopener">' . __( 'Privacy Policy', 'wpmoo' ) . '</a>'
-						)
-					)
-			);
+		if ( $options ) {
+			$page->fluid()->ajax_save();
 
-		Moo::section( 'sample_input', __( 'Input', 'wpmoo' ), __( 'Text input.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Field::input( 'demo_input' )
-					->label( __( 'Demo Input', 'wpmoo' ) )
-					->attributes( array( 'placeholder' => __( 'Type…', 'wpmoo' ) ) )
-					->description( __( 'Saved under the samples option set.', 'wpmoo' ) )
-			);
+			// Ensure at least one section exists to satisfy Options builder.
+			Moo::section( "{$id}_placeholder", $title )
+				->description( __( 'Samples placeholder section.', 'wpmoo' ) )
+				->parent( $id )
+				->html(
+					static function () {
+						echo '<p>' . esc_html__( 'Placeholder content – actual samples load below.', 'wpmoo' ) . '</p>';
+					}
+				);
+		}
 
-		Moo::section( 'sample_textarea', __( 'Textarea', 'wpmoo' ), __( 'Multiline input field.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Field::textarea( 'demo_textarea' )
-					->label( __( 'Demo Textarea', 'wpmoo' ) )
-					->attributes( array( 'placeholder' => __( 'Type multi-line…', 'wpmoo' ) ) )
-					->description( __( 'Saved under the samples option set.', 'wpmoo' ) )
-			);
+		if ( $parent_slug ) {
+			$page->parent_slug( $parent_slug );
+		}
+	}
 
-		Moo::section( 'sample_button', __( 'Button', 'wpmoo' ), __( 'Button field type.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Field::button( 'demo_button' )
-					->label( __( 'Run', 'wpmoo' ) )
-					->attributes( array( 'class' => 'contrast' ) )
-			);
+	public static function register_modules(): void {
+		self::register_input_sections();
+		self::register_layout_sections();
+		self::register_html_sections();
+		MetaboxSimple::register();
+		if ( function_exists( 'did_action' ) && did_action( 'wpmoo_init' ) ) {
+			MetaboxSimple::define();
+		}
+	}
 
-		Moo::section( 'sample_checkbox', __( 'Checkbox', 'wpmoo' ), __( 'Boolean switch.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Field::checkbox( 'demo_checkbox' )
-					->label( __( 'Enable feature', 'wpmoo' ) )
-			);
+	protected static function register_input_sections(): void {
+		Preview::register( self::PAGE_INPUTS );
+		Input::register( self::PAGE_INPUTS );
+		Textarea::register( self::PAGE_INPUTS );
+		Button::register( self::PAGE_INPUTS );
+		Checkbox::register( self::PAGE_INPUTS );
+		Radio::register( self::PAGE_INPUTS );
+		Toggle::register( self::PAGE_INPUTS );
+		Range::register( self::PAGE_INPUTS );
+	}
 
-		Moo::section( 'sample_radio', __( 'Radio', 'wpmoo' ), __( 'Single choice options.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Field::radio( 'demo_radio' )
-					->label( __( 'Pick one', 'wpmoo' ) )
-					->options(
-						array(
-							'a' => __( 'Option A', 'wpmoo' ),
-							'b' => __( 'Option B', 'wpmoo' ),
-							'c' => __( 'Option C', 'wpmoo' ),
-						)
-					)
-			);
+	protected static function register_layout_sections(): void {
+		Accordion::register( self::PAGE_LAYOUTS );
+		Fieldset::register( self::PAGE_LAYOUTS );
+		Tabs::register( self::PAGE_LAYOUTS );
+	}
 
-		Moo::section( 'sample_toggle', __( 'Toggle', 'wpmoo' ), __( 'Boolean toggle (role="switch").', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Field::toggle( 'demo_toggle' )
-					->label( __( 'Enable notifications', 'wpmoo' ) )
-			);
-
-		Moo::section( 'sample_range', __( 'Range', 'wpmoo' ), __( 'Range slider.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Field::range( 'demo_range' )
-					->label( __( 'Volume', 'wpmoo' ) )
-					->attributes(
-						array(
-							'min' => 0,
-							'max' => 100,
-							'step' => 5,
-						)
-					)
-			);
-
-		Moo::section( 'sample_accordion', __( 'Accordion', 'wpmoo' ), __( 'Display collapsible sections.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Accordion::make( 'demo_accordion' )
-					->label( __( 'Accordion field demo', 'wpmoo' ) )
-					->label_description( __( 'Group related controls inside collapsible panels.', 'wpmoo' ) )
-					->items(
-						array(
-							array(
-								'title'  => __( 'Accordion 1', 'wpmoo' ),
-								'open'   => true,
-								'fields' => array(
-									Field::input( 'demo_accordion_text' )
-										->label( __( 'Text', 'wpmoo' ) )
-										->default( __( 'Sample value', 'wpmoo' ) ),
-									Field::toggle( 'demo_accordion_switch' )
-										->label( __( 'Switcher', 'wpmoo' ) ),
-									Field::textarea( 'demo_accordion_textarea' )
-										->label( __( 'Textarea', 'wpmoo' ) ),
-								),
-							),
-							array(
-								'title'  => __( 'Accordion 2', 'wpmoo' ),
-								'fields' => array(
-									Field::select( 'demo_accordion_select' )
-										->label( __( 'Select an option', 'wpmoo' ) )
-										->options(
-											array(
-												'a' => __( 'Option A', 'wpmoo' ),
-												'b' => __( 'Option B', 'wpmoo' ),
-												'c' => __( 'Option C', 'wpmoo' ),
-											)
-										),
-									Field::button( 'demo_accordion_button' )
-										->label( __( 'Action button', 'wpmoo' ) )
-										->attributes(
-											array(
-												'class' => 'contrast',
-												'type'  => 'button',
-											)
-										)
-										->save_field( false ),
-								),
-							),
-						)
-					)
-			);
-
-		Moo::section( 'sample_fieldset', __( 'Fieldset', 'wpmoo' ), __( 'Group fields under sections.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Fieldset::make( 'demo_fieldset' )
-					->label( __( 'Profile configuration', 'wpmoo' ) )
-					->items(
-						array(
-							array(
-								'title'       => __( 'Basic info', 'wpmoo' ),
-								'description' => __( 'Contact details.', 'wpmoo' ),
-								'fields'      => array(
-									Field::input( 'fieldset_name' )
-										->label( __( 'Full name', 'wpmoo' ) ),
-									Field::input( 'fieldset_email' )
-										->label( __( 'Email', 'wpmoo' ) )
-										->attributes( array( 'type' => 'email' ) ),
-								),
-							),
-							array(
-								'title'       => __( 'Preferences', 'wpmoo' ),
-								'description' => __( 'Contact details.', 'wpmoo' ),
-								'fields'      => array(
-									Field::toggle( 'fieldset_newsletter' )
-										->label( __( 'Receive newsletter', 'wpmoo' ) ),
-									Field::select( 'fieldset_language' )
-										->label( __( 'Language', 'wpmoo' ) )
-										->options(
-											array(
-												'en' => __( 'English', 'wpmoo' ),
-												'tr' => __( 'Turkish', 'wpmoo' ),
-											)
-										),
-								),
-							),
-						)
-					)
-			);
-
-		Moo::section( 'sample_tabs', __( 'Tabs', 'wpmoo' ), __( 'Switch between grouped fields.', 'wpmoo' ) )
-			->parent( self::PAGE_ID )
-			->options(
-				Tabs::make( 'demo_tabs' )
-					->label( __( 'Tabbed settings', 'wpmoo' ) )
-					->items(
-						array(
-							array(
-								'title'       => __( 'Account', 'wpmoo' ),
-								'id'          => 'tab-account',
-								'type'        => 'tab',
-								'icon_type'   => 'dashicons',
-								'icon'        => 'dashicons-admin-users',
-								'description' => __( 'General account options.', 'wpmoo' ),
-								'fields'      => array(
-									Field::input( 'tabs_username' )
-										->label( __( 'Username', 'wpmoo' ) ),
-									Field::toggle( 'tabs_two_factor' )
-										->label( __( 'Enable 2FA', 'wpmoo' ) ),
-								),
-							),
-							array(
-								'title'       => __( 'Notifications', 'wpmoo' ),
-								'id'          => 'tab-notifications',
-								'icon_type'   => 'fontawesome',
-								'icon'        => 'fas fa-bell',
-								'fields'      => array(
-									Field::checkbox( 'tabs_email_notifications' )
-										->label( __( 'Email alerts', 'wpmoo' ) ),
-									Field::checkbox( 'tabs_sms_notifications' )
-										->label( __( 'SMS alerts', 'wpmoo' ) ),
-								),
-							),
-							array(
-								'title'       => __( 'Display', 'wpmoo' ),
-								'id'          => 'tab-display',
-								'icon_type'   => 'url',
-								'icon'        => plugins_url( 'assets/img/sample-tab-icon.svg', WPMOO_FILE ),
-								'fields'      => array(
-									Field::select( 'tabs_theme' )
-										->label( __( 'Theme', 'wpmoo' ) )
-										->options(
-											array(
-												'light' => __( 'Light', 'wpmoo' ),
-												'dark'  => __( 'Dark', 'wpmoo' ),
-											)
-										),
-								),
-							),
-						)
-					)
-			);
+	protected static function register_html_sections(): void {
+		HtmlDemo::register( self::PAGE_HTML );
 	}
 }

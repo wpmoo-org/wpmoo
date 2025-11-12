@@ -75,6 +75,13 @@ class Builder {
 	protected $options_enabled = false;
 
 	/**
+	 * Custom HTML or callback for rendering raw content.
+	 *
+	 * @var callable|string|null
+	 */
+	protected $html_content = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $id          Section ID.
@@ -178,6 +185,17 @@ class Builder {
 	}
 
 	/**
+	 * Provide raw HTML or a render callback.
+	 *
+	 * @param callable|string $content Content definition.
+	 * @return $this
+	 */
+	public function html( $content ): self {
+		$this->html_content = $content;
+		return $this;
+	}
+
+	/**
 	 * Get section id.
 	 *
 	 * @return string
@@ -263,6 +281,7 @@ class Builder {
 			'fields'      => $fields,
 			'layout'      => $this->get_layout(),
 			'options_enabled' => $this->options_enabled,
+			'html_content'     => $this->html_content,
 		);
 	}
 }

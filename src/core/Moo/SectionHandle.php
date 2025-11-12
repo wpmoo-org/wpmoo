@@ -61,6 +61,13 @@ class SectionHandle {
 	protected $pending_fields = array();
 
 	/**
+	 * Pending HTML content before the builder attaches.
+	 *
+	 * @var callable|string|null
+	 */
+	protected $pending_html = null;
+
+	/**
 	 * Indicates whether this section declares option fields.
 	 *
 	 * @var bool
@@ -284,6 +291,22 @@ class SectionHandle {
 	}
 
 	/**
+	 * Attach raw HTML or render callback to the section.
+	 *
+	 * @param callable|string $content Content definition.
+	 * @return $this
+	 */
+	public function html( $content ): self {
+		if ( $this->section_builder ) {
+			$this->section_builder->html( $content );
+		} else {
+			$this->pending_html = $content;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Register a grid wrapper for the provided fields.
 	 *
 	 * @param (\WPMoo\Fields\Builder|array<string,mixed>) ...$fields Field definitions assigned to the grid.
@@ -356,6 +379,7 @@ class SectionHandle {
 
 		$this->apply_icon();
 		$this->flush_fields();
+		$this->apply_html();
 		$this->flush_layout_groups();
 		$this->attached = true;
 	}
@@ -386,6 +410,7 @@ class SectionHandle {
 
 		$this->apply_icon();
 		$this->flush_fields();
+		$this->apply_html();
 		$this->flush_layout_groups();
 		$this->attached = true;
 	}
@@ -442,6 +467,20 @@ class SectionHandle {
 
 		$this->pending_fields = array();
 		$this->section_builder->fields( $prepared );
+	}
+
+	/**
+	 * Apply pending HTML if present.
+	 *
+	 * @return void
+	 */
+	protected function apply_html(): void {
+		if ( ! $this->section_builder || null === $this->pending_html ) {
+			return;
+		}
+
+		$this->section_builder->html( $this->pending_html );
+		$this->pending_html = null;
 	}
 
 	/**

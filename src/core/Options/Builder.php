@@ -325,8 +325,11 @@ class Builder {
 				}
 
 				if ( isset( $section['fields'] ) && is_array( $section['fields'] ) ) {
-					$builder->fields( $section['fields'] );
-					$builder->enable_options();
+					$builder->options( $section['fields'] );
+				}
+
+				if ( isset( $section['html_content'] ) ) {
+					$builder->html( $section['html_content'] );
 				}
 
 				if ( ! empty( $section['options_enabled'] ) ) {

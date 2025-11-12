@@ -639,6 +639,10 @@ class Page {
 			}
 			echo '</header>';
 
+			if ( isset( $section['html_content'] ) ) {
+				$this->render_section_content( $section['html_content'] );
+			}
+
 			$layout_meta = $this->prepare_section_layout( $section );
 			$active      = null;
 
@@ -705,6 +709,27 @@ class Page {
 	protected function render_sidebar_navigation( array $sections ): void {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sidebar component outputs sanitized nav markup.
 		echo $this->sidebar_component->render( $this, self::$nav_registry );
+	}
+
+	/**
+	 * Render arbitrary section content.
+	 *
+	 * @param callable|string $content Content definition.
+	 * @return void
+	 */
+	protected function render_section_content( $content ): void {
+		if ( is_callable( $content ) ) {
+			call_user_func( $content, $this );
+			return;
+		}
+
+		if ( is_string( $content ) && '' !== trim( $content ) ) {
+			if ( function_exists( 'wp_kses_post' ) ) {
+				echo wp_kses_post( $content );
+			} else {
+				echo $content;
+			}
+		}
 	}
 
 	// Panel/tab state helpers removed under Pico-first layout.
@@ -1145,13 +1170,14 @@ class Page {
 
 		foreach ( $sections as $section ) {
 			$section_defaults = array(
-				'id'          => '',
-				'title'       => '',
-				'description' => '',
-				'icon'        => '',
-				'fields'      => array(),
-				'layout'      => array(),
+				'id'              => '',
+				'title'           => '',
+				'description'     => '',
+				'icon'            => '',
+				'fields'          => array(),
+				'layout'          => array(),
 				'options_enabled' => false,
+				'html_content'    => null,
 			);
 
 			$section = array_merge( $section_defaults, is_array( $section ) ? $section : array() );
