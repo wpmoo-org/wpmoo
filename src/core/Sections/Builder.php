@@ -65,14 +65,14 @@ class Builder {
 	 *
 	 * @var array<int, array<string, mixed>>
 	 */
-    protected $layout_groups = array();
+	protected $layout_groups = array();
 
-    /**
-     * Whether this section declares option-backed fields.
-     *
-     * @var bool
-     */
-    protected $options_enabled = false;
+	/**
+	 * Whether this section declares option-backed fields.
+	 *
+	 * @var bool
+	 */
+	protected $options_enabled = false;
 
 	/**
 	 * Constructor.
@@ -158,24 +158,24 @@ class Builder {
 		return $this->fields( $fields );
 	}
 
-    /**
-     * Mark the section as options-enabled.
-     *
-     * @return $this
-     */
-    public function enable_options(): self {
-        $this->options_enabled = true;
-        return $this;
-    }
+	/**
+	 * Mark the section as options-enabled.
+	 *
+	 * @return $this
+	 */
+	public function enable_options(): self {
+		$this->options_enabled = true;
+		return $this;
+	}
 
-    /**
-     * Whether the section contains option-backed fields.
-     *
-     * @return bool
-     */
-    public function has_options(): bool {
-        return $this->options_enabled;
-    }
+	/**
+	 * Whether the section contains option-backed fields.
+	 *
+	 * @return bool
+	 */
+	public function has_options(): bool {
+		return $this->options_enabled;
+	}
 
 	/**
 	 * Get section id.
@@ -255,14 +255,14 @@ class Builder {
 			}
 		}
 
-        return array(
-            'id'          => $this->id,
-            'title'       => $this->title,
-            'description' => $this->description,
-            'icon'        => $this->icon,
-            'fields'      => $fields,
-            'layout'      => $this->get_layout(),
-            'options_enabled' => $this->options_enabled,
-        );
-    }
+		return array(
+			'id'          => $this->id,
+			'title'       => $this->title,
+			'description' => $this->description,
+			'icon'        => $this->icon,
+			'fields'      => $fields,
+			'layout'      => $this->get_layout(),
+			'options_enabled' => $this->options_enabled,
+		);
+	}
 }

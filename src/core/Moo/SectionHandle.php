@@ -58,14 +58,14 @@ class SectionHandle {
 	 *
 	 * @var array<int, mixed>
 	 */
-    protected $pending_fields = array();
+	protected $pending_fields = array();
 
-    /**
-     * Indicates whether this section declares option fields.
-     *
-     * @var bool
-     */
-    protected $options_enabled = false;
+	/**
+	 * Indicates whether this section declares option fields.
+	 *
+	 * @var bool
+	 */
+	protected $options_enabled = false;
 
 	/**
 	 * Pending layout groups (grid wrappers etc).
@@ -261,27 +261,27 @@ class SectionHandle {
 		return $this->options( ...$fields );
 	}
 
-    /**
-     * Declare option fields for this section.
-     *
-     * @param mixed ...$fields Field definitions or arrays of definitions.
-     * @return $this
-     */
-    public function options( ...$fields ): self {
-        if ( 1 === count( $fields ) && is_array( $fields[0] ) ) {
-            $fields = $fields[0];
-        }
+	/**
+	 * Declare option fields for this section.
+	 *
+	 * @param mixed ...$fields Field definitions or arrays of definitions.
+	 * @return $this
+	 */
+	public function options( ...$fields ): self {
+		if ( 1 === count( $fields ) && is_array( $fields[0] ) ) {
+			$fields = $fields[0];
+		}
 
-        $this->options_enabled = true;
+		$this->options_enabled = true;
 
-        foreach ( $fields as $field ) {
-            $this->pending_fields[] = $field;
-        }
+		foreach ( $fields as $field ) {
+			$this->pending_fields[] = $field;
+		}
 
-        $this->flush_fields();
+		$this->flush_fields();
 
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Register a grid wrapper for the provided fields.
@@ -436,12 +436,12 @@ class SectionHandle {
 			$prepared[] = $this->normalise_field( $field );
 		}
 
-        if ( $this->options_enabled && method_exists( $this->section_builder, 'enable_options' ) ) {
-            $this->section_builder->enable_options();
-        }
+		if ( $this->options_enabled && method_exists( $this->section_builder, 'enable_options' ) ) {
+			$this->section_builder->enable_options();
+		}
 
-        $this->pending_fields = array();
-        $this->section_builder->fields( $prepared );
+		$this->pending_fields = array();
+		$this->section_builder->fields( $prepared );
 	}
 
 	/**
