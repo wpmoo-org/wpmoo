@@ -36,17 +36,17 @@ class PageHandle {
 	 *
 	 * @var OptionsBuilder
 	 */
-	protected $builder;
+	protected $page_builder;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string         $id      Page identifier.
-	 * @param OptionsBuilder $builder Options builder instance.
+	 * @param string         $id            Page identifier.
+	 * @param OptionsBuilder $page_builder Options builder instance.
 	 */
-	public function __construct( string $id, OptionsBuilder $builder ) {
+	public function __construct( string $id, OptionsBuilder $page_builder ) {
 		$this->id      = $id;
-		$this->builder = $builder;
+		$this->page_builder = $page_builder;
 	}
 
 	/**
@@ -55,7 +55,7 @@ class PageHandle {
 	 * @return OptionsBuilder
 	 */
 	public function builder(): OptionsBuilder {
-		return $this->builder;
+		return $this->page_builder;
 	}
 
 	/**
@@ -74,7 +74,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function title( string $title ): self {
-		$this->builder->page_title( $title )->menu_title( $title );
+		$this->page_builder->page_title( $title )->menu_title( $title );
 
 		return $this;
 	}
@@ -86,7 +86,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function menu_title( string $title ): self {
-		$this->builder->menu_title( $title );
+		$this->page_builder->menu_title( $title );
 
 		return $this;
 	}
@@ -98,7 +98,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function menu_slug( string $slug ): self {
-		$this->builder->menu_slug( $slug );
+		$this->page_builder->menu_slug( $slug );
 
 		return $this;
 	}
@@ -110,7 +110,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function css_class( string $class ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		$this->builder->css_class( $class );
+		$this->page_builder->css_class( $class );
 		return $this;
 	}
 
@@ -121,7 +121,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function fluid( bool $enabled = true ): self {
-		$this->builder->fluid( $enabled );
+		$this->page_builder->fluid( $enabled );
 		return $this;
 	}
 
@@ -133,9 +133,9 @@ class PageHandle {
 	 */
 	public function sidebar_nav( bool $enabled = true ): self {
 		if ( method_exists( $this->builder, 'sidebar_nav' ) ) {
-			$this->builder->sidebar_nav( $enabled );
+			$this->page_builder->sidebar_nav( $enabled );
 		} else {
-			$this->builder->config( 'sidebar_nav', $enabled );
+			$this->page_builder->config( 'sidebar_nav', $enabled );
 		}
 
 		return $this;
@@ -148,7 +148,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function parent( string $parent ): self {
-		$this->builder->parent_slug( $parent );
+		$this->page_builder->parent_slug( $parent );
 
 		return $this;
 	}
@@ -160,7 +160,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function capability( string $capability ): self {
-		$this->builder->capability( $capability );
+		$this->page_builder->capability( $capability );
 
 		return $this;
 	}
@@ -172,7 +172,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function icon( string $icon ): self {
-		$this->builder->icon( $icon );
+		$this->page_builder->icon( $icon );
 
 		return $this;
 	}
@@ -184,7 +184,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function position( int $position ): self {
-		$this->builder->position( $position );
+		$this->page_builder->position( $position );
 
 		return $this;
 	}
@@ -196,7 +196,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function sticky_header( bool $enabled = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		$this->builder->config( 'sticky_header', $enabled );
+		$this->page_builder->config( 'sticky_header', $enabled );
 		return $this;
 	}
 
@@ -207,7 +207,7 @@ class PageHandle {
 	 * @return $this
 	 */
 	public function ajax_save( bool $enabled = true ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		$this->builder->config( 'ajax_save', $enabled );
+		$this->page_builder->config( 'ajax_save', $enabled );
 		return $this;
 	}
 
@@ -253,7 +253,7 @@ class PageHandle {
 	 * @return void
 	 */
 	public function register(): void {
-		$this->builder->register();
+		$this->page_builder->register();
 	}
 
 	/**

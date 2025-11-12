@@ -47,7 +47,7 @@ class MetaboxHandle {
 	 *
 	 * @var MetaboxInstance|null
 	 */
-	protected $instance = null;
+	protected $metabox_instance = null;
 
 	/**
 	 * Whether the metabox has been registered.
@@ -328,11 +328,11 @@ class MetaboxHandle {
 	 * @return MetaboxInstance
 	 */
 	public function register(): MetaboxInstance {
-		if ( $this->registered && $this->instance instanceof MetaboxInstance ) {
-			return $this->instance;
+		if ( $this->registered && $this->metabox_instance instanceof MetaboxInstance ) {
+			return $this->metabox_instance;
 		}
 
-		$this->instance   = $this->metabox_builder->register();
+		$this->metabox_instance   = $this->metabox_builder->register();
 		$this->registered = true;
 
 		if ( $this->registration_hooked && function_exists( 'remove_action' ) ) {
@@ -340,7 +340,7 @@ class MetaboxHandle {
 			$this->registration_hooked = false;
 		}
 
-		return $this->instance;
+		return $this->metabox_instance;
 	}
 
 	/**
@@ -423,7 +423,7 @@ class MetaboxHandle {
 	 * @return MetaboxInstance|null
 	 */
 	public function instance(): ?MetaboxInstance {
-		return $this->instance;
+		return $this->metabox_instance;
 	}
 
 	/**
