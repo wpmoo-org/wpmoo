@@ -40,7 +40,7 @@ class MetaboxHandle {
 	 *
 	 * @var MetaboxBuilder
 	 */
-	protected $builder;
+	protected $metabox_builder;
 
 	/**
 	 * Registered metabox instance.
@@ -73,12 +73,12 @@ class MetaboxHandle {
 	/**
 	 * Constructor.
 	 *
-	 * @param string         $id      Metabox identifier.
-	 * @param MetaboxBuilder $builder Builder instance.
+	 * @param string         $id               Metabox identifier.
+	 * @param MetaboxBuilder $metabox_builder  Builder instance.
 	 */
-	public function __construct( string $id, MetaboxBuilder $builder ) {
+	public function __construct( string $id, MetaboxBuilder $metabox_builder ) {
 		$this->id      = $id;
-		$this->builder = $builder;
+		$this->metabox_builder = $metabox_builder;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class MetaboxHandle {
 	 * @return MetaboxBuilder
 	 */
 	public function builder(): MetaboxBuilder {
-		return $this->builder;
+		return $this->metabox_builder;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function title( string $title ): self {
-		$this->builder->title( $title );
+		$this->metabox_builder->title( $title );
 
 		return $this;
 	}
@@ -118,7 +118,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function description( string $description ): self {
-		$this->builder->config( 'description', $description );
+		$this->metabox_builder->config( 'description', $description );
 
 		return $this;
 	}
@@ -133,7 +133,7 @@ class MetaboxHandle {
 		$normalized = $this->normalize_screens( $screens );
 
 		if ( ! empty( $normalized ) ) {
-			$this->builder->postType( $normalized );
+			$this->metabox_builder->postType( $normalized );
 		}
 
 		return $this;
@@ -156,7 +156,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function context( string $context ): self {
-		$this->builder->context( $context );
+		$this->metabox_builder->context( $context );
 
 		return $this;
 	}
@@ -168,7 +168,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function priority( string $priority ): self {
-		$this->builder->priority( $priority );
+		$this->metabox_builder->priority( $priority );
 
 		return $this;
 	}
@@ -179,7 +179,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function high(): self {
-		$this->builder->high();
+		$this->metabox_builder->high();
 
 		return $this;
 	}
@@ -190,7 +190,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function low(): self {
-		$this->builder->low();
+		$this->metabox_builder->low();
 
 		return $this;
 	}
@@ -202,7 +202,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function capability( string $capability ): self {
-		$this->builder->capability( $capability );
+		$this->metabox_builder->capability( $capability );
 
 		return $this;
 	}
@@ -214,7 +214,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function layout( string $layout ): self {
-		$this->builder->layout( $layout );
+		$this->metabox_builder->layout( $layout );
 
 		return $this;
 	}
@@ -227,7 +227,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function normal(): self {
-		$this->builder->normal();
+		$this->metabox_builder->normal();
 
 		return $this;
 	}
@@ -238,7 +238,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function side(): self {
-		$this->builder->side();
+		$this->metabox_builder->side();
 
 		return $this;
 	}
@@ -249,7 +249,7 @@ class MetaboxHandle {
 	 * @return $this
 	 */
 	public function advanced(): self {
-		$this->builder->advanced();
+		$this->metabox_builder->advanced();
 
 		return $this;
 	}
@@ -294,7 +294,7 @@ class MetaboxHandle {
 		}
 
 		if ( ! empty( $prepared ) ) {
-			$this->builder->fields( $prepared );
+			$this->metabox_builder->fields( $prepared );
 		}
 
 		return $this;
@@ -319,7 +319,7 @@ class MetaboxHandle {
 	 * @return SectionBuilder
 	 */
 	public function section( string $id, string $title = '', string $description = '' ): SectionBuilder {
-		return $this->builder->section( $id, $title, $description );
+		return $this->metabox_builder->section( $id, $title, $description );
 	}
 
 	/**
@@ -332,7 +332,7 @@ class MetaboxHandle {
 			return $this->instance;
 		}
 
-		$this->instance   = $this->builder->register();
+		$this->instance   = $this->metabox_builder->register();
 		$this->registered = true;
 
 		if ( $this->registration_hooked && function_exists( 'remove_action' ) ) {

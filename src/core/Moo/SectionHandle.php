@@ -107,7 +107,7 @@ class SectionHandle {
 	 *
 	 * @var SectionBuilder|null
 	 */
-	protected $builder = null;
+	protected $section_builder = null;
 
 	/**
 	 * Whether the section has been attached.
@@ -147,8 +147,8 @@ class SectionHandle {
 	public function description( string $description ): self {
 		$this->description = $description;
 
-		if ( $this->builder ) {
-			$this->builder->description( $description );
+		if ( $this->section_builder ) {
+			$this->section_builder->description( $description );
 		}
 
 		return $this;
@@ -163,8 +163,8 @@ class SectionHandle {
 	public function title( string $title ): self {
 		$this->title = $title;
 
-		if ( $this->builder ) {
-			$this->builder->title( $title );
+		if ( $this->section_builder ) {
+			$this->section_builder->title( $title );
 		}
 
 		return $this;
@@ -179,8 +179,8 @@ class SectionHandle {
 	public function icon( string $icon ): self {
 		$this->icon = $icon;
 
-		if ( $this->builder ) {
-			$this->builder->icon( $icon );
+		if ( $this->section_builder ) {
+			$this->section_builder->icon( $icon );
 		}
 
 		return $this;
@@ -329,7 +329,7 @@ class SectionHandle {
 		}
 
 		$this->page    = $page;
-		$this->builder = $page->builder()->section( $this->id, $this->title, $this->description );
+		$this->section_builder = $page->builder()->section( $this->id, $this->title, $this->description );
 
 		$this->apply_icon();
 		$this->flush_fields();
@@ -359,7 +359,7 @@ class SectionHandle {
 
 		$this->metabox    = $metabox;
 		$this->metabox_id = $metabox->id();
-		$this->builder    = $metabox->builder()->section( $this->id, $this->title, $this->description );
+		$this->section_builder    = $metabox->builder()->section( $this->id, $this->title, $this->description );
 
 		$this->apply_icon();
 		$this->flush_fields();
@@ -390,11 +390,11 @@ class SectionHandle {
 	 * @return void
 	 */
 	protected function apply_icon(): void {
-		if ( '' === $this->icon || ! $this->builder || ! method_exists( $this->builder, 'icon' ) ) {
+		if ( '' === $this->icon || ! $this->section_builder || ! method_exists( $this->section_builder, 'icon' ) ) {
 			return;
 		}
 
-		$this->builder->icon( $this->icon );
+		$this->section_builder->icon( $this->icon );
 	}
 
 	/**
@@ -403,7 +403,7 @@ class SectionHandle {
 	 * @return void
 	 */
 	protected function flush_fields(): void {
-		if ( ! $this->builder || empty( $this->pending_fields ) ) {
+		if ( ! $this->section_builder || empty( $this->pending_fields ) ) {
 			return;
 		}
 
@@ -414,7 +414,7 @@ class SectionHandle {
 		}
 
 		$this->pending_fields = array();
-		$this->builder->fields( $prepared );
+		$this->section_builder->fields( $prepared );
 	}
 
 	/**
@@ -423,7 +423,7 @@ class SectionHandle {
 	 * @return void
 	 */
 	protected function flush_layout_groups(): void {
-		if ( ! $this->builder || empty( $this->pending_layout_groups ) ) {
+		if ( ! $this->section_builder || empty( $this->pending_layout_groups ) ) {
 			return;
 		}
 
@@ -432,8 +432,8 @@ class SectionHandle {
 				continue;
 			}
 
-			if ( method_exists( $this->builder, 'add_layout_group' ) ) {
-				$this->builder->add_layout_group( (string) $group['type'], $group['fields'] );
+			if ( method_exists( $this->section_builder, 'add_layout_group' ) ) {
+				$this->section_builder->add_layout_group( (string) $group['type'], $group['fields'] );
 			}
 		}
 
@@ -522,8 +522,8 @@ class SectionHandle {
 			return;
 		}
 
-		if ( $this->builder && method_exists( $this->builder, 'add_layout_group' ) ) {
-			$this->builder->add_layout_group( $type, $field_ids );
+		if ( $this->section_builder && method_exists( $this->section_builder, 'add_layout_group' ) ) {
+			$this->section_builder->add_layout_group( $type, $field_ids );
 			return;
 		}
 
