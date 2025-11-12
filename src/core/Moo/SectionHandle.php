@@ -12,9 +12,9 @@ namespace WPMoo\Moo;
 
 use InvalidArgumentException;
 use WPMoo\Moo\PageHandle;
-use WPMoo\Fields\Builder as BaseFieldBuilder;
-use WPMoo\Layout\Builder as LayoutComponentBuilder;
-use WPMoo\Sections\Builder as BaseSectionBuilder;
+use WPMoo\Fields\Builder as FieldBuilder;
+use WPMoo\Layout\Builder as LayoutBuilder;
+use WPMoo\Sections\Builder as SectionBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -105,7 +105,7 @@ class SectionHandle {
 	/**
 	 * Underlying SectionBuilder once attached.
 	 *
-	 * @var BaseSectionBuilder|null
+	 * @var SectionBuilder|null
 	 */
 	protected $builder = null;
 
@@ -448,11 +448,11 @@ class SectionHandle {
 	 * @throws InvalidArgumentException When the field definition is invalid.
 	 */
 	protected function normalise_field( $field ): array {
-		if ( $field instanceof BaseFieldBuilder ) {
+		if ( $field instanceof FieldBuilder ) {
 			return $field->build();
 		}
 
-		if ( $field instanceof LayoutComponentBuilder ) {
+		if ( $field instanceof LayoutBuilder ) {
 			return $field->build();
 		}
 
@@ -475,7 +475,7 @@ class SectionHandle {
 	 * @throws InvalidArgumentException When the id cannot be determined.
 	 */
 	protected function extract_field_id( $field ): string {
-		if ( $field instanceof BaseFieldBuilder || $field instanceof LayoutComponentBuilder ) {
+		if ( $field instanceof FieldBuilder || $field instanceof LayoutBuilder ) {
 			$field_id = $field->id();
 
 			if ( '' !== $field_id ) {

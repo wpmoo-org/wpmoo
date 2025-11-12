@@ -14,9 +14,9 @@ namespace WPMoo\Moo;
 use InvalidArgumentException;
 use Traversable;
 use WPMoo\Metabox\Builder as MetaboxBuilder;
-use WPMoo\Fields\Builder as BaseFieldBuilder;
+use WPMoo\Fields\Builder as FieldBuilder;
 use WPMoo\Metabox\Metabox as MetaboxInstance;
-use WPMoo\Sections\Builder as BaseSectionBuilder;
+use WPMoo\Sections\Builder as SectionBuilder;
 
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -316,9 +316,9 @@ class MetaboxHandle {
 	 * @param string $id          Section identifier.
 	 * @param string $title       Section title.
 	 * @param string $description Optional description.
-	 * @return BaseSectionBuilder
+	 * @return SectionBuilder
 	 */
-	public function section( string $id, string $title = '', string $description = '' ): BaseSectionBuilder {
+	public function section( string $id, string $title = '', string $description = '' ): SectionBuilder {
 		return $this->builder->section( $id, $title, $description );
 	}
 
@@ -492,7 +492,7 @@ class MetaboxHandle {
 	protected function normalize_field( $field ): array {
 		// Field facade removed; accept arrays or base FieldBuilder.
 
-		if ( $field instanceof BaseFieldBuilder ) {
+		if ( $field instanceof FieldBuilder ) {
 			return $field->build();
 		}
 
