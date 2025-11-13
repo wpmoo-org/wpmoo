@@ -132,39 +132,6 @@ class Metabox {
 	}
 
 	/**
-	 * Register a new metabox (backward compatibility).
-	 *
-	 * @param string|array<string, mixed> $id_or_config Metabox ID or full config array.
-	 * @return Builder|Metabox
-	 */
-	public static function register( $id_or_config ) {
-		self::ensure_booted();
-
-		// Backward compatibility: if array is passed, use old method.
-		if ( is_array( $id_or_config ) ) {
-			return self::registerFromArray( $id_or_config );
-		}
-
-		// New fluent API: return Builder.
-		return self::create( (string) $id_or_config );
-	}
-
-	/**
-	 * Register from array configuration (backward compatibility).
-	 *
-	 * @param array<string, mixed> $config Metabox configuration.
-	 * @return Metabox
-	 */
-	protected static function registerFromArray( array $config ): Metabox {
-		$metabox           = new self( $config, self::$shared_manager, self::$shared_layout_manager );
-		self::$metaboxes[] = $metabox;
-
-		$metabox->boot();
-
-		return $metabox;
-	}
-
-	/**
 	 * Internal method to register a metabox from Builder.
 	 *
 	 * @param Metabox $metabox Metabox instance.

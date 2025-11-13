@@ -96,23 +96,7 @@ class Builder {
 		}
 		$this->config['attributes'] = array_merge( $this->config['attributes'], $attributes );
 
-		// Maintain backwards-compatible alias used by Metabox builder.
-		if ( ! isset( $this->config['args'] ) ) {
-			$this->config['args'] = array();
-		}
-		$this->config['args'] = array_merge( $this->config['args'], $attributes );
-
 		return $this;
-	}
-
-	/**
-	 * Back-compat setter for Metabox builder signature.
-	 *
-	 * @param array<string, mixed> $args Arguments.
-	 * @return $this
-	 */
-	public function args( array $args ): self { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-		return $this->attributes( $args );
 	}
 
 	/**
@@ -126,12 +110,6 @@ class Builder {
 			$this->config['attributes'] = array();
 		}
 		$this->config['attributes']['placeholder'] = $placeholder;
-
-		// Mirror for args if consumed by a metabox renderer.
-		if ( ! isset( $this->config['args'] ) ) {
-			$this->config['args'] = array();
-		}
-		$this->config['args']['placeholder'] = $placeholder;
 
 		return $this;
 	}

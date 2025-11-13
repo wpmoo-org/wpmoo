@@ -100,13 +100,6 @@ abstract class BaseField {
 	 */
 	protected $options = array();
 
-	/**
-	 * Backwards compatible array of attributes.
-	 *
-	 * @var array<string, mixed>
-	 */
-	protected $args = array();
-
 	// Layout/width helpers removed; rendering uses simple container/grid wrappers.
 
 	/**
@@ -288,10 +281,6 @@ abstract class BaseField {
 			$attributes = array_merge( $attributes, $config['attributes'] );
 		}
 
-		if ( is_array( $config['args'] ) ) {
-			$attributes = array_merge( $attributes, $config['args'] );
-		}
-
 		if ( isset( $config['options'] ) && is_array( $config['options'] ) ) {
 			$this->options = $config['options'];
 		}
@@ -315,7 +304,6 @@ abstract class BaseField {
 		}
 
 		$this->attributes = $attributes;
-		$this->args       = $attributes;
 	}
 
 	/**
@@ -373,15 +361,6 @@ abstract class BaseField {
 	}
 
 	// public function width() removed — not used by Pico-first renderers.
-
-	/**
-	 * Returns additional HTML attributes.
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function args() {
-		return $this->attributes;
-	}
 
 	// public function layout() removed — not used by Pico-first renderers.
 

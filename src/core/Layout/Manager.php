@@ -147,6 +147,3 @@ class Manager {
 		);
 	}
 }
-
-// Backwards compatibility alias.
-\class_alias( __NAMESPACE__ . '\Manager', __NAMESPACE__ . '\LayoutManager' );

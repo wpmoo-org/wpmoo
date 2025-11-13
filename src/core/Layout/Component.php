@@ -139,7 +139,6 @@ abstract class Component {
 		$this->help               = isset( $config['help'] ) ? (string) $config['help'] : '';
 		$this->css_class          = isset( $config['css_class'] ) ? (string) $config['css_class'] : '';
 		$this->attributes         = isset( $config['attributes'] ) && is_array( $config['attributes'] ) ? $config['attributes'] : array();
-		$this->args               = isset( $config['args'] ) && is_array( $config['args'] ) ? $config['args'] : array();
 		$this->sanitize_callback  = isset( $config['sanitize'] ) ? $config['sanitize'] : null;
 		$this->field_manager      = isset( $config['field_manager'] ) && $config['field_manager'] instanceof FieldManager ? $config['field_manager'] : null;
 
@@ -199,15 +198,6 @@ abstract class Component {
 	 */
 	public function attributes(): array {
 		return $this->attributes;
-	}
-
-	/**
-	 * Backwards-compatible args accessor.
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function args(): array {
-		return $this->args;
 	}
 
 	/**
@@ -339,6 +329,3 @@ abstract class Component {
 		return $this->esc_html( $value );
 	}
 }
-
-// Backwards compatibility: allow referencing the old class name.
-\class_alias( __NAMESPACE__ . '\Component', __NAMESPACE__ . '\LayoutComponent' );

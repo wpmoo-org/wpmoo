@@ -96,45 +96,6 @@ class Options {
 	}
 
 	/**
-	 * Register a new options page (backward compatibility).
-	 *
-	 * @param string|array<string, mixed> $option_key_or_config Option key or full config array.
-	 * @return PageBuilder|Page
-	 */
-	public static function register( $option_key_or_config ) {
-		self::boot();
-
-		// Backward compatibility: if array is passed, use old method.
-		if ( is_array( $option_key_or_config ) ) {
-			return self::registerFromArray( $option_key_or_config );
-		}
-
-		// New fluent API: return Builder.
-		return self::create( (string) $option_key_or_config );
-	}
-
-	/**
-	 * Register from array configuration (backward compatibility).
-	 *
-	 * @param array<string, mixed> $config Configuration array.
-	 * @return Page
-	 */
-	protected static function registerFromArray( array $config ): Page {
-		$page = new Page( $config, self::$field_manager, self::$layout_manager );
-
-		self::$pages[] = $page;
-		$page->boot();
-
-		$repository = $page->repository();
-
-		if ( $repository ) {
-			self::$repositories[ $repository->option_key() ] = $repository;
-		}
-
-		return $page;
-	}
-
-	/**
 	 * Internal method to register a page from Builder.
 	 *
 	 * @param Page $page Page instance.

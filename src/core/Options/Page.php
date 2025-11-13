@@ -834,9 +834,8 @@ class Page {
 		$name          = $this->field_input_name( $field );
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
 
-		$args          = $field->args();
 		$desc          = $field->description();
-		$desc_position = isset( $args['description_position'] ) ? $args['description_position'] : 'field';
+		$desc_position = 'field';
 
 		echo '<tr>';
 		echo '<th scope="row">';

@@ -36,15 +36,4 @@ class Taxonomy {
 
 		return $builder;
 	}
-
-	/**
-	 * Backward compatible alias of create().
-	 *
-	 * @param string                    $taxonomy     Taxonomy slug.
-	 * @param string|array<int, string> $object_types Optional. Post type(s) to attach to.
-	 * @return Builder
-	 */
-	public static function register( string $taxonomy, $object_types = null ): Builder {
-		return self::create( $taxonomy, $object_types );
-	}
 }
