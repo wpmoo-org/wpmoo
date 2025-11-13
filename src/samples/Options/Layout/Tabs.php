@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample tabs layout registrar.
+ *
+ * This demo illustrates how to switch between grouped fields using tabs within an options page.
+ */
 final class Tabs {
 	public static function register( string $page_id ): void {
 		Moo::section( 'sample_tabs', __( 'Tabs', 'wpmoo' ), __( 'Switch between grouped fields.', 'wpmoo' ) )

@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample Radio section registrar.
+ *
+ * This demo illustrates how to add a radio input field to an options page.
+ */
 final class Radio {
 	public static function register( string $page_id ): void {
 		Moo::section( 'sample_radio', __( 'Radio', 'wpmoo' ), __( 'Single choice options.', 'wpmoo' ) )

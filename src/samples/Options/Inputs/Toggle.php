@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample Toggle section registrar.
+ *
+ * This demo illustrates how to add a toggle input field to an options page.
+ */
 final class Toggle {
 	public static function register( string $page_id ): void {
 		Moo::section( 'sample_toggle', __( 'Toggle', 'wpmoo' ), __( 'Boolean toggle (role="switch").', 'wpmoo' ) )

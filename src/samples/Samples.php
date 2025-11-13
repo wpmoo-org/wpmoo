@@ -24,6 +24,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Entry point for registering all WPMoo sample demos.
+ */
 final class Samples {
 	public const PAGE_ID           = 'wpmoo_samples';
 	public const PAGE_INPUTS       = 'wpmoo_samples_inputs';

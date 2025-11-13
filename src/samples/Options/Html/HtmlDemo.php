@@ -7,6 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample HTML-only section.
+ *
+ * This demo shows how to create a section that outputs custom HTML content
+ * without any associated options or fields.
+ */
 final class HtmlDemo {
 	public static function register( string $page_id ): void {
 		Moo::section( 'html_demo_page', __( 'HTML Demo Page', 'wpmoo' ) )

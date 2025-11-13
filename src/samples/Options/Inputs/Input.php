@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample Input section registrar.
+ *
+ * This demo illustrates how to add a text input field to an options page.
+ */
 final class Input {
 	public static function register( string $page_id ): void {
 		Moo::section( 'sample_input', __( 'Input', 'wpmoo' ), __( 'Text input.', 'wpmoo' ) )

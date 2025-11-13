@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample Button section registrar.
+ *
+ * This demo illustrates how to add a button input field to an options page.
+ */
 final class Button {
 	public static function register( string $page_id ): void {
 		Moo::section( 'sample_button', __( 'Button', 'wpmoo' ), __( 'Button field type.', 'wpmoo' ) )

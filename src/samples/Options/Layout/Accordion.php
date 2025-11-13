@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample accordion layout registrar.
+ *
+ * This demo illustrates how to display collapsible sections within an options page.
+ */
 final class Accordion {
 	public static function register( string $page_id ): void {
 		Moo::section( 'sample_accordion', __( 'Accordion', 'wpmoo' ), __( 'Display collapsible sections.', 'wpmoo' ) )

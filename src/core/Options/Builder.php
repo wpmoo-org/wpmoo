@@ -368,6 +368,7 @@ class Builder {
 	 * Register the options page.
 	 *
 	 * @return Page
+	 * @throws InvalidArgumentException When no sections are defined.
 	 */
 	public function register(): Page {
 		if ( $this->registered && $this->page instanceof Page ) {

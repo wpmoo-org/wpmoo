@@ -9,6 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample fieldset layout registrar.
+ *
+ * This demo illustrates how to group fields under sections within an options page.
+ */
 final class Fieldset {
 	public static function register( string $page_id ): void {
 		Moo::section( 'sample_fieldset', __( 'Fieldset', 'wpmoo' ), __( 'Group fields under sections.', 'wpmoo' ) )

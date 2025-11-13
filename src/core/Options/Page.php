@@ -727,7 +727,7 @@ class Page {
 			if ( function_exists( 'wp_kses_post' ) ) {
 				echo wp_kses_post( $content );
 			} else {
-				echo $content;
+				echo esc_html( $content );
 			}
 		}
 	}
@@ -834,13 +834,12 @@ class Page {
 		$name          = $this->field_input_name( $field );
 		$is_repeatable = method_exists( $field, 'is_repeatable' ) ? $field->is_repeatable() : false;
 
-		$desc          = $field->description();
-		$desc_position = 'field';
+		$desc = $field->description();
 
 		echo '<tr>';
 		echo '<th scope="row">';
 		echo '<label for="' . esc_attr( $field->id() ) . '">' . esc_html( $field->label() ) . '</label>';
-		if ( $desc && 'label' === $desc_position ) {
+		if ( $desc ) {
 			echo '<p class="description">' . esc_html( $desc ) . '</p>';
 		}
 		echo '</th>';
@@ -884,7 +883,7 @@ class Page {
 
 		}
 
-		if ( $desc && 'field' === $desc_position ) {
+		if ( $desc ) {
 			echo '<p class="description">' . esc_html( $desc ) . '</p>';
 		}
 

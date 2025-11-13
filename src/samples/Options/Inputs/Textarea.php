@@ -8,6 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+/**
+ * Sample Textarea section registrar.
+ *
+ * This demo illustrates how to add a textarea input field to an options page.
+ */
 final class Textarea {
 	public static function register( string $page_id ): void {
 		Moo::section( 'sample_textarea', __( 'Textarea', 'wpmoo' ), __( 'Multiline input field.', 'wpmoo' ) )
