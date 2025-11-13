@@ -23,6 +23,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Builder extends LayoutBuilder {
 
 	/**
+	 * Switch layout orientation.
+	 *
+	 * @param string $orientation Orientation string (horizontal|vertical).
+	 * @return $this
+	 */
+	public function orientation( string $orientation ): self {
+		$orientation = strtolower( $orientation );
+		if ( ! in_array( $orientation, array( 'horizontal', 'vertical' ), true ) ) {
+			$orientation = 'horizontal';
+		}
+
+		return $this->set( 'orientation', $orientation );
+	}
+
+	/**
+	 * Convenience shortcut for vertical layout.
+	 *
+	 * @return $this
+	 */
+	public function vertical(): self {
+		return $this->orientation( 'vertical' );
+	}
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $id Tabs identifier.

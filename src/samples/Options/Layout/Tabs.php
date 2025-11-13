@@ -20,7 +20,6 @@ final class Tabs {
 			->parent( $page_id )
 			->options(
 				Component::make( 'demo_tabs' )
-
 					->label( __( 'Tabbed settings', 'wpmoo' ) )
 					->items(
 						array(
@@ -64,6 +63,67 @@ final class Tabs {
 												'dark'  => __( 'Dark', 'wpmoo' ),
 											)
 										),
+								),
+							),
+						)
+					)
+			);
+
+		Moo::section(
+			'sample_tabs_vertical',
+			__( 'Vertical Tabs', 'wpmoo' ),
+			__( 'Navigation is pinned to the left for dense configuration screens.', 'wpmoo' )
+		)
+			->parent( $page_id )
+			->options(
+				Component::make( 'demo_tabs_vertical' )
+					->vertical()
+					->label( __( 'Team preferences', 'wpmoo' ) )
+					->items(
+						array(
+							array(
+								'title'       => __( 'Overview', 'wpmoo' ),
+								'id'          => 'tab-overview-vertical',
+								'description' => __( 'High-level configuration for the module.', 'wpmoo' ),
+								'fields'      => array(
+									Field::textarea( 'tabs_overview_notes' )
+										->label( __( 'Internal notes', 'wpmoo' ) )
+										->placeholder( __( 'Describe how this group should behave.', 'wpmoo' ) ),
+									Field::toggle( 'tabs_overview_enabled' )
+										->label( __( 'Enable module', 'wpmoo' ) ),
+								),
+							),
+							array(
+								'title'       => __( 'Members', 'wpmoo' ),
+								'id'          => 'tab-members-vertical',
+								'description' => __( 'Fine tune who gets access to the settings.', 'wpmoo' ),
+								'fields'      => array(
+									Field::checkbox( 'tabs_members_admins' )
+										->label( __( 'Allow administrators', 'wpmoo' ) ),
+									Field::checkbox( 'tabs_members_editors' )
+										->label( __( 'Allow editors', 'wpmoo' ) ),
+									Field::input( 'tabs_members_custom_role' )
+										->label( __( 'Custom role', 'wpmoo' ) )
+										->placeholder( __( 'e.g. manage_team_settings', 'wpmoo' ) ),
+								),
+							),
+							array(
+								'title'       => __( 'Audit', 'wpmoo' ),
+								'id'          => 'tab-audit-vertical',
+								'description' => __( 'Log retention and export preferences.', 'wpmoo' ),
+								'fields'      => array(
+									Field::range( 'tabs_audit_retention' )
+										->label( __( 'Retention (days)', 'wpmoo' ) )
+										->attributes(
+											array(
+												'min'  => 7,
+												'max'  => 90,
+												'step' => 1,
+											)
+										),
+									Field::toggle( 'tabs_audit_export' )
+										->label( __( 'Allow CSV export', 'wpmoo' ) )
+										->description( __( 'Enable if the audit trail needs to be reviewed externally.', 'wpmoo' ) ),
 								),
 							),
 						)

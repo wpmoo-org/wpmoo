@@ -57,6 +57,13 @@ class Tabs extends Component {
 	protected $disallowed_types = array( 'tabs' );
 
 	/**
+	 * Layout orientation.
+	 *
+	 * @var string
+	 */
+	protected $orientation = 'horizontal';
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array<string, mixed> $config Component configuration.
@@ -67,6 +74,9 @@ class Tabs extends Component {
 		$this->field_manager = isset( $config['field_manager'] ) && $config['field_manager'] instanceof FieldManager
 			? $config['field_manager']
 			: FieldManager::instance();
+
+		$orientation       = isset( $config['orientation'] ) ? strtolower( (string) $config['orientation'] ) : 'horizontal';
+		$this->orientation = in_array( $orientation, array( 'horizontal', 'vertical' ), true ) ? $orientation : 'horizontal';
 
 		$this->items = $this->normalize_items( isset( $config['items'] ) ? $config['items'] : array() );
 	}
@@ -89,48 +99,153 @@ class Tabs extends Component {
 			return $output . $this->after_html();
 		}
 
-		$tabs_id       = $this->id() ? sanitize_title( $this->id() ) : uniqid( 'wpmoo_tabs_', true );
-		$control_name  = $tabs_id . '_control';
-		$output       .= '<div class="wpmoo-tabs" data-wpmoo-tabs="' . esc_attr( $tabs_id ) . '">';
-		$output       .= '<div class="wpmoo-tabs__controls">';
+		$tabs_id  = $this->id() ? sanitize_title( $this->id() ) : uniqid( 'wpmoo_tabs_', true );
+		$classes  = array( 'wpmoo-tabs' );
+
+		if ( $this->is_vertical() ) {
+			$classes[] = 'wpmoo-tabs--vertical';
+		}
+
+		$attributes = sprintf(
+			'class="%s" data-wpmoo-tabs="%s" data-tabs-orientation="%s"',
+			esc_attr( implode( ' ', $classes ) ),
+			esc_attr( $tabs_id ),
+			esc_attr( $this->is_vertical() ? 'vertical' : 'horizontal' )
+		);
+
+		if ( $this->is_vertical() ) {
+			$output .= $this->render_vertical_layout( $attributes, $tabs_id, $name, $value );
+		} else {
+			$output .= $this->render_horizontal_layout( $attributes, $tabs_id, $name, $value );
+		}
+
+		return $output . $this->after_html();
+	}
+
+	/**
+	 * Render default horizontal layout (existing markup).
+	 *
+	 * @param string               $attributes Container attributes.
+	 * @param string               $tabs_id    Tabs identifier attribute.
+	 * @param string               $name       Base input name.
+	 * @param array<string, mixed> $value      Stored value.
+	 * @return string
+	 */
+	protected function render_horizontal_layout( string $attributes, string $tabs_id, string $name, array $value ): string {
+		$control_name = $tabs_id . '_control';
+		$output       = '<div ' . $attributes . '>';
+		$output      .= '<div class="wpmoo-tabs__controls" role="tablist" aria-orientation="horizontal">';
 
 		foreach ( $this->items as $index => $item ) {
 			$input_id   = $tabs_id . '__' . $item['id'];
 			$panel_id   = $input_id . '__panel';
-			$is_checked = 0 === $index ? ' checked="checked"' : '';
+			$is_active  = 0 === $index;
+			$is_checked = $is_active ? ' checked="checked"' : '';
 
 			$output .= '<input type="radio" class="wpmoo-tabs__control" name="' . esc_attr( $control_name ) . '" id="' . esc_attr( $input_id ) . '"' . $is_checked . ' />';
-			$output .= '<label class="wpmoo-tabs__label" for="' . esc_attr( $input_id ) . '">';
+			$output .= '<label class="wpmoo-tabs__label" for="' . esc_attr( $input_id ) . '" role="tab" aria-controls="' . esc_attr( $panel_id ) . '" aria-selected="' . ( $is_active ? 'true' : 'false' ) . '">';
 			$output .= $this->render_icon_markup( $item );
 			$output .= esc_html( $item['title'] );
 			$output .= '</label>';
 
 			$item_value = isset( $value[ $item['id'] ] ) && is_array( $value[ $item['id'] ] ) ? $value[ $item['id'] ] : array();
-			$output    .= '<section class="wpmoo-tabs__panel" id="' . esc_attr( $panel_id ) . '">';
 
-			if ( '' !== $item['description'] ) {
-				$output .= '<p class="wpmoo-tabs__description">' . esc_html( $item['description'] ) . '</p>';
-			}
-
-			foreach ( $item['fields'] as $field_id => $field ) {
-				$field_name  = $this->build_nested_input_name( $name, $item['id'], $field_id );
-				$field_value = array_key_exists( $field_id, $item_value ) ? $item_value[ $field_id ] : $field->default();
-
-				$output .= '<div class="wpmoo-field wpmoo-tabs__field">';
-				$output .= $field->render( $field_name, $field_value );
-				if ( $field->description() ) {
-					$output .= '<small class="description">' . esc_html( $field->description() ) . '</small>';
-				}
-				$output .= '</div>';
-			}
-
+			$output .= '<section class="wpmoo-tabs__panel" id="' . esc_attr( $panel_id ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $input_id ) . '" aria-hidden="' . ( $is_active ? 'false' : 'true' ) . '">';
+			$output .= $this->render_tab_fields( $item, $item_value, $name );
 			$output .= '</section>';
 		}
 
 		$output .= '</div>';
 		$output .= '</div>';
 
-		return $output . $this->after_html();
+		return $output;
+	}
+
+	/**
+	 * Render the vertical layout (nav left, content right).
+	 *
+	 * @param string               $attributes Container attributes.
+	 * @param string               $tabs_id    Tabs identifier attribute.
+	 * @param string               $name       Base input name.
+	 * @param array<string, mixed> $value      Stored value.
+	 * @return string
+	 */
+	protected function render_vertical_layout( string $attributes, string $tabs_id, string $name, array $value ): string {
+		$output = '<div ' . $attributes . '>';
+		$output .= '<div class="wpmoo-tabs__nav" role="tablist" aria-orientation="vertical">';
+
+		foreach ( $this->items as $index => $item ) {
+			$panel_id     = $tabs_id . '__' . $item['id'] . '__panel';
+			$label_id     = $panel_id . '__label';
+			$is_active    = 0 === $index;
+			$tabindex     = $is_active ? '0' : '-1';
+			$active_class = $is_active ? ' is-active' : '';
+
+			$output .= '<a href="#' . esc_attr( $panel_id ) . '" class="wpmoo-tabs__label' . $active_class . '" id="' . esc_attr( $label_id ) . '" data-tabs-target="' . esc_attr( $panel_id ) . '" role="tab" aria-controls="' . esc_attr( $panel_id ) . '" aria-selected="' . ( $is_active ? 'true' : 'false' ) . '" tabindex="' . esc_attr( $tabindex ) . '">';
+			$output .= $this->render_icon_markup( $item );
+			$output .= esc_html( $item['title'] );
+			$output .= '</a>';
+		}
+
+		$output .= '</div>';
+		$output .= '<div class="wpmoo-tabs__panels">';
+
+		foreach ( $this->items as $index => $item ) {
+			$panel_id     = $tabs_id . '__' . $item['id'] . '__panel';
+			$label_id     = $panel_id . '__label';
+			$is_active    = 0 === $index;
+			$item_value   = isset( $value[ $item['id'] ] ) && is_array( $value[ $item['id'] ] ) ? $value[ $item['id'] ] : array();
+			$panel_class  = $is_active ? 'wpmoo-tabs__panel is-active' : 'wpmoo-tabs__panel';
+			$aria_hidden  = $is_active ? 'false' : 'true';
+
+			$output .= '<section class="' . esc_attr( $panel_class ) . '" id="' . esc_attr( $panel_id ) . '" data-tabs-panel="' . esc_attr( $panel_id ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $label_id ) . '" aria-hidden="' . esc_attr( $aria_hidden ) . '">';
+			$output .= $this->render_tab_fields( $item, $item_value, $name );
+			$output .= '</section>';
+		}
+
+		$output .= '</div>';
+		$output .= '</div>';
+
+		return $output;
+	}
+
+	/**
+	 * Render fields shared by all layouts.
+	 *
+	 * @param array<string, mixed> $item       Tab definition.
+	 * @param array<string, mixed> $item_value Stored item value.
+	 * @param string               $name       Base input name.
+	 * @return string
+	 */
+	protected function render_tab_fields( array $item, array $item_value, string $name ): string {
+		$output = '';
+
+		if ( '' !== $item['description'] ) {
+			$output .= '<p class="wpmoo-tabs__description">' . esc_html( $item['description'] ) . '</p>';
+		}
+
+		foreach ( $item['fields'] as $field_id => $field ) {
+			$field_name  = $this->build_nested_input_name( $name, $item['id'], $field_id );
+			$field_value = array_key_exists( $field_id, $item_value ) ? $item_value[ $field_id ] : $field->default();
+
+			$output .= '<div class="wpmoo-field wpmoo-tabs__field">';
+			$output .= $field->render( $field_name, $field_value );
+			if ( $field->description() ) {
+				$output .= '<small class="description">' . esc_html( $field->description() ) . '</small>';
+			}
+			$output .= '</div>';
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Determine if the layout is vertical.
+	 *
+	 * @return bool
+	 */
+	protected function is_vertical(): bool {
+		return 'vertical' === $this->orientation;
 	}
 
 	/**

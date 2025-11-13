@@ -59,3 +59,99 @@
 :where(.wpmoo) .wpmoo-tabs__field {
   padding: .25rem 0;
 }
+
+:where(.wpmoo) .wpmoo-tabs--vertical {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__controls {
+  display: none;
+}
+
+:where(.wpmoo) .wpmoo-tabs__nav {
+  width: 100%;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__nav {
+  flex: 0 0 16rem;
+  max-width: 18rem;
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__panels {
+  flex: 1 1 auto;
+  border-left: var(--wpmoo-tabs-border);
+  padding-left: 1.5rem;
+  min-height: 100%;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__label {
+  border-bottom: none;
+  border-left: 3px solid transparent;
+  border-radius: var(--wpmoo-border-radius, .25rem);
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  margin: 0;
+  padding: .5rem .85rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__label:focus-visible {
+  outline: 2px solid var(--wpmoo-primary-color, #1e40af);
+  outline-offset: 2px;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__label.is-active {
+  border-left-color: var(--wpmoo-primary-color, #1e40af);
+  color: var(--wpmoo-primary-color, #1e40af);
+  background-color: rgba(30, 64, 175, .08);
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__panel {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__panel + .wpmoo-tabs__panel {
+  margin-top: 1.25rem;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__panels .wpmoo-tabs__panel {
+  display: block;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical.is-ready .wpmoo-tabs__panel {
+  display: none;
+}
+
+:where(.wpmoo) .wpmoo-tabs--vertical.is-ready .wpmoo-tabs__panel.is-active {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  :where(.wpmoo) .wpmoo-tabs--vertical {
+    flex-direction: column;
+  }
+
+  :where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__nav {
+    flex: 0 0 auto;
+    max-width: none;
+  }
+
+  :where(.wpmoo) .wpmoo-tabs--vertical .wpmoo-tabs__panels {
+    border-left: none;
+    border-top: var(--wpmoo-tabs-border);
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+}
