@@ -16,7 +16,6 @@ use WPMoo\Fields\Manager as FieldManager;
 use WPMoo\Support\Assets;
 use WPMoo\Layout\Footer\Footer;
 use WPMoo\Layout\Header\Header;
-use WPMoo\Layout\Sidebar\Sidebar;
 use WPMoo\Layout\Component;
 use WPMoo\Layout\Manager as LayoutManager;
 use WPMoo\Options\OptionRepository;
@@ -83,12 +82,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Page {
 	use TranslatesStrings;
 
-	/**
-	 * Registry of pages and their sections for sidebar navigation.
-	 *
-	 * @var array<int|string, array<string, mixed>>
-	 */
-	protected static $nav_registry = array();
 
 	/**
 	 * Default header component.
@@ -97,12 +90,6 @@ class Page {
 	 */
 	protected static $default_header_component = null;
 
-	/**
-	 * Default sidebar component.
-	 *
-	 * @var Sidebar|null
-	 */
-	protected static $default_sidebar_component = null;
 
 	/**
 	 * Default footer component.
@@ -174,12 +161,6 @@ class Page {
 	 */
 	protected $header_component;
 
-	/**
-	 * Sidebar component instance.
-	 *
-	 * @var Sidebar
-	 */
-	protected $sidebar_component;
 
 	/**
 	 * Footer component instance.
@@ -203,9 +184,7 @@ class Page {
 		$this->options_enabled = $this->sections_require_options( $this->sections );
 		$this->repository      = $this->options_enabled ? new OptionRepository( $this->config['option_key'], $this->collect_defaults() ) : null;
 		$this->header_component  = $this->resolve_header_component( $this->config );
-		$this->sidebar_component = $this->resolve_sidebar_component( $this->config );
 		$this->footer_component  = $this->resolve_footer_component( $this->config );
-		$this->register_nav_entry();
 	}
 
 	/**
@@ -602,14 +581,6 @@ class Page {
 			settings_errors( $this->repository->option_key() );
 		}
 
-		$use_sidebar_nav = ! empty( $this->config['sidebar_nav'] ) && count( $sections ) > 0;
-
-		if ( $use_sidebar_nav ) {
-			echo '<div class="wpmoo-layout" data-wpmoo-sidebar>';
-			echo $this->sidebar_component->render( $this, self::$nav_registry );
-			echo '<div class="wpmoo-content">';
-		}
-
 		if ( $use_form ) {
 			echo '<form method="post" id="wpmoo-options-form" action="" enctype="multipart/form-data" autocomplete="off" novalidate="novalidate">';
 
@@ -691,25 +662,10 @@ class Page {
 			echo '</div>';
 		}
 
-		if ( $use_sidebar_nav ) {
-			echo '</div>';
-			echo '</div>';
-		}
-
 		echo '</main>';
 		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
-	/**
-	 * Render the sidebar navigation for sections.
-	 *
-	 * @param array<int, array<string, mixed>> $sections Sections array.
-	 * @return void
-	 */
-	protected function render_sidebar_navigation( array $sections ): void {
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sidebar component outputs sanitized nav markup.
-		echo $this->sidebar_component->render( $this, self::$nav_registry );
-	}
 
 	/**
 	 * Render arbitrary section content.
@@ -1241,39 +1197,6 @@ class Page {
 			&& ! empty( $definition['component'] );
 	}
 
-	/**
-	 * Register the page and its sections for sidebar navigation.
-	 *
-	 * @return void
-	 */
-	protected function register_nav_entry(): void {
-		$slug = isset( $this->config['menu_slug'] ) ? (string) $this->config['menu_slug'] : '';
-
-		if ( '' === $slug ) {
-			return;
-		}
-
-		$page_title = isset( $this->config['page_title'] ) && '' !== (string) $this->config['page_title']
-			? (string) $this->config['page_title']
-			: ucfirst( str_replace( array( '-', '_' ), ' ', $slug ) );
-
-		$sections = array();
-
-		foreach ( $this->sections as $section ) {
-			$section_id    = isset( $section['id'] ) ? (string) $section['id'] : '';
-			$section_title = ! empty( $section['title'] ) ? (string) $section['title'] : ucfirst( str_replace( '-', ' ', $section_id ) );
-
-			$sections[] = array(
-				'id'    => $section_id,
-				'title' => $section_title,
-			);
-		}
-
-		self::$nav_registry[ $slug ] = array(
-			'title'    => $page_title,
-			'sections' => $sections,
-		);
-	}
 
 	/**
 	 * Resolve header component for this page.
@@ -1297,23 +1220,6 @@ class Page {
 		return $component;
 	}
 
-	/**
-	 * Resolve sidebar component.
-	 *
-	 * @param array<string, mixed> $config Page config.
-	 * @return Sidebar
-	 */
-	protected function resolve_sidebar_component( array $config ): Sidebar {
-		if ( isset( $config['sidebar_component'] ) && $config['sidebar_component'] instanceof Sidebar ) {
-			return clone $config['sidebar_component'];
-		}
-
-		if ( self::$default_sidebar_component instanceof Sidebar ) {
-			return clone self::$default_sidebar_component;
-		}
-
-		return Sidebar::make();
-	}
 
 	/**
 	 * Resolve footer component.
@@ -1442,14 +1348,6 @@ class Page {
 		return isset( $this->config['menu_slug'] ) ? (string) $this->config['menu_slug'] : '';
 	}
 
-	/**
-	 * Provide read-only access to the nav registry.
-	 *
-	 * @return array<int|string, array<string, mixed>>
-	 */
-	public static function nav_registry(): array {
-		return self::$nav_registry;
-	}
 
 	/**
 	 * Override the default header component for all pages.
@@ -1461,15 +1359,6 @@ class Page {
 		self::$default_header_component = clone $header;
 	}
 
-	/**
-	 * Override the default sidebar component for all pages.
-	 *
-	 * @param Sidebar $sidebar Sidebar component instance.
-	 * @return void
-	 */
-	public static function default_sidebar_component( Sidebar $sidebar ): void {
-		self::$default_sidebar_component = clone $sidebar;
-	}
 
 	/**
 	 * Override the default footer component for all pages.

@@ -81,8 +81,7 @@ final class Samples {
 	protected static function configure_page( string $id, string $title, string $slug, bool $options, ?string $parent_slug ): void {
 		$page = Moo::page( $id )
 			->title( $title )
-			->menu_slug( $slug )
-			->sidebar_nav();
+			->menu_slug( $slug );
 
 		if ( $options ) {
 			$page->fluid()->ajax_save();

@@ -171,16 +171,6 @@ class Builder {
 		return $this;
 	}
 
-	/**
-	 * Enable sidebar navigation layout (sections listed on the left).
-	 *
-	 * @param bool $enabled Whether sidebar navigation is enabled.
-	 * @return $this
-	 */
-	public function sidebar_nav( bool $enabled = true ): self {
-		$this->config['sidebar_nav'] = $enabled;
-		return $this;
-	}
 
 	/**
 	 * Assign a custom header component for this page.
@@ -193,16 +183,6 @@ class Builder {
 		return $this;
 	}
 
-	/**
-	 * Assign a custom sidebar component for this page.
-	 *
-	 * @param Sidebar $sidebar Sidebar component instance.
-	 * @return $this
-	 */
-	public function sidebar_component( Sidebar $sidebar ): self {
-		$this->config['sidebar_component'] = clone $sidebar;
-		return $this;
-	}
 
 	/**
 	 * Assign a custom footer component for this page.

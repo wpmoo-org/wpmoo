@@ -125,21 +125,6 @@ class PageHandle {
 		return $this;
 	}
 
-	/**
-	 * Enable or disable sidebar navigation layout.
-	 *
-	 * @param bool $enabled Whether sidebar nav is enabled.
-	 * @return $this
-	 */
-	public function sidebar_nav( bool $enabled = true ): self {
-		if ( method_exists( $this->page_builder, 'sidebar_nav' ) ) {
-			$this->page_builder->sidebar_nav( $enabled );
-		} else {
-			$this->page_builder->config( 'sidebar_nav', $enabled );
-		}
-
-		return $this;
-	}
 
 	/**
 	 * Specify the parent slug (for sub-menus).
