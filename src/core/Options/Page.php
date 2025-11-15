@@ -67,7 +67,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  *   database: string,
  *   transient_time: int,
  *   contextual_help: array<int,mixed>,
- *   contextual_help_sidebar: string,
  *   enqueue_webfont: bool,
  *   async_webfont: bool,
  *   output_css: bool,
@@ -75,7 +74,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  *   theme: string,
  *   class: string,
  *   fluid: bool,
- *   sidebar_nav: bool,
  *   defaults: array<string,mixed>
  * }
  */
@@ -1074,7 +1072,6 @@ class Page {
 			'style'       => '',
 			'class'       => '',
 			'fluid'       => false,
-			'sidebar_nav' => false,
 			'theme'       => 'dark',
 			'nav'         => 'normal',
 			// Behavior/UI
@@ -1102,12 +1099,10 @@ class Page {
 			'database'                => 'option',
 			'transient_time'          => 0,
 			'contextual_help'         => array(),
-			'contextual_help_sidebar' => '',
 			'enqueue_webfont'         => true,
 			'async_webfont'           => false,
 			'output_css'              => true,
 			'header_component'        => null,
-			'sidebar_component'       => null,
 			'footer_component'        => null,
 			'defaults'                => array(),
 		);

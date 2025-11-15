@@ -1,4 +1,4 @@
-/* Sticky helper shared by header/sidebar */
+/* Sticky helper */
 :where(.wpmoo) .wpmoo-sticky {
   position: sticky;
   top: var(--wpmoo-sticky-top, 0px);

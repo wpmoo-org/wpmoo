@@ -20,7 +20,7 @@
     var $document = $(ctx.document);
 
     function syncSummaryState($details) {
-      if ( !$details || !$details.length ) {
+      if (!$details || !$details.length) {
         return;
       }
 
@@ -47,7 +47,7 @@
 
     $document.on("click", ".wpmoo-accordion__summary", function (event) {
       var $details = $(this).closest("details.wpmoo-accordion__item");
-      if ( ! $details.length ) {
+      if (!$details.length) {
         return;
       }
       event.preventDefault();
@@ -56,9 +56,9 @@
     });
 
     $document.on("keydown", ".wpmoo-accordion__summary", function (event) {
-      if ( event.key === "Enter" || event.key === " " || event.key === "Spacebar" ) {
+      if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
         var $details = $(this).closest("details.wpmoo-accordion__item");
-        if ( ! $details.length ) {
+        if (!$details.length) {
           return;
         }
         event.preventDefault();
@@ -230,12 +230,12 @@
     var windowObj = ctx.window;
     var optionsConfig = windowObj.wpmooAdminOptions || null;
 
-    if ( ! optionsConfig || ! optionsConfig.menu_slug ) {
+    if (!optionsConfig || !optionsConfig.menu_slug) {
       return;
     }
 
     var $optionsForm = $("#wpmoo-options-form");
-    if ( ! $optionsForm.length ) {
+    if (!$optionsForm.length) {
       return;
     }
 
@@ -246,7 +246,7 @@
     var $submitButtons = $optionsForm.find('button[type="submit"], input[type="submit"]');
     var toastContainer = $(".wpmoo-toast-container");
 
-    if ( ! toastContainer.length ) {
+    if (!toastContainer.length) {
       toastContainer = $("<div>", { class: "wpmoo-toast-container" });
       $("body").append(toastContainer);
     }
@@ -358,7 +358,7 @@
           try {
             $optionsForm.off("submit");
             $optionsForm.trigger("submit");
-          } catch (error) {}
+          } catch (error) { }
         })
         .always(function () {
           $submitButtons.prop("disabled", false).removeClass("disabled");
@@ -394,7 +394,7 @@
     var windowObj = ctx.window;
     var $panels = $("[data-wpmoo-panel]");
 
-    if ( ! $panels.length ) {
+    if (!$panels.length) {
       return;
     }
 
@@ -411,7 +411,7 @@
 
       if ($form.length) {
         $hidden = $form.find('input[type="hidden"][name="' + activeInputName + '"]').first();
-        if ( ! $hidden.length ) {
+        if (!$hidden.length) {
           $hidden = $("<input>", { type: "hidden", name: activeInputName }).appendTo($form);
         }
 
@@ -438,13 +438,13 @@
           $panel.data("panel-multi") === true;
 
         var $targetTab = $tabs.filter('[data-panel-tab="' + target + '"]');
-        if ( ! $targetTab.length && $tabs.length ) {
+        if (!$targetTab.length && $tabs.length) {
           $targetTab = $tabs.first();
           target = $targetTab.data("panel-tab");
         }
 
         var $targetSection = $sections.filter('[data-panel-section="' + target + '"]');
-        if ( ! $targetSection.length && $sections.length ) {
+        if (!$targetSection.length && $sections.length) {
           $targetSection = $sections.first();
           target = $targetSection.data("panel-section");
         }
@@ -484,11 +484,11 @@
             $targetSection.addClass("is-active").attr("aria-hidden", "false");
           }
 
-          if ( ! isAccordionMode ) {
+          if (!isAccordionMode) {
             $sections.each(function () {
               var $section = $(this);
               var $body = $section.find(".wpmoo-panel__section-body");
-              if ( ! $body.length ) {
+              if (!$body.length) {
                 return;
               }
               if ($section.is($targetSection)) {
@@ -504,7 +504,7 @@
           $hidden.val(target);
         }
 
-        if ( ! skipStore && canStore && storageKey ) {
+        if (!skipStore && canStore && storageKey) {
           try {
             windowObj.localStorage.setItem(storageKey, target);
           } catch (error) {
@@ -513,7 +513,7 @@
         }
       }
 
-      if ( ! $tabs.length ) {
+      if (!$tabs.length) {
         $sections.addClass("is-active").attr("aria-hidden", "false");
         if ($hidden && $sections.length) {
           $hidden.val($sections.first().data("panel-section"));
@@ -546,11 +546,11 @@
       }
 
       var currentTarget = $tabs.filter(".is-active").first().data("panel-tab");
-      if ( ! currentTarget ) {
+      if (!currentTarget) {
         currentTarget = $sections.filter(".is-active").first().data("panel-section");
       }
 
-      if ( ! initialTarget && currentTarget ) {
+      if (!initialTarget && currentTarget) {
         initialTarget = currentTarget;
       }
 
@@ -558,7 +558,7 @@
         $hidden.val(currentTarget);
       }
 
-      if ( initialTarget && initialTarget !== currentTarget ) {
+      if (initialTarget && initialTarget !== currentTarget) {
         setTimeout(function () {
           activate(initialTarget, true);
         }, 0);
@@ -583,7 +583,7 @@
           $panel.data("panel-multi") === "1" ||
           $panel.data("panel-multi") === true;
 
-        if ( ! allowMulti && this.open ) {
+        if (!allowMulti && this.open) {
           $details.siblings("details[data-panel-section]").prop("open", false);
         }
 
@@ -594,7 +594,7 @@
         if (canStore && panelId) {
           try {
             windowObj.localStorage.setItem("wpmoo_panel_active_" + panelId, targetId);
-          } catch (error) {}
+          } catch (error) { }
         }
       });
 
@@ -608,17 +608,17 @@
           $panel.data("panel-multi") === true;
 
         if (isAccordion) {
-          if ( ! allowMulti ) {
+          if (!allowMulti) {
             var target = $hidden ? $hidden.val() : "";
 
-            if ( ! target ) {
+            if (!target) {
               var $activeDesktop = $sections.filter(".is-active").first();
               if ($activeDesktop.length) {
                 target = $activeDesktop.data("panel-section");
               }
             }
 
-            if ( ! target && $sections.length ) {
+            if (!target && $sections.length) {
               target = $sections.first().data("panel-section");
             }
 
@@ -647,14 +647,14 @@
         } else {
           var targetDesktop = $hidden ? $hidden.val() : "";
 
-          if ( ! targetDesktop ) {
+          if (!targetDesktop) {
             var $activeSection = $sections.filter(".is-active").last();
             if ($activeSection.length) {
               targetDesktop = $activeSection.data("panel-section");
             }
           }
 
-          if ( ! targetDesktop && $sections.length ) {
+          if (!targetDesktop && $sections.length) {
             targetDesktop = $sections.first().data("panel-section");
           }
 
@@ -882,59 +882,6 @@
     });
   });
 })(window);
-
-
-/*!
- * WPMoo Framework – Smooth scroll helper for sidebar/menu anchor jumps.
- * Intercepts in-page links inside .wpmoo layout and scrolls smoothly.
- * @license GPL-2.0-or-later
- * @link https://github.com/wpmoo/wpmoo
- */
-(function (root) {
-  "use strict";
-
-  root.WPMooModuleRegistry = root.WPMooModuleRegistry || [];
-
-  root.WPMooModuleRegistry.push(function (ctx) {
-    var documentRef = ctx.document;
-    var rootEl = documentRef.querySelector(".wpmoo");
-
-    if (!rootEl) {
-      return;
-    }
-
-    rootEl.addEventListener(
-      "click",
-      function (event) {
-        var anchor = event.target.closest('a[href^="#"]');
-        if (!anchor) {
-          return;
-        }
-
-        var href = anchor.getAttribute("href");
-        if (!href || href.charAt(0) !== "#" || href.length <= 1) {
-          return;
-        }
-
-        var target = rootEl.querySelector(href);
-        if (!target) {
-          return;
-        }
-
-        event.preventDefault();
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-
-        if (ctx.window.history && ctx.window.history.replaceState) {
-          ctx.window.history.replaceState(null, "", href);
-        } else {
-          ctx.window.location.hash = href.substring(1);
-        }
-      },
-      true
-    );
-  });
-})(window);
-
 
 /*!
  * WPMoo Framework – Vertical tabs controller.

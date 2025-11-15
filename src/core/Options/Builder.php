@@ -17,7 +17,6 @@ use WPMoo\Layout\Footer\Footer;
 use WPMoo\Layout\Header\Header;
 use WPMoo\Sections\Builder as SectionBuilder;
 use WPMoo\Layout\Manager as LayoutManager;
-use WPMoo\Layout\Sidebar\Sidebar;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -1,5 +1,5 @@
 /*!
- * WPMoo Framework – Smooth scroll helper for sidebar/menu anchor jumps.
+ * WPMoo Framework – Smooth scroll helper for anchor jumps.
  * Intercepts in-page links inside .wpmoo layout and scrolls smoothly.
  * @license GPL-2.0-or-later
  * @link https://github.com/wpmoo/wpmoo

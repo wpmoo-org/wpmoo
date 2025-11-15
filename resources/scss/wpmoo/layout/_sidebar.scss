@@ -1,4 +1,4 @@
-/* Sidebar menu */
+/* Layout */
 :where(.wpmoo) .wpmoo-layout {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
@@ -14,15 +14,6 @@
   :where(.wpmoo) .wpmoo-layout {
     grid-template-columns: 1fr;
   }
-}
-
-:where(.wpmoo) .wpmoo-sidebar {
-  border-right: 1px solid var(--wpmoo-border-color, rgba(0, 0, 0, .08));
-  padding-right: 1rem;
-  align-self: flex-start;
-  max-height: calc(100vh - var(--wpmoo-sticky-top, 0px));
-  overflow: auto;
-  top: calc(var(--wpmoo-sticky-top, 0px) + 100px) !important;
 }
 
 :where(.wpmoo) .wpmoo-brand {
@@ -95,13 +86,4 @@
 :where(.wpmoo) .wpmoo-sub-link.is-active,
 :where(.wpmoo) .wpmoo-sub-link[aria-current="true"] {
   color: var(--wpmoo-primary-color, #1e40af);
-}
-
-@media (max-width: 960px) {
-  :where(.wpmoo) .wpmoo-sidebar {
-    border-right: 0;
-    border-bottom: 1px solid var(--wpmoo-border-color, rgba(0, 0, 0, .08));
-    padding-right: 0;
-    padding-bottom: 1rem;
-  }
 }
