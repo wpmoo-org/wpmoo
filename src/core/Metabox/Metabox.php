@@ -12,10 +12,10 @@
 namespace WPMoo\Metabox;
 
 use WP_Post;
-use WPMoo\Fields\BaseField as Field;
-use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Fields\Abstracts\BaseField as Field;
+use WPMoo\Fields\Managers\FieldManager;
 use WPMoo\Layout\Component;
-use WPMoo\Layout\Manager as LayoutManager;
+use WPMoo\Layout\Managers\LayoutManager;
 use WPMoo\Support\Assets;
 use WPMoo\Support\Str;
 

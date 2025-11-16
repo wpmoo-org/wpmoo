@@ -9,9 +9,9 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Layout;
+namespace WPMoo\Layout\Builders;
 
-use WPMoo\Fields\Builder as FieldBuilder;
+use WPMoo\Fields\Builders\FieldBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Base configuration builder for layout components.
  */
-abstract class Builder {
+abstract class LayoutBuilder {
 
 	/**
 	 * Layout identifier.

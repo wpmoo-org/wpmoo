@@ -14,7 +14,7 @@ namespace WPMoo\Moo;
 use InvalidArgumentException;
 use Traversable;
 use WPMoo\Metabox\Builder as MetaboxBuilder;
-use WPMoo\Fields\Builder as FieldBuilder;
+use WPMoo\Fields\Builders\FieldBuilder;
 use WPMoo\Metabox\Metabox as MetaboxInstance;
 use WPMoo\Sections\Builder as SectionBuilder;
 

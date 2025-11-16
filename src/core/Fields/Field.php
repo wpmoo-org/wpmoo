@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
+use WPMoo\Fields\Builders\FieldBuilder;
+
 /**
  * Field builder (alias for Builder).
  *
@@ -32,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @phpstan-consistent-constructor
  */
-final class Field extends Builder {
+final class Field extends FieldBuilder {
 	/**
 	 * Create an 'input' field builder (text-like).
 	 *

@@ -9,7 +9,7 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Fields;
+namespace WPMoo\Fields\Builders;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Provides a consistent fluent API that Options and Metabox builders can extend.
  */
-class Builder {
+class FieldBuilder {
 
 	/**
 	 * Field configuration.

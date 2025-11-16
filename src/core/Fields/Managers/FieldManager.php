@@ -9,10 +9,10 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Fields;
+namespace WPMoo\Fields\Managers;
 
 use InvalidArgumentException;
-use WPMoo\Fields\BaseField;
+use WPMoo\Fields\Abstracts\BaseField;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,13 +22,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Keeps track of field type mappings.
  */
-class Manager {
+class FieldManager {
 	use TranslatesStrings;
 
 	/**
 	 * Shared singleton instance.
 	 *
-	 * @var Manager|null
+	 * @var FieldManager|null
 	 */
 	protected static $instance = null;
 
@@ -57,9 +57,9 @@ class Manager {
 	/**
 	 * Retrieve the shared manager instance.
 	 *
-	 * @return Manager
+	 * @return FieldManager
 	 */
-	public static function instance(): Manager {
+	public static function instance(): FieldManager {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}

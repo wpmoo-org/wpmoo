@@ -11,7 +11,7 @@
 
 namespace WPMoo\Layout;
 
-use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Fields\Managers\FieldManager;
 use WPMoo\Support\Concerns\EscapesOutput;
 
 if ( ! defined( 'ABSPATH' ) ) {

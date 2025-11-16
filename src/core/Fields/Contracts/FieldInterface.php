@@ -9,7 +9,7 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Fields;
+namespace WPMoo\Fields\Contracts;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();

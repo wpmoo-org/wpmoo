@@ -9,9 +9,9 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Fields;
+namespace WPMoo\Fields\Abstracts;
 
-use WPMoo\Fields\AbstractField;
+use WPMoo\Fields\Abstracts\AbstractField;
 
 /**
  * Provides shared functionality for field types.

@@ -11,8 +11,8 @@
 
 namespace WPMoo\Layout\Accordion;
 
-use WPMoo\Fields\BaseField;
-use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Fields\Abstracts\BaseField;
+use WPMoo\Fields\Managers\FieldManager;
 use WPMoo\Layout\Component;
 
 if ( ! defined( 'ABSPATH' ) ) {

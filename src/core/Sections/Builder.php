@@ -12,8 +12,8 @@
 
 namespace WPMoo\Sections;
 
-use WPMoo\Fields\Builder as FieldBuilder;
-use WPMoo\Layout\Builder as LayoutBuilder;
+use WPMoo\Fields\Builders\FieldBuilder;
+use WPMoo\Layout\Builders\LayoutBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -132,10 +132,10 @@ class Builder {
 	 *
 	 * @param string $id   Field ID.
 	 * @param string $type Field type.
-	 * @return \WPMoo\Fields\Builder
+	 * @return \WPMoo\Fields\Builders\FieldBuilder
 	 */
-	public function field( string $id, string $type ): \WPMoo\Fields\Builder {
-		$field           = new \WPMoo\Fields\Builder( $id, $type );
+	public function field( string $id, string $type ): \WPMoo\Fields\Builders\FieldBuilder {
+		$field           = new \WPMoo\Fields\Builders\FieldBuilder( $id, $type );
 		$this->fields[]  = $field;
 		return $field;
 	}

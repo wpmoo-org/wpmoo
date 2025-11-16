@@ -11,8 +11,8 @@
 
 namespace WPMoo\Options;
 
-use WPMoo\Fields\Manager as FieldManager;
-use WPMoo\Layout\Manager as LayoutManager;
+use WPMoo\Fields\Managers\FieldManager;
+use WPMoo\Layout\Managers\LayoutManager;
 use WPMoo\Options\Builder as PageBuilder;
 use WPMoo\Options\OptionRepository;
 

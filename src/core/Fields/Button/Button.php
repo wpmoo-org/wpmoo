@@ -10,7 +10,7 @@
  */
 namespace WPMoo\Fields\Button;
 
-use WPMoo\Fields\BaseField;
+use WPMoo\Fields\Abstracts\BaseField;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();

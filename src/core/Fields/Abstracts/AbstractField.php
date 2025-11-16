@@ -9,9 +9,9 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Fields;
+namespace WPMoo\Fields\Abstracts;
 
-use WPMoo\Fields\FieldInterface;
+use WPMoo\Fields\Contracts\FieldInterface;
 use WPMoo\Support\Concerns\EscapesOutput;
 
 if ( ! defined( 'ABSPATH' ) ) {

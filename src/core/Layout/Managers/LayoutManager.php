@@ -9,10 +9,12 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Layout;
+namespace WPMoo\Layout\Managers;
 
 use InvalidArgumentException;
-use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Fields\Managers\FieldManager;
+use WPMoo\Layout\Abstracts\AbstractLayout;
+use WPMoo\Layout\Component;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -21,12 +23,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Keeps track of layout components and instantiates them on demand.
  */
-class Manager {
+class LayoutManager {
 
 	/**
 	 * Shared singleton instance.
 	 *
-	 * @var Manager|null
+	 * @var LayoutManager|null
 	 */
 	protected static $instance = null;
 
@@ -47,9 +49,9 @@ class Manager {
 	/**
 	 * Retrieve the singleton instance.
 	 *
-	 * @return Manager
+	 * @return LayoutManager
 	 */
-	public static function instance(): Manager {
+	public static function instance(): LayoutManager {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}

@@ -10,7 +10,7 @@
  */
 namespace WPMoo\Fields\Radio;
 
-use WPMoo\Fields\BaseField;
+use WPMoo\Fields\Abstracts\BaseField;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();

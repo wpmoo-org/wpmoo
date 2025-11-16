@@ -12,11 +12,11 @@
 namespace WPMoo\Options;
 
 use InvalidArgumentException;
-use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Fields\Managers\FieldManager;
 use WPMoo\Layout\Footer\Footer;
 use WPMoo\Layout\Header\Header;
 use WPMoo\Sections\Builder as SectionBuilder;
-use WPMoo\Layout\Manager as LayoutManager;
+use WPMoo\Layout\Managers\LayoutManager;
 use WPMoo\Support\Concerns\TranslatesStrings;
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -11,7 +11,7 @@
 
 namespace WPMoo\Layout\Fieldset;
 
-use WPMoo\Layout\Builder as LayoutBuilder;
+use WPMoo\Layout\Builders\LayoutBuilder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();

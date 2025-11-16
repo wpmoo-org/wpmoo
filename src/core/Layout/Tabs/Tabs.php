@@ -11,9 +11,9 @@
 
 namespace WPMoo\Layout\Tabs;
 
-use WPMoo\Fields\BaseField;
-use WPMoo\Fields\Builder as FieldBuilder;
-use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Fields\Abstracts\BaseField;
+use WPMoo\Fields\Builders\FieldBuilder;
+use WPMoo\Fields\Managers\FieldManager;
 use WPMoo\Layout\Component;
 
 if ( ! defined( 'ABSPATH' ) ) {

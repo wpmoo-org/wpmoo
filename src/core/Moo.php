@@ -290,9 +290,9 @@ class Moo {
 	 *
 	 * @param string $type Field type slug (e.g., 'input', 'button').
 	 * @param string $id   Field identifier.
-	 * @return \WPMoo\Fields\Builder
+	 * @return \WPMoo\Fields\Builders\FieldBuilder
 	 */
 	public static function Field( string $type, string $id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		return new \WPMoo\Fields\Builder( $id, $type );
+		return new \WPMoo\Fields\Builders\FieldBuilder( $id, $type );
 	}
 }

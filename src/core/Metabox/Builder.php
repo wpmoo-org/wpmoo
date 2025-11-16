@@ -12,9 +12,9 @@
 namespace WPMoo\Metabox;
 
 use InvalidArgumentException;
-use WPMoo\Fields\Manager as FieldManager;
-use WPMoo\Layout\Manager as LayoutManager;
-use WPMoo\Fields\Builder as FieldBuilder;
+use WPMoo\Fields\Managers\FieldManager;
+use WPMoo\Layout\Managers\LayoutManager;
+use WPMoo\Fields\Builders\FieldBuilder;
 use WPMoo\Sections\Builder as SectionBuilder;
 use WPMoo\Support\Concerns\TranslatesStrings;
 

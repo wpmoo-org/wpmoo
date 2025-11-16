@@ -9,10 +9,11 @@
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 
-namespace WPMoo\Layout;
+namespace WPMoo\Layout\Abstracts;
 
-use WPMoo\Layout\LayoutInterface;
+use WPMoo\Layout\Contracts\LayoutInterface;
 use WPMoo\Support\Concerns\EscapesOutput;
+use WPMoo\Fields\Managers\FieldManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
@@ -118,7 +119,7 @@ abstract class AbstractLayout implements LayoutInterface {
 	/**
 	 * Field manager (used for nested fields).
 	 *
-	 * @var \WPMoo\Fields\Manager|null
+	 * @var FieldManager|null
 	 */
 	protected $field_manager = null;
 
@@ -140,7 +141,7 @@ abstract class AbstractLayout implements LayoutInterface {
 		$this->css_class          = isset( $config['css_class'] ) ? (string) $config['css_class'] : '';
 		$this->attributes         = isset( $config['attributes'] ) && is_array( $config['attributes'] ) ? $config['attributes'] : array();
 		$this->sanitize_callback  = isset( $config['sanitize'] ) ? $config['sanitize'] : null;
-		$this->field_manager      = isset( $config['field_manager'] ) && $config['field_manager'] instanceof \WPMoo\Fields\Manager ? $config['field_manager'] : null;
+		$this->field_manager      = isset( $config['field_manager'] ) && $config['field_manager'] instanceof FieldManager ? $config['field_manager'] : null;
 
 		if ( '' === $this->label && isset( $config['title'] ) ) {
 			$this->label = (string) $config['title'];
@@ -280,8 +281,8 @@ abstract class AbstractLayout implements LayoutInterface {
 	/**
 	 * Retrieve the field manager (fallback to singleton).
 	 */
-	protected function field_manager(): \WPMoo\Fields\Manager {
-		return $this->field_manager instanceof \WPMoo\Fields\Manager ? $this->field_manager : \WPMoo\Fields\Manager::instance();
+	protected function field_manager(): FieldManager {
+		return $this->field_manager instanceof FieldManager ? $this->field_manager : FieldManager::instance();
 	}
 
 	/**

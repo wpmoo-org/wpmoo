@@ -12,7 +12,7 @@
 namespace WPMoo\Sections;
 
 use InvalidArgumentException;
-use WPMoo\Fields\Builder as FieldBuilder;
+use WPMoo\Fields\Builders\FieldBuilder;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
 

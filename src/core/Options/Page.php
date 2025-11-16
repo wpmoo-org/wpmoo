@@ -11,13 +11,13 @@
 
 namespace WPMoo\Options;
 
-use WPMoo\Fields\BaseField as Field;
-use WPMoo\Fields\Manager as FieldManager;
+use WPMoo\Fields\Abstracts\BaseField as Field;
+use WPMoo\Fields\Managers\FieldManager;
 use WPMoo\Support\Assets;
 use WPMoo\Layout\Footer\Footer;
 use WPMoo\Layout\Header\Header;
 use WPMoo\Layout\Component;
-use WPMoo\Layout\Manager as LayoutManager;
+use WPMoo\Layout\Managers\LayoutManager;
 use WPMoo\Options\OptionRepository;
 use WPMoo\Support\Concerns\TranslatesStrings;
 use WPMoo\Support\Str;
