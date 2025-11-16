@@ -1,15 +1,15 @@
 includes:
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
+    - phpstan-baseline.neon
 
 parameters:
-    level: 5
+    level: 6
+    phpVersion: 70400
     paths:
         - src
-    stubFiles:
-        - phpstan-stubs/wpmoo-fields-field.stub.php
-    treatPhpDocTypesAsCertain: false
+    excludePaths:
+        - vendor
+        - tests
+        - src/CLI
     reportUnmatchedIgnoredErrors: false
-    ignoreErrors:
-        -
-            message: '#Variable \$output in empty\(\) always exists and is not falsy#'
-            path: src/Support/I18n/PotGenerator.php
+    treatPhpDocTypesAsCertain: false

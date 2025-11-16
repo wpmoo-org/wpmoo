@@ -13,7 +13,3 @@ parameters:
         - src/CLI
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
-    ignoreErrors:
-        -
-            message: '#Method WPMoo\\Admin\\UI\\Panel::make\(\) should return static#'
-            path: src/Admin/UI/Panel.php

@@ -1,7 +1,7 @@
 {
   "name": "wpmoo/wpmoo",
   "description": "WPMoo — WordPress Micro Object-Oriented Framework (PHP 7.4+)",
-  "license": "GPL-3.0-or-later",
+  "license": "GPL-2.0-or-later",
   "homepage": "https://wpmoo.org",
   "authors": [
     {

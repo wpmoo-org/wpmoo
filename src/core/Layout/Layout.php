@@ -1,16 +1,16 @@
 <?php
 
-namespace WPMoo\Metabox;
+namespace WPMoo\Layout;
 
-use WPMoo\Metabox\Builders\MetaboxBuilder;
+use WPMoo\Layout\Builders\LayoutBuilder;
 
 /**
- * Metabox builder (alias for Builder).
+ * Layout builder (alias for Builder).
  *
- * @package WPMoo\Metabox
+ * @package WPMoo\Layout
  * @since 0.1.0
  * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
  * @link https://github.com/wpmoo/wpmoo GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
-final class Metabox extends MetaboxBuilder {}
+final class Layout extends LayoutBuilder {}

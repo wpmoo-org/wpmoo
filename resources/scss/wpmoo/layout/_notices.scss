@@ -1,8 +1,0 @@
-/* Align WP admin notices with container paddings */
-:where(.wpmoo) .notice,
-:where(.wpmoo) .notice.is-dismissible {
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-  width: 100%;
-}
