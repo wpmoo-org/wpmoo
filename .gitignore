@@ -1,0 +1,32 @@
+# Ignore dependencies and build artifacts
+vendor/
+node_modules/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE specific files
+.vscode/
+
+# Ignore log files
+*.log
+
+# Ignore build directories
+dist/
+build/
+
+# Ignore package lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+composer.lock
+
+# Ignore temporary files
+*.tmp
+
+# PHPUnit cache
+.phpunit.result.cache
+
+src/assets/**/*.css
+src/assets/**/*.map

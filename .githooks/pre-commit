@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "WPMoo pre-commit: moo check (quick) or fallback"
+
+# Collect staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | tr '\n' ' ')
+PHP_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.php$' || true)
+SCSS_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(scss)$' || true)
+
+# Nothing staged; nothing to do
+if [ -z "${STAGED_FILES}" ]; then
+  echo "(no staged changes; skipping checks)"
+  exit 0
+fi
+
+# Prefer WPMoo CLI check via Composer if available
+if [ -x "./vendor/bin/moo" ] || grep -q '"moo"' composer.json 2>/dev/null; then
+  if command -v composer >/dev/null 2>&1; then
+    composer moo -- check --quick || exit 1
+    exit 0
+  else
+    ./vendor/bin/moo check --quick || exit 1
+    exit 0
+  fi
+fi
+
+# Composer validate (skip lock check)
+if command -v composer >/dev/null 2>&1 && [ -f composer.json ]; then
+  composer validate --strict --no-check-lock --ansi || exit 1
+fi
+
+# PHP syntax lint on staged PHP files
+if [ -n "${PHP_FILES}" ]; then
+  echo "→ Linting PHP files"
+  while IFS= read -r file; do
+    [ -f "$file" ] || continue
+    php -l "$file" >/dev/null || { echo "PHP syntax error in $file"; exit 1; }
+  done <<< "${PHP_FILES}"
+fi
+
+# PHPCBF then PHPCS on staged PHP files
+if [ -n "${PHP_FILES}" ]; then
+  if [ -x vendor/bin/phpcbf ]; then
+    echo "→ PHPCBF (auto-fix staged files)"
+    if [ -f phpcs.xml ]; then
+      vendor/bin/phpcbf --standard=phpcs.xml ${PHP_FILES} || true
+    else
+      vendor/bin/phpcbf ${PHP_FILES} || true
+    fi
+    git add ${PHP_FILES}
+  fi
+  if [ -x vendor/bin/phpcs ] && [ -f phpcs.xml ]; then
+    echo "→ PHPCS"
+    vendor/bin/phpcs -n --standard=phpcs.xml ${PHP_FILES} || exit 1
+  fi
+fi
+
+# SCSS format + lint on staged files (if Node + tools available)
+if [ -n "${SCSS_FILES}" ]; then
+  if command -v node >/dev/null 2>&1; then
+    if grep -q '"style:format"' package.json 2>/dev/null; then
+      echo "→ Formatting SCSS with Prettier + Stylelint"
+      ./node_modules/.bin/prettier --write ${SCSS_FILES} || npx prettier --write ${SCSS_FILES} || true
+      ./node_modules/.bin/stylelint ${SCSS_FILES} --fix || npx stylelint ${SCSS_FILES} --fix || true
+      git add ${SCSS_FILES}
+    fi
+  fi
+fi
+
+# PHPStan on staged PHP files (can be disabled with SKIP_PHPSTAN=1)
+if [ "${SKIP_PHPSTAN:-0}" != "1" ] && [ -n "${PHP_FILES}" ] && [ -x vendor/bin/phpstan ] \
+   && { [ -f phpstan.neon ] || [ -f phpstan.neon.dist ]; }; then
+  echo "→ Running PHPStan (staged files only)"
+  vendor/bin/phpstan analyse --no-progress --memory-limit=1G ${PHP_FILES} || exit 1
+fi
+
+# PHPUnit (can be disabled with SKIP_TESTS=1)
+if [ "${SKIP_TESTS:-0}" != "1" ] && [ -x vendor/bin/phpunit ] \
+   && { [ -f phpunit.xml ] || [ -f phpunit.xml.dist ]; }; then
+  echo "→ Running PHPUnit"
+  vendor/bin/phpunit || exit 1
+fi
+
+echo "✔ Pre-commit checks passed"
+exit 0
