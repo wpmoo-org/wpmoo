@@ -3,10 +3,10 @@
 namespace WPMoo\App\WordPress;
 
 use WPMoo\App\Container;
-use WPMoo\Field\WordPress\Registrar as FieldRegistrar;
-use WPMoo\Page\WordPress\Registrar as PageRegistrar;
-use WPMoo\Metabox\WordPress\Registrar as MetaboxRegistrar;
-use WPMoo\Layout\WordPress\Registrar as LayoutRegistrar;
+use WPMoo\Field\WordPress\Manager as FieldManager;
+use WPMoo\Page\WordPress\Manager as PageManager;
+use WPMoo\Metabox\WordPress\Manager as MetaboxManager;
+use WPMoo\Layout\WordPress\Manager as LayoutManager;
 
 /**
  * Plugin bootstrap handler.
@@ -66,16 +66,16 @@ class Bootstrap {
 	 */
 	private function register_bindings(): void {
 		// Register core services
-		$this->container->singleton( FieldRegistrar::class );
-		$this->container->singleton( PageRegistrar::class );
-		$this->container->singleton( MetaboxRegistrar::class );
-		$this->container->singleton( LayoutRegistrar::class );
+		$this->container->singleton( FieldManager::class );
+		$this->container->singleton( PageManager::class );
+		$this->container->singleton( MetaboxManager::class );
+		$this->container->singleton( LayoutManager::class );
 
 		// Bind aliases
-		$this->container->bind( 'field_registrar', FieldRegistrar::class );
-		$this->container->bind( 'page_registrar', PageRegistrar::class );
-		$this->container->bind( 'metabox_registrar', MetaboxRegistrar::class );
-		$this->container->bind( 'layout_registrar', LayoutRegistrar::class );
+		$this->container->bind( 'field_manager', FieldManager::class );
+		$this->container->bind( 'page_manager', PageManager::class );
+		$this->container->bind( 'metabox_manager', MetaboxManager::class );
+		$this->container->bind( 'layout_manager', LayoutManager::class );
 	}
 
 	/**
@@ -116,7 +116,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_fields(): void {
-		$this->container->resolve( FieldRegistrar::class )->register_all();
+		$this->container->resolve( FieldManager::class )->register_all();
 	}
 
 	/**
@@ -125,7 +125,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_pages(): void {
-		$this->container->resolve( PageRegistrar::class )->register_all();
+		$this->container->resolve( PageManager::class )->register_all();
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_metaboxes(): void {
-		$this->container->resolve( MetaboxRegistrar::class )->register_all();
+		$this->container->resolve( MetaboxManager::class )->register_all();
 	}
 
 	/**
@@ -143,7 +143,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_layouts(): void {
-		$this->container->resolve( LayoutRegistrar::class )->register_all();
+		$this->container->resolve( LayoutManager::class )->register_all();
 	}
 
 	/**

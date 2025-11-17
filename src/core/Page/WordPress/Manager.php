@@ -5,7 +5,7 @@ namespace WPMoo\Page\WordPress;
 use WPMoo\Page\Builders\PageBuilder;
 
 /**
- * Page menu registrar.
+ * Page menu manager.
  *
  * @package WPMoo\Page
  * @since 0.1.0
@@ -13,7 +13,7 @@ use WPMoo\Page\Builders\PageBuilder;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Registrar {
+class Manager {
 	/**
 	 * Registered pages.
 	 *

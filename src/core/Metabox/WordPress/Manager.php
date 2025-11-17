@@ -3,7 +3,7 @@
 namespace WPMoo\Metabox\WordPress;
 
 /**
- * Metabox registrar.
+ * Metabox manager.
  *
  * @package WPMoo\Metabox
  * @since 0.1.0
@@ -11,7 +11,7 @@ namespace WPMoo\Metabox\WordPress;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Registrar {
+class Manager {
 	/**
 	 * Register all metaboxes with WordPress.
 	 *

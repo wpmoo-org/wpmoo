@@ -3,7 +3,7 @@
 namespace WPMoo\Field\WordPress;
 
 /**
- * Registers field types in WordPress context.
+ * Manages field types in WordPress context.
  *
  * @package WPMoo\Field
  * @since 0.1.0
@@ -11,7 +11,7 @@ namespace WPMoo\Field\WordPress;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Registrar {
+class Manager {
 	/**
 	 * Register all fields with WordPress.
 	 *
