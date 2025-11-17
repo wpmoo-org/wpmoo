@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset name="WPMoo Framework">
+    <description>Project ruleset consuming the shared WPMoo coding standard configuration.</description>
+
+    <!-- Treat warnings as non-fatal to keep CI green on style warnings -->
+    <arg name="warning-severity" value="0"/>
+
+    <rule ref="vendor/wpmoo/wpmoo-coding-standards/phpcs.xml.dist"/>
+
+    <file>.</file>
+
+    <!-- Exclude the CLI shim (lives in wpmoo-cli) from framework PHPCS -->
+    <exclude-pattern>src/CLI/*</exclude-pattern>
+
+    <!-- Relax line length to reduce false positives on fluent chains -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="180"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Re-enable strict sniffs for output escaping and @throws tags -->
+    <rule ref="WordPress.Security.EscapeOutput"/>
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="wpmoo"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>

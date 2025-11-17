@@ -1,0 +1,25 @@
+{
+      "name": "wpmoo",
+      "version": "0.1.0",
+      "private": true,
+      "description": "Build tooling for WPMoo admin assets.",
+      "scripts": {
+            "build": "gulp build",
+            "watch": "gulp watch",
+            "style:lint": "stylelint \"assets/scss/**/*.scss\"",
+            "style:format": "prettier --write \"assets/scss/**/*.scss\" && stylelint \"assets/scss/**/*.scss\" --fix",
+            "style:check": "prettier --check \"assets/scss/**/*.scss\" && stylelint \"assets/scss/**/*.scss\""
+      },
+      "devDependencies": {
+            "@picocss/pico": "^2.1.1",
+            "open": "^9.1.0",
+            "browser-sync": "3.0.4",
+            "gulp": "5.0.1",
+            "gulp-clean-css": "4.3.0",
+            "gulp-sourcemaps": "3.0.0",
+            "sass": "1.93.2",
+            "prettier": "3.3.3",
+            "stylelint": "16.10.0",
+            "stylelint-config-standard-scss": "13.1.0"
+      }
+}
