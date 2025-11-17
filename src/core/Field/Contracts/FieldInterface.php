@@ -8,4 +8,28 @@ namespace WPMoo\Field\Contracts;
  * @package WPMoo
  * @since 1.0.0
  */
-interface FieldInterface {}
+interface FieldInterface {
+	/**
+	 * Set field name.
+	 *
+	 * @param string $name Field name.
+	 * @return self
+	 */
+	public function name( string $name );
+
+	/**
+	 * Set field label.
+	 *
+	 * @param string $label Field label.
+	 * @return self
+	 */
+	public function label( string $label );
+
+	/**
+	 * Set field placeholder.
+	 *
+	 * @param string $placeholder Field placeholder.
+	 * @return self
+	 */
+	public function placeholder( string $placeholder );
+}
