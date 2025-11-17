@@ -6,6 +6,7 @@ use WPMoo\App\Container;
 use WPMoo\Field\WordPress\Registrar as FieldRegistrar;
 use WPMoo\Page\WordPress\Registrar as PageRegistrar;
 use WPMoo\Metabox\WordPress\Registrar as MetaboxRegistrar;
+use WPMoo\Layout\WordPress\Registrar as LayoutRegistrar;
 
 /**
  * Plugin bootstrap handler.
@@ -68,11 +69,13 @@ class Bootstrap {
 		$this->container->singleton( FieldRegistrar::class );
 		$this->container->singleton( PageRegistrar::class );
 		$this->container->singleton( MetaboxRegistrar::class );
+		$this->container->singleton( LayoutRegistrar::class );
 
 		// Bind aliases
 		$this->container->bind( 'field_registrar', FieldRegistrar::class );
 		$this->container->bind( 'page_registrar', PageRegistrar::class );
 		$this->container->bind( 'metabox_registrar', MetaboxRegistrar::class );
+		$this->container->bind( 'layout_registrar', LayoutRegistrar::class );
 	}
 
 	/**
@@ -99,8 +102,12 @@ class Bootstrap {
 	private function register_hooks(): void {
 		// Register all domain handlers
 		add_action( 'init', [ $this, 'register_fields' ], 10 );
+		add_action( 'init', [ $this, 'register_layouts' ], 15 );
 		add_action( 'admin_menu', [ $this, 'register_pages' ], 10 );
 		add_action( 'add_meta_boxes', [ $this, 'register_metaboxes' ], 10 );
+
+		// Load sample configurations
+		add_action( 'init', [ $this, 'load_samples' ], 5 );
 	}
 
 	/**
@@ -109,8 +116,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_fields(): void {
-		// Temporary - Field registration will be implemented when the Registrar class is ready
-		// $this->container->resolve( FieldRegistrar::class )->register_all();
+		$this->container->resolve( FieldRegistrar::class )->register_all();
 	}
 
 	/**
@@ -119,8 +125,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_pages(): void {
-		// Temporary - Page registration will be implemented when the Registrar class is ready
-		// $this->container->resolve( PageRegistrar::class )->register_all();
+		$this->container->resolve( PageRegistrar::class )->register_all();
 	}
 
 	/**
@@ -129,8 +134,40 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_metaboxes(): void {
-		// Temporary - Metabox registration will be implemented when the Registrar class is ready
-		// $this->container->resolve( MetaboxRegistrar::class )->register_all();
+		$this->container->resolve( MetaboxRegistrar::class )->register_all();
+	}
+
+	/**
+	 * Register all layouts.
+	 *
+	 * @return void
+	 */
+	public function register_layouts(): void {
+		$this->container->resolve( LayoutRegistrar::class )->register_all();
+	}
+
+	/**
+	 * Load sample configurations from the samples directory.
+	 *
+	 * @return void
+	 */
+	public function load_samples(): void {
+		$samples_dir = dirname( dirname( __DIR__ ) ) . '/samples';
+		if ( is_dir( $samples_dir ) ) {
+			$files = glob( $samples_dir . '/*.php' );
+			if ( is_array( $files ) && ! empty( $files ) ) {
+				foreach ( $files as $file ) {
+					if ( is_readable( $file ) ) {
+						// Add error handling to make sure sample loading doesn't break everything
+						try {
+							require_once $file;
+						} catch ( \Exception $e ) {
+							error_log( 'WPMoo Sample Loading Error: ' . $e->getMessage() );
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**

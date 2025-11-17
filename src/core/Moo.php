@@ -5,6 +5,7 @@ namespace WPMoo;
 use WPMoo\Page\Builders\PageBuilder;
 use WPMoo\Layout\Layout;  // Main layout facade
 use WPMoo\Field\Field;  // Main field facade
+use WPMoo\Shared\Registry;
 
 /**
  * Main facade for fluent API.
@@ -24,7 +25,9 @@ class Moo {
 	 * @return PageBuilder
 	 */
 	public static function page( string $id, string $title ): PageBuilder {
-		return new PageBuilder( $id, $title );
+		$page = new PageBuilder( $id, $title );
+		Registry::instance()->add_page( $page );
+		return $page;
 	}
 
 	/**
@@ -34,6 +37,8 @@ class Moo {
 	 * @return \WPMoo\Layout\Component\Tabs
 	 */
 	public static function tabs( string $id ) {
-		return Layout::tabs( $id );
+		$tabs = Layout::tabs( $id );
+		Registry::instance()->add_layout( $tabs );
+		return $tabs;
 	}
 }

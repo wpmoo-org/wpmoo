@@ -43,3 +43,6 @@ foreach ( $autoload_paths as $autoload ) {
 if ( function_exists( 'plugin_basename' ) ) {
 	\WPMoo\App\WordPress\Bootstrap::instance()->boot( __FILE__, 'wpmoo' );
 }
+
+// For reliable loading, include the samples directly
+include_once WPMOO_PATH . 'samples/settings.php';
