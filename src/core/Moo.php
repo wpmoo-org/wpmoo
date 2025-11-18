@@ -2,9 +2,9 @@
 
 namespace WPMoo;
 
-use WPMoo\Page\Page; 		// Main page facade
-use WPMoo\Layout\Layout;  	// Main layout facade
-use WPMoo\Field\Field;  	// Main field facade
+use WPMoo\Page\Page;        // Main page facade
+use WPMoo\Layout\Layout;    // Main layout facade
+use WPMoo\Field\Field;      // Main field facade
 use WPMoo\Shared\Registry;
 
 /**
