@@ -3,7 +3,7 @@
  * Plugin Name: WPMoo Framework
  * Plugin URI:  https://wpmoo.org
  * Description: Core framework utilities for WPMoo-based plugins.
- * Version:     0.1.0
+ * Version:     0.1.1
  * Author:      Ahmet Cangir
  * Author URI:  https://wpmoo.org
  * Text Domain: wpmoo
