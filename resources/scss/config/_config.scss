@@ -1,0 +1,21 @@
+@use "sass:map";
+
+/* Import Pico SCSS using variables from sibling modules */
+@use "settings" as settings;
+@use "breakpoints" as bp;
+@use "modules" as mods;
+@use "vars";
+
+@use "@picocss/pico/scss/index" with ($theme-color: settings.$theme-color,
+  $css-var-prefix: settings.$css-var-prefix,
+  $semantic-root-element: settings.$semantic-root-element,
+  $enable-semantic-container: settings.$enable-semantic-container,
+  $enable-viewport: settings.$enable-viewport,
+  $enable-responsive-spacings: settings.$enable-responsive-spacings,
+  $enable-responsive-typography: settings.$enable-responsive-typography,
+  $enable-classes: settings.$enable-classes,
+  $enable-transitions: settings.$enable-transitions,
+  $enable-important: settings.$enable-important,
+  $parent-selector: settings.$parent-selector,
+  $breakpoints: bp.$breakpoints,
+  $modules: mods.$modules);

@@ -1,11 +1,11 @@
 <?php
 
-namespace WPMoo\Field\WordPress\Renderer;
+namespace WPMoo\WordPress\Renderers;
 
 /**
  * WordPress renderer for textarea field.
  *
- * @package WPMoo
- * @since 1.0.0
+ * @package WPMoo\WordPress
+ * @since 0.1.0
  */
 class TextareaRenderer {}

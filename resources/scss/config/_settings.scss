@@ -1,0 +1,39 @@
+// Theme color
+$theme-color: "cyan" !default; // amber, azure, blue, cyan, fuchsia, green, grey, indigo, jade, lime, orange, pink, pumpkin, purple, red, sand, slate, violet, yellow, zinc
+
+// Prefix for CSS variables (customized for WPMoo)
+$css-var-prefix: "--wpmoo-" !default; // Must start with "--"
+
+// Define the root element used to target <header>, <main>, <footer>
+// with $enable-semantic-container and $enable-responsive-spacings
+$semantic-root-element: "body" !default;
+
+// Enable <header>, <main>, <footer> inside $semantic-root-element as containers
+$enable-semantic-container: true !default;
+
+// Enable a centered viewport for <header>, <main>, <footer> inside $semantic-root-element
+// Fluid layout if disabled
+$enable-viewport: true !default;
+
+// Enable responsive spacings for <header>, <main>, <footer>, <section>, <article>
+// Fixed spacings by default
+$enable-responsive-spacings: true !default;
+
+// Enable responsive typography
+// Fixed root element size (rem) if disabled
+$enable-responsive-typography: true !default;
+
+// Enable .classes
+// .classless version if disabled
+$enable-classes: true !default;
+
+// Enable transitions
+$enable-transitions: true !default;
+
+// Enable overriding with !important
+$enable-important: true !default;
+
+// Optional parent selector (customized scope name)
+// If defined, all HTML tags are wrapped with this selector
+// :root is not wrapped
+$parent-selector: ".wpmoo" !default;

@@ -8,6 +8,6 @@ use WPMoo\Field\Abstracts\AbstractField;
  * Textarea field type.
  *
  * @package WPMoo
- * @since 1.0.0
+ * @since 0.1.0
  */
 class Textarea extends AbstractField {}
