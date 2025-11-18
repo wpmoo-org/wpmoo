@@ -1,18 +1,18 @@
 <?php
 
-namespace WPMoo\App\WordPress;
+namespace WPMoo\WordPress;
 
 use WPMoo\App\Container;
-use WPMoo\Field\WordPress\Manager as FieldManager;
-use WPMoo\Page\WordPress\Manager as PageManager;
-use WPMoo\Metabox\WordPress\Manager as MetaboxManager;
-use WPMoo\Layout\WordPress\Manager as LayoutManager;
+use WPMoo\WordPress\Managers\FieldManager;
+use WPMoo\WordPress\Managers\PageManager;
+use WPMoo\WordPress\Managers\MetaboxManager;
+use WPMoo\WordPress\Managers\LayoutManager;
 
 /**
  * Plugin bootstrap handler.
  *
  * @package WPMoo
- * @since 1.0.0
+ * @since 0.1.0
  * @link https://wpmoo.org   WPMoo – WordPress Micro Object-Oriented Framework.
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
@@ -66,16 +66,16 @@ class Bootstrap {
 	 */
 	private function register_bindings(): void {
 		// Register core services
-		$this->container->singleton( FieldManager::class );
-		$this->container->singleton( PageManager::class );
-		$this->container->singleton( MetaboxManager::class );
-		$this->container->singleton( LayoutManager::class );
+		$this->container->singleton( \WPMoo\WordPress\Managers\FieldManager::class );
+		$this->container->singleton( \WPMoo\WordPress\Managers\PageManager::class );
+		$this->container->singleton( \WPMoo\WordPress\Managers\MetaboxManager::class );
+		$this->container->singleton( \WPMoo\WordPress\Managers\LayoutManager::class );
 
 		// Bind aliases
-		$this->container->bind( 'field_manager', FieldManager::class );
-		$this->container->bind( 'page_manager', PageManager::class );
-		$this->container->bind( 'metabox_manager', MetaboxManager::class );
-		$this->container->bind( 'layout_manager', LayoutManager::class );
+		$this->container->bind( 'field_manager', \WPMoo\WordPress\Managers\FieldManager::class );
+		$this->container->bind( 'page_manager', \WPMoo\WordPress\Managers\PageManager::class );
+		$this->container->bind( 'metabox_manager', \WPMoo\WordPress\Managers\MetaboxManager::class );
+		$this->container->bind( 'layout_manager', \WPMoo\WordPress\Managers\LayoutManager::class );
 	}
 
 	/**
@@ -116,7 +116,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_fields(): void {
-		$this->container->resolve( FieldManager::class )->register_all();
+		$this->container->resolve( \WPMoo\WordPress\Managers\FieldManager::class )->register_all();
 	}
 
 	/**
@@ -125,7 +125,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_pages(): void {
-		$this->container->resolve( PageManager::class )->register_all();
+		$this->container->resolve( \WPMoo\WordPress\Managers\PageManager::class )->register_all();
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_metaboxes(): void {
-		$this->container->resolve( MetaboxManager::class )->register_all();
+		$this->container->resolve( \WPMoo\WordPress\Managers\MetaboxManager::class )->register_all();
 	}
 
 	/**
@@ -143,7 +143,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_layouts(): void {
-		$this->container->resolve( LayoutManager::class )->register_all();
+		$this->container->resolve( \WPMoo\WordPress\Managers\LayoutManager::class )->register_all();
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Field\WordPress;
+namespace WPMoo\WordPress\Managers;
 
 /**
  * Manages field types in WordPress context.
@@ -11,7 +11,7 @@ namespace WPMoo\Field\WordPress;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Manager {
+class FieldManager {
 	/**
 	 * Register all fields with WordPress.
 	 *

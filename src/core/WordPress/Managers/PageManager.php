@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Page\WordPress;
+namespace WPMoo\WordPress\Managers;
 
 use WPMoo\Page\Builders\PageBuilder;
 
@@ -13,7 +13,7 @@ use WPMoo\Page\Builders\PageBuilder;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Manager {
+class PageManager {
 	/**
 	 * Registered pages.
 	 *

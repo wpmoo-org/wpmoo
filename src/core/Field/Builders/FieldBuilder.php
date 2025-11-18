@@ -10,7 +10,7 @@ use WPMoo\Field\Type\Toggle;
  * Fluent field builder.
  *
  * @package WPMoo
- * @since 1.0.0
+ * @since 0.1.0
  */
 class FieldBuilder {
 	/**

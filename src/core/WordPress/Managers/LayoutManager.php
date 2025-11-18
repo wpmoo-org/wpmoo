@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Layout\WordPress;
+namespace WPMoo\WordPress\Managers;
 
 use WPMoo\Layout\Component\Tabs;
 use WPMoo\Layout\Component\Accordion;
@@ -14,7 +14,7 @@ use WPMoo\Layout\Component\Accordion;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Manager {
+class LayoutManager {
 	/**
 	 * Registered layouts.
 	 *

@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Metabox\WordPress;
+namespace WPMoo\WordPress\Managers;
 
 /**
  * Metabox manager.
@@ -11,7 +11,7 @@ namespace WPMoo\Metabox\WordPress;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Manager {
+class MetaboxManager {
 	/**
 	 * Register all metaboxes with WordPress.
 	 *
