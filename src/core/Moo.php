@@ -2,9 +2,9 @@
 
 namespace WPMoo;
 
-use WPMoo\Page\Builders\PageBuilder;
-use WPMoo\Layout\Layout;  // Main layout facade
-use WPMoo\Field\Field;  // Main field facade
+use WPMoo\Page\Page; 		// Main page facade
+use WPMoo\Layout\Layout;  	// Main layout facade
+use WPMoo\Field\Field;  	// Main field facade
 use WPMoo\Shared\Registry;
 
 /**
@@ -22,10 +22,10 @@ class Moo {
 	 *
 	 * @param string $id Page ID.
 	 * @param string $title Page title.
-	 * @return PageBuilder
+	 * @return Page
 	 */
-	public static function page( string $id, string $title ): PageBuilder {
-		$page = new PageBuilder( $id, $title );
+	public static function page( string $id, string $title ): Page {
+		$page = new Page( $id, $title );
 		Registry::instance()->add_page( $page );
 		return $page;
 	}
