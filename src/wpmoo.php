@@ -22,7 +22,12 @@ if ( ! defined( 'WPMOO_PATH' ) ) {
 }
 
 if ( ! defined( 'WPMOO_VERSION' ) ) {
-	define( 'WPMOO_VERSION', '0.1.0' );
+	if ( function_exists( 'get_plugin_data' ) ) {
+		$plugin_data = get_plugin_data( __FILE__ );
+		define( 'WPMOO_VERSION', $plugin_data['Version'] );
+	} else {
+		define( 'WPMOO_VERSION', '0.1.1' );
+	}
 }
 
 $autoload_paths = array(
