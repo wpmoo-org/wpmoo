@@ -106,8 +106,16 @@ class Bootstrap {
 		add_action( 'admin_menu', [ $this, 'register_pages' ], 10 );
 		add_action( 'add_meta_boxes', [ $this, 'register_metaboxes' ], 10 );
 
-		// Load sample configurations
-		add_action( 'init', [ $this, 'load_samples' ], 5 );
+		// Load textdomain for the framework if loaded as plugin
+		// Commenting out to prevent early loading warnings until we find the source of the problem
+		// if ( defined( 'WPMOO_PLUGIN_LOADED' ) && WPMOO_PLUGIN_LOADED ) {
+		// 	add_action( 'init', [ $this, 'load_textdomain' ], 2 );
+		// }
+
+		// Load sample configurations only when loaded as plugin directly (not as dependency)
+		if ( defined( 'WPMOO_PLUGIN_LOADED' ) && WPMOO_PLUGIN_LOADED === true ) {
+			add_action( 'init', [ $this, 'load_samples' ], 5 );
+		}
 	}
 
 	/**
@@ -168,6 +176,19 @@ class Bootstrap {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Load textdomain for the WPMoo framework.
+	 */
+	public function load_textdomain(): void {
+		// Get the directory of the main framework file
+		$framework_file = WPMOO_FILE;
+		$plugin_dir = dirname( $framework_file );
+
+		// Load the textdomain for the framework
+		// This is intentionally commented out to prevent early loading errors
+		// Should only be loaded via init hook which is handled by the register_hooks method when appropriate
 	}
 
 	/**
