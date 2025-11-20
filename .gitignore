@@ -1,6 +1,7 @@
 # Ignore dependencies and build artifacts
 vendor/
 node_modules/
+moo
 
 # Ignore OS generated files
 .DS_Store
@@ -28,5 +29,7 @@ composer.lock
 # PHPUnit cache
 .phpunit.result.cache
 
+# WPMoo generated assets
 src/assets/**/*.css
 src/assets/**/*.map
+src/assets/**/*.js
