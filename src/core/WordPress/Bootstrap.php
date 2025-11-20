@@ -109,7 +109,7 @@ class Bootstrap {
 		// Load textdomain for the framework if loaded as plugin
 		// Commenting out to prevent early loading warnings until we find the source of the problem
 		// if ( defined( 'WPMOO_PLUGIN_LOADED' ) && WPMOO_PLUGIN_LOADED ) {
-		// 	add_action( 'init', [ $this, 'load_textdomain' ], 2 );
+		//  add_action( 'init', [ $this, 'load_textdomain' ], 2 );
 		// }
 
 		// Load sample configurations only when loaded as plugin directly (not as dependency)

@@ -13,17 +13,19 @@ use WPMoo\Moo;
 use WPMoo\Field\Field;
 
 // Wrap the code in an init action to ensure it runs at the right time
-add_action('init', function() {
-	// Create a settings page
-	Moo::page( 'wpmoo_settings', 'WPMoo Settings' )
+add_action(
+	'init',
+	function () {
+		// Create a settings page
+		Moo::page( 'wpmoo_settings', 'WPMoo Settings' )
 		->capability( 'manage_options' )
 		->description( 'Configure WPMoo Framework settings' )
 		->menu_slug( 'wpmoo-settings' )
 		->menu_position( 20 )
 		->menu_icon( 'dashicons-admin-generic' );
 
-	// Create tabs for the settings page
-	Moo::tabs( 'wpmoo_main_tabs' )
+		// Create tabs for the settings page
+		Moo::tabs( 'wpmoo_main_tabs' )
 		->parent( 'wpmoo_settings' )  // Link to the settings page
 		->items(
 			[
@@ -54,7 +56,8 @@ add_action('init', function() {
 				],
 			]
 		);
-});
+	}
+);
 
 
 // Alternative approach: Define tabs directly within the page
