@@ -58,25 +58,3 @@ add_action(
 		);
 	}
 );
-
-
-// Alternative approach: Define tabs directly within the page
-
-/*
-add_action('init', function() {
-	Moo::page( 'wpmoo_settings_v2', 'WPMoo Settings (Alternative)' )
-		->capability( 'manage_options' )
-		->menu_slug( 'wpmoo-settings-alt' )
-		->tabs('wpmoo_alt_tabs')
-			->items([
-				[
-					'id' => 'general',
-					'title' => 'General Settings',
-					'content' => [
-						Field::input('alt_site_title')->label('Site Title'),
-						Field::toggle('alt_enable_feature')->label('Enable Feature')
-					]
-				]
-			]);
-});
-*/

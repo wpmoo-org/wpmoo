@@ -113,7 +113,8 @@ class Bootstrap {
 		// }
 
 		// Load sample configurations only when loaded as plugin directly (not as dependency)
-		if ( defined( 'WPMOO_PLUGIN_LOADED' ) && WPMOO_PLUGIN_LOADED === true ) {
+		$is_directly_loaded = $this->is_directly_loaded();
+		if ( $is_directly_loaded ) {
 			add_action( 'init', [ $this, 'load_samples' ], 5 );
 		}
 	}
@@ -198,5 +199,19 @@ class Bootstrap {
 	 */
 	public function container(): Container {
 		return $this->container;
+	}
+
+	/**
+	 * Check if the framework is loaded directly as a plugin (not as a dependency).
+	 *
+	 * @return bool True if loaded directly as a plugin, false otherwise.
+	 */
+	private function is_directly_loaded(): bool {
+		// This check verifies if the framework is running as a plugin rather than a dependency
+		if ( ! defined( 'WPMOO_PLUGIN_LOADED' ) ) {
+			return false;
+		}
+
+		return (bool) WPMOO_PLUGIN_LOADED;
 	}
 }
