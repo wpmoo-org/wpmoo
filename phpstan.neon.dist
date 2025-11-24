@@ -1,6 +1,6 @@
 includes:
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
-    - phpstan-baseline.neon
+    - resources/phpstan/phpstan-baseline.neon
 
 parameters:
     level: 6
@@ -11,5 +11,7 @@ parameters:
         - vendor
         - tests
         - src/CLI
+    stubFiles:
+        - resources/phpstan/stubs/wpmoo-fields-field.stub.php
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
