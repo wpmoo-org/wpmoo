@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Layout\Contracts;
+namespace WPMoo\Layout\Interfaces;
 
 /**
  * Layout contract.

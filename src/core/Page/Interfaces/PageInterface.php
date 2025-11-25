@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Page\Contracts;
+namespace WPMoo\Page\Interfaces;
 
 /**
  * Page contract.

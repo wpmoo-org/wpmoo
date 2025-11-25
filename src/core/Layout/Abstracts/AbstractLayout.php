@@ -2,7 +2,7 @@
 
 namespace WPMoo\Layout\Abstracts;
 
-use WPMoo\Layout\Contracts\LayoutInterface;
+use WPMoo\Layout\Interfaces\LayoutInterface;
 
 /**
  * Base layout implementation.

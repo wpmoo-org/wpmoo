@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Field\Contracts;
+namespace WPMoo\Field\Interfaces;
 
 /**
  * Contract for all field types.

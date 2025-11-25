@@ -2,7 +2,7 @@
 
 namespace WPMoo\Field\Abstracts;
 
-use WPMoo\Field\Contracts\FieldInterface;
+use WPMoo\Field\Interfaces\FieldInterface;
 
 /**
  * Base field implementation.

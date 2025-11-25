@@ -2,8 +2,8 @@
 
 namespace WPMoo\Page\Builders;
 
-use WPMoo\Page\Contracts\PageInterface;
-use WPMoo\Field\Contracts\FieldInterface;
+use WPMoo\Page\Interfaces\PageInterface;
+use WPMoo\Field\Interfaces\FieldInterface;
 
 /**
  * Page builder.
