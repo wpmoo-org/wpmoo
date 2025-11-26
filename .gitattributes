@@ -29,3 +29,4 @@ phpunit.xml.dist export-ignore
 release-please-config.json export-ignore
 release-please-manifest.json export-ignore
 moo export-ignore
+composer.json export-ignore
