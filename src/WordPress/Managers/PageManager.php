@@ -34,6 +34,7 @@ class PageManager {
 	/**
 	 * Register all pages with WordPress.
 	 *
+	 * @throws \Exception If a page registration fails.
 	 * @return void
 	 */
 	public function register_all(): void {
@@ -49,8 +50,7 @@ class PageManager {
 			try {
 				$this->register_page( $page );
 			} catch ( \Exception $e ) {
-				// In a production environment, you'd want to log this properly
-				error_log( 'WPMoo Page Registration Error: ' . $e->getMessage() );
+				throw $e;
 			}
 		}
 	}

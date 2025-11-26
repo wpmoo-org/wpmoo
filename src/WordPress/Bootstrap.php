@@ -158,13 +158,11 @@ class Bootstrap {
 	/**
 	 * Load sample configurations from the samples directory.
 	 *
+	 * @throws \Exception If a sample file cannot be loaded.
 	 * @return void
 	 */
 	public function load_samples(): void {
 		if ( ! defined( '\WPMOO_PATH' ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'WPMoo Framework: WPMOO_PATH constant is not defined. Cannot load samples.' );
-			}
 			return;
 		}
 
@@ -178,7 +176,7 @@ class Bootstrap {
 						try {
 							require_once $file;
 						} catch ( \Exception $e ) {
-							error_log( 'WPMoo Sample Loading Error: ' . $e->getMessage() );
+							throw $e;
 						}
 					}
 				}
