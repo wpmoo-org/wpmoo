@@ -39,12 +39,9 @@
   },
   "autoload": {
     "psr-4": {
-      "WPMoo\\": "src/core/",
-      "WPMoo\\Samples\\": "src/samples/"
-    },
-    "files": [
-      "src/wpmoo.php"
-    ]
+      "WPMoo\\": "src/",
+      "WPMoo\\Samples\\": "samples/"
+    }
   },
   "require-dev": {
     "wpmoo/wpmoo-coding-standards": "dev-main",

@@ -5,6 +5,8 @@ includes:
 parameters:
     level: 6
     phpVersion: 70400
+    bootstrapFiles:
+        - phpstan-bootstrap.php
     paths:
         - src
     excludePaths:

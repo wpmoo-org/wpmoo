@@ -161,7 +161,14 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function load_samples(): void {
-		$samples_dir = dirname( dirname( __DIR__ ) ) . '/samples';
+		if ( ! defined( '\WPMOO_PATH' ) ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'WPMoo Framework: WPMOO_PATH constant is not defined. Cannot load samples.' );
+			}
+			return;
+		}
+
+		$samples_dir = \WPMOO_PATH . '/samples';
 		if ( is_dir( $samples_dir ) ) {
 			$files = glob( $samples_dir . '/*.php' );
 			if ( is_array( $files ) && ! empty( $files ) ) {
