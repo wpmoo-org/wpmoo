@@ -5,7 +5,7 @@
  * Description: A Simple and Lightweight WordPress Option Framework for Themes and Plugins.
  * Author: WPMoo
  * Author URI: https://wpmoo.org
- * Version: 0.1.3
+ * Version: 0.1.1
  * Text Domain: wpmoo
  * Domain Path: /languages
  * License: GPL-2.0-or-later
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
-// Define framework constants directly in the main plugin file.
+// 1. Define framework constants.
 if ( ! defined( 'WPMOO_VERSION' ) ) {
 	define( 'WPMOO_VERSION', '0.1.0' );
 }
@@ -28,19 +28,48 @@ if ( ! defined( 'WPMOO_URL' ) ) {
 	define( 'WPMOO_URL', plugin_dir_url( __FILE__ ) );
 }
 
-// If this file is present, it means WPMoo is installed in a development environment.
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-	require_once __DIR__ . '/vendor/autoload.php';
-}
-
-// Load the framework guard file to prevent double-loading.
+// 2. Include the guard file to prevent double loading.
 require_once __DIR__ . '/init.php';
 
-// Define a constant to indicate that WPMoo is loaded as a standalone plugin.
-// This allows the framework to enable plugin-specific features like sample pages.
+// 3. If no Composer autoloader has loaded the framework, register our own.
+if ( ! class_exists( 'WPMoo\\Moo' ) ) {
+	/**
+	 * Simple PSR-4 autoloader for the WPMoo framework.
+	 * This allows the plugin to run standalone without a vendor directory.
+	 *
+	 * @param string $class The fully-qualified class name.
+	 * @return void
+	 */
+	spl_autoload_register(
+		function ( $class ) {
+			// Base namespace for the framework.
+			$prefix = 'WPMoo\\';
+
+			// Does the class use the namespace prefix?
+			$len = strlen( $prefix );
+			if ( strncmp( $prefix, $class, $len ) !== 0 ) {
+				// No, move to the next registered autoloader.
+				return;
+			}
+
+			// Get the relative class name.
+			$relative_class = substr( $class, $len );
+
+			// Build the file path.
+			$file = WPMOO_PATH . '/src/' . str_replace( '\\', '/', $relative_class ) . '.php';
+
+			// If the file exists, require it.
+			if ( file_exists( $file ) ) {
+				require $file;
+			}
+		}
+	);
+}
+
+// 4. Define that the framework is loaded directly as a plugin.
 if ( ! defined( 'WPMOO_PLUGIN_LOADED' ) ) {
 	define( 'WPMOO_PLUGIN_LOADED', true );
 }
 
-// Boot the framework. This call is what registers all the WordPress hooks.
+// 5. Boot the framework.
 \WPMoo\WordPress\Bootstrap::instance()->boot( __FILE__, 'wpmoo' );
