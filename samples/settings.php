@@ -3,7 +3,7 @@
  * Sample Settings Page using WPMoo Framework.
  *
  * This demonstrates the usage of the new WPMoo architecture for creating
- * a settings page with tabs and fields.
+ * a settings page with tabs and fields, following internationalization best practices.
  *
  * @package WPMoo
  * @since 0.1.0
@@ -17,9 +17,9 @@ add_action(
 	'init',
 	function () {
 		// Create a settings page
-		Moo::page( 'wpmoo_settings', 'WPMoo Settings' )
+		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'your-text-domain' ) )
 		->capability( 'manage_options' )
-		->description( 'Configure WPMoo Framework settings' )
+		->description( __( 'Configure WPMoo Framework settings', 'your-text-domain' ) )
 		->menu_slug( 'wpmoo-settings' )
 		->menu_position( 20 )
 		->menu_icon( 'dashicons-admin-generic' );
@@ -31,27 +31,27 @@ add_action(
 			[
 				[
 					'id' => 'general',
-					'title' => 'General Settings',
+					'title' => __( 'General Settings', 'your-text-domain' ),
 					'content' => [
 						Field::input( 'site_title' )
-							->label( 'Site Title' )
-							->placeholder( 'Enter your site title' ),
+							->label( __( 'Site Title', 'your-text-domain' ) )
+							->placeholder( __( 'Enter your site title', 'your-text-domain' ) ),
 						Field::textarea( 'site_description' )
-							->label( 'Site Description' )
-							->placeholder( 'Enter site description' ),
+							->label( __( 'Site Description', 'your-text-domain' ) )
+							->placeholder( __( 'Enter site description', 'your-text-domain' ) ),
 						Field::toggle( 'enable_cache' )
-							->label( 'Enable Caching' ),
+							->label( __( 'Enable Caching', 'your-text-domain' ) ),
 					],
 				],
 				[
 					'id' => 'advanced',
-					'title' => 'Advanced Settings',
+					'title' => __( 'Advanced Settings', 'your-text-domain' ),
 					'content' => [
 						Field::input( 'cache_duration' )
-							->label( 'Cache Duration (seconds)' )
-							->placeholder( 'Enter cache duration' ),
+							->label( __( 'Cache Duration (seconds)', 'your-text-domain' ) )
+							->placeholder( __( 'Enter cache duration', 'your-text-domain' ) ),
 						Field::toggle( 'enable_debug' )
-							->label( 'Enable Debug Mode' ),
+							->label( __( 'Enable Debug Mode', 'your-text-domain' ) ),
 					],
 				],
 			]

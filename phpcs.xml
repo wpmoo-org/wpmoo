@@ -25,6 +25,7 @@
     <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
 
     <rule ref="WordPress.WP.I18n">
+        <exclude-pattern>*/samples/*</exclude-pattern>
         <properties>
             <property name="text_domain" type="array">
                 <element value="wpmoo"/>
