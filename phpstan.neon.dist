@@ -6,7 +6,7 @@ parameters:
     level: 6
     phpVersion: 70400
     bootstrapFiles:
-        - phpstan-bootstrap.php
+        - resources/phpstan/stubs/phpstan-bootstrap.php
     paths:
         - src
     excludePaths:
