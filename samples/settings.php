@@ -16,7 +16,7 @@ use WPMoo\Field\Field;
 add_action(
 	'init',
 	function () {
-		// Create a settings page
+		// Create a settings page - plugin slug will be auto-detected
 		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'your-text-domain' ) )
 		->capability( 'manage_options' )
 		->description( __( 'Configure WPMoo Framework settings', 'your-text-domain' ) )

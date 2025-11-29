@@ -41,11 +41,24 @@ class LayoutManager {
 		// Layouts are typically rendered inline with pages,
 		// so this may be where we store them for later retrieval
 		// when they're needed by page rendering
-		$registry = \WPMoo\Shared\Registry::instance();
+		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
 		$registry_layouts = $registry->get_layouts();
 
 		// Update our internal layouts array with the registry layouts
-		$this->layouts = array_merge( $this->layouts, $registry_layouts );
+		// The registry now returns layouts grouped by plugin, so we need to flatten the array
+		if ( isset( $registry_layouts[ key( $registry_layouts ) ] ) ) {
+			// If the first element is an array, it means we have grouped layouts by plugin
+			$flattened_layouts = [];
+			foreach ( $registry_layouts as $plugin_layouts ) {
+				if ( is_array( $plugin_layouts ) ) {
+					$flattened_layouts = array_merge( $flattened_layouts, $plugin_layouts );
+				}
+			}
+			$this->layouts = array_merge( $this->layouts, $flattened_layouts );
+		} else {
+			// If not grouped, merge directly
+			$this->layouts = array_merge( $this->layouts, $registry_layouts );
+		}
 
 		// For now, we're just retrieving them for potential use
 		// Later, we could tie them to specific pages or sections

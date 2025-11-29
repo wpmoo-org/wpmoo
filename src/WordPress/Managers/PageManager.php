@@ -39,11 +39,24 @@ class PageManager {
 	 */
 	public function register_all(): void {
 		// First, populate our internal pages array from the registry
-		$registry = \WPMoo\Shared\Registry::instance();
+		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
 		$registry_pages = $registry->get_pages();
 
 		// Update our internal pages array with the registry pages
-		$this->pages = array_merge( $this->pages, $registry_pages );
+		// The registry now returns pages grouped by plugin, so we need to flatten the array
+		if ( isset( $registry_pages[ key( $registry_pages ) ] ) ) {
+			// If the first element is an array, it means we have grouped pages by plugin
+			$flattened_pages = [];
+			foreach ( $registry_pages as $plugin_pages ) {
+				if ( is_array( $plugin_pages ) ) {
+					$flattened_pages = array_merge( $flattened_pages, $plugin_pages );
+				}
+			}
+			$this->pages = array_merge( $this->pages, $flattened_pages );
+		} else {
+			// If not grouped, merge directly
+			$this->pages = array_merge( $this->pages, $registry_pages );
+		}
 
 		foreach ( $this->pages as $page ) {
 			// Make sure page registration doesn't fail the entire process
@@ -97,7 +110,7 @@ class PageManager {
 	 * @return void
 	 */
 	private function render_page( PageBuilder $page ): void {
-		$registry = \WPMoo\Shared\Registry::instance();
+		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
 
 		// Get layouts associated with this page
 		$page_layouts = $registry->get_layouts_by_parent( $page->get_id() );

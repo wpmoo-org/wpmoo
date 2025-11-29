@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // If the main Moo class exists, it means the framework has already been loaded.
-if ( class_exists( 'WPMoo\\Moo' ) ) {
+// We check without triggering autoloading since autoloading might trigger a circular require.
+if ( class_exists( 'WPMoo\\Moo', false ) ) {
 	return;
 }

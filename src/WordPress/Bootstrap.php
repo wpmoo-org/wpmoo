@@ -40,6 +40,13 @@ class Bootstrap {
 	private bool $booted = false;
 
 	/**
+	 * List of plugin instances using WPMoo.
+	 *
+	 * @var array<string, array{file: string, slug: string, is_main_instance: bool}>
+	 */
+	private array $instances = [];
+
+	/**
 	 * Get singleton instance.
 	 *
 	 * @return self Bootstrap instance.
@@ -49,6 +56,15 @@ class Bootstrap {
 			self::$instance = new self();
 		}
 		return self::$instance;
+	}
+
+	/**
+	 * Check if the get_instances method exists (for debugging purposes).
+	 *
+	 * @return bool
+	 */
+	public function has_get_instances_method(): bool {
+		return method_exists( $this, 'get_instances' );
 	}
 
 	/**
@@ -86,12 +102,39 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function boot( string $plugin_file, string $plugin_slug ): void {
-		if ( $this->booted ) {
+		// Check if this specific plugin instance has already been booted
+		if ( isset( $this->instances[ $plugin_slug ] ) ) {
 			return;
 		}
 
-		$this->register_hooks();
-		$this->booted = true;
+		// Register this plugin instance
+		$this->instances[ $plugin_slug ] = [
+			'file' => $plugin_file,
+			'slug' => $plugin_slug,
+			'is_main_instance' => ! $this->booted,
+		];
+
+		// Only register the main WordPress hooks once, regardless of how many plugins use the framework
+		if ( ! $this->booted ) {
+			$this->register_hooks();
+			$this->booted = true;
+		}
+
+		// Initialize this specific plugin instance
+		$this->init_plugin_instance( $plugin_slug );
+	}
+
+	/**
+	 * Initialize a specific plugin instance.
+	 *
+	 * @param string $plugin_slug Unique plugin identifier.
+	 * @return void
+	 */
+	private function init_plugin_instance( string $plugin_slug ): void {
+		// Load sample configurations only when loaded as plugin directly (not as dependency)
+		if ( $this->is_directly_loaded() && $plugin_slug === 'wpmoo' ) {
+			add_action( 'init', [ $this, 'load_samples' ], 5 );
+		}
 	}
 
 	/**
@@ -100,7 +143,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	private function register_hooks(): void {
-		// Register all domain handlers
+		// Register all domain handlers - only once regardless of how many plugins use the framework
 		add_action( 'init', [ $this, 'register_fields' ], 10 );
 		add_action( 'init', [ $this, 'register_layouts' ], 15 );
 		add_action( 'admin_menu', [ $this, 'register_pages' ], 10 );
@@ -111,12 +154,6 @@ class Bootstrap {
 		// if ( defined( 'WPMOO_PLUGIN_LOADED' ) && WPMOO_PLUGIN_LOADED ) {
 		//  add_action( 'init', [ $this, 'load_textdomain' ], 2 );
 		// }
-
-		// Load sample configurations only when loaded as plugin directly (not as dependency)
-		$is_directly_loaded = $this->is_directly_loaded();
-		if ( $is_directly_loaded ) {
-			add_action( 'init', [ $this, 'load_samples' ], 5 );
-		}
 	}
 
 	/**
@@ -204,6 +241,15 @@ class Bootstrap {
 	 */
 	public function container(): Container {
 		return $this->container;
+	}
+
+	/**
+	 * Get the list of plugin instances using WPMoo.
+	 *
+	 * @return array<string, array{file: string, slug: string, is_main_instance: bool}> List of plugin instances.
+	 */
+	public function get_instances(): array {
+		return $this->instances;
 	}
 
 	/**
