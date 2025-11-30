@@ -14,22 +14,6 @@ use WPMoo\Page\Builders\PageBuilder;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
 class PageManager {
-	/**
-	 * Registered pages.
-	 *
-	 * @var array<string, PageBuilder>
-	 */
-	private array $pages = [];
-
-	/**
-	 * Add a page to be registered.
-	 *
-	 * @param PageBuilder $page Page builder instance.
-	 * @return void
-	 */
-	public function add_page( PageBuilder $page ): void {
-		$this->pages[ $page->get_id() ] = $page;
-	}
 
 	/**
 	 * Register all pages with WordPress.
@@ -38,27 +22,26 @@ class PageManager {
 	 * @return void
 	 */
 	public function register_all(): void {
-		// First, populate our internal pages array from the registry
+		// Get the registry instance to retrieve all pages
 		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
-		$registry_pages = $registry->get_pages();
+		$all_pages_by_plugin = $registry->get_pages();
 
-		// Update our internal pages array with the registry pages
-		// The registry now returns pages grouped by plugin, so we need to flatten the array
-		if ( isset( $registry_pages[ key( $registry_pages ) ] ) ) {
-			// If the first element is an array, it means we have grouped pages by plugin
-			$flattened_pages = [];
-			foreach ( $registry_pages as $plugin_pages ) {
-				if ( is_array( $plugin_pages ) ) {
-					$flattened_pages = array_merge( $flattened_pages, $plugin_pages );
-				}
-			}
-			$this->pages = array_merge( $this->pages, $flattened_pages );
-		} else {
-			// If not grouped, merge directly
-			$this->pages = array_merge( $this->pages, $registry_pages );
+		// Process pages by plugin to maintain isolation
+		foreach ( $all_pages_by_plugin as $plugin_slug => $pages ) {
+			$this->register_pages_for_plugin( $plugin_slug, $pages );
 		}
+	}
 
-		foreach ( $this->pages as $page ) {
+	/**
+	 * Register pages for a specific plugin.
+	 *
+	 * @param string $plugin_slug The plugin slug.
+	 * @param array<string, \WPMoo\Page\Builders\PageBuilder> $pages The pages to register.
+	 * @return void
+	 * @throws \Exception If a page registration fails.
+	 */
+	private function register_pages_for_plugin( string $plugin_slug, array $pages ): void {
+		foreach ( $pages as $page ) {
 			// Make sure page registration doesn't fail the entire process
 			try {
 				$this->register_page( $page );

@@ -31,14 +31,45 @@ class Moo {
 				$file = $call['file'];
 
 				// Check if the file is part of a plugin (not core framework)
-				if ( strpos( $file, '/wp-content/plugins/' ) !== false &&
-					! str_contains( $file, '/wpmoo-org/wpmoo/' ) ) {
+				if ( strpos( $file, '/wp-content/plugins/' ) !== false ) {
+					// Exclude the framework's own files
+					if ( str_contains( $file, '/wpmoo-org/wpmoo/' ) ) {
+						continue;
+					}
 
 					// Extract plugin directory name from the path
 					$plugin_path = explode( '/wp-content/plugins/', $file )[1];
 					$plugin_dir = explode( '/', $plugin_path )[0];
 
+					// Handle vendor directories in case of Composer dependencies
+					// Check if this is a WPMoo-based plugin using the framework as a dependency
+					if ( $plugin_dir === 'vendor' && str_contains( $file, '/wpmoo/wpmoo/' ) ) {
+						// Extract the full path relative to plugins directory
+						$relative_path = str_replace( '/wp-content/plugins/', '', $file );
+						$parts = explode( '/', $relative_path );
+
+						// Find the vendor directory and get the parent plugin
+						$vendor_index = array_search( 'vendor', $parts );
+						if ( $vendor_index !== false && $vendor_index > 0 ) {
+							// The plugin directory is the one before the vendor directory
+							return $parts[ $vendor_index - 1 ];
+						}
+					}
+
 					return $plugin_dir;
+				}
+			}
+		}
+
+		// If we can't determine from the call stack, try to get it from Bootstrap instances
+		$bootstrap = \WPMoo\WordPress\Bootstrap::instance();
+		$instances = $bootstrap->get_instances();
+
+		if ( ! empty( $instances ) ) {
+			// Return the most recently registered instance that isn't the framework itself
+			foreach ( array_reverse( $instances ) as $slug => $instance ) {
+				if ( $slug !== 'wpmoo' ) {
+					return $slug;
 				}
 			}
 		}
@@ -73,5 +104,20 @@ class Moo {
 		$tabs = Layout::tabs( $id );
 		FrameworkManager::instance()->add_layout( $tabs, $plugin_slug );
 		return $tabs;
+	}
+
+	/**
+	 * Create a field.
+	 *
+	 * @param string $type Field type.
+	 * @param string $id Field ID.
+	 * @param string|null $plugin_slug Plugin slug to register the field under. If null, auto-detect.
+	 * @return \WPMoo\Field\Interfaces\FieldInterface
+	 */
+	public static function field( string $type, string $id, ?string $plugin_slug = null ) {
+		$plugin_slug = $plugin_slug ?? self::get_calling_plugin_slug();
+		$field = Field::{$type}( $id );
+		FrameworkManager::instance()->add_field( $field, $plugin_slug );
+		return $field;
 	}
 }

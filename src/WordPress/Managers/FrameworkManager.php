@@ -31,6 +31,13 @@ class FrameworkManager {
 	private array $layouts = [];
 
 	/**
+	 * Registered fields by plugin.
+	 *
+	 * @var array<string, array<string, \WPMoo\Field\Interfaces\FieldInterface>>
+	 */
+	private array $fields = [];
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var ?self
@@ -228,6 +235,70 @@ class FrameworkManager {
 	 */
 	public function get_layouts_by_plugin( string $plugin_slug ): array {
 		return $this->layouts[ $plugin_slug ] ?? [];
+	}
+
+	/**
+	 * Add a field to the registry.
+	 *
+	 * @param \WPMoo\Field\Interfaces\FieldInterface $field Field instance.
+	 * @param string|null $plugin_slug Plugin slug to register the field under.
+	 * @return void
+	 */
+	public function add_field( $field, ?string $plugin_slug = null ): void {
+		$plugin_slug = $plugin_slug ?? $this->get_current_plugin_slug();
+
+		if ( ! isset( $this->fields[ $plugin_slug ] ) ) {
+			$this->fields[ $plugin_slug ] = [];
+		}
+
+		$this->fields[ $plugin_slug ][ $field->get_id() ] = $field;
+	}
+
+	/**
+	 * Get a field by ID.
+	 *
+	 * @param string $id Field ID.
+	 * @param string|null $plugin_slug Plugin slug to search within.
+	 * @return \WPMoo\Field\Interfaces\FieldInterface|null
+	 */
+	public function get_field( string $id, ?string $plugin_slug = null ) {
+		if ( $plugin_slug ) {
+			return $this->fields[ $plugin_slug ][ $id ] ?? null;
+		}
+
+		// Search across all plugins if no specific plugin specified
+		foreach ( $this->fields as $plugin_fields ) {
+			if ( isset( $plugin_fields[ $id ] ) ) {
+				return $plugin_fields[ $id ];
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get all fields.
+	 *
+	 * @param string|null $plugin_slug Plugin slug to get fields from, or null for all.
+	 * @return array<string, \WPMoo\Field\Interfaces\FieldInterface>|array<string, array<string, \WPMoo\Field\Interfaces\FieldInterface>>
+	 */
+	public function get_fields( ?string $plugin_slug = null ) {
+		if ( $plugin_slug ) {
+			return $this->fields[ $plugin_slug ] ?? [];
+		}
+
+		// Return all fields grouped by plugin
+		return $this->fields;
+	}
+
+	/**
+	 * Get all fields for a specific plugin.
+	 *
+	 * @param string $plugin_slug Plugin slug to get fields for.
+	 * @return array<string, \WPMoo\Field\Interfaces\FieldInterface>
+	 */
+	public function get_fields_by_plugin( string $plugin_slug ): array {
+		return $this->fields[ $plugin_slug ] ?? [];
 	}
 
 	/**

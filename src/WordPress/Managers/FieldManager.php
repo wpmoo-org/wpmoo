@@ -18,19 +18,40 @@ class FieldManager {
 	 * @return void
 	 */
 	public function register_all(): void {
-		// Fields are typically registered through settings sections and fields
-		// when they're associated with specific pages or options
-		// This is where we would handle the registration of all fields
-		// based on how they're connected to pages through the registry
+		// Get the registry instance to retrieve all fields
+		$registry = FrameworkManager::instance();
+		$all_fields_by_plugin = $registry->get_fields();
+
+		// Process fields by plugin to maintain isolation
+		foreach ( $all_fields_by_plugin as $plugin_slug => $fields ) {
+			$this->register_fields_for_plugin( $plugin_slug, $fields );
+		}
+	}
+
+	/**
+	 * Register fields for a specific plugin.
+	 *
+	 * @param string $plugin_slug The plugin slug.
+	 * @param array<string, \WPMoo\Field\Interfaces\FieldInterface> $fields The fields to register.
+	 * @return void
+	 */
+	private function register_fields_for_plugin( string $plugin_slug, array $fields ): void {
+		// Registration logic for fields specific to this plugin
+		// This could involve connecting fields to specific pages, sections, or options
+		// Currently a placeholder - actual implementation will be added later
 	}
 
 	/**
 	 * Add a field to be registered.
 	 *
 	 * @param object $field Field instance.
+	 * @param string|null $plugin_slug Plugin slug to register the field under. If null, use default.
 	 * @return void
 	 */
-	public function add_field( $field ): void {
-		// Store field for later registration
+	public function add_field( $field, ?string $plugin_slug = null ): void {
+		// Fields are now added via the FrameworkManager
+		// This maintains compatibility with existing code if needed
+		$registry = FrameworkManager::instance();
+		$registry->add_field( $field, $plugin_slug );
 	}
 }

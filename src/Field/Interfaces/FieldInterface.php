@@ -32,4 +32,11 @@ interface FieldInterface {
 	 * @return self
 	 */
 	public function placeholder( string $placeholder );
+
+	/**
+	 * Get field ID.
+	 *
+	 * @return string Field ID.
+	 */
+	public function get_id(): string;
 }
