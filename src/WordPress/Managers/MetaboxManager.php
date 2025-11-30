@@ -18,8 +18,8 @@ class MetaboxManager {
 	 * @return void
 	 */
 	public function register_all(): void {
-		// This is where we would register all metaboxes with WordPress
-		// using the add_meta_box function based on registered metabox instances
+		// This is where we would register all metaboxes with WordPress.
+		// Using the add_meta_box function based on registered metabox instances.
 	}
 
 	/**
@@ -29,6 +29,6 @@ class MetaboxManager {
 	 * @return void
 	 */
 	public function add_metabox( $metabox ): void {
-		// Store metabox for later registration
+		// Store metabox for later registration.
 	}
 }

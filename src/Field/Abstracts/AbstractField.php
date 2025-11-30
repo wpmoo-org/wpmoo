@@ -46,7 +46,7 @@ abstract class AbstractField implements FieldInterface {
 	 */
 	public function __construct( string $id ) {
 		$this->id = $id;
-		$this->name = $id; // Default name to ID
+		$this->name = $id; // Default name to ID.
 	}
 
 	/**

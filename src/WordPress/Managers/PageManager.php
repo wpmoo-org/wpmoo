@@ -22,11 +22,11 @@ class PageManager {
 	 * @return void
 	 */
 	public function register_all(): void {
-		// Get the registry instance to retrieve all pages
+		// Get the registry instance to retrieve all pages.
 		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
 		$all_pages_by_plugin = $registry->get_pages();
 
-		// Process pages by plugin to maintain isolation
+		// Process pages by plugin to maintain isolation.
 		foreach ( $all_pages_by_plugin as $plugin_slug => $pages ) {
 			$this->register_pages_for_plugin( $plugin_slug, $pages );
 		}
@@ -42,7 +42,7 @@ class PageManager {
 	 */
 	private function register_pages_for_plugin( string $plugin_slug, array $pages ): void {
 		foreach ( $pages as $page ) {
-			// Make sure page registration doesn't fail the entire process
+			// Make sure page registration doesn't fail the entire process.
 			try {
 				$this->register_page( $page );
 			} catch ( \Exception $e ) {
@@ -58,7 +58,7 @@ class PageManager {
 	 * @return void
 	 */
 	private function register_page( PageBuilder $page ): void {
-		$self = $this;  // Capture $this context for closure
+		$self = $this;  // Capture $this context for closure.
 
 		if ( $page->get_parent_slug() ) {
 			add_submenu_page(
@@ -95,7 +95,7 @@ class PageManager {
 	private function render_page( PageBuilder $page ): void {
 		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
 
-		// Get layouts associated with this page
+		// Get layouts associated with this page.
 		$page_layouts = $registry->get_layouts_by_parent( $page->get_id() );
 
 		?>
@@ -107,11 +107,11 @@ class PageManager {
 
 			<form method="post" action="options.php">
 				<?php
-				// If there are layouts for this page, render them
+				// If there are layouts for this page, render them.
 				if ( ! empty( $page_layouts ) ) {
 					$this->render_layouts( $page_layouts );
 				} else {
-					// Fallback: render standard WordPress settings
+					// Fallback: render standard WordPress settings.
 					settings_fields( $page->get_menu_slug() );
 					do_settings_sections( $page->get_menu_slug() );
 					submit_button();
@@ -171,7 +171,7 @@ class PageManager {
 						 role="tabpanel"
 						 class="tab-pane <?php echo $index === 0 ? 'active' : ''; ?>">
 						<?php
-						// Render content for this tab
+						// Render content for this tab.
 						$this->render_content( $item['content'] );
 						?>
 					</div>
@@ -188,8 +188,8 @@ class PageManager {
 	 * @return void
 	 */
 	private function render_accordion( \WPMoo\Layout\Component\Accordion $accordion ): void {
-		// Placeholder for accordion rendering
-		// This would render the accordion structure similar to tabs
+		// Placeholder for accordion rendering.
+		// This would render the accordion structure similar to tabs.
 		echo '<!-- Accordion content to be implemented -->';
 	}
 
@@ -204,13 +204,13 @@ class PageManager {
 			return;
 		}
 
-		// For now, just render each item in the content array
+		// For now, just render each item in the content array.
 		// In the future, this would process fields, nested layouts, etc.
 		foreach ( $content as $item ) {
-			// If item is a field, render it
+			// If item is a field, render it.
 			if ( is_object( $item ) && method_exists( $item, 'get_id' ) ) {
-				// This is a field that needs to be rendered
-				// For now, we'll just show a placeholder
+				// This is a field that needs to be rendered.
+				// For now, we'll just show a placeholder.
 				echo '<div class="field-placeholder" data-field-id="' . esc_attr( $item->get_id() ) . '">';
 				if ( method_exists( $item, 'get_label' ) ) {
 					echo '<label>' . esc_html( $item->get_label() ) . '</label>';
@@ -218,7 +218,7 @@ class PageManager {
 				echo '<div class="field-content">Field: ' . esc_html( $item->get_id() ) . ' (to be implemented)</div>';
 				echo '</div>';
 			} elseif ( is_string( $item ) ) {
-				// This could be other content
+				// This could be other content.
 				echo wp_kses_post( $item );
 			}
 		}

@@ -18,11 +18,11 @@ class FieldManager {
 	 * @return void
 	 */
 	public function register_all(): void {
-		// Get the registry instance to retrieve all fields
+		// Get the registry instance to retrieve all fields.
 		$registry = FrameworkManager::instance();
 		$all_fields_by_plugin = $registry->get_fields();
 
-		// Process fields by plugin to maintain isolation
+		// Process fields by plugin to maintain isolation.
 		foreach ( $all_fields_by_plugin as $plugin_slug => $fields ) {
 			$this->register_fields_for_plugin( $plugin_slug, $fields );
 		}
@@ -36,9 +36,9 @@ class FieldManager {
 	 * @return void
 	 */
 	private function register_fields_for_plugin( string $plugin_slug, array $fields ): void {
-		// Registration logic for fields specific to this plugin
-		// This could involve connecting fields to specific pages, sections, or options
-		// Currently a placeholder - actual implementation will be added later
+		// Registration logic for fields specific to this plugin.
+		// This could involve connecting fields to specific pages, sections, or options.
+		// Currently a placeholder - actual implementation will be added later.
 	}
 
 	/**
@@ -49,8 +49,8 @@ class FieldManager {
 	 * @return void
 	 */
 	public function add_field( $field, ?string $plugin_slug = null ): void {
-		// Fields are now added via the FrameworkManager
-		// This maintains compatibility with existing code if needed
+		// Fields are now added via the FrameworkManager.
+		// This maintains compatibility with existing code if needed.
 		$registry = FrameworkManager::instance();
 		$registry->add_field( $field, $plugin_slug );
 	}

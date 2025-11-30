@@ -62,17 +62,17 @@ class FrameworkManager {
 	 * @return string The current plugin slug, defaults to 'wpmoo' if not determined.
 	 */
 	private function get_current_plugin_slug(): string {
-		// Get the current plugin slug from Bootstrap instances
+		// Get the current plugin slug from Bootstrap instances.
 		$bootstrap = \WPMoo\WordPress\Bootstrap::instance();
 		$instances = $bootstrap->get_instances();
 
 		if ( ! empty( $instances ) ) {
-			// Return the first instance's slug since we're in a WordPress hook context
+			// Return the first instance's slug since we're in a WordPress hook context.
 			$first_instance = reset( $instances );
 			return $first_instance['slug'];
 		}
 
-		// Default to 'wpmoo' if not determined
+		// Default to 'wpmoo' if not determined.
 		return 'wpmoo';
 	}
 
@@ -105,7 +105,7 @@ class FrameworkManager {
 			return $this->pages[ $plugin_slug ][ $id ] ?? null;
 		}
 
-		// Search across all plugins if no specific plugin specified
+		// Search across all plugins if no specific plugin specified.
 		foreach ( $this->pages as $plugin_pages ) {
 			if ( isset( $plugin_pages[ $id ] ) ) {
 				return $plugin_pages[ $id ];
@@ -126,7 +126,7 @@ class FrameworkManager {
 			return $this->pages[ $plugin_slug ] ?? [];
 		}
 
-		// Return all pages grouped by plugin
+		// Return all pages grouped by plugin.
 		return $this->pages;
 	}
 
@@ -159,7 +159,7 @@ class FrameworkManager {
 			return $this->layouts[ $plugin_slug ][ $id ] ?? null;
 		}
 
-		// Search across all plugins if no specific plugin specified
+		// Search across all plugins if no specific plugin specified.
 		foreach ( $this->layouts as $plugin_layouts ) {
 			if ( isset( $plugin_layouts[ $id ] ) ) {
 				return $plugin_layouts[ $id ];
@@ -180,7 +180,7 @@ class FrameworkManager {
 			return $this->layouts[ $plugin_slug ] ?? [];
 		}
 
-		// Return all layouts grouped by plugin
+		// Return all layouts grouped by plugin.
 		return $this->layouts;
 	}
 
@@ -195,7 +195,7 @@ class FrameworkManager {
 		$layouts = [];
 
 		if ( $plugin_slug ) {
-			// Search only in the specified plugin
+			// Search only in the specified plugin.
 			if ( isset( $this->layouts[ $plugin_slug ] ) ) {
 				foreach ( $this->layouts[ $plugin_slug ] as $layout ) {
 					if ( $layout->get_parent() === $parentId ) {
@@ -204,7 +204,7 @@ class FrameworkManager {
 				}
 			}
 		} else {
-			// Search across all plugins
+			// Search across all plugins.
 			foreach ( $this->layouts as $plugin_layouts ) {
 				foreach ( $plugin_layouts as $layout ) {
 					if ( $layout->get_parent() === $parentId ) {
@@ -266,7 +266,7 @@ class FrameworkManager {
 			return $this->fields[ $plugin_slug ][ $id ] ?? null;
 		}
 
-		// Search across all plugins if no specific plugin specified
+		// Search across all plugins if no specific plugin specified.
 		foreach ( $this->fields as $plugin_fields ) {
 			if ( isset( $plugin_fields[ $id ] ) ) {
 				return $plugin_fields[ $id ];
@@ -287,7 +287,7 @@ class FrameworkManager {
 			return $this->fields[ $plugin_slug ] ?? [];
 		}
 
-		// Return all fields grouped by plugin
+		// Return all fields grouped by plugin.
 		return $this->fields;
 	}
 

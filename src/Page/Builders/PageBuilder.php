@@ -80,7 +80,7 @@ class PageBuilder implements PageInterface {
 	public function __construct( string $id, string $title ) {
 		$this->id    = $id;
 		$this->title = $title;
-		$this->menu_slug = $id; // Default to ID if menu slug not specified
+		$this->menu_slug = $id; // Default to ID if menu slug is not specified.
 	}
 
 	/**

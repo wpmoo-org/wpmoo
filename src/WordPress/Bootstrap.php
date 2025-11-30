@@ -81,13 +81,13 @@ class Bootstrap {
 	 * @return void
 	 */
 	private function register_bindings(): void {
-		// Register core services
+		// Register core services.
 		$this->container->singleton( \WPMoo\WordPress\Managers\FieldManager::class );
 		$this->container->singleton( \WPMoo\WordPress\Managers\PageManager::class );
 		$this->container->singleton( \WPMoo\WordPress\Managers\MetaboxManager::class );
 		$this->container->singleton( \WPMoo\WordPress\Managers\LayoutManager::class );
 
-		// Bind aliases
+		// Bind aliases.
 		$this->container->bind( 'field_manager', \WPMoo\WordPress\Managers\FieldManager::class );
 		$this->container->bind( 'page_manager', \WPMoo\WordPress\Managers\PageManager::class );
 		$this->container->bind( 'metabox_manager', \WPMoo\WordPress\Managers\MetaboxManager::class );
@@ -102,25 +102,25 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function boot( string $plugin_file, string $plugin_slug ): void {
-		// Check if this specific plugin instance has already been booted
+		// Check if this specific plugin instance has already been booted.
 		if ( isset( $this->instances[ $plugin_slug ] ) ) {
 			return;
 		}
 
-		// Register this plugin instance
+		// Register this plugin instance.
 		$this->instances[ $plugin_slug ] = [
 			'file' => $plugin_file,
 			'slug' => $plugin_slug,
 			'is_main_instance' => ! $this->booted,
 		];
 
-		// Only register the main WordPress hooks once, regardless of how many plugins use the framework
+		// Only register the main WordPress hooks once, regardless of how many plugins use the framework.
 		if ( ! $this->booted ) {
 			$this->register_hooks();
 			$this->booted = true;
 		}
 
-		// Initialize this specific plugin instance
+		// Initialize this specific plugin instance.
 		$this->init_plugin_instance( $plugin_slug );
 	}
 
@@ -131,7 +131,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	private function init_plugin_instance( string $plugin_slug ): void {
-		// Load sample configurations only when loaded as plugin directly (not as dependency)
+		// Load sample configurations only when loaded as plugin directly (not as dependency).
 		if ( $this->is_directly_loaded() && $plugin_slug === 'wpmoo' ) {
 			add_action( 'init', [ $this, 'load_samples' ], 5 );
 		}
@@ -143,14 +143,14 @@ class Bootstrap {
 	 * @return void
 	 */
 	private function register_hooks(): void {
-		// Register all domain handlers - only once regardless of how many plugins use the framework
+		// Register all domain handlers - only once regardless of how many plugins use the framework.
 		add_action( 'init', [ $this, 'register_fields' ], 10 );
 		add_action( 'init', [ $this, 'register_layouts' ], 15 );
 		add_action( 'admin_menu', [ $this, 'register_pages' ], 10 );
 		add_action( 'add_meta_boxes', [ $this, 'register_metaboxes' ], 10 );
 
-		// Load textdomain for the framework if loaded as plugin
-		// Commenting out to prevent early loading warnings until we find the source of the problem
+		// Load textdomain for the framework if loaded as plugin.
+		// Commenting out to prevent early loading warnings until we find the source of the problem.
 		// if ( defined( 'WPMOO_PLUGIN_LOADED' ) && WPMOO_PLUGIN_LOADED ) {
 		//  add_action( 'init', [ $this, 'load_textdomain' ], 2 );
 		// }
@@ -209,7 +209,7 @@ class Bootstrap {
 			if ( is_array( $files ) && ! empty( $files ) ) {
 				foreach ( $files as $file ) {
 					if ( is_readable( $file ) ) {
-						// Add error handling to make sure sample loading doesn't break everything
+						// Add error handling to make sure sample loading doesn't break everything.
 						try {
 							require_once $file;
 						} catch ( \Exception $e ) {
@@ -225,13 +225,13 @@ class Bootstrap {
 	 * Load textdomain for the WPMoo framework.
 	 */
 	public function load_textdomain(): void {
-		// Get the directory of the main framework file
+		// Get the directory of the main framework file.
 		$framework_file = WPMOO_FILE;
 		$plugin_dir = dirname( $framework_file );
 
-		// Load the textdomain for the framework
-		// This is intentionally commented out to prevent early loading errors
-		// Should only be loaded via init hook which is handled by the register_hooks method when appropriate
+		// Load the textdomain for the framework.
+		// This is intentionally commented out to prevent early loading errors.
+		// Should only be loaded via init hook which is handled by the register_hooks method when appropriate.
 	}
 
 	/**
@@ -258,7 +258,7 @@ class Bootstrap {
 	 * @return bool True if loaded directly as a plugin, false otherwise.
 	 */
 	private function is_directly_loaded(): bool {
-		// This check verifies if the framework is running as a plugin rather than a dependency
+		// This check verifies if the framework is running as a plugin rather than a dependency.
 		if ( ! defined( 'WPMOO_PLUGIN_LOADED' ) ) {
 			return false;
 		}

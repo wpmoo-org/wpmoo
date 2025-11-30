@@ -2,9 +2,9 @@
 
 namespace WPMoo;
 
-use WPMoo\Page\Page;        // Main page facade
-use WPMoo\Layout\Layout;    // Main layout facade
-use WPMoo\Field\Field;      // Main field facade
+use WPMoo\Page\Page;        // Main page facade.
+use WPMoo\Layout\Layout;    // Main layout facade.
+use WPMoo\Field\Field;      // Main field facade.
 use WPMoo\WordPress\Managers\FrameworkManager;
 
 /**
@@ -25,33 +25,33 @@ class Moo {
 	private static function get_calling_plugin_slug(): string {
 		$trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 10 );
 
-		// Loop through the call stack to find the first plugin file
+		// Loop through the call stack to find the first plugin file.
 		foreach ( $trace as $call ) {
 			if ( isset( $call['file'] ) ) {
 				$file = $call['file'];
 
-				// Check if the file is part of a plugin (not core framework)
+				// Check if the file is part of a plugin (not core framework).
 				if ( strpos( $file, '/wp-content/plugins/' ) !== false ) {
-					// Exclude the framework's own files
+					// Exclude the framework's own files.
 					if ( str_contains( $file, '/wpmoo-org/wpmoo/' ) ) {
 						continue;
 					}
 
-					// Extract plugin directory name from the path
+					// Extract plugin directory name from the path.
 					$plugin_path = explode( '/wp-content/plugins/', $file )[1];
 					$plugin_dir = explode( '/', $plugin_path )[0];
 
-					// Handle vendor directories in case of Composer dependencies
-					// Check if this is a WPMoo-based plugin using the framework as a dependency
+					// Handle vendor directories in case of Composer dependencies.
+					// Check if this is a WPMoo-based plugin using the framework as a dependency.
 					if ( $plugin_dir === 'vendor' && str_contains( $file, '/wpmoo/wpmoo/' ) ) {
-						// Extract the full path relative to plugins directory
+						// Extract the full path relative to plugins directory.
 						$relative_path = str_replace( '/wp-content/plugins/', '', $file );
 						$parts = explode( '/', $relative_path );
 
-						// Find the vendor directory and get the parent plugin
+						// Find the vendor directory and get the parent plugin.
 						$vendor_index = array_search( 'vendor', $parts );
 						if ( $vendor_index !== false && $vendor_index > 0 ) {
-							// The plugin directory is the one before the vendor directory
+							// The plugin directory is the one before the vendor directory.
 							return $parts[ $vendor_index - 1 ];
 						}
 					}
@@ -61,12 +61,12 @@ class Moo {
 			}
 		}
 
-		// If we can't determine from the call stack, try to get it from Bootstrap instances
+		// If we can't determine from the call stack, try to get it from Bootstrap instances.
 		$bootstrap = \WPMoo\WordPress\Bootstrap::instance();
 		$instances = $bootstrap->get_instances();
 
 		if ( ! empty( $instances ) ) {
-			// Return the most recently registered instance that isn't the framework itself
+			// Return the most recently registered instance that isn't the framework itself.
 			foreach ( array_reverse( $instances ) as $slug => $instance ) {
 				if ( $slug !== 'wpmoo' ) {
 					return $slug;
@@ -74,7 +74,7 @@ class Moo {
 			}
 		}
 
-		return 'wpmoo'; // Default fallback
+		return 'wpmoo'; // Default fallback.
 	}
 
 	/**
