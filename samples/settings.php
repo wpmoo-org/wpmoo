@@ -17,9 +17,9 @@ add_action(
 	'init',
 	function () {
 		// Create a settings page - plugin slug will be auto-detected
-		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'your-text-domain' ) )
+		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'wpmoo' ) )
 		->capability( 'manage_options' )
-		->description( __( 'Configure WPMoo Framework settings', 'your-text-domain' ) )
+		->description( __( 'Configure WPMoo Framework settings', 'wpmoo' ) )
 		->menu_slug( 'wpmoo-settings' )
 		->menu_position( 20 )
 		->menu_icon( 'dashicons-admin-generic' );
@@ -31,27 +31,27 @@ add_action(
 			[
 				[
 					'id' => 'general',
-					'title' => __( 'General Settings', 'your-text-domain' ),
+					'title' => __( 'General Settings', 'wpmoo' ),
 					'content' => [
 						Field::input( 'site_title' )
-							->label( __( 'Site Title', 'your-text-domain' ) )
-							->placeholder( __( 'Enter your site title', 'your-text-domain' ) ),
+							->label( __( 'Site Title', 'wpmoo' ) )
+							->placeholder( __( 'Enter your site title', 'wpmoo' ) ),
 						Field::textarea( 'site_description' )
-							->label( __( 'Site Description', 'your-text-domain' ) )
-							->placeholder( __( 'Enter site description', 'your-text-domain' ) ),
+							->label( __( 'Site Description', 'wpmoo' ) )
+							->placeholder( __( 'Enter site description', 'wpmoo' ) ),
 						Field::toggle( 'enable_cache' )
-							->label( __( 'Enable Caching', 'your-text-domain' ) ),
+							->label( __( 'Enable Caching', 'wpmoo' ) ),
 					],
 				],
 				[
 					'id' => 'advanced',
-					'title' => __( 'Advanced Settings', 'your-text-domain' ),
+					'title' => __( 'Advanced Settings', 'wpmoo' ),
 					'content' => [
 						Field::input( 'cache_duration' )
-							->label( __( 'Cache Duration (seconds)', 'your-text-domain' ) )
-							->placeholder( __( 'Enter cache duration', 'your-text-domain' ) ),
+							->label( __( 'Cache Duration (seconds)', 'wpmoo' ) )
+							->placeholder( __( 'Enter cache duration', 'wpmoo' ) ),
 						Field::toggle( 'enable_debug' )
-							->label( __( 'Enable Debug Mode', 'your-text-domain' ) ),
+							->label( __( 'Enable Debug Mode', 'wpmoo' ) ),
 					],
 				],
 			]
