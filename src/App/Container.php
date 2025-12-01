@@ -1,10 +1,4 @@
 <?php
-/**
- * Container class file.
- *
- * @package WPMoo
- * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
- */
 
 namespace WPMoo\App;
 
