@@ -43,18 +43,18 @@ class PageAssetEnqueuer {
 	 * Enqueue WPMoo assets.
 	 */
 	public function enqueue_assets(): void {
-		// Enqueue main WPMoo styles, dependent on PicoCSS styles.
+		// Enqueue main WPMoo styles.
 		wp_enqueue_style(
-			'wpm-main-styles',
-			WPMOO_URL . '/assets/css/wpmoo.css',
-			[ 'wpm-pico-styles' ], // Dependency
+			'wpmoo-styles',
+			WPMOO_URL . 'assets/css/wpmoo.css',
+			[],
 			WPMOO_VERSION
 		);
 
 		// Enqueue main WPMoo script.
 		wp_enqueue_script(
-			'wpm-main-script',
-			WPMOO_URL . '/assets/js/wpmoo.js',
+			'wpmoo-script',
+			WPMOO_URL . 'assets/js/wpmoo.js',
 			[ 'jquery' ], // Assuming jQuery as a common dependency
 			WPMOO_VERSION,
 			true // Load in footer

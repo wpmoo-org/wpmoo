@@ -108,6 +108,12 @@ function compileSass(options = {}) {
 }
 
 function styles() {
+  // 1. Get scoped Pico content first.
+  const picoContent = fs.readFileSync(paths.pico.scoped, "utf8");
+  const scopedPicoContent = picoContent
+    .replace(/\.pico/g, ".wpmoo")
+    .replace(/--pico-/g, "--wpmoo-");
+
   return src(paths.styles.entries, { allowEmpty: true })
     .pipe(sourcemaps.init())
     .pipe(
@@ -121,7 +127,7 @@ function styles() {
     .pipe(replaceText(/\/\*!([\s\S]*?)WPMoo UI bundle([\s\S]*?)\*\//g, ""))
     .pipe(cleanCSS())
 
-    /* Prepend attribution banner preserved after minify */
+    /* Prepend scoped Pico and attribution banner */
     .pipe(new Transform({
       objectMode: true,
       transform(file, enc, cb) {
@@ -134,8 +140,10 @@ function styles() {
           ` * Copyright ${year} - Licensed under MIT\n` +
           " * Contains portions of Pico CSS (MIT). See LICENSE-PICO.md.\n" +
           " */\n";
-        const css = file.contents.toString(enc || "utf8");
-        file.contents = Buffer.from(banner + css);
+        const mainCss = file.contents.toString(enc || "utf8");
+        // Prepend scoped Pico, then the main CSS
+        const finalCss = banner + scopedPicoContent + mainCss;
+        file.contents = Buffer.from(finalCss);
         cb(null, file);
       },
     }))
@@ -225,16 +233,6 @@ function renameTo(newBaseName) {
   });
 }
 
-/* Generate a Pico CSS variant scoped to .wpmoo */
-function picoScope() {
-  return src(paths.pico.scoped, { allowEmpty: true })
-    .pipe(replaceText(/\.pico/g, ".wpmoo"))
-    .pipe(replaceText(/--pico-/g, "--wpmoo-"))
-    .pipe(renameTo(paths.pico.outFile))
-    .pipe(dest(paths.pico.dest))
-    .pipe(browserSync.stream({ match: "**/*.css" }));
-}
-
 /* Clean destination to avoid stale copies of individual module files. */
 function scripts() {
   fs.rmSync(paths.scripts.dest, { recursive: true, force: true });
@@ -317,7 +315,6 @@ function serve() {
 
 
 exports.styles = styles;
-exports["pico:scope"] = picoScope;
 exports.watch = series(cleanOut, styles, scripts, copyLicenses, serve);
 exports.build = series(cleanOut, styles, scripts, copyLicenses);
 exports.default = series(cleanOut, styles, scripts, copyLicenses);
