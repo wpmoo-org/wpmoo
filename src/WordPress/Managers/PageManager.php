@@ -59,9 +59,10 @@ class PageManager {
 	 */
 	private function register_page( PageBuilder $page ): void {
 		$self = $this;  // Capture $this context for closure.
+		$hook_suffix = '';
 
 		if ( $page->get_parent_slug() ) {
-			add_submenu_page(
+			$hook_suffix = add_submenu_page(
 				$page->get_parent_slug(),
 				$page->get_title(),
 				$page->get_title(),
@@ -72,7 +73,7 @@ class PageManager {
 				}
 			);
 		} else {
-			add_menu_page(
+			$hook_suffix = add_menu_page(
 				$page->get_title(),
 				$page->get_title(),
 				$page->get_capability(),
@@ -83,6 +84,10 @@ class PageManager {
 				$page->get_menu_icon(),
 				$page->get_menu_position()
 			);
+		}
+
+		if ( $hook_suffix ) {
+			FrameworkManager::instance()->add_page_hook( $hook_suffix );
 		}
 	}
 

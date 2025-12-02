@@ -2,6 +2,8 @@
 
 namespace WPMoo\WordPress\AssetEnqueuers;
 
+use WPMoo\WordPress\Managers\FrameworkManager;
+
 /**
  * Enqueues PicoCSS and JS assets.
  *
@@ -40,12 +42,20 @@ class PageAssetEnqueuer {
 	}
 
 	/**
-	 * Enqueue WPMoo assets.
+	 * Enqueue WPMoo assets only on WPMoo admin pages.
+	 *
+	 * @param string $hook_suffix The hook suffix of the current admin page.
 	 */
-	public function enqueue_assets(): void {
+	public function enqueue_assets( string $hook_suffix ): void {
+		$wpm_pages = FrameworkManager::instance()->get_all_page_hooks();
+
+		if ( ! in_array( $hook_suffix, $wpm_pages, true ) ) {
+			return;
+		}
+
 		// Enqueue main WPMoo styles.
 		wp_enqueue_style(
-			'wpmoo-styles',
+			'wpm-main-styles',
 			WPMOO_URL . 'assets/css/wpmoo.css',
 			[],
 			WPMOO_VERSION
@@ -53,7 +63,7 @@ class PageAssetEnqueuer {
 
 		// Enqueue main WPMoo script.
 		wp_enqueue_script(
-			'wpmoo-script',
+			'wpm-main-script',
 			WPMOO_URL . 'assets/js/wpmoo.js',
 			[ 'jquery' ], // Assuming jQuery as a common dependency
 			WPMOO_VERSION,

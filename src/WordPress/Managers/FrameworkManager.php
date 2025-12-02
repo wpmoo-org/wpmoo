@@ -45,6 +45,13 @@ class FrameworkManager {
 	private array $fields = [];
 
 	/**
+	 * Registered page hooks.
+	 *
+	 * @var array<string>
+	 */
+	private array $page_hooks = [];
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var ?self
@@ -97,6 +104,27 @@ class FrameworkManager {
 		}
 
 		return $latest_stable_plugin;
+	}
+
+	/**
+	 * Add a page hook to the registry.
+	 *
+	 * @param string $hook The page hook suffix.
+	 * @return void
+	 */
+	public function add_page_hook( string $hook ): void {
+		if ( ! in_array( $hook, $this->page_hooks, true ) ) {
+			$this->page_hooks[] = $hook;
+		}
+	}
+
+	/**
+	 * Get all registered page hooks.
+	 *
+	 * @return array<string>
+	 */
+	public function get_all_page_hooks(): array {
+		return $this->page_hooks;
 	}
 
 	/**
