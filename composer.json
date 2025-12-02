@@ -1,0 +1,80 @@
+{
+  "name": "wpmoo/wpmoo",
+  "description": "WPMoo \u2014 WordPress Micro Object-Oriented Framework (PHP 7.4+)",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://wpmoo.org",
+  "authors": [
+    {
+      "name": "WPMoo",
+      "email": "hello@wpmoo.org",
+      "homepage": "https://wpmoo.org/"
+    }
+  ],
+  "keywords": [
+    "wordpress",
+    "wp-cli",
+    "framework",
+    "micro-framework",
+    "php",
+    "php7.4",
+    "php8.0",
+    "php8.1",
+    "php8.2",
+    "php8.3",
+    "oop",
+    "object-oriented"
+  ],
+  "support": {
+    "issues": "https://github.com/wpmoo/wpmoo/issues",
+    "source": "https://github.com/wpmoo/wpmoo/"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.1.x-dev"
+    }
+  },
+  "type": "wordpress-framework",
+  "require": {
+    "php": ">=7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "WPMoo\\": "src/",
+      "WPMoo\\Samples\\": "samples/"
+    }
+  },
+  "require-dev": {
+    "wpmoo/wpmoo-coding-standards": "dev-main",
+    "wpmoo/wpmoo-cli": "dev-dev",
+    "scssphp/scssphp": "^1.12",
+    "phpstan/phpstan": "^1.11",
+    "szepeviktor/phpstan-wordpress": "^1.3",
+    "phpunit/phpunit": "^9.6 || ^10.5"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "lint:php": "find . -path './vendor' -prune -o -path './dist' -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l",
+    "phpcs": "vendor/bin/phpcs -n --standard=phpcs.xml",
+    "phpcbf": "vendor/bin/phpcbf",
+    "phpstan": "vendor/bin/phpstan analyse --no-progress --memory-limit=1G",
+    "hooks:install": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit .githooks/pre-push",
+    "watch": "pnpm watch || yarn watch || npm run watch",
+    "setup-wrapper": "php vendor/wpmoo/wpmoo-cli/scripts/generate-moo-wrapper.php",
+    "post-install-cmd": [
+      "@setup-wrapper"
+    ],
+    "post-update-cmd": [
+      "@setup-wrapper"
+    ],
+    "check": [
+      "@lint:php",
+      "@phpcbf",
+      "@phpcs",
+      "@phpstan"
+    ]
+  }
+}

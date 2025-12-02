@@ -1,0 +1,6 @@
+@use "sass:map"; // use Sass map module
+
+/* WP Moo SCSS customizations */
+
+@use "config/config"; // load configuration
+@use "wpmoo/index"; // load WP Moo base styles

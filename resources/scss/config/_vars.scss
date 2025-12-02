@@ -1,0 +1,29 @@
+@use "settings";
+
+/* WPMoo CSS custom property defaults (scoped) */
+:where(.wpmoo) {
+  --wpmoo-theme-color: $theme-color;
+  --wpmoo-background-color: #fff;
+  --wpmoo-header-background-color: rgba(255, 255, 255, 0.9);
+  --wpmoo-header-spacing: 0.5rem;
+  --wpmoo-container-x: 2rem;
+  --wpmoo-container-max: 1280px;
+  --wpmoo-section-gap: 1rem;
+  --wpmoo-section-spacing: 1rem;
+  --wpmoo-field-gap: 1rem;
+  --wpmoo-spacing: 1rem;
+  --wpmoo-border: 1px solid rgba(0, 0, 0, 0.05);
+  --wpmoo-border-color: rgba(0, 0, 0, 0.08);
+  --wpmoo-border-radius: 0.375rem;
+  --wpmoo-transition-duration: 0.2s;
+  --wpmoo-transition-easing: ease;
+
+  /* Toggle (switch) sizing tokens */
+  --wpmoo-switch-height: 1.25em;
+  --wpmoo-switch-width: 2.25em;
+  --wpmoo-switch-knob-size: 0.85rem;
+  --wpmoo-switch-knob-offset: calc(
+    (var(--wpmoo-switch-height) - var(--wpmoo-switch-knob-size)) / 2
+  );
+  --wpmoo-switch-thumb-box-shadow: 0 0 0 0.0625rem rgba(0, 0, 0, 0.06);
+}

@@ -1,0 +1,20 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+    - resources/phpstan/phpstan-baseline.neon
+
+parameters:
+    level: 6
+    phpVersion: 70400
+    bootstrapFiles:
+        - resources/phpstan/stubs/phpstan-bootstrap.php
+    paths:
+        - src
+    excludePaths:
+        - vendor
+        - tests
+        - src/CLI
+        - dist
+    stubFiles:
+        - resources/phpstan/stubs/wpmoo-fields-field.stub.php
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
