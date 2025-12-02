@@ -23,6 +23,8 @@ class Moo {
 	 * @return string The slug of the plugin that called this method, or 'wpmoo' as fallback.
 	 */
 	private static function get_calling_plugin_slug(): string {
+
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 		$trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 10 );
 
 		// Loop through the call stack to find the first plugin file.

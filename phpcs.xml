@@ -25,6 +25,11 @@
     <rule ref="WordPress.Security.EscapeOutput"/>
     <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
 
+    <!-- Ignore debug_backtrace() warning in Moo.php as it's used for legitimate context detection. -->
+    <rule ref="WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace">
+        <exclude-pattern>src/Moo.php</exclude-pattern>
+    </rule>
+
     <rule ref="WordPress.WP.I18n">
         <exclude-pattern>*/samples/*</exclude-pattern>
         <properties>
