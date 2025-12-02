@@ -30,6 +30,6 @@ composer.lock
 .phpunit.result.cache
 
 # WPMoo generated assets
-src/assets/**/*.css
-src/assets/**/*.map
-src/assets/**/*.js
+assets/**/*.css
+assets/**/*.map
+assets/**/*.js
