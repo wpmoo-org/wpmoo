@@ -35,7 +35,7 @@ const paths = {
     base: ".",
   },
   pico: {
-    scoped: "vendor/pico/css/pico.conditional.css",
+    scoped: "node_modules/@picocss/pico/css/pico.conditional.css",
     dest: "assets",
     outFile: "pico-wpmoo.css",
   },
