@@ -44,8 +44,3 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 if ( class_exists( 'WPMoo\\WordPress\\Bootstrap' ) ) {
 	\WPMoo\WordPress\Bootstrap::initialize( __FILE__, 'wpmoo', WPMOO_VERSION );
 }
-
-// If this instance is the "winner" chosen by the loader, boot the framework.
-if ( defined( 'WPMOO_IS_LOADING_WINNER' ) ) {
-	\WPMoo\WordPress\Bootstrap::instance()->boot( __FILE__, 'wpmoo' );
-}

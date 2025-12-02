@@ -80,9 +80,8 @@ class Bootstrap {
 		$latest_stable_plugin = FrameworkManager::instance()->get_highest_version_plugin();
 
 		if ( $latest_stable_plugin ) {
-			// Define a constant that the winning file can check for.
-			define( 'WPMOO_IS_LOADING_WINNER', true );
-			require_once $latest_stable_plugin['path'];
+			// Now that we have the winner, boot the framework using its data.
+			self::instance()->boot( $latest_stable_plugin['path'], $latest_stable_plugin['slug'] );
 		}
 	}
 
