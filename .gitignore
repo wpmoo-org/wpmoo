@@ -33,3 +33,6 @@ composer.lock
 assets/**/*.css
 assets/**/*.map
 assets/**/*.js
+
+# WPMoo generated languages
+languages/

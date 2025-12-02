@@ -7,7 +7,7 @@ use WPMoo\Layout\Component\Tabs;
 use WPMoo\Layout\Component\Accordion;
 
 /**
- * Framework manager for handling cross-plugin component registration.
+ * Framework manager for handling cross-plugin component registration and version loading.
  *
  * @package WPMoo\WordPress\Managers
  * @since 0.1.0
@@ -16,6 +16,13 @@ use WPMoo\Layout\Component\Accordion;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
 class FrameworkManager {
+	/**
+	 * Registered plugins that use WPMoo.
+	 *
+	 * @var array<string, array{slug: string, version: string, path: string}>
+	 */
+	private array $plugins = [];
+
 	/**
 	 * Registered pages by plugin.
 	 *
@@ -57,35 +64,49 @@ class FrameworkManager {
 	}
 
 	/**
-	 * Get the current plugin slug.
+	 * Register a plugin that is using the WPMoo framework.
 	 *
-	 * @return string The current plugin slug, defaults to 'wpmoo' if not determined.
+	 * @param string $slug    The plugin's unique slug.
+	 * @param string $version The version of the WPMoo framework the plugin requires.
+	 * @param string $path    The full path to the plugin's main file or bootstrap file.
+	 * @return void
 	 */
-	private function get_current_plugin_slug(): string {
-		// Get the current plugin slug from Bootstrap instances.
-		$bootstrap = \WPMoo\WordPress\Bootstrap::instance();
-		$instances = $bootstrap->get_instances();
+	public function register_plugin( string $slug, string $version, string $path ): void {
+		$this->plugins[ $slug ] = [
+			'slug'    => $slug,
+			'version' => $version,
+			'path'    => $path,
+		];
+	}
 
-		if ( ! empty( $instances ) ) {
-			// Return the first instance's slug since we're in a WordPress hook context.
-			$first_instance = reset( $instances );
-			return $first_instance['slug'];
+	/**
+	 * Get the plugin with the highest version of the WPMoo framework.
+	 *
+	 * @return array{slug: string, version: string, path: string}|null The latest stable plugin.
+	 */
+	public function get_highest_version_plugin(): ?array {
+		if ( empty( $this->plugins ) ) {
+			return null;
 		}
 
-		// Default to 'wpmoo' if not determined.
-		return 'wpmoo';
+		$latest_stable_plugin = null;
+		foreach ( $this->plugins as $plugin ) {
+			if ( null === $latest_stable_plugin || version_compare( $plugin['version'], $latest_stable_plugin['version'], '>' ) ) {
+				$latest_stable_plugin = $plugin;
+			}
+		}
+
+		return $latest_stable_plugin;
 	}
 
 	/**
 	 * Add a page to the registry.
 	 *
 	 * @param PageBuilder $page Page builder instance.
-	 * @param string|null $plugin_slug Plugin slug to register the page under.
+	 * @param string $plugin_slug Plugin slug to register the page under.
 	 * @return void
 	 */
-	public function add_page( PageBuilder $page, ?string $plugin_slug = null ): void {
-		$plugin_slug = $plugin_slug ?? $this->get_current_plugin_slug();
-
+	public function add_page( PageBuilder $page, string $plugin_slug ): void {
 		if ( ! isset( $this->pages[ $plugin_slug ] ) ) {
 			$this->pages[ $plugin_slug ] = [];
 		}
@@ -134,12 +155,10 @@ class FrameworkManager {
 	 * Add a layout to the registry.
 	 *
 	 * @param Tabs|Accordion $layout Layout component instance.
-	 * @param string|null $plugin_slug Plugin slug to register the layout under.
+	 * @param string $plugin_slug Plugin slug to register the layout under.
 	 * @return void
 	 */
-	public function add_layout( $layout, ?string $plugin_slug = null ): void {
-		$plugin_slug = $plugin_slug ?? $this->get_current_plugin_slug();
-
+	public function add_layout( $layout, string $plugin_slug ): void {
 		if ( ! isset( $this->layouts[ $plugin_slug ] ) ) {
 			$this->layouts[ $plugin_slug ] = [];
 		}
@@ -241,12 +260,10 @@ class FrameworkManager {
 	 * Add a field to the registry.
 	 *
 	 * @param \WPMoo\Field\Interfaces\FieldInterface $field Field instance.
-	 * @param string|null $plugin_slug Plugin slug to register the field under.
+	 * @param string $plugin_slug Plugin slug to register the field under.
 	 * @return void
 	 */
-	public function add_field( $field, ?string $plugin_slug = null ): void {
-		$plugin_slug = $plugin_slug ?? $this->get_current_plugin_slug();
-
+	public function add_field( $field, string $plugin_slug ): void {
 		if ( ! isset( $this->fields[ $plugin_slug ] ) ) {
 			$this->fields[ $plugin_slug ] = [];
 		}

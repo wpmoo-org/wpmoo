@@ -61,19 +61,6 @@ class Moo {
 			}
 		}
 
-		// If we can't determine from the call stack, try to get it from Bootstrap instances.
-		$bootstrap = \WPMoo\WordPress\Bootstrap::instance();
-		$instances = $bootstrap->get_instances();
-
-		if ( ! empty( $instances ) ) {
-			// Return the most recently registered instance that isn't the framework itself.
-			foreach ( array_reverse( $instances ) as $slug => $instance ) {
-				if ( $slug !== 'wpmoo' ) {
-					return $slug;
-				}
-			}
-		}
-
 		return 'wpmoo'; // Default fallback.
 	}
 

@@ -7,6 +7,7 @@ use WPMoo\WordPress\Managers\FieldManager;
 use WPMoo\WordPress\Managers\PageManager;
 use WPMoo\WordPress\Managers\MetaboxManager;
 use WPMoo\WordPress\Managers\LayoutManager;
+use WPMoo\WordPress\Managers\FrameworkManager;
 
 /**
  * Plugin bootstrap handler.
@@ -40,11 +41,11 @@ class Bootstrap {
 	private bool $booted = false;
 
 	/**
-	 * List of plugin instances using WPMoo.
+	 * Flag to ensure the loader is hooked only once.
 	 *
-	 * @var array<string, array{file: string, slug: string, is_main_instance: bool}>
+	 * @var bool
 	 */
-	private array $instances = [];
+	private static bool $loader_initialized = false;
 
 	/**
 	 * Get singleton instance.
@@ -59,12 +60,30 @@ class Bootstrap {
 	}
 
 	/**
-	 * Check if the get_instances method exists (for debugging purposes).
-	 *
-	 * @return bool
+	 * Initializes the framework loader.
+	 * This method should be called by each plugin using the framework.
 	 */
-	public function has_get_instances_method(): bool {
-		return method_exists( $this, 'get_instances' );
+	public static function initialize( string $plugin_file, string $plugin_slug, string $version ): void {
+		FrameworkManager::instance()->register_plugin( $plugin_slug, $version, $plugin_file );
+
+		if ( ! self::$loader_initialized ) {
+			add_action( 'plugins_loaded', [ __CLASS__, 'boot_latest_stable' ], 9 );
+			self::$loader_initialized = true;
+		}
+	}
+
+	/**
+	 * Boots the latest stable version of the framework.
+	 * This method is hooked to 'plugins_loaded'.
+	 */
+	public static function boot_latest_stable(): void {
+		$latest_stable_plugin = FrameworkManager::instance()->get_highest_version_plugin();
+
+		if ( $latest_stable_plugin ) {
+			// Define a constant that the winning file can check for.
+			define( 'WPMOO_IS_LOADING_WINNER', true );
+			require_once $latest_stable_plugin['path'];
+		}
 	}
 
 	/**
@@ -82,16 +101,18 @@ class Bootstrap {
 	 */
 	private function register_bindings(): void {
 		// Register core services.
-		$this->container->singleton( \WPMoo\WordPress\Managers\FieldManager::class );
-		$this->container->singleton( \WPMoo\WordPress\Managers\PageManager::class );
-		$this->container->singleton( \WPMoo\WordPress\Managers\MetaboxManager::class );
-		$this->container->singleton( \WPMoo\WordPress\Managers\LayoutManager::class );
+		$this->container->singleton( FrameworkManager::class );
+		$this->container->singleton( FieldManager::class );
+		$this->container->singleton( PageManager::class );
+		$this->container->singleton( MetaboxManager::class );
+		$this->container->singleton( LayoutManager::class );
 
 		// Bind aliases.
-		$this->container->bind( 'field_manager', \WPMoo\WordPress\Managers\FieldManager::class );
-		$this->container->bind( 'page_manager', \WPMoo\WordPress\Managers\PageManager::class );
-		$this->container->bind( 'metabox_manager', \WPMoo\WordPress\Managers\MetaboxManager::class );
-		$this->container->bind( 'layout_manager', \WPMoo\WordPress\Managers\LayoutManager::class );
+		$this->container->bind( 'framework_manager', FrameworkManager::class );
+		$this->container->bind( 'field_manager', FieldManager::class );
+		$this->container->bind( 'page_manager', PageManager::class );
+		$this->container->bind( 'metabox_manager', MetaboxManager::class );
+		$this->container->bind( 'layout_manager', LayoutManager::class );
 	}
 
 	/**
@@ -102,23 +123,13 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function boot( string $plugin_file, string $plugin_slug ): void {
-		// Check if this specific plugin instance has already been booted.
-		if ( isset( $this->instances[ $plugin_slug ] ) ) {
+		if ( $this->booted ) {
 			return;
 		}
 
-		// Register this plugin instance.
-		$this->instances[ $plugin_slug ] = [
-			'file' => $plugin_file,
-			'slug' => $plugin_slug,
-			'is_main_instance' => ! $this->booted,
-		];
-
-		// Only register the main WordPress hooks once, regardless of how many plugins use the framework.
-		if ( ! $this->booted ) {
-			$this->register_hooks();
-			$this->booted = true;
-		}
+		// Only register the main WordPress hooks once, by the winning instance.
+		$this->register_hooks();
+		$this->booted = true;
 
 		// Initialize this specific plugin instance.
 		$this->init_plugin_instance( $plugin_slug );
@@ -151,12 +162,6 @@ class Bootstrap {
 
 		// Initialize asset enqueuer for pages.
 		\WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer::instance();
-
-		// Load textdomain for the framework if loaded as plugin.
-		// Commenting out to prevent early loading warnings until we find the source of the problem.
-		// if ( defined( 'WPMOO_PLUGIN_LOADED' ) && WPMOO_PLUGIN_LOADED ) {
-		//  add_action( 'init', [ $this, 'load_textdomain' ], 2 );
-		// }
 	}
 
 	/**
@@ -165,7 +170,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_fields(): void {
-		$this->container->resolve( \WPMoo\WordPress\Managers\FieldManager::class )->register_all();
+		$this->container->resolve( FieldManager::class )->register_all();
 	}
 
 	/**
@@ -174,7 +179,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_pages(): void {
-		$this->container->resolve( \WPMoo\WordPress\Managers\PageManager::class )->register_all();
+		$this->container->resolve( PageManager::class )->register_all();
 	}
 
 	/**
@@ -183,7 +188,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_metaboxes(): void {
-		$this->container->resolve( \WPMoo\WordPress\Managers\MetaboxManager::class )->register_all();
+		$this->container->resolve( MetaboxManager::class )->register_all();
 	}
 
 	/**
@@ -192,7 +197,7 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function register_layouts(): void {
-		$this->container->resolve( \WPMoo\WordPress\Managers\LayoutManager::class )->register_all();
+		$this->container->resolve( LayoutManager::class )->register_all();
 	}
 
 	/**
@@ -202,17 +207,16 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function load_samples(): void {
-		if ( ! defined( '\WPMOO_PATH' ) ) {
+		if ( ! defined( 'WPMOO_PATH' ) ) {
 			return;
 		}
 
-		$samples_dir = \WPMOO_PATH . '/samples';
+		$samples_dir = WPMOO_PATH . '/samples';
 		if ( is_dir( $samples_dir ) ) {
 			$files = glob( $samples_dir . '/*.php' );
 			if ( is_array( $files ) && ! empty( $files ) ) {
 				foreach ( $files as $file ) {
 					if ( is_readable( $file ) ) {
-						// Add error handling to make sure sample loading doesn't break everything.
 						try {
 							require_once $file;
 						} catch ( \Exception $e ) {
@@ -225,19 +229,6 @@ class Bootstrap {
 	}
 
 	/**
-	 * Load textdomain for the WPMoo framework.
-	 */
-	public function load_textdomain(): void {
-		// Get the directory of the main framework file.
-		$framework_file = WPMOO_FILE;
-		$plugin_dir = dirname( $framework_file );
-
-		// Load the textdomain for the framework.
-		// This is intentionally commented out to prevent early loading errors.
-		// Should only be loaded via init hook which is handled by the register_hooks method when appropriate.
-	}
-
-	/**
 	 * Get the dependency injection container.
 	 *
 	 * @return Container DI container instance.
@@ -247,21 +238,11 @@ class Bootstrap {
 	}
 
 	/**
-	 * Get the list of plugin instances using WPMoo.
-	 *
-	 * @return array<string, array{file: string, slug: string, is_main_instance: bool}> List of plugin instances.
-	 */
-	public function get_instances(): array {
-		return $this->instances;
-	}
-
-	/**
 	 * Check if the framework is loaded directly as a plugin (not as a dependency).
 	 *
 	 * @return bool True if loaded directly as a plugin, false otherwise.
 	 */
 	private function is_directly_loaded(): bool {
-		// This check verifies if the framework is running as a plugin rather than a dependency.
 		if ( ! defined( 'WPMOO_PLUGIN_LOADED' ) ) {
 			return false;
 		}
