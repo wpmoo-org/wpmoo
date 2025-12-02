@@ -5,7 +5,7 @@
  * Description: A Simple and Lightweight WordPress Option Framework for Themes and Plugins.
  * Author: WPMoo
  * Author URI: https://wpmoo.org
- * Version: 0.1.1
+ * Version: 0.1.0
  * Text Domain: wpmoo
  * Domain Path: /languages
  * License: GPL-2.0-or-later
