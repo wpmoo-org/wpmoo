@@ -29,6 +29,11 @@ if ( ! defined( 'WPMOO_URL' ) ) {
 	define( 'WPMOO_URL', plugin_dir_url( __FILE__ ) );
 }
 
+// Define that the framework is loaded directly as a plugin.
+if ( ! defined( 'WPMOO_PLUGIN_LOADED' ) ) {
+	define( 'WPMOO_PLUGIN_LOADED', true );
+}
+
 // Load the Composer autoloader to make the Bootstrap class available.
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
