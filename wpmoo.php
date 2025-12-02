@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
-// 1. Define framework constants.
+// Define framework constants required for registration and asset loading.
 if ( ! defined( 'WPMOO_VERSION' ) ) {
 	define( 'WPMOO_VERSION', '0.1.0' );
 }
@@ -29,23 +29,18 @@ if ( ! defined( 'WPMOO_URL' ) ) {
 	define( 'WPMOO_URL', plugin_dir_url( __FILE__ ) );
 }
 
-// 2. Load Composer's autoloader.
+// Load the Composer autoloader to make the Bootstrap class available.
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
 }
 
-// 3. Define that the framework is loaded directly as a plugin.
-if ( ! defined( 'WPMOO_PLUGIN_LOADED' ) ) {
-	define( 'WPMOO_PLUGIN_LOADED', true );
-}
-
-// 4. Register this plugin with the WPMoo loader.
+// Register this plugin with the WPMoo loader.
 // The loader will decide which version of the framework to actually boot on the 'plugins_loaded' hook.
 if ( class_exists( 'WPMoo\\WordPress\\Bootstrap' ) ) {
 	\WPMoo\WordPress\Bootstrap::initialize( __FILE__, 'wpmoo', WPMOO_VERSION );
 }
 
-// 4. If this instance is the "winner" chosen by the loader, boot the framework.
+// If this instance is the "winner" chosen by the loader, boot the framework.
 if ( defined( 'WPMOO_IS_LOADING_WINNER' ) ) {
 	\WPMoo\WordPress\Bootstrap::instance()->boot( __FILE__, 'wpmoo' );
 }
