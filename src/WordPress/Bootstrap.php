@@ -149,6 +149,9 @@ class Bootstrap {
 		add_action( 'admin_menu', [ $this, 'register_pages' ], 10 );
 		add_action( 'add_meta_boxes', [ $this, 'register_metaboxes' ], 10 );
 
+		// Initialize asset enqueuer for pages.
+		\WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer::instance();
+
 		// Load textdomain for the framework if loaded as plugin.
 		// Commenting out to prevent early loading warnings until we find the source of the problem.
 		// if ( defined( 'WPMOO_PLUGIN_LOADED' ) && WPMOO_PLUGIN_LOADED ) {

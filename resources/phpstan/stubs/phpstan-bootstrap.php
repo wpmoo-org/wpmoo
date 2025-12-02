@@ -15,3 +15,5 @@
 define( 'WPMOO_PATH', '' );
 define( 'WPMOO_FILE', '' );
 define( 'WPMOO_PLUGIN_LOADED', false );
+define( 'WPMOO_URL', '' );
+define( 'WPMOO_VERSION', '' );
