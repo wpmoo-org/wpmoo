@@ -21,14 +21,14 @@ const paths = {
       "resources/scss/wpmoo.scss", // Main WPMoo scoped styles
     ],
     src: "resources/scss/**/*.scss",
-    dest: "src/assets/css",
+    dest: "assets/css",
     bridgeOut: "wpmoo.bridge.css",
     finalOut: "wpmoo.css",
   },
   scripts: {
     entry: "resources/js/wpmoo.js",
     watch: "resources/js/**/*.js",
-    dest: "src/assets/js",
+    dest: "assets/js",
   },
   html: {
     src: "/*.html",
@@ -36,7 +36,7 @@ const paths = {
   },
   pico: {
     scoped: "vendor/pico/css/pico.conditional.css",
-    dest: "src/assets",
+    dest: "assets",
     outFile: "pico-wpmoo.css",
   },
 };
