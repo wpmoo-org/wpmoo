@@ -18,29 +18,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	wp_die();
 }
 
-// Define framework constants required for registration and asset loading.
-if ( ! defined( 'WPMOO_VERSION' ) ) {
-	define( 'WPMOO_VERSION', '0.1.0' );
-}
-if ( ! defined( 'WPMOO_PATH' ) ) {
-	define( 'WPMOO_PATH', __DIR__ );
-}
-if ( ! defined( 'WPMOO_URL' ) ) {
-	define( 'WPMOO_URL', plugin_dir_url( __FILE__ ) );
-}
-
-// Define that the framework is loaded directly as a plugin.
-if ( ! defined( 'WPMOO_PLUGIN_LOADED' ) ) {
-	define( 'WPMOO_PLUGIN_LOADED', true );
-}
-
-// Load the Composer autoloader to make the Bootstrap class available.
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-	require_once __DIR__ . '/vendor/autoload.php';
-}
-
-// Register this plugin with the WPMoo loader.
-// The loader will decide which version of the framework to actually boot on the 'plugins_loaded' hook.
-if ( class_exists( 'WPMoo\\WordPress\\Bootstrap' ) ) {
-	\WPMoo\WordPress\Bootstrap::initialize( __FILE__, 'wpmoo', WPMOO_VERSION );
-}
+/**
+ * Load the WPMoo framework bootstrap.
+ *
+ * This file is responsible for setting up constants, autoloading,
+ * and initializing the framework.
+ */
+require_once __DIR__ . '/src/WordPress/boot.php';
