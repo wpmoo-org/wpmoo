@@ -1,0 +1,9 @@
+project:
+  name: 'WPMoo Starter'
+  namespace: 'WPMooStarter'
+  text_domain: 'wpmoo-starter'
+
+localization:
+  team: 'WPMoo Team <hello@wpmoo.org>'
+  translator: 'WPMoo <hello@wpmoo.org>'
+  bug_reports: 'https://github.com/wpmoo/wpmoo-starter/issues'
