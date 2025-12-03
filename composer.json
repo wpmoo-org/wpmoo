@@ -43,6 +43,15 @@
       "WPMoo\\Samples\\": "samples/"
     }
   },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../wpmoo-cli",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
   "require-dev": {
     "wpmoo/wpmoo-coding-standards": "dev-main",
     "wpmoo/wpmoo-cli": "dev-dev",
