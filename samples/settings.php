@@ -17,9 +17,9 @@ add_action(
 	'init',
 	function () {
 		// Create a settings page - plugin slug will be auto-detected
-		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'wpmoo' ) )
+		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'wpmoo-samples' ) )
 		->capability( 'manage_options' )
-		->description( __( 'Configure WPMoo Framework settings', 'wpmoo' ) )
+		->description( __( 'Configure WPMoo Framework settings', 'wpmoo-samples' ) )
 		->menu_slug( 'wpmoo-settings' )
 		->menu_position( 20 )
 		->menu_icon( 'dashicons-admin-generic' );
@@ -31,27 +31,27 @@ add_action(
 			[
 				[
 					'id' => 'general',
-					'title' => __( 'General Settings', 'wpmoo' ),
+					'title' => __( 'General Settings', 'wpmoo-samples' ),
 					'content' => [
 						Field::input( 'site_title' )
-							->label( __( 'Site Title', 'wpmoo' ) )
-							->placeholder( __( 'Enter your site title', 'wpmoo' ) ),
+							->label( __( 'Site Title', 'wpmoo-samples' ) )
+							->placeholder( __( 'Enter your site title', 'wpmoo-samples' ) ),
 						Field::textarea( 'site_description' )
-							->label( __( 'Site Description', 'wpmoo' ) )
-							->placeholder( __( 'Enter site description', 'wpmoo' ) ),
+							->label( __( 'Site Description', 'wpmoo-samples' ) )
+							->placeholder( __( 'Enter site description', 'wpmoo-samples' ) ),
 						Field::toggle( 'enable_cache' )
-							->label( __( 'Enable Caching', 'wpmoo' ) ),
+							->label( __( 'Enable Caching', 'wpmoo-samples' ) ),
 					],
 				],
 				[
 					'id' => 'advanced',
-					'title' => __( 'Advanced Settings', 'wpmoo' ),
+					'title' => __( 'Advanced Settings', 'wpmoo-samples' ),
 					'content' => [
 						Field::input( 'cache_duration' )
-							->label( __( 'Cache Duration (seconds)', 'wpmoo' ) )
-							->placeholder( __( 'Enter cache duration', 'wpmoo' ) ),
+							->label( __( 'Cache Duration (seconds)', 'wpmoo-samples' ) )
+							->placeholder( __( 'Enter cache duration', 'wpmoo-samples' ) ),
 						Field::toggle( 'enable_debug' )
-							->label( __( 'Enable Debug Mode', 'wpmoo' ) ),
+							->label( __( 'Enable Debug Mode', 'wpmoo-samples' ) ),
 					],
 				],
 			]
