@@ -25,6 +25,7 @@ pnpm-lock.yaml
 composer.lock
 
 # Ignore temporary files
+.wpmoo-temp/
 *.tmp
 
 # PHPUnit cache
