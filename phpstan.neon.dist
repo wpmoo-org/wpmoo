@@ -16,5 +16,5 @@ parameters:
         - dist
     stubFiles:
         - resources/phpstan/stubs/wpmoo-fields-field.stub.php
-    reportUnmatchedIgnoredErrors: false
+    reportUnmatchedIgnoredErrors: true
     treatPhpDocTypesAsCertain: false
