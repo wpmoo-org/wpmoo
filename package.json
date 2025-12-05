@@ -2,10 +2,5 @@
     "name": "wpmoo",
     "version": "0.1.1",
     "private": true,
-    "description": "Build tooling for WPMoo admin assets.",
-    "devDependencies": {
-        "sass": "^1.77.8",
-        "clean-css-cli": "^5.6.3",
-        "@picocss/pico": "^2.1.1"
-    }
+    "description": "Build tooling for WPMoo admin assets."
 }
