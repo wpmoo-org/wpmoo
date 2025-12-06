@@ -14,7 +14,7 @@ localization:
 dev:
   browser_sync:
     enabled: true
-    url: "http://wp.test"
+    url: "https://wp-dev.local"
     port: 3000
     open: true
     notify: false
