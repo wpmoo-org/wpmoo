@@ -210,7 +210,7 @@ class Bootstrap {
 			return;
 		}
 
-		$samples_dir = WPMOO_PATH . '/samples';
+		$samples_dir = WPMOO_PATH . '/src/samples';
 		if ( is_dir( $samples_dir ) ) {
 			$files = glob( $samples_dir . '/*.php' );
 			if ( is_array( $files ) && ! empty( $files ) ) {

@@ -40,7 +40,7 @@ if ( file_exists( WPMOO_PATH . '/vendor/autoload.php' ) ) {
 	spl_autoload_register(
 		function ( $class ) {
 			$prefix = 'WPMoo\\';
-			$base_dir = WPMOO_PATH . '/src/';
+			$base_dir = WPMOO_PATH . '/framework/';
 			$len = strlen( $prefix );
 			if ( strncmp( $class, $prefix, $len ) !== 0 ) {
 				  return;
