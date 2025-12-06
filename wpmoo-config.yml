@@ -10,3 +10,16 @@ localization:
   copyright_text: |
     # Copyright (C) 2025 WPMoo.org
     # This file is distributed under the GPL-2.0+.
+
+dev:
+  browser_sync:
+    enabled: true
+    url: "http://wp.test"
+    port: 3000
+    open: true
+    notify: false
+    files:
+      - "./**/*.php"
+      - "./assets/js/**/*.js"
+      - "./assets/css/**/*.css"
+  theme: "amber"
