@@ -24,4 +24,4 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This file is responsible for setting up constants, autoloading,
  * and initializing the framework.
  */
-require_once __DIR__ . '/src/WordPress/boot.php';
+require_once __DIR__ . '/framework/WordPress/boot.php';
