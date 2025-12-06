@@ -234,18 +234,19 @@ class FrameworkManager {
 	/**
 	 * Get layouts by parent ID.
 	 *
-	 * @param string $parentId Parent ID to filter by.
+	 $parent_id Parent ID to filter by.
+	 *
 	 * @param string|null $plugin_slug Plugin slug to search within.
 	 * @return array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>
 	 */
-	public function get_layouts_by_parent( string $parentId, ?string $plugin_slug = null ): array {
+	public function get_layouts_by_parent( string $parent_id, ?string $plugin_slug = null ): array {
 		$layouts = [];
 
 		if ( $plugin_slug ) {
 			// Search only in the specified plugin.
 			if ( isset( $this->layouts[ $plugin_slug ] ) ) {
 				foreach ( $this->layouts[ $plugin_slug ] as $layout ) {
-					if ( $layout->get_parent() === $parentId ) {
+					if ( $layout->get_parent() === $parent_id ) {
 						$layouts[ $layout->get_id() ] = $layout;
 					}
 				}
@@ -254,7 +255,7 @@ class FrameworkManager {
 			// Search across all plugins.
 			foreach ( $this->layouts as $plugin_layouts ) {
 				foreach ( $plugin_layouts as $layout ) {
-					if ( $layout->get_parent() === $parentId ) {
+					if ( $layout->get_parent() === $parent_id ) {
 						$layouts[ $layout->get_id() ] = $layout;
 					}
 				}

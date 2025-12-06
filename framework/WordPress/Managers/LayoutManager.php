@@ -65,8 +65,8 @@ class LayoutManager {
 		// Process layouts based on their parent/page relationship.
 		foreach ( $this->layouts as $layout ) {
 			// Link layouts to their parent pages based on parent property.
-			$parentId = $layout->get_parent();
-			if ( ! empty( $parentId ) ) {
+			$parent_id = $layout->get_parent();
+			if ( ! empty( $parent_id ) ) {
 				// This is where we'll implement the connection between layouts and pages.
 				// For now, just acknowledge the relationship.
 				continue; // Placeholder to avoid empty if error.

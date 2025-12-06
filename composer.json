@@ -39,8 +39,8 @@
   },
   "autoload": {
     "psr-4": {
-      "WPMoo\\": "src/",
-      "WPMoo\\Samples\\": "samples/"
+      "WPMoo\\": "framework/",
+      "WPMoo\\Samples\\": "src/samples/"
     }
   },
   "require-dev": {
