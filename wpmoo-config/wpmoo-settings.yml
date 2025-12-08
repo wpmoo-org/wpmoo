@@ -1,12 +1,12 @@
 project:
-  name: 'WPMoo Starter'
-  namespace: 'WPMooStarter'
-  text_domain: 'wpmoo-starter'
+  name: 'WPMoo'
+  namespace: 'WPMoo'
+  text_domain: 'wpmoo'
 
 localization:
   team: 'WPMoo Team <hello@wpmoo.org>'
   translator: 'WPMoo <hello@wpmoo.org>'
-  bug_reports: 'https://github.com/wpmoo/wpmoo-starter/issues'
+  bug_reports: 'https://github.com/wpmoo-org/wpmoo/issues'
   copyright_text: |
     # Copyright (C) 2025 WPMoo.org
     # This file is distributed under the GPL-2.0+.
