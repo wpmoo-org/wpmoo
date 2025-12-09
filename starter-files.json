@@ -1,0 +1,13 @@
+{
+  "files": [
+    ".editorconfig",
+    ".prettierrc.json",
+    ".stylelintrc.json",
+    "phpcs.xml",
+    ".gitattributes"
+  ],
+  "directories": [
+    ".githooks",
+    ".github"
+  ]
+}
