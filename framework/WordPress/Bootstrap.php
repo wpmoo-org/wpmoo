@@ -126,6 +126,13 @@ class Bootstrap {
 			return;
 		}
 
+		// Load framework textdomain.
+		load_plugin_textdomain(
+			'wpmoo',
+			false,
+			plugin_basename( dirname( __DIR__, 2 ) . '/languages' )
+		);
+
 		// Only register the main WordPress hooks once, by the winning instance.
 		$this->register_hooks();
 		$this->booted = true;
