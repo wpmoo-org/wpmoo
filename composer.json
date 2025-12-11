@@ -51,5 +51,14 @@
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
+  },
+  "scripts": {
+    "setup-wrapper": "php vendor/wpmoo/wpmoo-cli/scripts/generate-moo-wrapper.php",
+    "post-install-cmd": [
+      "@setup-wrapper"
+    ],
+    "post-update-cmd": [
+      "@setup-wrapper"
+    ]
   }
 }
