@@ -56,12 +56,15 @@ class PageAssetEnqueuer {
 		// Dynamically compute the WPMoo URL
 		$wpmoo_url = plugin_dir_url(dirname(dirname(__DIR__)) . '/wpmoo.php');
 
+		// Use a fallback version in case constants are not defined
+		$wpmoo_version = defined('WPMOO_VERSION') ? WPMOO_VERSION : '0.1.0';
+
 		// Enqueue main WPMoo styles.
 		wp_enqueue_style(
 			'wpm-main-styles',
 			$wpmoo_url . 'assets/css/wpmoo.css',
 			[],
-			WPMOO_VERSION
+			$wpmoo_version
 		);
 
 		// Enqueue main WPMoo script.
@@ -69,7 +72,7 @@ class PageAssetEnqueuer {
 			'wpm-main-script',
 			$wpmoo_url . 'assets/js/wpmoo.js',
 			[ 'jquery' ], // Assuming jQuery as a common dependency
-			WPMOO_VERSION,
+			$wpmoo_version,
 			true // Load in footer
 		);
 	}
