@@ -67,21 +67,32 @@ class Bootstrap {
 		FrameworkManager::instance()->register_plugin( $plugin_slug, $version, $plugin_file );
 
 		if ( ! self::$loader_initialized ) {
-			add_action( 'plugins_loaded', [ __CLASS__, 'boot_latest_stable' ], 9 );
+			add_action( 'plugins_loaded', [ __CLASS__, 'boot_framework' ], 9 );
 			self::$loader_initialized = true;
 		}
 	}
 
 	/**
-	 * Boots the latest stable version of the framework.
+	 * Boots the WPMoo framework.
 	 * This method is hooked to 'plugins_loaded'.
 	 */
-	public static function boot_latest_stable(): void {
-		$latest_stable_plugin = FrameworkManager::instance()->get_highest_version_plugin();
+	public static function boot_framework(): void {
+		// Always prioritize the main WPMoo framework plugin if it's present
+		$framework_manager = FrameworkManager::instance();
+		$plugins = $framework_manager->get_all_registered_plugins();
 
-		if ( $latest_stable_plugin ) {
-			// Now that we have the winner, boot the framework using its data.
-			self::instance()->boot( $latest_stable_plugin['path'], $latest_stable_plugin['slug'] );
+		// Check if the main 'wpmoo' framework is registered
+		if (isset($plugins['wpmoo'])) {
+			// Boot the main framework first
+			define('WPMOO_IS_LOADING_WINNER', true);
+			self::instance()->boot( $plugins['wpmoo']['path'], $plugins['wpmoo']['slug'] );
+		} else {
+			// If no main framework, boot the highest version plugin
+			$latest_stable_plugin = $framework_manager->get_highest_version_plugin();
+			if ($latest_stable_plugin) {
+				define('WPMOO_IS_LOADING_WINNER', true);
+				self::instance()->boot( $latest_stable_plugin['path'], $latest_stable_plugin['slug'] );
+			}
 		}
 	}
 

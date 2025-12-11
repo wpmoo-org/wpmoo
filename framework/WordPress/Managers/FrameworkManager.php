@@ -87,6 +87,15 @@ class FrameworkManager {
 	}
 
 	/**
+	 * Get all registered plugins
+	 *
+	 * @return array<string, array{slug: string, version: string, path: string}> All registered plugins.
+	 */
+	public function get_all_registered_plugins(): array {
+		return $this->plugins;
+	}
+
+	/**
 	 * Get the plugin with the highest version of the WPMoo framework.
 	 *
 	 * @return array{slug: string, version: string, path: string}|null The latest stable plugin.
