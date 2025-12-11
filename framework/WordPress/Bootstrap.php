@@ -213,11 +213,10 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function load_samples(): void {
-		if ( ! defined( 'WPMOO_PATH' ) ) {
-			return;
-		}
+		// Use dynamic path resolution instead of hardcoded constant
+		$wpmoo_path = dirname( __DIR__, 2 ); // Gets the root wpmoo directory
 
-		$samples_dir = WPMOO_PATH . '/src/samples';
+		$samples_dir = $wpmoo_path . '/src/samples';
 		if ( is_dir( $samples_dir ) ) {
 			$files = glob( $samples_dir . '/*.php' );
 			if ( is_array( $files ) && ! empty( $files ) ) {
