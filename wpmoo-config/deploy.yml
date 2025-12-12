@@ -9,11 +9,11 @@ dist:
     include: # List of vendor packages to definitely include
       - "wpmoo/wpmoo"  # Always include the WPMoo framework
     exclude:  # List of vendor packages to exclude from distribution
-      - "phpunit/phpunit"  # Don't include testing frameworks
-      - "dealerdirect/phpcodesniffer-composer-installer"  # Don't include development tools
-      - "squizlabs/php_codesniffer"  # Don't include coding standards
-      - "phpstan/phpstan"  # Don't include static analysis tools
-      - "szepeviktor/phpstan-wordpress"  # Don't include WordPress-specific PHPStan rules
+      - "phpunit/phpunit"  # Do not include testing frameworks
+      - "dealerdirect/phpcodesniffer-composer-installer"  # Do not include development tools
+      - "squizlabs/php_codesniffer"  # Do not include coding standards
+      - "phpstan/phpstan"  # Do not include static analysis tools
+      - "szepeviktor/phpstan-wordpress"  # Do not include WordPress-specific PHPStan rules
     # Selective exclusion rules - define which parts of vendor packages to exclude
     selective_exclusion: # Example rules - customize as needed
       scssphp/scssphp:
@@ -21,9 +21,9 @@ dist:
         - "docs/*"
         - "examples/*"
     # How to handle wpmoo/wpmoo package specifically
-    # Options: 'include', 'exclude', 'separate'
-    # 'separate' means the main framework is handled separately in wpmoo-core directory
-    wpmoo_handling: 'separate'
+    # Options: "include", "exclude", "separate"
+    # "separate" means the main framework is handled separately in wpmoo-core directory
+    wpmoo_handling: "separate"
   # Additional patterns to exclude from distribution
   exclude_patterns:
     - ".git*"
