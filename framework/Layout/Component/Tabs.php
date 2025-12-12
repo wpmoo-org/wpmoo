@@ -26,7 +26,7 @@ class Tabs extends AbstractLayout {
 	 *
 	 * @var array<int, array{id: string, title: string, content: array<mixed>}>
 	 */
-	private array $items = [];
+	private array $items = array();
 
 	/**
 	 * Constructor.
@@ -100,17 +100,17 @@ class Tabs extends AbstractLayout {
 	/**
 	 * Add a single tab to the tabs collection.
 	 *
-	 * @param string $id Tab ID.
-	 * @param string $title Tab title.
+	 * @param string       $id Tab ID.
+	 * @param string       $title Tab title.
 	 * @param array<mixed> $content Array of fields or components.
 	 * @return self
 	 */
-	public function add_tab( string $id, string $title, array $content = [] ): self {
-		$this->items[] = [
+	public function add_tab( string $id, string $title, array $content = array() ): self {
+		$this->items[] = array(
 			'id'      => $id,
 			'title'   => $title,
 			'content' => $content,
-		];
+		);
 		return $this;
 	}
 

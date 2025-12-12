@@ -29,7 +29,7 @@ class Container {
 	/**
 	 * Bind a service to the container.
 	 *
-	 * @param string $service_name Service identifier.
+	 * @param string                                                       $service_name Service identifier.
 	 * @param (callable(Container):mixed)|array<string, mixed>|string|null $concrete Service resolver or class name.
 	 * @return void
 	 */
@@ -45,7 +45,7 @@ class Container {
 	/**
 	 * Bind a singleton service to the container.
 	 *
-	 * @param string $service_name Service identifier.
+	 * @param string                                                       $service_name Service identifier.
 	 * @param (callable(Container):mixed)|array<string, mixed>|string|null $concrete Service resolver or class name.
 	 * @return void
 	 */

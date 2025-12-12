@@ -18,7 +18,7 @@ interface MetaboxInterface {
 	/**
 	 * Set the ID of the metabox.
 	 *
-	 * @param string $id
+	 * @param string $id Metabox ID.
 	 * @return self
 	 */
 	public function id( string $id ): self;
@@ -26,7 +26,7 @@ interface MetaboxInterface {
 	/**
 	 * Set the title of the metabox.
 	 *
-	 * @param string $title
+	 * @param string $title Metabox title.
 	 * @return self
 	 */
 	public function title( string $title ): self;
@@ -34,7 +34,7 @@ interface MetaboxInterface {
 	/**
 	 * Set the screen(s) on which to show the metabox.
 	 *
-	 * @param string|string[] $screen
+	 * @param string|string[] $screen Screen(s) on which to show the metabox.
 	 * @return self
 	 */
 	public function screen( $screen ): self;
@@ -42,7 +42,7 @@ interface MetaboxInterface {
 	/**
 	 * Set the context within the screen where the metabox should display.
 	 *
-	 * @param string $context
+	 * @param string $context Context within the screen where the metabox should display.
 	 * @return self
 	 */
 	public function context( string $context ): self;
@@ -50,7 +50,7 @@ interface MetaboxInterface {
 	/**
 	 * Set the priority within the context where the metabox should display.
 	 *
-	 * @param string $priority
+	 * @param string $priority Priority within the context where the metabox should display.
 	 * @return self
 	 */
 	public function priority( string $priority ): self;
@@ -58,7 +58,7 @@ interface MetaboxInterface {
 	/**
 	 * Add content (fields or other components) to the metabox.
 	 *
-	 * @param array<mixed> $content
+	 * @param array<mixed> $content Content (fields or other components) of the metabox.
 	 * @return self
 	 */
 	public function content( array $content ): self;

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PHPStan Bootstrap File.
  *

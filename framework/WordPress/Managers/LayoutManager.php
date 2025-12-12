@@ -20,7 +20,7 @@ class LayoutManager {
 	 *
 	 * @var array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>
 	 */
-	private array $layouts = [];
+	private array $layouts = array();
 
 	/**
 	 * Add a layout to be registered.
@@ -48,7 +48,7 @@ class LayoutManager {
 		// The registry now returns layouts grouped by plugin, so we need to flatten the array.
 		if ( isset( $registry_layouts[ key( $registry_layouts ) ] ) ) {
 			// If the first element is an array, it means we have grouped layouts by plugin.
-			$flattened_layouts = [];
+			$flattened_layouts = array();
 			foreach ( $registry_layouts as $plugin_layouts ) {
 				if ( is_array( $plugin_layouts ) ) {
 					$flattened_layouts = array_merge( $flattened_layouts, $plugin_layouts );

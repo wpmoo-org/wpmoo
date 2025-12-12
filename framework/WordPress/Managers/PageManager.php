@@ -35,7 +35,7 @@ class PageManager {
 	/**
 	 * Register pages for a specific plugin.
 	 *
-	 * @param string $plugin_slug The plugin slug.
+	 * @param string                                          $plugin_slug The plugin slug.
 	 * @param array<string, \WPMoo\Page\Builders\PageBuilder> $pages The pages to register.
 	 * @return void
 	 * @throws \Exception If a page registration fails.
@@ -153,16 +153,16 @@ class PageManager {
 		$items = $tabs->get_items();
 		$orientation = $tabs->get_orientation();
 
-		$tab_class = $orientation === 'vertical' ? 'wpmoo-tabs-vertical' : 'wpmoo-tabs-horizontal';
+		$tab_class = 'vertical' === $orientation ? 'wpmoo-tabs-vertical' : 'wpmoo-tabs-horizontal';
 		?>
 		<div class="wpmoo-tabs <?php echo esc_attr( $tab_class ); ?>">
 			<div class="wpmoo-tab-nav">
 				<ul role="tablist">
 				<?php foreach ( $items as $index => $item ) : ?>
-					<li role="presentation" class="<?php echo $index === 0 ? 'active' : ''; ?>">
+					<li role="presentation" class="<?php echo 0 === $index ? 'active' : ''; ?>">
 						<a href="#<?php echo esc_attr( $item['id'] ); ?>"
 							role="tab"
-							aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>">
+							aria-selected="<?php echo 0 === $index ? 'true' : 'false'; ?>">
 							<?php echo esc_html( $item['title'] ); ?>
 						</a>
 					</li>
@@ -174,7 +174,7 @@ class PageManager {
 				<?php foreach ( $items as $index => $item ) : ?>
 					<div id="<?php echo esc_attr( $item['id'] ); ?>"
 						 role="tabpanel"
-						 class="tab-pane <?php echo $index === 0 ? 'active' : ''; ?>">
+						 class="tab-pane <?php echo 0 === $index ? 'active' : ''; ?>">
 						<?php
 						// Render content for this tab.
 						$this->render_content( $item['content'] );

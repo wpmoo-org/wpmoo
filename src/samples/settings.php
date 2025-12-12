@@ -12,11 +12,11 @@
 use WPMoo\Moo;
 use WPMoo\Field\Field;
 
-// Wrap the code in an init action to ensure it runs at the right time
+// Wrap the code in an init action to ensure it runs at the right time.
 add_action(
 	'init',
 	function () {
-		// Create a settings page - plugin slug will be auto-detected
+		// Create a settings page - plugin slug will be auto-detected.
 		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'wpmoo-samples' ) )
 		->capability( 'manage_options' )
 		->description( __( 'Configure WPMoo Framework settings', 'wpmoo-samples' ) )
@@ -24,15 +24,15 @@ add_action(
 		->menu_position( 20 )
 		->menu_icon( 'dashicons-admin-generic' );
 
-		// Create tabs for the settings page
+		// Create tabs for the settings page.
 		Moo::tabs( 'wpmoo_main_tabs' )
-		->parent( 'wpmoo_settings' )  // Link to the settings page
+		->parent( 'wpmoo_settings' )  // Link to the settings page.
 		->items(
-			[
-				[
+			array(
+				array(
 					'id' => 'general',
 					'title' => __( 'General Settings', 'wpmoo-samples' ),
-					'content' => [
+					'content' => array(
 						Field::input( 'site_title' )
 							->label( __( 'Site Title', 'wpmoo-samples' ) )
 							->placeholder( __( 'Enter your site title', 'wpmoo-samples' ) ),
@@ -41,20 +41,20 @@ add_action(
 							->placeholder( __( 'Enter site description', 'wpmoo-samples' ) ),
 						Field::toggle( 'enable_cache' )
 							->label( __( 'Enable Caching', 'wpmoo-samples' ) ),
-					],
-				],
-				[
+					),
+				),
+				array(
 					'id' => 'advanced',
 					'title' => __( 'Advanced Settings', 'wpmoo-samples' ),
-					'content' => [
+					'content' => array(
 						Field::input( 'cache_duration' )
 							->label( __( 'Cache Duration (seconds)', 'wpmoo-samples' ) )
 							->placeholder( __( 'Enter cache duration', 'wpmoo-samples' ) ),
 						Field::toggle( 'enable_debug' )
 							->label( __( 'Enable Debug Mode', 'wpmoo-samples' ) ),
-					],
-				],
-			]
+					),
+				),
+			)
 		);
 	}
 );

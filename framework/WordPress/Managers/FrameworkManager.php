@@ -21,35 +21,35 @@ class FrameworkManager {
 	 *
 	 * @var array<string, array{slug: string, version: string, path: string}>
 	 */
-	private array $plugins = [];
+	private array $plugins = array();
 
 	/**
 	 * Registered pages by plugin.
 	 *
 	 * @var array<string, array<string, PageBuilder>>
 	 */
-	private array $pages = [];
+	private array $pages = array();
 
 	/**
 	 * Registered layouts by plugin.
 	 *
 	 * @var array<string, array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>>
 	 */
-	private array $layouts = [];
+	private array $layouts = array();
 
 	/**
 	 * Registered fields by plugin.
 	 *
 	 * @var array<string, array<string, \WPMoo\Field\Interfaces\FieldInterface>>
 	 */
-	private array $fields = [];
+	private array $fields = array();
 
 	/**
 	 * Registered page hooks.
 	 *
 	 * @var array<string>
 	 */
-	private array $page_hooks = [];
+	private array $page_hooks = array();
 
 	/**
 	 * Singleton instance.
@@ -79,11 +79,11 @@ class FrameworkManager {
 	 * @return void
 	 */
 	public function register_plugin( string $slug, string $version, string $path ): void {
-		$this->plugins[ $slug ] = [
+		$this->plugins[ $slug ] = array(
 			'slug'    => $slug,
 			'version' => $version,
 			'path'    => $path,
-		];
+		);
 	}
 
 	/**
@@ -140,12 +140,12 @@ class FrameworkManager {
 	 * Add a page to the registry.
 	 *
 	 * @param PageBuilder $page Page builder instance.
-	 * @param string $plugin_slug Plugin slug to register the page under.
+	 * @param string      $plugin_slug Plugin slug to register the page under.
 	 * @return void
 	 */
 	public function add_page( PageBuilder $page, string $plugin_slug ): void {
 		if ( ! isset( $this->pages[ $plugin_slug ] ) ) {
-			$this->pages[ $plugin_slug ] = [];
+			$this->pages[ $plugin_slug ] = array();
 		}
 
 		$this->pages[ $plugin_slug ][ $page->get_id() ] = $page;
@@ -154,7 +154,7 @@ class FrameworkManager {
 	/**
 	 * Get a page by ID.
 	 *
-	 * @param string $id Page ID.
+	 * @param string      $id Page ID.
 	 * @param string|null $plugin_slug Plugin slug to search within.
 	 * @return PageBuilder|null
 	 */
@@ -181,7 +181,7 @@ class FrameworkManager {
 	 */
 	public function get_pages( ?string $plugin_slug = null ) {
 		if ( $plugin_slug ) {
-			return $this->pages[ $plugin_slug ] ?? [];
+			return $this->pages[ $plugin_slug ] ?? array();
 		}
 
 		// Return all pages grouped by plugin.
@@ -192,12 +192,12 @@ class FrameworkManager {
 	 * Add a layout to the registry.
 	 *
 	 * @param Tabs|Accordion $layout Layout component instance.
-	 * @param string $plugin_slug Plugin slug to register the layout under.
+	 * @param string         $plugin_slug Plugin slug to register the layout under.
 	 * @return void
 	 */
 	public function add_layout( $layout, string $plugin_slug ): void {
 		if ( ! isset( $this->layouts[ $plugin_slug ] ) ) {
-			$this->layouts[ $plugin_slug ] = [];
+			$this->layouts[ $plugin_slug ] = array();
 		}
 
 		$this->layouts[ $plugin_slug ][ $layout->get_id() ] = $layout;
@@ -206,7 +206,7 @@ class FrameworkManager {
 	/**
 	 * Get a layout by ID.
 	 *
-	 * @param string $id Layout ID.
+	 * @param string      $id Layout ID.
 	 * @param string|null $plugin_slug Plugin slug to search within.
 	 * @return Tabs|Accordion|null
 	 */
@@ -233,7 +233,7 @@ class FrameworkManager {
 	 */
 	public function get_layouts( ?string $plugin_slug = null ) {
 		if ( $plugin_slug ) {
-			return $this->layouts[ $plugin_slug ] ?? [];
+			return $this->layouts[ $plugin_slug ] ?? array();
 		}
 
 		// Return all layouts grouped by plugin.
@@ -243,13 +243,12 @@ class FrameworkManager {
 	/**
 	 * Get layouts by parent ID.
 	 *
-	 $parent_id Parent ID to filter by.
-	 *
+	 * @param string      $parent_id Parent ID to filter by.
 	 * @param string|null $plugin_slug Plugin slug to search within.
 	 * @return array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>
 	 */
 	public function get_layouts_by_parent( string $parent_id, ?string $plugin_slug = null ): array {
-		$layouts = [];
+		$layouts = array();
 
 		if ( $plugin_slug ) {
 			// Search only in the specified plugin.
@@ -281,7 +280,7 @@ class FrameworkManager {
 	 * @return array<string, PageBuilder>
 	 */
 	public function get_pages_by_plugin( string $plugin_slug ): array {
-		return $this->pages[ $plugin_slug ] ?? [];
+		return $this->pages[ $plugin_slug ] ?? array();
 	}
 
 	/**
@@ -291,19 +290,19 @@ class FrameworkManager {
 	 * @return array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>
 	 */
 	public function get_layouts_by_plugin( string $plugin_slug ): array {
-		return $this->layouts[ $plugin_slug ] ?? [];
+		return $this->layouts[ $plugin_slug ] ?? array();
 	}
 
 	/**
 	 * Add a field to the registry.
 	 *
 	 * @param \WPMoo\Field\Interfaces\FieldInterface $field Field instance.
-	 * @param string $plugin_slug Plugin slug to register the field under.
+	 * @param string                                 $plugin_slug Plugin slug to register the field under.
 	 * @return void
 	 */
 	public function add_field( $field, string $plugin_slug ): void {
 		if ( ! isset( $this->fields[ $plugin_slug ] ) ) {
-			$this->fields[ $plugin_slug ] = [];
+			$this->fields[ $plugin_slug ] = array();
 		}
 
 		$this->fields[ $plugin_slug ][ $field->get_id() ] = $field;
@@ -312,7 +311,7 @@ class FrameworkManager {
 	/**
 	 * Get a field by ID.
 	 *
-	 * @param string $id Field ID.
+	 * @param string      $id Field ID.
 	 * @param string|null $plugin_slug Plugin slug to search within.
 	 * @return \WPMoo\Field\Interfaces\FieldInterface|null
 	 */
@@ -339,7 +338,7 @@ class FrameworkManager {
 	 */
 	public function get_fields( ?string $plugin_slug = null ) {
 		if ( $plugin_slug ) {
-			return $this->fields[ $plugin_slug ] ?? [];
+			return $this->fields[ $plugin_slug ] ?? array();
 		}
 
 		// Return all fields grouped by plugin.
@@ -353,7 +352,7 @@ class FrameworkManager {
 	 * @return array<string, \WPMoo\Field\Interfaces\FieldInterface>
 	 */
 	public function get_fields_by_plugin( string $plugin_slug ): array {
-		return $this->fields[ $plugin_slug ] ?? [];
+		return $this->fields[ $plugin_slug ] ?? array();
 	}
 
 	/**

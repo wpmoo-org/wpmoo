@@ -31,7 +31,7 @@ class FieldManager {
 	/**
 	 * Register fields for a specific plugin.
 	 *
-	 * @param string $plugin_slug The plugin slug.
+	 * @param string                                                $plugin_slug The plugin slug.
 	 * @param array<string, \WPMoo\Field\Interfaces\FieldInterface> $fields The fields to register.
 	 * @return void
 	 */
@@ -44,7 +44,7 @@ class FieldManager {
 	/**
 	 * Add a field to be registered.
 	 *
-	 * @param object $field Field instance.
+	 * @param object      $field Field instance.
 	 * @param string|null $plugin_slug Plugin slug to register the field under. If null, use default.
 	 * @return void
 	 */

@@ -9,6 +9,14 @@
 
     <file>.</file>
 
+    <rule ref="WordPress.Files.FileName">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Commenting.FileComment.Missing">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+
     <!-- Exclude the CLI shim (lives in wpmoo-cli) from framework PHPCS -->
     <exclude-pattern>src/CLI/*</exclude-pattern>
     <exclude-pattern>dist/*</exclude-pattern>

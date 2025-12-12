@@ -45,14 +45,14 @@ class Moo {
 
 					// Handle vendor directories in case of Composer dependencies.
 					// Check if this is a WPMoo-based plugin using the framework as a dependency.
-					if ( $plugin_dir === 'vendor' && str_contains( $file, '/wpmoo/wpmoo/' ) ) {
+					if ( 'vendor' === $plugin_dir && str_contains( $file, '/wpmoo/wpmoo/' ) ) {
 						// Extract the full path relative to plugins directory.
 						$relative_path = str_replace( '/wp-content/plugins/', '', $file );
 						$parts = explode( '/', $relative_path );
 
 						// Find the vendor directory and get the parent plugin.
 						$vendor_index = array_search( 'vendor', $parts );
-						if ( $vendor_index !== false && $vendor_index > 0 ) {
+						if ( false !== $vendor_index && $vendor_index > 0 ) {
 							// The plugin directory is the one before the vendor directory.
 							return $parts[ $vendor_index - 1 ];
 						}
@@ -69,8 +69,8 @@ class Moo {
 	/**
 	 * Create a page builder.
 	 *
-	 * @param string $id Page ID.
-	 * @param string $title Page title.
+	 * @param string      $id Page ID.
+	 * @param string      $title Page title.
 	 * @param string|null $plugin_slug Plugin slug to register the page under. If null, auto-detect.
 	 * @return Page
 	 */
@@ -84,7 +84,7 @@ class Moo {
 	/**
 	 * Create a tabs layout component.
 	 *
-	 * @param string $id Tabs ID.
+	 * @param string      $id Tabs ID.
 	 * @param string|null $plugin_slug Plugin slug to register the layout under. If null, auto-detect.
 	 * @return \WPMoo\Layout\Component\Tabs
 	 */
@@ -98,8 +98,8 @@ class Moo {
 	/**
 	 * Create a field.
 	 *
-	 * @param string $type Field type.
-	 * @param string $id Field ID.
+	 * @param string      $type Field type.
+	 * @param string      $id Field ID.
 	 * @param string|null $plugin_slug Plugin slug to register the field under. If null, auto-detect.
 	 * @return \WPMoo\Field\Interfaces\FieldInterface
 	 */

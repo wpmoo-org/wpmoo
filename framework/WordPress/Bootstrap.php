@@ -62,12 +62,16 @@ class Bootstrap {
 	/**
 	 * Initializes the framework loader.
 	 * This method should be called by each plugin using the framework.
+	 *
+	 * @param string $plugin_file Full path to the main plugin file.
+	 * @param string $plugin_slug Unique plugin identifier.
+	 * @param string $version     The version of the plugin.
 	 */
 	public static function initialize( string $plugin_file, string $plugin_slug, string $version ): void {
 		FrameworkManager::instance()->register_plugin( $plugin_slug, $version, $plugin_file );
 
 		if ( ! self::$loader_initialized ) {
-			add_action( 'plugins_loaded', [ __CLASS__, 'boot_framework' ], 9 );
+			add_action( 'plugins_loaded', array( __CLASS__, 'boot_framework' ), 9 );
 			self::$loader_initialized = true;
 		}
 	}
@@ -77,20 +81,20 @@ class Bootstrap {
 	 * This method is hooked to 'plugins_loaded'.
 	 */
 	public static function boot_framework(): void {
-		// Always prioritize the main WPMoo framework plugin if it's present
+		// Always prioritize the main WPMoo framework plugin if it's present.
 		$framework_manager = FrameworkManager::instance();
 		$plugins = $framework_manager->get_all_registered_plugins();
 
-		// Check if the main 'wpmoo' framework is registered
-		if (isset($plugins['wpmoo'])) {
-			// Boot the main framework first
-			define('WPMOO_IS_LOADING_WINNER', true);
+		// Check if the main 'wpmoo' framework is registered.
+		if ( isset( $plugins['wpmoo'] ) ) {
+			// Boot the main framework first.
+			define( 'WPMOO_IS_LOADING_WINNER', true );
 			self::instance()->boot( $plugins['wpmoo']['path'], $plugins['wpmoo']['slug'] );
 		} else {
-			// If no main framework, boot the highest version plugin
+			// If no main framework, boot the highest version plugin.
 			$latest_stable_plugin = $framework_manager->get_highest_version_plugin();
-			if ($latest_stable_plugin) {
-				define('WPMOO_IS_LOADING_WINNER', true);
+			if ( $latest_stable_plugin ) {
+				define( 'WPMOO_IS_LOADING_WINNER', true );
 				self::instance()->boot( $latest_stable_plugin['path'], $latest_stable_plugin['slug'] );
 			}
 		}
@@ -160,8 +164,8 @@ class Bootstrap {
 	 */
 	private function init_plugin_instance( string $plugin_slug ): void {
 		// Load sample configurations only when loaded as plugin directly (not as dependency).
-		if ( $this->is_directly_loaded() && $plugin_slug === 'wpmoo' ) {
-			add_action( 'init', [ $this, 'load_samples' ], 5 );
+		if ( $this->is_directly_loaded() && 'wpmoo' === $plugin_slug ) {
+			add_action( 'init', array( $this, 'load_samples' ), 5 );
 		}
 	}
 
@@ -172,10 +176,10 @@ class Bootstrap {
 	 */
 	private function register_hooks(): void {
 		// Register all domain handlers - only once regardless of how many plugins use the framework.
-		add_action( 'init', [ $this, 'register_fields' ], 10 );
-		add_action( 'init', [ $this, 'register_layouts' ], 15 );
-		add_action( 'admin_menu', [ $this, 'register_pages' ], 10 );
-		add_action( 'add_meta_boxes', [ $this, 'register_metaboxes' ], 10 );
+		add_action( 'init', array( $this, 'register_fields' ), 10 );
+		add_action( 'init', array( $this, 'register_layouts' ), 15 );
+		add_action( 'admin_menu', array( $this, 'register_pages' ), 10 );
+		add_action( 'add_meta_boxes', array( $this, 'register_metaboxes' ), 10 );
 
 		// Initialize asset enqueuer for pages.
 		\WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer::instance();
@@ -224,8 +228,8 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function load_samples(): void {
-		// Use dynamic path resolution instead of hardcoded constant
-		$wpmoo_path = dirname( __DIR__, 2 ); // Gets the root wpmoo directory
+		// Use dynamic path resolution instead of hardcoded constant.
+		$wpmoo_path = dirname( __DIR__, 2 ); // Gets the root wpmoo directory.
 
 		$samples_dir = $wpmoo_path . '/src/samples';
 		if ( is_dir( $samples_dir ) ) {

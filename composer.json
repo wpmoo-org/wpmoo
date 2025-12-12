@@ -2,6 +2,8 @@
   "name": "wpmoo/wpmoo",
   "description": "WPMoo \u2014 WordPress Micro Object-Oriented Framework (PHP 7.4+)",
   "license": "GPL-2.0-or-later",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "homepage": "https://wpmoo.org",
   "authors": [
     {
@@ -21,6 +23,8 @@
     "php8.1",
     "php8.2",
     "php8.3",
+    "php8.4",
+    "php8.5",
     "oop",
     "object-oriented"
   ],
