@@ -20,6 +20,7 @@
     <!-- Exclude the CLI shim (lives in wpmoo-cli) from framework PHPCS -->
     <exclude-pattern>src/CLI/*</exclude-pattern>
     <exclude-pattern>dist/*</exclude-pattern>
+    <exclude-pattern>resources/phpstan/stubs/wpmoo-fields-field.stub.php</exclude-pattern>
 
     <!-- Relax line length to reduce false positives on fluent chains -->
     <rule ref="Generic.Files.LineLength">

@@ -1,1 +1,5 @@
 parameters:
+    bootstrapFiles:
+        - stubs/phpstan-bootstrap.php
+    stubFiles:
+        - stubs/wpmoo-fields-field.stub.php

@@ -1,3 +1,7 @@
+<?php
+
+namespace WPMoo\Metabox\Builders;
+
 use WPMoo\Metabox\Interfaces\MetaboxInterface;
 
 /**
@@ -22,7 +26,7 @@ class MetaboxBuilder implements MetaboxInterface {
 	 * Metabox title.
 	 *
 	 * @var string
-	 */	private string $title;
+	 */ private string $title;
 
 	/**
 	 * Screen(s) on which to show the metabox.
