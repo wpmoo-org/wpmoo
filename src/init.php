@@ -9,7 +9,9 @@
  */
 
 // 1. Load the shared, immutable loader.
-require_once dirname(__DIR__) . '/framework/wpmoo-loader.php';
+if (!class_exists('WPMoo_Loader')) {
+    require_once dirname(__DIR__) . '/framework/wpmoo-loader.php';
+}
 
 // Load the WPMoo autoloader early so Core and other WPMoo classes are available.
 // This is the path to the 'framework' directory relative to the plugin root.
