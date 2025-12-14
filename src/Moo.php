@@ -13,11 +13,7 @@ if (!class_exists('WPMoo\Moo')) {
      * @method static \WPMoo\Layout\Component\Tabs tabs(string $id)
      * @method static \WPMoo\Field\Interfaces\FieldInterface field(string $type, string $id)
      */
-    class Moo {
-        private const APP_ID = 'wpmoo';
-
-        public static function __callStatic($method, $args) {
-            return Core::get(self::APP_ID)->$method(...$args);
-        }
+    class Moo extends Facade { // Extend the new Facade class
+        // APP_ID and __callStatic are now handled by the parent Facade class
     }
 }

@@ -27,7 +27,7 @@ add_action('wpmoo_loaded', function() {
     // This ensures that its components (pages, fields) can be associated with it.
     \WPMoo\Core::instance()->get_container()->resolve(\WPMoo\WordPress\Managers\FrameworkManager::class)->register_plugin(
         __FILE__, // Plugin's main file path
-        'wpmoo',  // Plugin slug
+        \WPMoo\Moo::detect_app_id(),  // Dynamically detected plugin slug
         '0.2.0'   // Plugin version
     );
 
