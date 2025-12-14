@@ -71,7 +71,7 @@ class Bootstrap {
 		FrameworkManager::instance()->register_plugin( $plugin_slug, $version, $plugin_file );
 
 		if ( ! self::$loader_initialized ) {
-			add_action( 'plugins_loaded', array( __CLASS__, 'boot_framework' ), 9 );
+			add_action( 'plugins_loaded', array( __CLASS__, 'boot_framework' ), -100 );
 			self::$loader_initialized = true;
 		}
 	}
@@ -83,12 +83,29 @@ class Bootstrap {
 	public static function boot_framework(): void {
 		$framework_manager = FrameworkManager::instance();
 
-		// Find and boot the highest version among all registered plugins.
+		// Find the highest version among all registered plugins.
 		$highest_version_plugin = $framework_manager->get_highest_version_plugin();
 
-		if ( $highest_version_plugin ) {
-			self::instance()->boot( $highest_version_plugin['path'], $highest_version_plugin['slug'] );
+		if ( ! $highest_version_plugin ) {
+			return;
 		}
+
+		// Get the singleton instance of the loaded framework.
+		$bootstrap_instance = self::instance();
+
+		// Boot the core framework hooks (runs only once).
+		$bootstrap_instance->boot();
+
+		/**
+		 * Fires once the WPMoo framework's core is loaded and ready.
+		 *
+		 * This allows consuming plugins to initialize their own components
+		 * (pages, metaboxes, etc.) using the loaded framework.
+		 *
+		 * @since 0.2.0
+		 * @param Bootstrap $wpmoo The booted WPMoo bootstrap instance.
+		 */
+		do_action( 'wpmoo_loaded', $bootstrap_instance );
 	}
 
 	/**
@@ -127,7 +144,7 @@ class Bootstrap {
 	 * @param string $plugin_slug Unique plugin identifier.
 	 * @return void
 	 */
-	public function boot( string $plugin_file, string $plugin_slug ): void {
+	public function boot(): void {
 		if ( $this->booted ) {
 			return;
 		}
@@ -139,12 +156,9 @@ class Bootstrap {
 			plugin_basename( dirname( __DIR__, 2 ) . '/languages' )
 		);
 
-		// Only register the main WordPress hooks once, by the winning instance.
+		// Only register the main WordPress hooks once.
 		$this->register_hooks();
 		$this->booted = true;
-
-		// Initialize this specific plugin instance.
-		$this->init_plugin_instance( $plugin_slug );
 	}
 
 	/**
@@ -153,7 +167,7 @@ class Bootstrap {
 	 * @param string $plugin_slug Unique plugin identifier.
 	 * @return void
 	 */
-	private function init_plugin_instance( string $plugin_slug ): void {
+	public function init_plugin_instance( string $plugin_slug ): void {
 		// Load sample configurations only when loaded as plugin directly (not as dependency).
 		if ( $this->is_directly_loaded() && 'wpmoo' === $plugin_slug ) {
 			add_action( 'init', array( $this, 'load_samples' ), 5 );
