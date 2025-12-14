@@ -81,22 +81,13 @@ class Bootstrap {
 	 * This method is hooked to 'plugins_loaded'.
 	 */
 	public static function boot_framework(): void {
-		// Always prioritize the main WPMoo framework plugin if it's present.
 		$framework_manager = FrameworkManager::instance();
-		$plugins = $framework_manager->get_all_registered_plugins();
 
-		// Check if the main 'wpmoo' framework is registered.
-		if ( isset( $plugins['wpmoo'] ) ) {
-			// Boot the main framework first.
-			define( 'WPMOO_IS_LOADING_WINNER', true );
-			self::instance()->boot( $plugins['wpmoo']['path'], $plugins['wpmoo']['slug'] );
-		} else {
-			// If no main framework, boot the highest version plugin.
-			$latest_stable_plugin = $framework_manager->get_highest_version_plugin();
-			if ( $latest_stable_plugin ) {
-				define( 'WPMOO_IS_LOADING_WINNER', true );
-				self::instance()->boot( $latest_stable_plugin['path'], $latest_stable_plugin['slug'] );
-			}
+		// Find and boot the highest version among all registered plugins.
+		$highest_version_plugin = $framework_manager->get_highest_version_plugin();
+
+		if ( $highest_version_plugin ) {
+			self::instance()->boot( $highest_version_plugin['path'], $highest_version_plugin['slug'] );
 		}
 	}
 
