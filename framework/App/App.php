@@ -3,7 +3,7 @@
 namespace WPMoo\App;
 
 use WPMoo\WordPress\Managers\FrameworkManager;
-use WPMoo\Page\Page;
+use WPMoo\Page\Builders\PageBuilder; // Corrected use statement
 use WPMoo\Layout\Layout;
 use WPMoo\Field\Field;
 
@@ -44,10 +44,10 @@ class App {
      *
      * @param string $id Page ID.
      * @param string $title Page title.
-     * @return Page
+     * @return PageBuilder // Corrected return type
      */
-    public function page(string $id, string $title): Page {
-        $page = new Page($id, $title);
+    public function page(string $id, string $title): PageBuilder {
+        $page = new PageBuilder($id, $title); // Corrected instantiation
         $this->get_framework_manager()->add_page($page, $this->app_id);
         return $page;
     }

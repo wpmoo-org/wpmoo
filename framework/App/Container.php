@@ -27,6 +27,13 @@ class Container {
 	private array $instances = array();
 
 	/**
+	 * Marks a service as a singleton (boolean flag).
+	 *
+	 * @var array<string, bool>
+	 */
+	private array $singletons = array();
+
+	/**
 	 * Bind a service to the container.
 	 *
 	 * @param string                                                       $service_name Service identifier.
@@ -55,7 +62,8 @@ class Container {
 		}
 
 		$this->bindings[ $service_name ]  = $concrete;
-		$this->instances[ $service_name ] = null;
+		$this->singletons[ $service_name ] = true; // Mark as singleton
+		unset( $this->instances[ $service_name ] ); // Ensure no old instance is present
 	}
 
 	/**
@@ -66,6 +74,7 @@ class Container {
 	 * @throws \InvalidArgumentException When service cannot be resolved.
 	 */
 	public function resolve( string $service_name ) {
+		// If it's a singleton AND already instantiated, return it.
 		if ( isset( $this->instances[ $service_name ] ) ) {
 			return $this->instances[ $service_name ];
 		}
@@ -82,8 +91,9 @@ class Container {
 			throw new \InvalidArgumentException( 'Unable to resolve service' );
 		}
 
-		if ( isset( $this->instances[ $service_name ] ) ) {
-			$this->instances[ $service_name ] = $instance;
+		// If it's a singleton, store the instance.
+		if ( isset( $this->singletons[ $service_name ] ) ) { // Check the new singletons array
+			$this->instances[ $service_name ] = $instance; // Store in instances
 		}
 
 		return $instance;

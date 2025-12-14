@@ -62,4 +62,33 @@ final class WPMoo_Loader {
             require_once $winner_path;
         }
     }
+
+    /**
+     * Sets up the PSR-4 autoloader for WPMoo classes.
+     * This method must be called by every plugin using the framework.
+     *
+     * @param string $framework_base_path The path to the 'framework' directory.
+     */
+    public static function load_autoloader(string $framework_base_path): void {
+        if (file_exists($framework_base_path . '/vendor/autoload.php')) {
+            require_once $framework_base_path . '/vendor/autoload.php';
+        } else {
+            // Fallback to a simple PSR-4 autoloader for distributed versions.
+            spl_autoload_register(
+                function ($class) use ($framework_base_path) {
+                    $prefix = 'WPMoo\\';
+                    $base_dir = $framework_base_path . '/';
+                    $len = strlen($prefix);
+                    if (strncmp($class, $prefix, $len) !== 0) {
+                        return;
+                    }
+                    $relative_class = substr($class, $len);
+                    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+                    if (file_exists($file)) {
+                        require $file;
+                    }
+                }
+            );
+        }
+    }
 }

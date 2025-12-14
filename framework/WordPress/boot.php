@@ -24,25 +24,9 @@ if ( ! defined( 'WPMOO_PATH' ) ) {
 }
 
 // 1. Load the Composer autoloader for the winning framework version.
+// The primary autoloader is already set by WPMoo_Loader.
 if ( file_exists( WPMOO_PATH . '/vendor/autoload.php' ) ) {
 	require_once WPMOO_PATH . '/vendor/autoload.php';
-} else {
-	// Fallback to a simple PSR-4 autoloader for non-composer installs.
-	spl_autoload_register(
-		function ( $class ) {
-			$prefix = 'WPMoo\\';
-			$base_dir = __DIR__ . '/../'; // Relative to this boot.php file
-			$len = strlen( $prefix );
-			if ( strncmp( $class, $prefix, $len ) !== 0 ) {
-				  return;
-			}
-			$relative_class = substr( $class, $len );
-			$file = $base_dir . str_replace( '\\', '/', $relative_class ) . '.php';
-			if ( file_exists( $file ) ) {
-				require $file;
-			}
-		}
-	);
 }
 
 // 2. Boot the WordPress Kernel, which registers all hooks.

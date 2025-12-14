@@ -4,6 +4,12 @@ namespace WPMoo;
 
 use WPMoo\App\App;
 use WPMoo\App\Container;
+use WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer;
+use WPMoo\WordPress\Managers\FieldManager;
+use WPMoo\WordPress\Managers\FrameworkManager;
+use WPMoo\WordPress\Managers\LayoutManager;
+use WPMoo\WordPress\Managers\MetaboxManager;
+use WPMoo\WordPress\Managers\PageManager;
 
 /**
  * WPMoo Core Registry & Factory.
@@ -39,7 +45,23 @@ final class Core {
      */
     private function __construct() {
         $this->container = new Container();
-        // We can register framework-internal, non-WP services here if needed.
+        $this->register_services(); // Call register_services here
+    }
+
+    /**
+     * Registers all core services in the container.
+     * This method is called once when the Core singleton is instantiated.
+     */
+    private function register_services(): void {
+        // Register all managers as singletons.
+        $this->container->singleton(FrameworkManager::class);
+        $this->container->singleton(FieldManager::class);
+        $this->container->singleton(PageManager::class);
+        $this->container->singleton(LayoutManager::class);
+        $this->container->singleton(MetaboxManager::class);
+        
+        // Register asset enqueuers as singletons.
+        $this->container->singleton(PageAssetEnqueuer::class);
     }
 
     /**

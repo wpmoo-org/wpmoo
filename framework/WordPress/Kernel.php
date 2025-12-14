@@ -41,8 +41,7 @@ final class Kernel {
      * Private constructor.
      */
     private function __construct() {
-        // The service registration can happen on instantiation.
-        $this->register_services();
+        // Services are now registered in WPMoo\Core.
     }
     
     /**
@@ -56,20 +55,6 @@ final class Kernel {
         $this->register_hooks();
         $this->booted = true;
     }
-
-    /**
-     * Register services in the core container.
-     */
-    private function register_services(): void {
-        $container = Core::instance()->get_container();
-        
-        $container->singleton(\WPMoo\WordPress\Managers\FrameworkManager::class);
-        $container->singleton(\WPMoo\WordPress\Managers\FieldManager::class);
-        $container->singleton(\WPMoo\WordPress\Managers\PageManager::class);
-        $container->singleton(\WPMoo\WordPress\Managers\MetaboxManager::class);
-        $container->singleton(\WPMoo\WordPress\Managers\LayoutManager::class);
-        $container->singleton(\WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer::class);
-    }
     
     /**
      * Register WordPress hooks.
@@ -82,17 +67,34 @@ final class Kernel {
             $container->resolve(\WPMoo\WordPress\Managers\LayoutManager::class)->register_all();
         }, 15);
 
-        add_action('admin_menu', function() use ($container) {
-            $container->resolve(\WPMoo\WordPress\Managers\PageManager::class)->register_all();
-        });
-
-        add_action('add_meta_boxes', function() use ($container) {
-            $container->resolve(\WPMoo\WordPress\Managers\MetaboxManager::class)->register_all();
-        });
+        // Register PageManager and MetaboxManager hooks on wpmoo_loaded
+        // This ensures pages are registered after all plugins have declared them.
+        add_action('wpmoo_loaded', [$this, 'register_admin_page_related_hooks'], 20);
 
         // Resolve the PageAssetEnqueuer from the container. Since it's a singleton,
         // this will create it on the first call and retrieve it on subsequent calls.
         // Its constructor registers the necessary 'admin_enqueue_scripts' hook.
         $container->resolve(\WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer::class);
+    }
+    
+    /**
+     * Registers WordPress admin menu-related hooks.
+     * This method is hooked to `wpmoo_loaded` to ensure pages are registered after all plugins have declared them.
+     */
+    public function register_admin_page_related_hooks(): void {
+        $container = Core::instance()->get_container();
+        
+        // Resolve managers here to ensure they are the same singletons.
+        $pageManager = $container->resolve(\WPMoo\WordPress\Managers\PageManager::class);
+        
+        $metaboxManager = $container->resolve(\WPMoo\WordPress\Managers\MetaboxManager::class);
+
+        add_action('admin_menu', function() use ($pageManager) {
+            $pageManager->register_all();
+        });
+        
+        add_action('add_meta_boxes', function() use ($metaboxManager) {
+            $metaboxManager->register_all();
+        });
     }
 }
