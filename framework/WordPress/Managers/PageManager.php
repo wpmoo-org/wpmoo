@@ -7,13 +7,23 @@ use WPMoo\Page\Builders\PageBuilder;
 /**
  * Page menu manager.
  *
- * @package WPMoo\Page
- * @since 0.1.0
- * @link https://wpmoo.org   WPMoo – WordPress Micro Object-Oriented Framework.
- * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
- * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
+ * @package WPMoo\WordPress\Managers
+ * @since 0.2.0
  */
 class PageManager {
+    /**
+     * The framework manager instance.
+     * @var FrameworkManager
+     */
+    private FrameworkManager $framework_manager;
+
+    /**
+     * Constructor.
+     * @param FrameworkManager $framework_manager The main framework manager.
+     */
+    public function __construct(FrameworkManager $framework_manager) {
+        $this->framework_manager = $framework_manager;
+    }
 
 	/**
 	 * Register all pages with WordPress.
@@ -22,9 +32,8 @@ class PageManager {
 	 * @return void
 	 */
 	public function register_all(): void {
-		// Get the registry instance to retrieve all pages.
-		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
-		$all_pages_by_plugin = $registry->get_pages();
+		// Get all pages from the central framework manager.
+		$all_pages_by_plugin = $this->framework_manager->get_pages();
 
 		// Process pages by plugin to maintain isolation.
 		foreach ( $all_pages_by_plugin as $plugin_slug => $pages ) {
@@ -87,7 +96,7 @@ class PageManager {
 		}
 
 		if ( $hook_suffix ) {
-			FrameworkManager::instance()->add_page_hook( $hook_suffix );
+			$this->framework_manager->add_page_hook( $hook_suffix );
 		}
 	}
 
@@ -98,10 +107,8 @@ class PageManager {
 	 * @return void
 	 */
 	private function render_page( PageBuilder $page ): void {
-		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
-
 		// Get layouts associated with this page.
-		$page_layouts = $registry->get_layouts_by_parent( $page->get_id() );
+		$page_layouts = $this->framework_manager->get_layouts_by_parent( $page->get_id() );
 
 		?>
 		<div class="wrap">

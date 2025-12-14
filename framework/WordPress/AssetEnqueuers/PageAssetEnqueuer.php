@@ -5,39 +5,24 @@ namespace WPMoo\WordPress\AssetEnqueuers;
 use WPMoo\WordPress\Managers\FrameworkManager;
 
 /**
- * Enqueues PicoCSS and JS assets.
+ * Enqueues PicoCSS and JS assets for WPMoo pages.
  *
- * @package WPMoo\WordPress
- * @since 0.1.0
- * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
- * @link https://github.com/wpmoo/wpmoo GitHub Repository.
- * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
+ * @package WPMoo\WordPress\AssetEnqueuers
+ * @since 0.2.0
  */
 class PageAssetEnqueuer {
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var PageAssetEnqueuer|null
-	 */
-	private static ?PageAssetEnqueuer $instance = null;
-
-	/**
-	 * Get the single instance of the class.
-	 *
-	 * @return PageAssetEnqueuer
-	 */
-	public static function instance(): PageAssetEnqueuer {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
+    /**
+     * The framework manager instance.
+     * @var FrameworkManager
+     */
+    private FrameworkManager $framework_manager;
 
 	/**
 	 * Constructor.
+     * @param FrameworkManager $framework_manager The main framework manager.
 	 */
-	private function __construct() {
+	public function __construct(FrameworkManager $framework_manager) {
+        $this->framework_manager = $framework_manager;
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
@@ -47,7 +32,7 @@ class PageAssetEnqueuer {
 	 * @param string $hook_suffix The hook suffix of the current admin page.
 	 */
 	public function enqueue_assets( string $hook_suffix ): void {
-		$wpm_pages = FrameworkManager::instance()->get_all_page_hooks();
+		$wpm_pages = $this->framework_manager->get_all_page_hooks();
 
 		if ( ! in_array( $hook_suffix, $wpm_pages, true ) ) {
 			return;
@@ -57,7 +42,7 @@ class PageAssetEnqueuer {
 		$wpmoo_url = plugin_dir_url( dirname( dirname( __DIR__ ) ) . '/wpmoo.php' );
 
 		// Use a fallback version in case constants are not defined.
-		$wpmoo_version = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.1.0';
+		$wpmoo_version = defined( 'WPMOO_VERSION' ) ? WPMOO_VERSION : '0.2.0';
 
 		// Enqueue main WPMoo styles.
 		wp_enqueue_style(

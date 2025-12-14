@@ -1,46 +1,37 @@
 <?php
 /**
- * WPMoo Framework Bootstrap.
+ * WPMoo Framework Core Bootstrap.
  *
- * This file handles constant definitions, autoloading, and framework initialization.
+ * This file is loaded ONLY by the "winning" version of the framework,
+ * chosen by the WPMoo_Loader. It's responsible for setting up the core
+ * services and firing the action that lets consumer plugins initialize.
  *
  * @package WPMoo
  */
 
-namespace WPMoo\WordPress;
-
-use WPMoo\WordPress\Bootstrap;
-
 // If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
-	wp_die();
+	exit;
 }
 
-// Define framework constants.
+// Define framework constants if they haven't been defined yet.
 if ( ! defined( 'WPMOO_VERSION' ) ) {
-	define( 'WPMOO_VERSION', '0.1.0' );
+	define( 'WPMOO_VERSION', '0.2.0' ); // Update version
 }
 if ( ! defined( 'WPMOO_PATH' ) ) {
-	define( 'WPMOO_PATH', dirname( __DIR__, 2 ) ); // Points to the plugin root.
-}
-if ( ! defined( 'WPMOO_URL' ) ) {
-	define( 'WPMOO_URL', plugin_dir_url( WPMOO_PATH . '/wpmoo.php' ) );
+	// This path points to the root of the winning framework instance.
+	define( 'WPMOO_PATH', dirname( __DIR__, 2 ) ); 
 }
 
-// Define that this is the main WPMoo plugin.
-if ( ! defined( 'WPMOO_PLUGIN_LOADED' ) ) {
-	define( 'WPMOO_PLUGIN_LOADED', true );
-}
-
-// Use Composer autoloader if available, otherwise use our own simple autoloader.
+// 1. Load the Composer autoloader for the winning framework version.
 if ( file_exists( WPMOO_PATH . '/vendor/autoload.php' ) ) {
 	require_once WPMOO_PATH . '/vendor/autoload.php';
 } else {
-	// Fallback to a simple PSR-4 autoloader for the distributed version.
+	// Fallback to a simple PSR-4 autoloader for non-composer installs.
 	spl_autoload_register(
 		function ( $class ) {
 			$prefix = 'WPMoo\\';
-			$base_dir = WPMOO_PATH . '/framework/';
+			$base_dir = __DIR__ . '/../'; // Relative to this boot.php file
 			$len = strlen( $prefix );
 			if ( strncmp( $class, $prefix, $len ) !== 0 ) {
 				  return;
@@ -54,12 +45,15 @@ if ( file_exists( WPMOO_PATH . '/vendor/autoload.php' ) ) {
 	);
 }
 
-// Register this plugin with the WPMoo loader.
-if ( class_exists( 'WPMoo\\WordPress\\Bootstrap' ) ) {
-	Bootstrap::initialize( WPMOO_PATH . '/wpmoo.php', 'wpmoo', WPMOO_VERSION );
+// 2. Boot the WordPress Kernel, which registers all hooks.
+if ( class_exists( 'WPMoo\WordPress\Kernel' ) ) {
+    \WPMoo\WordPress\Kernel::instance()->boot();
 }
 
-// If this instance is the "winner" chosen by the loader, boot the framework.
-if ( defined( 'WPMOO_IS_LOADING_WINNER' ) ) {
-	Bootstrap::instance()->boot( WPMOO_PATH . '/wpmoo.php', 'wpmoo' );
-}
+// 3. Fire the action to let all consuming plugins know the core is ready.
+/**
+ * Fires once the WPMoo framework's core is loaded and ready.
+ *
+ * @since 0.2.0
+ */
+do_action( 'wpmoo_loaded' );

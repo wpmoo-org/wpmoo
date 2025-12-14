@@ -8,11 +8,8 @@ use WPMoo\Layout\Component\Accordion;
 /**
  * Layout manager.
  *
- * @package WPMoo\Layout
- * @since 0.1.0
- * @link https://wpmoo.org   WPMoo – WordPress Micro Object-Oriented Framework.
- * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
- * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
+ * @package WPMoo\WordPress\Managers
+ * @since 0.2.0
  */
 class LayoutManager {
 	/**
@@ -21,6 +18,21 @@ class LayoutManager {
 	 * @var array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>
 	 */
 	private array $layouts = array();
+
+    /**
+     * The framework manager instance.
+     * @var FrameworkManager
+     */
+    private FrameworkManager $framework_manager;
+
+    /**
+     * Constructor.
+     *
+     * @param FrameworkManager $framework_manager The main framework manager.
+     */
+    public function __construct(FrameworkManager $framework_manager) {
+        $this->framework_manager = $framework_manager;
+    }
 
 	/**
 	 * Add a layout to be registered.
@@ -39,10 +51,9 @@ class LayoutManager {
 	 */
 	public function register_all(): void {
 		// Layouts are typically rendered inline with pages.
-		// So this may be where we store them for later retrieval.
+		// So this is where we store them for later retrieval.
 		// When they're needed by page rendering.
-		$registry = \WPMoo\WordPress\Managers\FrameworkManager::instance();
-		$registry_layouts = $registry->get_layouts();
+		$registry_layouts = $this->framework_manager->get_layouts();
 
 		// Update our internal layouts array with the registry layouts.
 		// The registry now returns layouts grouped by plugin, so we need to flatten the array.

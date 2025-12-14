@@ -51,24 +51,7 @@ class FrameworkManager {
 	 */
 	private array $page_hooks = array();
 
-	/**
-	 * Singleton instance.
-	 *
-	 * @var ?self
-	 */
-	private static ?self $instance = null;
 
-	/**
-	 * Get singleton instance.
-	 *
-	 * @return self
-	 */
-	public static function instance(): self {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
 
 	/**
 	 * Register a plugin that is using the WPMoo framework.
@@ -356,7 +339,8 @@ class FrameworkManager {
 	}
 
 	/**
-	 * Private constructor for singleton pattern.
+	 * Public constructor.
+	 * The lifecycle of this class is managed by the DI container.
 	 */
-	private function __construct() {}
+	public function __construct() {}
 }
