@@ -23,7 +23,7 @@ wpmoo_loader( 'register', dirname( __DIR__ ) . '/framework/WordPress/boot.php', 
 require_once __DIR__ . '/Moo.php';
 
 // 4. Hook into the core loaded action to initialize samples.
-add_action('wpmoo_loaded', function() {
+add_action('init', function() {
     // 4.1. Register this plugin with the FrameworkManager for component tracking.
     // This ensures that its components (pages, fields) can be associated with it.
     \WPMoo\Core::instance()->get_container()->resolve(\WPMoo\WordPress\Managers\FrameworkManager::class)->register_plugin(

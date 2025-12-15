@@ -135,7 +135,7 @@ class PageManager
         <?php
         // If there are layouts for this plugin, render them.
         if (! empty($plugin_layouts) ) {
-            $this->render_layouts($plugin_layouts, $page->get_id());
+            $this->render_layouts($plugin_layouts, $page->get_id(), $unique_slug);
         } else {
             // Fallback: render standard WordPress settings.
             settings_fields($unique_slug);
@@ -153,9 +153,10 @@ class PageManager
      *
      * @param  array<string, mixed> $pluginLayouts All layout components for the current plugin.
      * @param  string               $page_id       The ID of the current page, used as the top-level parent.
+     * @param  string               $unique_slug   The unique slug for the page, used as the option group name.
      * @return void
      */
-    private function render_layouts( array $pluginLayouts, string $page_id ): void
+    private function render_layouts( array $pluginLayouts, string $page_id, string $unique_slug ): void
     {
         $containers    = [];
         $itemsByParent = [];
@@ -182,10 +183,10 @@ class PageManager
 
             switch ( $containerType ) {
                 case 'tabs':
-                    $this->render_tabs_from_container( $container, $items );
+                    $this->render_tabs_from_container( $container, $items, $unique_slug );
                     break;
                 case 'accordion':
-                    $this->render_accordion_from_container( $container, $items );
+                    $this->render_accordion_from_container( $container, $items, $unique_slug );
                     break;
                 default:
                     // Handle other container types if needed.
@@ -197,11 +198,12 @@ class PageManager
     /**
      * Render tabs layout from container and item components.
      *
-     * @param  \WPMoo\Layout\Component\Container $container Container component.
-     * @param  array                             $items     Item components for this container.
+     * @param  \WPMoo\Layout\Component\Container $container   Container component.
+     * @param  array                             $items       Item components for this container.
+     * @param  string                            $unique_slug The unique slug for the page.
      * @return void
      */
-    private function render_tabs_from_container( \WPMoo\Layout\Component\Container $container, array $items ): void
+    private function render_tabs_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void
     {
         $orientation = 'horizontal'; // Default orientation, could be stored in Container properties if needed
 
@@ -235,7 +237,7 @@ class PageManager
                          class="tab-pane <?php echo 0 === $index ? 'active' : ''; ?>">
                 <?php
                 // Render content for this tab.
-                $this->render_content($item->get_content());
+                $this->render_content($item->get_content(), $unique_slug);
                 ?>
                     </div>
             <?php endif; ?>
@@ -249,11 +251,12 @@ class PageManager
     /**
      * Render accordion layout from container and item components.
      *
-     * @param  \WPMoo\Layout\Component\Container $container Container component.
-     * @param  array                             $items     Item components for this container.
+     * @param  \WPMoo\Layout\Component\Container $container   Container component.
+     * @param  array                             $items       Item components for this container.
+     * @param  string                            $unique_slug The unique slug for the page.
      * @return void
      */
-    private function render_accordion_from_container( \WPMoo\Layout\Component\Container $container, array $items ): void
+    private function render_accordion_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void
     {
         ?>
         <div class="wpmoo-accordion">
@@ -265,7 +268,7 @@ class PageManager
                     <div class="wpmoo-accordion-content">
                 <?php
                 // Render content for this accordion item.
-                $this->render_content($item->get_content());
+                $this->render_content($item->get_content(), $unique_slug);
                 ?>
                     </div>
                 </div>
@@ -335,14 +338,18 @@ class PageManager
     /**
      * Render content (fields or other elements).
      *
-     * @param  array<mixed> $content Content to render.
+     * @param  array<mixed> $content     Content to render.
+     * @param  string       $unique_slug The unique option group name for the page.
      * @return void
      */
-    private function render_content( array $content ): void
+    private function render_content( array $content, string $unique_slug ): void
     {
         if (empty($content) ) {
             return;
         }
+
+        // Get the entire array of options for this page at once.
+        $option_values = get_option( $unique_slug );
 
         // Render each item in the content array.
         // This processes fields and other content elements.
@@ -366,9 +373,13 @@ class PageManager
                     $field_type = 'text'; // Default to text
                 }
 
-                $field_name = $field_id; // In a real implementation, this would be prefixed with the option group
+                // The name attribute should be in the format 'option_group[field_id]'
+                $field_name = $unique_slug . '[' . $field_id . ']';
 
-                // Get field properties
+                // Get the saved value from the options array.
+                $value = $option_values[ $field_id ] ?? '';
+
+                // Get other field properties
                 $label = method_exists($item, 'get_label') ? $item->get_label() : '';
                 $placeholder = method_exists($item, 'get_placeholder') ? $item->get_placeholder() : '';
 
@@ -381,15 +392,13 @@ class PageManager
                 // Render different field types
                 switch ( $field_type ) {
                 case 'toggle':
-                    $checked = get_option($field_id, false) ? 'checked' : '';
-                    echo '<div class="form-group"><input type="checkbox" id="' . esc_attr($field_id) . '" name="' . esc_attr($field_name) . '" ' . $checked . ' class="wpmoo-toggle form-switch"></div>';
+                    $checked = checked( $value, true, false );
+                    echo '<div class="form-group"><input type="checkbox" id="' . esc_attr($field_id) . '" name="' . esc_attr($field_name) . '" value="1" ' . $checked . ' class="wpmoo-toggle form-switch"></div>';
                     break;
                 case 'textarea':
-                    $value = get_option($field_id, '');
                     echo '<div class="form-group"><textarea id="' . esc_attr($field_id) . '" name="' . esc_attr($field_name) . '" placeholder="' . esc_attr($placeholder) . '" class="wpmoo-textarea input-group">' . esc_textarea($value) . '</textarea></div>';
                     break;
                 default: // Includes text, number, etc.
-                    $value = get_option($field_id, '');
                     echo '<div class="form-group"><input type="text" id="' . esc_attr($field_id) . '" name="' . esc_attr($field_name) . '" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '" class="wpmoo-input input-group"></div>';
                 }
                 echo '</div>';
