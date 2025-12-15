@@ -88,8 +88,8 @@ class PageManager
                 $page->get_title(),
                 $page->get_capability(),
                 $unique_slug,
-                function () use ( $page, $self, $unique_slug ) {
-                    $self->render_page($page, $unique_slug);
+                function () use ( $page, $self, $unique_slug, $plugin_slug ) {
+                    $self->render_page($page, $unique_slug, $plugin_slug);
                 }
             );
         } else {
@@ -98,8 +98,8 @@ class PageManager
                 $page->get_title(),
                 $page->get_capability(),
                 $unique_slug,
-                function () use ( $page, $self, $unique_slug ) {
-                    $self->render_page($page, $unique_slug);
+                function () use ( $page, $self, $unique_slug, $plugin_slug ) {
+                    $self->render_page($page, $unique_slug, $plugin_slug);
                 },
                 $page->get_menu_icon(),
                 $page->get_menu_position()
@@ -116,19 +116,21 @@ class PageManager
      *
      * @param  PageBuilder $page        Page builder instance.
      * @param  string      $unique_slug The unique, prefixed slug for the page.
+     * @param  string      $plugin_slug The slug of the plugin being rendered.
      * @return void
      */
-    private function render_page( PageBuilder $page, string $unique_slug ): void
+    private function render_page( PageBuilder $page, string $unique_slug, string $plugin_slug ): void
     {
-        // Get ALL layouts from the framework manager to process containers and their items
+        // Get ALL layouts from the framework manager to process containers and their items.
         $all_layouts = $this->framework_manager->get_layouts();
-        // Filter to get only those that are directly associated with this page (containers)
-        $page_layouts = $this->framework_manager->get_layouts_by_parent($page->get_id());
+        // Filter to get only those layouts that are directly associated with this page AND this plugin.
+        $page_layouts = $this->framework_manager->get_layouts_by_parent($page->get_id(), $plugin_slug);
 
         // DEBUG: Show what page layouts were found
         // Uncomment the following lines for debugging
         /*
         error_log('DEBUG: Page ID: ' . $page->get_id());
+        error_log('DEBUG: Plugin Slug: ' . $plugin_slug);
         error_log('DEBUG: Found page layouts count: ' . count($page_layouts));
         foreach ($page_layouts as $id => $layout) {
         error_log('DEBUG: Page layout ID: ' . $id . ', Type: ' . get_class($layout) . ', Parent: ' . ($layout->get_parent() ?? 'none'));

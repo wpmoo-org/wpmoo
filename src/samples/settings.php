@@ -19,16 +19,16 @@ add_action(
 		// we can make static calls directly. The APP_ID 'wpmoo' is handled by the facade.
 
 		// Create a settings page.
-		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'wpmoo-samples' ) )
+		Moo::page( 'settings', __( 'WPMoo Settings', 'wpmoo-samples' ) )
 		->capability( 'manage_options' )
 		->description( __( 'Configure WPMoo Framework settings', 'wpmoo-samples' ) )
-		->menu_slug( 'wpmoo-settings' )
+		->menu_slug( 'settings' )
 		->menu_position( 20 )
 		->menu_icon( 'dashicons-admin-generic' );
 
 		// Create tabs container for the settings page.
 		Moo::container( 'tabs', 'wpmoo_main_tabs' )
-			->parent( 'wpmoo_settings' );  // Link to the settings page.
+			->parent( 'settings' );  // Link to the settings page.
 
 		// Create individual tabs
 		Moo::tab( 'general', __( 'General Settings', 'wpmoo-samples' ) )
