@@ -2,93 +2,82 @@
 /**
  * WPMoo Framework Loader.
  *
- * This file is responsible for negotiating which version of the WPMoo framework
- * to load when multiple plugins are using it. It ensures only the latest version
- * is loaded. This file should be immutable and have no namespace.
+ * This file provides a single function, wpmoo_loader(), to manage the framework
+ * loading process. It negotiates which version to load and sets up autoloading,
+ * using static variables internally to maintain state instead of a global class.
  *
  * @package WPMoo
  */
 
-if (class_exists('WPMoo_Loader')) {
-    return;
+if ( function_exists( 'wpmoo_loader' ) ) {
+	return;
 }
 
-final class WPMoo_Loader {
-    /**
-     * Holds the registered instances of the framework.
-     *
-     * @var array<string, array{path: string, version: string}>
-     */
-    private static array $versions = [];
+/**
+ * Manages the WPMoo framework loading, registration, and autoloading.
+ *
+ * @param string $action The action to perform ('register', 'negotiate_and_boot', 'load_autoloader').
+ * @param mixed  ...$args Arguments for the action.
+ */
+function wpmoo_loader( string $action, ...$args ) {
+	static $versions = [];
+	static $booted   = false;
 
-    /**
-     * Flag to ensure the boot process is hooked only once.
-     *
-     * @var bool
-     */
-    private static bool $booted = false;
+	switch ( $action ) {
+		case 'register':
+			list( $path, $version ) = $args;
+			$versions[ $version ]   = [ 'path' => $path ];
 
-    /**
-     * Registers a version of the framework.
-     *
-     * @param string $path    The full path to the main plugin file or boot file.
-     * @param string $version The version of the framework being registered.
-     */
-    public static function register(string $path, string $version): void {
-        self::$versions[$version] = ['path' => $path];
+			if ( ! $booted ) {
+				add_action(
+					'plugins_loaded',
+					function () {
+						wpmoo_loader( 'negotiate_and_boot' );
+					},
+					-100
+				);
+				$booted = true;
+			}
+			break;
 
-        if (!self::$booted) {
-            // Hook into plugins_loaded at a very early priority to run the negotiator.
-            add_action('plugins_loaded', [__CLASS__, 'negotiate_and_boot'], -100);
-            self::$booted = true;
-        }
-    }
+		case 'negotiate_and_boot':
+			if ( empty( $versions ) ) {
+				return;
+			}
 
-    /**
-     * Finds the highest version and loads its bootstrap file.
-     */
-    public static function negotiate_and_boot(): void {
-        if (empty(self::$versions)) {
-            return;
-        }
+			$version_keys = array_keys( $versions );
+			usort( $version_keys, 'version_compare' );
+			$winner_version = end( $version_keys );
+			$winner_path    = $versions[ $winner_version ]['path'];
 
-        // Find the highest version available.
-        $versions = array_keys(self::$versions);
-        usort($versions, 'version_compare');
-        $winner_version = end($versions);
-        $winner_path = self::$versions[$winner_version]['path'];
+			if ( file_exists( $winner_path ) && basename( $winner_path ) === 'boot.php' ) {
+				require_once $winner_path;
+			}
+			break;
 
-        if (file_exists($winner_path)) {
-            require_once $winner_path;
-        }
-    }
+		case 'load_autoloader':
+			list( $framework_base_path ) = $args;
+			$vendor_autoload             = $framework_base_path . '/vendor/autoload.php';
 
-    /**
-     * Sets up the PSR-4 autoloader for WPMoo classes.
-     * This method must be called by every plugin using the framework.
-     *
-     * @param string $framework_base_path The path to the 'framework' directory.
-     */
-    public static function load_autoloader(string $framework_base_path): void {
-        if (file_exists($framework_base_path . '/vendor/autoload.php')) {
-            require_once $framework_base_path . '/vendor/autoload.php';
-        } else {
-            // Fallback to a simple PSR-4 autoloader for distributed versions.
-            spl_autoload_register(
-                function ($class) use ($framework_base_path) {
-                    $prefix = 'WPMoo\\';
-                    $base_dir = $framework_base_path . '/';
-                    $len = strlen($prefix);
-                    if (strncmp($class, $prefix, $len) !== 0) {
-                        return;
-                    }
-                    $relative_class = substr($class, $len);
-                    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-                    if (file_exists($file)) {
-                        require $file;
-                    }
-                }
-            );
-        }
-    }
+			if ( file_exists( $vendor_autoload ) ) {
+				require_once $vendor_autoload;
+			} else {
+				spl_autoload_register(
+					function ( $class ) use ( $framework_base_path ) {
+						$prefix   = 'WPMoo\\';
+						$base_dir = $framework_base_path . '/';
+						$len      = strlen( $prefix );
+						if ( strncmp( $class, $prefix, $len ) !== 0 ) {
+							return;
+						}
+						$relative_class = substr( $class, $len );
+						$file           = $base_dir . str_replace( '\\', '/', $relative_class ) . '.php';
+						if ( file_exists( $file ) ) {
+							require $file;
+						}
+					}
+				);
+			}
+			break;
+	}
 }

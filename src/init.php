@@ -9,16 +9,15 @@
  */
 
 // 1. Load the shared, immutable loader.
-if (!class_exists('WPMoo_Loader')) {
-    require_once dirname(__DIR__) . '/framework/wpmoo-loader.php';
+if ( ! function_exists( 'wpmoo_loader' ) ) {
+	require_once dirname( __DIR__ ) . '/framework/wpmoo-loader.php';
 }
 
 // Load the WPMoo autoloader early so Core and other WPMoo classes are available.
-// This is the path to the 'framework' directory relative to the plugin root.
-\WPMoo_Loader::load_autoloader(dirname(__DIR__) . '/framework');
+wpmoo_loader( 'load_autoloader', dirname( __DIR__ ) . '/framework' );
 
 // 2. Register this version of the framework with the loader.
-WPMoo_Loader::register( dirname(__DIR__) . '/framework/WordPress/boot.php', '0.2.0' );
+wpmoo_loader( 'register', dirname( __DIR__ ) . '/framework/WordPress/boot.php', '0.2.0' );
 
 // 3. Load the Local Facade for this plugin.
 require_once __DIR__ . '/Moo.php';
