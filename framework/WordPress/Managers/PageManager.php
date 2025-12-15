@@ -112,6 +112,13 @@ class PageManager {
 		// Filter to get only those that are directly associated with this page (containers)
 		$page_layouts = $this->framework_manager->get_layouts_by_parent( $page->get_id() );
 
+		// DEBUG: Show what page layouts were found
+		error_log('DEBUG: Page ID: ' . $page->get_id());
+		error_log('DEBUG: Found page layouts count: ' . count($page_layouts));
+		foreach ($page_layouts as $id => $layout) {
+			error_log('DEBUG: Page layout ID: ' . $id . ', Type: ' . get_class($layout) . ', Parent: ' . ($layout->get_parent() ?? 'none'));
+		}
+
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( $page->get_title() ); ?></h1>
@@ -144,17 +151,8 @@ class PageManager {
 	 * @return void
 	 */
 	private function render_layouts( array $pageLayouts, array $allLayouts ): void {
-		// Process allLayouts to flatten them for easier lookup
-		$allFlatLayouts = array();
-		foreach ( $allLayouts as $plugin => $layouts ) {
-			if ( is_array( $layouts ) ) {
-				$allFlatLayouts = array_merge( $allFlatLayouts, $layouts );
-			}
-		}
-
 		// Separate containers from their item components
 		$containers = array();
-		$itemComponents = array();
 
 		// Process page-level layouts (these should be containers)
 		foreach ( $pageLayouts as $layout ) {
@@ -164,12 +162,19 @@ class PageManager {
 			}
 		}
 
-		// Process all layouts to find items that belong to the containers
-		foreach ( $allFlatLayouts as $layout ) {
-			$parent_id = $layout->get_parent();
-			if ( $parent_id && isset( $containers[ $parent_id ] ) ) {
-				// This layout item belongs to one of our containers
-				$itemComponents[ $parent_id ][ $layout->get_id() ] = $layout;
+		// Process layouts grouped by plugin to avoid ID conflicts across plugins
+		$itemComponents = array();
+		foreach ( $allLayouts as $plugin => $layouts ) {
+			if ( is_array( $layouts ) ) {
+				foreach ( $layouts as $layout ) {
+					$parent_id = $layout->get_parent();
+					if ( $parent_id && isset( $containers[ $parent_id ] ) ) {
+						// This layout item belongs to one of our containers
+						$itemComponents[ $parent_id ][ $layout->get_id() ] = $layout;
+						// DEBUG: Log the matched item
+						error_log("DEBUG: Matched item '" . $layout->get_id() . "' to container '$parent_id' from plugin '$plugin'");
+					}
+				}
 			}
 		}
 
