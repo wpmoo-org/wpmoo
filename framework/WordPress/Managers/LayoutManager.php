@@ -15,7 +15,7 @@ class LayoutManager {
 	/**
 	 * Registered layouts.
 	 *
-	 * @var array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>
+	 * @var array<string, mixed> Array containing all layout components (Tabs, Accordion, Container, Tab, AccordionItem, etc.)
 	 */
 	private array $layouts = array();
 
@@ -37,7 +37,7 @@ class LayoutManager {
 	/**
 	 * Add a layout to be registered.
 	 *
-	 * @param Tabs|Accordion $layout Layout component instance.
+	 * @param mixed $layout Layout component instance (could be Tabs, Accordion, Container, Tab, AccordionItem, etc.).
 	 * @return void
 	 */
 	public function add_layout( $layout ): void {

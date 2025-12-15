@@ -5,7 +5,7 @@ namespace WPMoo\Layout\Component;
 use WPMoo\Layout\Abstracts\AbstractLayout;
 
 /**
- * Accordion layout component (individual accordion item within an accordion container).
+ * Container layout component that can hold other layout components like tabs, accordions, etc.
  *
  * @package WPMoo\Layout\Component
  * @since 0.1.0
@@ -13,30 +13,30 @@ use WPMoo\Layout\Abstracts\AbstractLayout;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Accordion extends AbstractLayout {
+class Container extends AbstractLayout {
     /**
-     * Content fields for this accordion item.
-     *
-     * @var array
-     */
-    private array $content = [];
-
-    /**
-     * Accordion item title.
+     * The type of container (e.g., 'tabs', 'accordion', 'grid', etc.)
      *
      * @var string
      */
-    private string $title;
+    private string $type;
+
+    /**
+     * Item components of this container.
+     *
+     * @var array
+     */
+    private array $items = [];
 
     /**
      * Constructor.
      *
      * @param string $id Layout ID.
-     * @param string $title Accordion item title.
+     * @param string $type Container type.
      */
-    public function __construct(string $id, string $title) {
+    public function __construct(string $id, string $type) {
         $this->id = $id;
-        $this->title = $title;
+        $this->type = $type;
     }
 
     /**
@@ -51,42 +51,43 @@ class Accordion extends AbstractLayout {
     }
 
     /**
-     * Set content fields for the accordion item.
+     * Add an item component to this container.
      *
-     * @param array $content Array of field components.
+     * @param mixed $item The item component to add.
      * @return self
      */
-    public function content(array $content): self {
-        $this->content = $content;
+    public function add_item($item): self {
+        $this->items[] = $item;
         return $this;
     }
 
     /**
-     * Set content fields for the accordion item (alternative method name for API consistency).
+     * Set multiple item components.
      *
-     * @param array $fields Array of field components.
+     * @param array $items Array of item components.
      * @return self
      */
-    public function fields(array $fields): self {
-        return $this->content($fields);
+    public function items(array $items): self {
+        $this->items = $items;
+        return $this;
     }
 
     /**
-     * Get content fields.
-     *
-     * @return array
-     */
-    public function get_content(): array {
-        return $this->content;
-    }
-
-    /**
-     * Get accordion item title.
+     * Get container type.
      *
      * @return string
      */
-    public function get_title(): string {
-        return $this->title;
+    public function get_type(): string {
+        return $this->type;
+    }
+
+    /**
+     * Get item components.
+     *
+     * @return array
+     */
+    public function get_items(): array {
+        return $this->items;
     }
 
     /**

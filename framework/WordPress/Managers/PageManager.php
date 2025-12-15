@@ -107,7 +107,9 @@ class PageManager {
 	 * @return void
 	 */
 	private function render_page( PageBuilder $page ): void {
-		// Get layouts associated with this page.
+		// Get ALL layouts from the framework manager to process containers and their items
+		$all_layouts = $this->framework_manager->get_layouts();
+		// Filter to get only those that are directly associated with this page (containers)
 		$page_layouts = $this->framework_manager->get_layouts_by_parent( $page->get_id() );
 
 		?>
@@ -121,7 +123,7 @@ class PageManager {
 				<?php
 				// If there are layouts for this page, render them.
 				if ( ! empty( $page_layouts ) ) {
-					$this->render_layouts( $page_layouts );
+					$this->render_layouts( $page_layouts, $all_layouts ); // Pass all layouts for item processing
 				} else {
 					// Fallback: render standard WordPress settings.
 					settings_fields( $page->get_menu_slug() );
@@ -137,11 +139,61 @@ class PageManager {
 	/**
 	 * Render layouts for the page.
 	 *
-	 * @param array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion> $layouts Layout components to render.
+	 * @param array<string, mixed> $pageLayouts Layout components directly associated with page (containers).
+	 * @param array<string, array<string, mixed>> $allLayouts All layout components grouped by plugin.
 	 * @return void
 	 */
-	private function render_layouts( array $layouts ): void {
-		foreach ( $layouts as $layout ) {
+	private function render_layouts( array $pageLayouts, array $allLayouts ): void {
+		// Process allLayouts to flatten them for easier lookup
+		$allFlatLayouts = array();
+		foreach ( $allLayouts as $plugin => $layouts ) {
+			if ( is_array( $layouts ) ) {
+				$allFlatLayouts = array_merge( $allFlatLayouts, $layouts );
+			}
+		}
+
+		// Separate containers from their item components
+		$containers = array();
+		$itemComponents = array();
+
+		// Process page-level layouts (these should be containers)
+		foreach ( $pageLayouts as $layout ) {
+			// Check if it's a Container component
+			if ( $layout instanceof \WPMoo\Layout\Component\Container ) {
+				$containers[ $layout->get_id() ] = $layout;
+			}
+		}
+
+		// Process all layouts to find items that belong to the containers
+		foreach ( $allFlatLayouts as $layout ) {
+			$parent_id = $layout->get_parent();
+			if ( $parent_id && isset( $containers[ $parent_id ] ) ) {
+				// This layout item belongs to one of our containers
+				$itemComponents[ $parent_id ][ $layout->get_id() ] = $layout;
+			}
+		}
+
+		// Render each container with its item components
+		foreach ( $containers as $container ) {
+			$containerId = $container->get_id();
+			$containerType = $container->get_type();
+			$items = $itemComponents[ $containerId ] ?? array();
+
+			switch ( $containerType ) {
+				case 'tabs':
+					$this->render_tabs_from_container( $container, $items );
+					break;
+				case 'accordion':
+					$this->render_accordion_from_container( $container, $items );
+					break;
+				default:
+					// Handle other container types if needed
+					break;
+			}
+		}
+
+		// Also render any legacy tabs/accordions that still use the old structure
+		foreach ( $pageLayouts as $layout ) {
 			if ( $layout instanceof \WPMoo\Layout\Component\Tabs ) {
 				$this->render_tabs( $layout );
 			} elseif ( $layout instanceof \WPMoo\Layout\Component\Accordion ) {
@@ -151,7 +203,86 @@ class PageManager {
 	}
 
 	/**
-	 * Render tabs layout.
+	 * Render tabs layout from container and item components.
+	 *
+	 * @param \WPMoo\Layout\Component\Container $container Container component.
+	 * @param array $items Item components for this container.
+	 * @return void
+	 */
+	private function render_tabs_from_container( \WPMoo\Layout\Component\Container $container, array $items ): void {
+		$orientation = 'horizontal'; // Default orientation, could be stored in Container properties if needed
+
+		$tab_class = 'vertical' === $orientation ? 'wpmoo-tabs-vertical' : 'wpmoo-tabs-horizontal';
+		?>
+		<div class="wpmoo-tabs <?php echo esc_attr( $tab_class ); ?>">
+			<div class="wpmoo-tab-nav">
+				<ul role="tablist">
+				<?php $index = 0; ?>
+				<?php foreach ( $items as $item ) : ?>
+					<?php if ( $item instanceof \WPMoo\Layout\Component\Tab ) : ?>
+					<li role="presentation" class="<?php echo 0 === $index ? 'active' : ''; ?>">
+						<a href="#<?php echo esc_attr( $item->get_id() ); ?>"
+							role="tab"
+							aria-selected="<?php echo 0 === $index ? 'true' : 'false'; ?>">
+							<?php echo esc_html( $item->get_title() ); ?>
+						</a>
+					</li>
+					<?php endif; ?>
+					<?php $index++; ?>
+				<?php endforeach; ?>
+				</ul>
+			</div>
+
+			<div class="wpmoo-tab-content">
+				<?php $index = 0; ?>
+				<?php foreach ( $items as $item ) : ?>
+					<?php if ( $item instanceof \WPMoo\Layout\Component\Tab ) : ?>
+					<div id="<?php echo esc_attr( $item->get_id() ); ?>"
+						 role="tabpanel"
+						 class="tab-pane <?php echo 0 === $index ? 'active' : ''; ?>">
+						<?php
+						// Render content for this tab.
+						$this->render_content( $item->get_content() );
+						?>
+					</div>
+					<?php endif; ?>
+					<?php $index++; ?>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render accordion layout from container and item components.
+	 *
+	 * @param \WPMoo\Layout\Component\Container $container Container component.
+	 * @param array $items Item components for this container.
+	 * @return void
+	 */
+	private function render_accordion_from_container( \WPMoo\Layout\Component\Container $container, array $items ): void {
+		?>
+		<div class="wpmoo-accordion">
+			<?php foreach ( $items as $item ) : ?>
+				<?php if ( $item instanceof \WPMoo\Layout\Component\Accordion ) : ?>
+				<div class="accordion-item">
+					<input type="checkbox" id="<?php echo esc_attr( $item->get_id() ); ?>_checkbox" hidden>
+					<label class="wpmoo-accordion-label" for="<?php echo esc_attr( $item->get_id() ); ?>_checkbox"><?php echo esc_html( $item->get_title() ); ?></label>
+					<div class="wpmoo-accordion-content">
+						<?php
+						// Render content for this accordion item.
+						$this->render_content( $item->get_content() );
+						?>
+					</div>
+				</div>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render tabs layout (legacy structure).
 	 *
 	 * @param \WPMoo\Layout\Component\Tabs $tabs Tabs component.
 	 * @return void
@@ -216,18 +347,54 @@ class PageManager {
 			return;
 		}
 
-		// For now, just render each item in the content array.
-		// In the future, this would process fields, nested layouts, etc.
+		// Render each item in the content array.
+		// This processes fields and other content elements.
 		foreach ( $content as $item ) {
 			// If item is a field, render it.
 			if ( is_object( $item ) && method_exists( $item, 'get_id' ) ) {
 				// This is a field that needs to be rendered.
-				// For now, we'll just show a placeholder.
-				echo '<div class="field-placeholder" data-field-id="' . esc_attr( $item->get_id() ) . '">';
-				if ( method_exists( $item, 'get_label' ) ) {
-					echo '<label>' . esc_html( $item->get_label() ) . '</label>';
+				$field_id = $item->get_id();
+				// Determine field type from the class name
+				$field_class = get_class($item);
+				$field_type = strtolower(pathinfo($field_class, PATHINFO_FILENAME)); // Extract type from class name like 'Input', 'Toggle', etc.
+
+				// As a fallback, we can check the class name directly
+				if (strpos($field_class, 'Input') !== false) {
+					$field_type = 'text';
+				} elseif (strpos($field_class, 'Textarea') !== false) {
+					$field_type = 'textarea';
+				} elseif (strpos($field_class, 'Toggle') !== false) {
+					$field_type = 'toggle';
+				} else {
+					$field_type = 'text'; // Default to text
 				}
-				echo '<div class="field-content">Field: ' . esc_html( $item->get_id() ) . ' (to be implemented)</div>';
+
+				$field_name = $field_id; // In a real implementation, this would be prefixed with the option group
+
+				// Get field properties
+				$label = method_exists( $item, 'get_label' ) ? $item->get_label() : '';
+				$placeholder = method_exists( $item, 'get_placeholder' ) ? $item->get_placeholder() : '';
+
+				// Output the field based on its type
+				echo '<div class="field-wrapper" data-field-id="' . esc_attr( $field_id ) . '">';
+				if ( ! empty( $label ) ) {
+					echo '<label for="' . esc_attr( $field_id ) . '">' . esc_html( $label ) . '</label>';
+				}
+
+				// Render different field types
+				switch ( $field_type ) {
+					case 'toggle':
+						$checked = get_option( $field_id, false ) ? 'checked' : '';
+						echo '<div class="form-group"><input type="checkbox" id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" ' . $checked . ' class="wpmoo-toggle form-switch"></div>';
+						break;
+					case 'textarea':
+						$value = get_option( $field_id, '' );
+						echo '<div class="form-group"><textarea id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $placeholder ) . '" class="wpmoo-textarea input-group">' . esc_textarea( $value ) . '</textarea></div>';
+						break;
+					default: // Includes text, number, etc.
+						$value = get_option( $field_id, '' );
+						echo '<div class="form-group"><input type="text" id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" value="' . esc_attr( $value ) . '" placeholder="' . esc_attr( $placeholder ) . '" class="wpmoo-input input-group"></div>';
+				}
 				echo '</div>';
 			} elseif ( is_string( $item ) ) {
 				// This could be other content.

@@ -33,7 +33,7 @@ class FrameworkManager {
 	/**
 	 * Registered layouts by plugin.
 	 *
-	 * @var array<string, array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>>
+	 * @var array<string, array<string, mixed>> Array containing all layout components (Tabs, Accordion, Container, Tab, AccordionItem, etc.)
 	 */
 	private array $layouts = array();
 
@@ -174,7 +174,7 @@ class FrameworkManager {
 	/**
 	 * Add a layout to the registry.
 	 *
-	 * @param Tabs|Accordion $layout Layout component instance.
+	 * @param mixed $layout Layout component instance (could be Tabs, Accordion, Container, Tab, AccordionItem, etc.).
 	 * @param string         $plugin_slug Plugin slug to register the layout under.
 	 * @return void
 	 */
@@ -191,7 +191,7 @@ class FrameworkManager {
 	 *
 	 * @param string      $id Layout ID.
 	 * @param string|null $plugin_slug Plugin slug to search within.
-	 * @return Tabs|Accordion|null
+	 * @return mixed|null The layout component or null if not found
 	 */
 	public function get_layout( string $id, ?string $plugin_slug = null ) {
 		if ( $plugin_slug ) {
@@ -212,7 +212,7 @@ class FrameworkManager {
 	 * Get all layouts.
 	 *
 	 * @param string|null $plugin_slug Plugin slug to get layouts from, or null for all.
-	 * @return array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>|array<string, array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>>
+	 * @return array<string, mixed>|array<string, array<string, mixed>> Array containing all layout components
 	 */
 	public function get_layouts( ?string $plugin_slug = null ) {
 		if ( $plugin_slug ) {
@@ -228,7 +228,7 @@ class FrameworkManager {
 	 *
 	 * @param string      $parent_id Parent ID to filter by.
 	 * @param string|null $plugin_slug Plugin slug to search within.
-	 * @return array<string, \WPMoo\Layout\Component\Tabs|\WPMoo\Layout\Component\Accordion>
+	 * @return array<string, mixed> Array of layout components that have the specified parent
 	 */
 	public function get_layouts_by_parent( string $parent_id, ?string $plugin_slug = null ): array {
 		$layouts = array();

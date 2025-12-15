@@ -79,6 +79,45 @@ class App {
     }
 
     /**
+     * Create a layout container.
+     *
+     * @param string $type Container type (e.g., 'tabs', 'accordion', 'grid', etc.).
+     * @param string $id Container ID.
+     * @return \WPMoo\Layout\Component\Container
+     */
+    public function container(string $type, string $id) {
+        $container = new \WPMoo\Layout\Component\Container($id, $type);
+        $this->get_framework_manager()->add_layout($container, $this->app_id);
+        return $container;
+    }
+
+    /**
+     * Create a tab component.
+     *
+     * @param string $id Tab ID.
+     * @param string $title Tab title.
+     * @return \WPMoo\Layout\Component\Tab
+     */
+    public function tab(string $id, string $title) {
+        $tab = new \WPMoo\Layout\Component\Tab($id, $title);
+        $this->get_framework_manager()->add_layout($tab, $this->app_id);
+        return $tab;
+    }
+
+    /**
+     * Create an accordion component (individual accordion item within an accordion container).
+     *
+     * @param string $id Accordion item ID.
+     * @param string $title Accordion item title.
+     * @return \WPMoo\Layout\Component\Accordion
+     */
+    public function accordion(string $id, string $title) {
+        $accordion = new \WPMoo\Layout\Component\Accordion($id, $title);
+        $this->get_framework_manager()->add_layout($accordion, $this->app_id);
+        return $accordion;
+    }
+
+    /**
      * Gets the ID for the current app instance.
      *
      * @return string

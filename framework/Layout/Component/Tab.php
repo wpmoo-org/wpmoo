@@ -5,7 +5,7 @@ namespace WPMoo\Layout\Component;
 use WPMoo\Layout\Abstracts\AbstractLayout;
 
 /**
- * Accordion layout component (individual accordion item within an accordion container).
+ * Tab layout component (individual tab within a tabs container).
  *
  * @package WPMoo\Layout\Component
  * @since 0.1.0
@@ -13,16 +13,16 @@ use WPMoo\Layout\Abstracts\AbstractLayout;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Accordion extends AbstractLayout {
+class Tab extends AbstractLayout {
     /**
-     * Content fields for this accordion item.
+     * Content fields for this tab.
      *
      * @var array
      */
     private array $content = [];
 
     /**
-     * Accordion item title.
+     * Tab title.
      *
      * @var string
      */
@@ -32,7 +32,7 @@ class Accordion extends AbstractLayout {
      * Constructor.
      *
      * @param string $id Layout ID.
-     * @param string $title Accordion item title.
+     * @param string $title Tab title.
      */
     public function __construct(string $id, string $title) {
         $this->id = $id;
@@ -51,7 +51,7 @@ class Accordion extends AbstractLayout {
     }
 
     /**
-     * Set content fields for the accordion item.
+     * Set content fields for the tab.
      *
      * @param array $content Array of field components.
      * @return self
@@ -62,7 +62,7 @@ class Accordion extends AbstractLayout {
     }
 
     /**
-     * Set content fields for the accordion item (alternative method name for API consistency).
+     * Set content fields for the tab (alternative method name for API consistency).
      *
      * @param array $fields Array of field components.
      * @return self
@@ -81,7 +81,7 @@ class Accordion extends AbstractLayout {
     }
 
     /**
-     * Get accordion item title.
+     * Get tab title.
      *
      * @return string
      */
