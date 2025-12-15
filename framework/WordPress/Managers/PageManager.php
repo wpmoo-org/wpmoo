@@ -148,7 +148,7 @@ class PageManager
         <?php
         // If there are layouts for this page, render them.
         if (! empty($page_layouts) ) {
-            $this->render_layouts($page_layouts, $all_layouts); // Pass all layouts for item processing
+            $this->render_layouts($page_layouts); // Pass only the scoped layouts
         } else {
             // Fallback: render standard WordPress settings.
             settings_fields($unique_slug);
@@ -164,62 +164,49 @@ class PageManager
     /**
      * Render layouts for the page.
      *
-     * @param  array<string, mixed>                $pageLayouts Layout components directly associated with page (containers).
-     * @param  array<string, array<string, mixed>> $allLayouts  All layout components grouped by plugin.
+     * @param  array<string, mixed> $pageLayouts Layout components directly associated with the page.
      * @return void
      */
-    private function render_layouts( array $pageLayouts, array $allLayouts ): void
+    private function render_layouts( array $pageLayouts ): void
     {
-        // Separate containers from their item components
-        $containers = array();
+        $containers    = [];
+        $itemsByParent = [];
 
-        // Process page-level layouts (these should be containers)
+        // First, categorize all given layouts into containers and their child items.
         foreach ( $pageLayouts as $layout ) {
-            // Check if it's a Container component
-            if ($layout instanceof \WPMoo\Layout\Component\Container ) {
+            $parent_id = $layout->get_parent();
+
+            if ( $layout instanceof \WPMoo\Layout\Component\Container ) {
                 $containers[ $layout->get_id() ] = $layout;
+            } elseif ( $parent_id ) {
+                $itemsByParent[ $parent_id ][ $layout->get_id() ] = $layout;
             }
         }
 
-        // Process layouts grouped by plugin to avoid ID conflicts across plugins
-        $itemComponents = array();
-        foreach ( $allLayouts as $plugin => $layouts ) {
-            if (is_array($layouts) ) {
-                foreach ( $layouts as $layout ) {
-                    $parent_id = $layout->get_parent();
-                    if ($parent_id && isset($containers[ $parent_id ]) ) {
-                        // This layout item belongs to one of our containers
-                        $itemComponents[ $parent_id ][ $layout->get_id() ] = $layout;
-                    }
-                }
-            }
-        }
-
-        // Render each container with its item components
-        foreach ( $containers as $container ) {
-            $containerId = $container->get_id();
+        // Render each container with its pre-categorized items.
+        foreach ( $containers as $containerId => $container ) {
+            $items         = $itemsByParent[ $containerId ] ?? [];
             $containerType = $container->get_type();
-            $items = $itemComponents[ $containerId ] ?? array();
 
             switch ( $containerType ) {
-            case 'tabs':
-                $this->render_tabs_from_container($container, $items);
-                break;
-            case 'accordion':
-                $this->render_accordion_from_container($container, $items);
-                break;
-            default:
-                // Handle other container types if needed
-                break;
+                case 'tabs':
+                    $this->render_tabs_from_container( $container, $items );
+                    break;
+                case 'accordion':
+                    $this->render_accordion_from_container( $container, $items );
+                    break;
+                default:
+                    // Handle other container types if needed.
+                    break;
             }
         }
 
-        // Also render any legacy tabs/accordions that still use the old structure
+        // Also render any legacy tabs/accordions that still use the old structure.
         foreach ( $pageLayouts as $layout ) {
-            if ($layout instanceof \WPMoo\Layout\Component\Tabs ) {
-                $this->render_tabs($layout);
-            } elseif ($layout instanceof \WPMoo\Layout\Component\Accordion ) {
-                $this->render_accordion($layout);
+            if ( $layout instanceof \WPMoo\Layout\Component\Tabs ) {
+                $this->render_tabs( $layout );
+            } elseif ( $layout instanceof \WPMoo\Layout\Component\Accordion ) {
+                $this->render_accordion( $layout );
             }
         }
     }
