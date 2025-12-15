@@ -8,17 +8,23 @@ use WPMoo\Field\Field;
 abstract class Facade {
 
     /**
-     * Holds the automatically detected or manually set ID.
+     * Holds the automatically detected app IDs for each child facade.
+     * @var array<string, string>
      */
-    protected static ?string $app_id = null;
+    protected static array $app_ids = [];
 
     public static function __callStatic($method, $args) {
-        // If the ID has not been determined yet, try to find it automatically.
-        if (static::$app_id === null) {
-            static::$app_id = static::detect_app_id(); // Changed call site
+        $called_class = static::class;
+
+        // If the ID for this specific facade has not been determined yet, detect and store it.
+        if (!isset(static::$app_ids[$called_class])) {
+            static::$app_ids[$called_class] = static::detect_app_id();
         }
 
-        return Core::get(static::$app_id)->$method(...$args);
+        // Use the app_id specific to the child class that was called.
+        $app_id = static::$app_ids[$called_class];
+
+        return Core::get($app_id)->$method(...$args);
     }
 
     /**

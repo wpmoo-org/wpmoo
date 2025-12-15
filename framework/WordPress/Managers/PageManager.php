@@ -121,21 +121,8 @@ class PageManager
      */
     private function render_page( PageBuilder $page, string $unique_slug, string $plugin_slug ): void
     {
-        // Get ALL layouts from the framework manager to process containers and their items.
-        $all_layouts = $this->framework_manager->get_layouts();
-        // Filter to get only those layouts that are directly associated with this page AND this plugin.
-        $page_layouts = $this->framework_manager->get_layouts_by_parent($page->get_id(), $plugin_slug);
-
-        // DEBUG: Show what page layouts were found
-        // Uncomment the following lines for debugging
-        /*
-        error_log('DEBUG: Page ID: ' . $page->get_id());
-        error_log('DEBUG: Plugin Slug: ' . $plugin_slug);
-        error_log('DEBUG: Found page layouts count: ' . count($page_layouts));
-        foreach ($page_layouts as $id => $layout) {
-        error_log('DEBUG: Page layout ID: ' . $id . ', Type: ' . get_class($layout) . ', Parent: ' . ($layout->get_parent() ?? 'none'));
-        }
-        */
+        // Get all layouts for the current plugin to build the page structure.
+        $plugin_layouts = $this->framework_manager->get_layouts($plugin_slug);
 
         ?>
         <div class="wrap">
@@ -146,9 +133,9 @@ class PageManager
 
             <form method="post" action="options.php">
         <?php
-        // If there are layouts for this page, render them.
-        if (! empty($page_layouts) ) {
-            $this->render_layouts($page_layouts); // Pass only the scoped layouts
+        // If there are layouts for this plugin, render them.
+        if (! empty($plugin_layouts) ) {
+            $this->render_layouts($plugin_layouts, $page->get_id());
         } else {
             // Fallback: render standard WordPress settings.
             settings_fields($unique_slug);
@@ -164,21 +151,26 @@ class PageManager
     /**
      * Render layouts for the page.
      *
-     * @param  array<string, mixed> $pageLayouts Layout components directly associated with the page.
+     * @param  array<string, mixed> $pluginLayouts All layout components for the current plugin.
+     * @param  string               $page_id       The ID of the current page, used as the top-level parent.
      * @return void
      */
-    private function render_layouts( array $pageLayouts ): void
+    private function render_layouts( array $pluginLayouts, string $page_id ): void
     {
         $containers    = [];
         $itemsByParent = [];
 
-        // First, categorize all given layouts into containers and their child items.
-        foreach ( $pageLayouts as $layout ) {
-            $parent_id = $layout->get_parent();
-
-            if ( $layout instanceof \WPMoo\Layout\Component\Container ) {
+        // First, find the top-level containers for the current page.
+        foreach ( $pluginLayouts as $layout ) {
+            if ( $layout->get_parent() === $page_id && $layout instanceof \WPMoo\Layout\Component\Container ) {
                 $containers[ $layout->get_id() ] = $layout;
-            } elseif ( $parent_id ) {
+            }
+        }
+
+        // Now, find all the items that belong to those containers.
+        foreach ( $pluginLayouts as $layout ) {
+            $parent_id = $layout->get_parent();
+            if ( $parent_id && isset( $containers[ $parent_id ] ) ) {
                 $itemsByParent[ $parent_id ][ $layout->get_id() ] = $layout;
             }
         }
@@ -198,15 +190,6 @@ class PageManager
                 default:
                     // Handle other container types if needed.
                     break;
-            }
-        }
-
-        // Also render any legacy tabs/accordions that still use the old structure.
-        foreach ( $pageLayouts as $layout ) {
-            if ( $layout instanceof \WPMoo\Layout\Component\Tabs ) {
-                $this->render_tabs( $layout );
-            } elseif ( $layout instanceof \WPMoo\Layout\Component\Accordion ) {
-                $this->render_accordion( $layout );
             }
         }
     }
