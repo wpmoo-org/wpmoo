@@ -3,6 +3,7 @@
 namespace WPMoo;
 
 use ReflectionClass;
+use WPMoo\Field\Field;
 
 abstract class Facade {
 
@@ -21,12 +22,43 @@ abstract class Facade {
     }
 
     /**
+     * Create an input field.
+     *
+     * @param string $id Field ID.
+     * @return \WPMoo\Field\Type\Input
+     */
+    public static function input(string $id) {
+        return Field::input($id);
+    }
+
+    /**
+     * Create a textarea field.
+     *
+     * @param string $id Field ID.
+     * @return \WPMoo\Field\Type\Textarea
+     */
+    public static function textarea(string $id) {
+        return Field::textarea($id);
+    }
+
+    /**
+     * Create a toggle field.
+     *
+     * @param string $id Field ID.
+     * @return \WPMoo\Field\Type\Toggle
+     */
+    public static function toggle(string $id) {
+        return Field::toggle($id);
+    }
+
+
+    /**
      * Magic Method: Extracts the slug from the file path of the inheriting class.
      */
     public static function detect_app_id(): string { // Changed method name
         // 1. Get the identity of the class calling this method (inheriting class) using Reflection.
         $reflector = new ReflectionClass(static::class);
-        
+
         // 2. Get the full path of the file where the class is located.
         // E.g.: /var/www/html/wp-content/plugins/super-form/src/App.php
         $file_path = $reflector->getFileName(); // Changed to snake_case
@@ -42,10 +74,10 @@ abstract class Facade {
         // 4. Get the part before the first '/' (Folder name = Slug).
         // Result: super-form
         $parts = explode('/', $plugin_basename); // Changed to snake_case
-        
+
         // If it's a single-file plugin (without a folder), get the file name.
-        $slug = $parts[0]; 
-        
+        $slug = $parts[0];
+
         if (str_ends_with($slug, '.php')) {
             $slug = basename($slug, '.php');
         }

@@ -10,7 +10,6 @@
  */
 
 use WPMoo\Moo;
-use WPMoo\Field\Field;
 
 // Wrap the code in an init action to ensure it runs at the right time.
 // add_action(
@@ -18,7 +17,7 @@ use WPMoo\Field\Field;
 // 	function () {
 		// Since this file is loaded via the 'wpmoo' plugin's Local Facade (WPMoo\Moo),
 		// we can make static calls directly. The APP_ID 'wpmoo' is handled by the facade.
-		
+
 		// Create a settings page.
 		Moo::page( 'wpmoo_settings', __( 'WPMoo Settings', 'wpmoo-samples' ) )
 		->capability( 'manage_options' )
@@ -26,7 +25,7 @@ use WPMoo\Field\Field;
 		->menu_slug( 'wpmoo-settings' )
 		->menu_position( 20 )
 		->menu_icon( 'dashicons-admin-generic' );
-		
+
 		// Create tabs for the settings page.
 		Moo::tabs( 'wpmoo_main_tabs' )
 			->parent( 'wpmoo_settings' )  // Link to the settings page.
@@ -36,13 +35,13 @@ use WPMoo\Field\Field;
 						'id' => 'general',
 						'title' => __( 'General Settings', 'wpmoo-samples' ),
 						'content' => array(
-							Field::input( 'site_title' )
+							Moo::input( 'site_title' )
 								->label( __( 'Site Title', 'wpmoo-samples' ) )
 								->placeholder( __( 'Enter your site title', 'wpmoo-samples' ) ),
-							Field::textarea( 'site_description' )
+							Moo::textarea( 'site_description' )
 								->label( __( 'Site Description', 'wpmoo-samples' ) )
 								->placeholder( __( 'Enter site description', 'wpmoo-samples' ) ),
-							Field::toggle( 'enable_cache' )
+							Moo::toggle( 'enable_cache' )
 								->label( __( 'Enable Caching', 'wpmoo-samples' ) ),
 						),
 					),
@@ -50,10 +49,10 @@ use WPMoo\Field\Field;
 						'id' => 'advanced',
 						'title' => __( 'Advanced Settings', 'wpmoo-samples' ),
 						'content' => array(
-							Field::input( 'cache_duration' )
+							Moo::input( 'cache_duration' )
 								->label( __( 'Cache Duration (seconds)', 'wpmoo-samples' ) )
 								->placeholder( __( 'Enter cache duration', 'wpmoo-samples' ) ),
-							Field::toggle( 'enable_debug' )
+							Moo::toggle( 'enable_debug' )
 								->label( __( 'Enable Debug Mode', 'wpmoo-samples' ) ),
 						),
 					),
