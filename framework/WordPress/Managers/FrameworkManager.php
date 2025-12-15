@@ -183,7 +183,10 @@ class FrameworkManager {
 			$this->layouts[ $plugin_slug ] = array();
 		}
 
-		$this->layouts[ $plugin_slug ][ $layout->get_id() ] = $layout;
+		// Add plugin slug as prefix to layout ID to prevent conflicts across plugins
+		$prefixed_id = $plugin_slug . '_' . $layout->get_id();
+
+		$this->layouts[ $plugin_slug ][ $prefixed_id ] = $layout;
 	}
 
 	/**

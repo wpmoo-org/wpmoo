@@ -113,11 +113,14 @@ class PageManager {
 		$page_layouts = $this->framework_manager->get_layouts_by_parent( $page->get_id() );
 
 		// DEBUG: Show what page layouts were found
+		// Uncomment the following lines for debugging
+		/*
 		error_log('DEBUG: Page ID: ' . $page->get_id());
 		error_log('DEBUG: Found page layouts count: ' . count($page_layouts));
 		foreach ($page_layouts as $id => $layout) {
 			error_log('DEBUG: Page layout ID: ' . $id . ', Type: ' . get_class($layout) . ', Parent: ' . ($layout->get_parent() ?? 'none'));
 		}
+		*/
 
 		?>
 		<div class="wrap">
@@ -171,8 +174,6 @@ class PageManager {
 					if ( $parent_id && isset( $containers[ $parent_id ] ) ) {
 						// This layout item belongs to one of our containers
 						$itemComponents[ $parent_id ][ $layout->get_id() ] = $layout;
-						// DEBUG: Log the matched item
-						error_log("DEBUG: Matched item '" . $layout->get_id() . "' to container '$parent_id' from plugin '$plugin'");
 					}
 				}
 			}
