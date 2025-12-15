@@ -3,6 +3,8 @@
 namespace WPMoo\WordPress;
 
 use WPMoo\Core;
+use WPMoo\WordPress\Managers\FrameworkManager;
+use WPMoo\WordPress\Managers\PageManager;
 
 /**
  * WPMoo WordPress Kernel.
@@ -67,6 +69,9 @@ final class Kernel {
             $container->resolve(\WPMoo\WordPress\Managers\LayoutManager::class)->register_all();
         }, 15);
 
+        // Register settings groups on admin_init.
+        add_action('admin_init', [$this, 'register_settings_groups']);
+
         // Register PageManager and MetaboxManager hooks on wpmoo_loaded
         // This ensures pages are registered after all plugins have declared them.
         add_action('wpmoo_loaded', [$this, 'register_admin_page_related_hooks'], 20);
@@ -75,6 +80,23 @@ final class Kernel {
         // this will create it on the first call and retrieve it on subsequent calls.
         // Its constructor registers the necessary 'admin_enqueue_scripts' hook.
         $container->resolve(\WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer::class);
+    }
+
+    /**
+     * Registers all unique settings groups with WordPress.
+     * This is necessary to whitelist the options so they can be saved.
+     */
+    public function register_settings_groups(): void {
+        $container = Core::instance()->get_container();
+        $frameworkManager = $container->resolve(FrameworkManager::class);
+        $all_pages_by_plugin = $frameworkManager->get_pages();
+
+        foreach ( $all_pages_by_plugin as $plugin_slug => $pages ) {
+            foreach ( $pages as $page ) {
+                $unique_slug = PageManager::get_unique_slug($plugin_slug, $page->get_menu_slug());
+                register_setting( $unique_slug, $unique_slug );
+            }
+        }
     }
     
     /**
@@ -85,7 +107,7 @@ final class Kernel {
         $container = Core::instance()->get_container();
         
         // Resolve managers here to ensure they are the same singletons.
-        $pageManager = $container->resolve(\WPMoo\WordPress\Managers\PageManager::class);
+        $pageManager = $container->resolve(PageManager::class);
         
         $metaboxManager = $container->resolve(\WPMoo\WordPress\Managers\MetaboxManager::class);
 

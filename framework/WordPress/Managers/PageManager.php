@@ -67,6 +67,18 @@ class PageManager
     }
 
     /**
+     * Generates a unique, prefixed slug for a page to prevent conflicts.
+     *
+     * @param  string $plugin_slug The unique slug of the plugin.
+     * @param  string $page_slug   The original slug of the page.
+     * @return string The conflict-safe slug.
+     */
+    public static function get_unique_slug( string $plugin_slug, string $page_slug ): string
+    {
+        return $plugin_slug . '_' . $page_slug;
+    }
+
+    /**
      * Register a single page with WordPress.
      *
      * @param  string      $plugin_slug The plugin's unique slug.
@@ -79,7 +91,7 @@ class PageManager
         $hook_suffix = '';
 
         // Create a unique slug prefixed with the plugin's ID to prevent conflicts.
-        $unique_slug = $plugin_slug . '_' . $page->get_menu_slug();
+        $unique_slug = self::get_unique_slug($plugin_slug, $page->get_menu_slug());
 
         if ($page->get_parent_slug() ) {
             $hook_suffix = add_submenu_page(
@@ -133,17 +145,27 @@ class PageManager
 
             <form method="post" action="options.php">
         <?php
+        // This function prints out all hidden setting fields
+        settings_fields($unique_slug);
+
         // If there are layouts for this plugin, render them.
         if (! empty($plugin_layouts) ) {
             $this->render_layouts($plugin_layouts, $page->get_id(), $unique_slug);
         } else {
-            // Fallback: render standard WordPress settings.
-            settings_fields($unique_slug);
+            // Fallback for pages without layouts.
             do_settings_sections($unique_slug);
-            submit_button();
         }
+
+        submit_button();
         ?>
             </form>
+
+            <!-- ### DEBUG: Show saved options ### -->
+            <hr>
+            <h2>Saved Data</h2>
+            <pre><?php echo esc_html( wp_json_encode( get_option( $unique_slug ), JSON_PRETTY_PRINT ) ); ?></pre>
+            <!-- ### END DEBUG ### -->
+
         </div>
         <?php
     }
