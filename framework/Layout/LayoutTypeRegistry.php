@@ -55,19 +55,25 @@ class LayoutTypeRegistry {
 	/**
 	 * Register a new layout type.
 	 *
-	 * @param string                        $type The layout type slug.
-	 * @param class-string<LayoutInterface> $class The layout class name.
+	 * @param string $type The layout type slug.
+	 * @param string $class The layout class name.
+	 *
+	 * @phpstan-param class-string<\WPMoo\Layout\Interfaces\LayoutInterface> $class
+	 *
 	 * @return void
 	 * @throws \InvalidArgumentException If the layout class doesn't exist or doesn't implement LayoutInterface.
 	 */
 	public function register_layout_type( string $type, string $class ): void {
+		// Validate the layout type slug format.
 		if ( ! class_exists( $class ) ) {
-			throw new \InvalidArgumentException( sprintf( 'Layout class does not exist: %s', $class ) );
+			/* translators: %s: Layout class name */
+			throw new \InvalidArgumentException( sprintf( esc_html__( 'Layout class does not exist: %s', 'wpmoo' ), esc_html( $class ) ) );
 		}
 
 		// Verify that the class implements the LayoutInterface.
 		if ( ! in_array( \WPMoo\Layout\Interfaces\LayoutInterface::class, class_implements( $class ) ) ) {
-			throw new \InvalidArgumentException( sprintf( 'Layout class must implement LayoutInterface: %s', $class ) );
+			/* translators: %s: Layout class name */
+			throw new \InvalidArgumentException( sprintf( esc_html__( 'Layout class must implement LayoutInterface: %s', 'wpmoo' ), esc_html( $class ) ) );
 		}
 
 		$this->layout_types[ $type ] = $class;

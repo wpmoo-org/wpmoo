@@ -55,22 +55,58 @@ class FieldTypeRegistry {
 	/**
 	 * Register a new field type.
 	 *
-	 * @param string                       $type The field type slug.
-	 * @param class-string<FieldInterface> $class The field class name.
+	 * @param string $type The field type slug.
+	 * @param string $class The field class name.
+	 *
+	 * @phpstan-param class-string<\WPMoo\Field\Interfaces\FieldInterface> $class
+	 *
 	 * @return void
 	 * @throws \InvalidArgumentException If the field class doesn't exist or doesn't implement FieldInterface.
 	 */
 	public function register_field_type( string $type, string $class ): void {
+
+		// Validate the field type slug format.
+		if ( ! $this->is_valid_type_slug( $type ) ) {
+			/* translators: %s: field type slug */
+			throw new \InvalidArgumentException( sprintf( esc_html__( 'Invalid field type slug: %s', 'wpmoo' ), esc_html( $type ) ) );
+		}
+
+		// Check if class exists.
 		if ( ! class_exists( $class ) ) {
-			throw new \InvalidArgumentException( sprintf( 'Field class does not exist: %s', $class ) );
+			/* translators: %s: field class name */
+			throw new \InvalidArgumentException( sprintf( esc_html__( 'Field class does not exist: %s', 'wpmoo' ), esc_html( $class ) ) );
 		}
 
 		// Verify that the class implements the FieldInterface.
 		if ( ! in_array( \WPMoo\Field\Interfaces\FieldInterface::class, class_implements( $class ) ) ) {
-			throw new \InvalidArgumentException( sprintf( 'Field class must implement FieldInterface: %s', $class ) );
+			/* translators: %s: field class name */
+			throw new \InvalidArgumentException( sprintf( esc_html__( 'Field class must implement FieldInterface: %s', 'wpmoo' ), esc_html( $class ) ) );
+		}
+
+		// Verify that the class is instantiable.
+		if ( ! ( new \ReflectionClass( $class ) )->isInstantiable() ) {
+			/* translators: %s: field class name */
+			throw new \InvalidArgumentException( sprintf( esc_html__( 'Field class is not instantiable: %s', 'wpmoo' ), esc_html( $class ) ) );
+		}
+
+		// Prevent duplicate registration.
+		if ( isset( $this->field_types[ $type ] ) ) {
+			/* translators: %s: field type slug */
+			throw new \InvalidArgumentException( sprintf( esc_html__( 'Field type already registered: %s', 'wpmoo' ), esc_html( $type ) ) );
 		}
 
 		$this->field_types[ $type ] = $class;
+	}
+
+	/**
+	 * Validates the format of a field type slug.
+	 *
+	 * @param string $type The field type slug to validate.
+	 * @return bool True if the slug is valid, false otherwise.
+	 */
+	private function is_valid_type_slug( string $type ): bool {
+		// Allow alphanumeric characters, underscores and hyphens, but start with a letter or underscore.
+		return preg_match( '/^[a-zA-Z_][a-zA-Z0-9_-]*$/', $type ) === 1;
 	}
 
 	/**
