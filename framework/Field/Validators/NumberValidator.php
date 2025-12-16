@@ -22,11 +22,11 @@ class NumberValidator extends BaseValidator implements FieldValidatorInterface {
 	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
 	 */
 	public function validate( mixed $value, array $field_options = array() ): array {
-		if ( ! is_numeric( $value ) && ( ! is_string( $value ) || $value === '' ) ) {
+		if ( ! is_numeric( $value ) && ( ! is_string( $value ) || '' === $value ) ) {
 			return array(
 				'valid' => true,
 				'error' => null,
-			); // Allow empty values to be handled by required validator
+			); // Allow empty values to be handled by required validator.
 		}
 
 		if ( ! is_numeric( $value ) ) {
@@ -36,12 +36,13 @@ class NumberValidator extends BaseValidator implements FieldValidatorInterface {
 			);
 		}
 
-		// Check min/max constraints if provided
+		// Check min/max constraints if provided.
 		$min = $field_options['min'] ?? null;
 		$max = $field_options['max'] ?? null;
 
 		$num_value = floatval( $value );
 
+		/* translators: %s is the minimum allowed value */
 		if ( isset( $min ) && $num_value < floatval( $min ) ) {
 			return array(
 				'valid' => false,
@@ -49,6 +50,7 @@ class NumberValidator extends BaseValidator implements FieldValidatorInterface {
 			);
 		}
 
+		/* translators: %s is the maximum allowed value */
 		if ( isset( $max ) && $num_value > floatval( $max ) ) {
 			return array(
 				'valid' => false,

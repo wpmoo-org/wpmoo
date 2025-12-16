@@ -26,17 +26,19 @@ class ValidationHelper {
 	 */
 	public static function validate_id_format( string $id, string $component_type = 'component' ): bool {
 		if ( empty( $id ) ) {
-			throw new \InvalidArgumentException( sprintf( __( '%s ID cannot be empty.', 'wpmoo' ), $component_type ) );
+			/* translators: %s: Component type */
+			throw new \InvalidArgumentException( sprintf( esc_html__( '%s ID cannot be empty.', 'wpmoo' ), sanitize_text_field( $component_type ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( ! preg_match( '/^[a-z0-9_-]+$/', $id ) ) {
+			/* translators: 1: Component type 2: Invalid ID */
 			throw new \InvalidArgumentException(
 				sprintf(
-					__( 'Invalid %1$s ID: %2$s. Must contain only lowercase letters, numbers, hyphens, and underscores.', 'wpmoo' ),
-					$component_type,
-					$id
+					esc_html__( 'Invalid %1$s ID: %2$s. Must contain only lowercase letters, numbers, hyphens, and underscores.', 'wpmoo' ),
+					sanitize_text_field( $component_type ),
+					sanitize_text_field( $id )
 				)
-			);
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return true;
@@ -55,12 +57,13 @@ class ValidationHelper {
 		}
 
 		if ( ! preg_match( '/^[a-z0-9-]+$/', $slug ) ) {
+			/* translators: %s: Invalid plugin slug */
 			throw new \InvalidArgumentException(
 				sprintf(
-					__( 'Invalid plugin slug: %s. Must contain only lowercase letters, numbers, and hyphens.', 'wpmoo' ),
-					$slug
+					esc_html__( 'Invalid plugin slug: %s. Must contain only lowercase letters, numbers, and hyphens.', 'wpmoo' ),
+					sanitize_text_field( $slug )
 				)
-			);
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return true;
@@ -75,17 +78,18 @@ class ValidationHelper {
 	 */
 	public static function validate_version_format( string $version ): bool {
 		if ( empty( $version ) ) {
-			throw new \InvalidArgumentException( __( 'Version cannot be empty.', 'wpmoo' ) );
+			throw new \InvalidArgumentException( esc_html__( 'Version cannot be empty.', 'wpmoo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
-		// Basic semantic versioning format: X.Y or X.Y.Z, optionally with pre-release or build metadata
+		// Basic semantic versioning format: X.Y or X.Y.Z, optionally with pre-release or build metadata.
 		if ( ! preg_match( '/^[\d]+\.[\d]+(?:\.[\d]+)?(?:-[a-zA-Z0-9.]+)?(?:\+[a-zA-Z0-9.]+)?$/', $version ) ) {
+			/* translators: %s: Invalid version */
 			throw new \InvalidArgumentException(
 				sprintf(
-					__( 'Invalid version format: %s. Must follow semantic versioning (e.g., 1.0.0).', 'wpmoo' ),
-					$version
+					esc_html__( 'Invalid version format: %s. Must follow semantic versioning (e.g., 1.0.0).', 'wpmoo' ),
+					sanitize_text_field( $version )
 				)
-			);
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return true;
@@ -100,19 +104,21 @@ class ValidationHelper {
 	 */
 	public static function validate_file_path( string $path ): bool {
 		if ( empty( $path ) ) {
-			throw new \InvalidArgumentException( __( 'File path cannot be empty.', 'wpmoo' ) );
+			throw new \InvalidArgumentException( esc_html__( 'File path cannot be empty.', 'wpmoo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( ! file_exists( $path ) ) {
+			/* translators: %s: File path */
 			throw new \InvalidArgumentException(
-				sprintf( __( 'File does not exist: %s', 'wpmoo' ), $path )
-			);
+				sprintf( esc_html__( 'File does not exist: %s', 'wpmoo' ), sanitize_text_field( $path ) )
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( ! is_readable( $path ) ) {
+			/* translators: %s: File path */
 			throw new \InvalidArgumentException(
-				sprintf( __( 'File is not readable: %s', 'wpmoo' ), $path )
-			);
+				sprintf( esc_html__( 'File is not readable: %s', 'wpmoo' ), sanitize_text_field( $path ) )
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		return true;

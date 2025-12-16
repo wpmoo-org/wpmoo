@@ -22,11 +22,11 @@ class EmailValidator extends BaseValidator implements FieldValidatorInterface {
 	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
 	 */
 	public function validate( mixed $value, array $field_options = array() ): array {
-		if ( ! is_string( $value ) || $value === '' ) {
+		if ( ! is_string( $value ) || '' === $value ) {
 			return array(
 				'valid' => true,
 				'error' => null,
-			); // Allow empty values to be handled by required validator
+			); // Allow empty values to be handled by required validator.
 		}
 
 		if ( ! is_email( $value ) ) {

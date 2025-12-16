@@ -81,9 +81,16 @@ abstract class AbstractField implements FieldInterface {
 	public function __construct( string $id ) {
 		$this->id = $id;
 		$this->name = $id; // Default name to ID.
-		// Initialize with a default validator that doesn't do anything
-		// We don't want to instantiate BaseValidator directly as it's an abstract class
+		// Initialize with a default validator that doesn't do anything.
+		// We don't want to instantiate BaseValidator directly as it's an abstract class.
 		$this->validator = new class() extends \WPMoo\Field\Validators\BaseValidator {
+			/**
+			 * Validate the field value.
+			 *
+			 * @param mixed $value The value to validate.
+			 * @param array $field_options Field options for validation.
+			 * @return array Array with validation result ['valid' => bool, 'error' => string|null].
+			 */
 			public function validate( mixed $value, array $field_options = array() ): array {
 				return array(
 					'valid' => true,

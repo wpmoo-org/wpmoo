@@ -69,7 +69,7 @@ final class Core {
 		$this->container = new Container();
 		$this->field_type_registry = new FieldTypeRegistry();
 		$this->layout_type_registry = new LayoutTypeRegistry();
-		$this->register_services(); // Call register_services here
+		$this->register_services(); // Call register_services here.
 	}
 
 	/**
@@ -124,6 +124,7 @@ final class Core {
 	 *
 	 * @param string $app_id A unique identifier for the App instance (e.g., 'my-shop').
 	 * @return App The App instance for the given ID.
+	 * @throws \InvalidArgumentException If the app ID is empty.
 	 */
 	public static function get( string $app_id ): App {
 		$core = self::instance();

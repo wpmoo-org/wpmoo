@@ -98,8 +98,8 @@ final class Kernel {
 	 */
 	public function register_settings_groups(): void {
 		$container = Core::instance()->get_container();
-		$frameworkManager = $container->resolve( FrameworkManager::class );
-		$all_pages_by_plugin = $frameworkManager->get_pages();
+		$framework_manager = $container->resolve( FrameworkManager::class );
+		$all_pages_by_plugin = $framework_manager->get_pages();
 
 		foreach ( $all_pages_by_plugin as $plugin_slug => $pages ) {
 			foreach ( $pages as $page ) {
@@ -117,21 +117,21 @@ final class Kernel {
 		$container = Core::instance()->get_container();
 
 		// Resolve managers here to ensure they are the same singletons.
-		$pageManager = $container->resolve( PageManager::class );
+		$page_manager = $container->resolve( PageManager::class );
 
-		$metaboxManager = $container->resolve( \WPMoo\WordPress\Managers\MetaboxManager::class );
+		$metabox_manager = $container->resolve( \WPMoo\WordPress\Managers\MetaboxManager::class );
 
 		add_action(
 			'admin_menu',
-			function () use ( $pageManager ) {
-				$pageManager->register_all();
+			function () use ( $page_manager ) {
+				$page_manager->register_all();
 			}
 		);
 
 		add_action(
 			'add_meta_boxes',
-			function () use ( $metaboxManager ) {
-				$metaboxManager->register_all();
+			function () use ( $metabox_manager ) {
+				$metabox_manager->register_all();
 			}
 		);
 
@@ -146,12 +146,12 @@ final class Kernel {
 	 */
 	public function log_version_compatibility(): void {
 		$container = Core::instance()->get_container();
-		$frameworkManager = $container->resolve( FrameworkManager::class );
+		$framework_manager = $container->resolve( FrameworkManager::class );
 
-		$all_plugins = $frameworkManager->get_all_registered_plugins();
-		$incompatible_plugins = $frameworkManager->get_incompatible_plugins();
+		$all_plugins = $framework_manager->get_all_registered_plugins();
+		$incompatible_plugins = $framework_manager->get_incompatible_plugins();
 
-		// Log all plugins and their compatibility status
+		// Log all plugins and their compatibility status.
 		foreach ( $all_plugins as $slug => $plugin ) {
 			if ( isset( $plugin['compatibility'] ) ) {
 				$status = $plugin['compatibility']['compatible'] ? 'COMPATIBLE' : 'INCOMPATIBLE';
@@ -159,7 +159,7 @@ final class Kernel {
 			}
 		}
 
-		// If there are incompatible plugins, log them specifically
+		// If there are incompatible plugins, log them specifically.
 		if ( ! empty( $incompatible_plugins ) ) {
 			$incompatible_list = array_keys( $incompatible_plugins );
 			error_log( 'WPMoo: Found ' . count( $incompatible_plugins ) . ' plugin(s) with version compatibility issues: ' . implode( ', ', $incompatible_list ) );

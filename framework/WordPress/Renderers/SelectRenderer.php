@@ -26,7 +26,7 @@ class SelectRenderer extends BaseRenderer {
 		$field_id = $field->get_id();
 		$field_name = $unique_slug . '[' . $field_id . ']';
 
-		// Get options if the field has them
+		// Get options if the field has them.
 		$options = array();
 		if ( method_exists( $field, 'get_options' ) ) {
 			$options = $field->get_options();

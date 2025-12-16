@@ -27,18 +27,18 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 	 * @return void
 	 */
 	public function enqueue_admin_assets( string $hook_suffix ): void {
-		// Only load assets on WPMoo pages
+		// Only load assets on WPMoo pages.
 		if ( ! $this->is_wpmoo_page( $hook_suffix ) ) {
 			return;
 		}
 
-		// Enqueue framework styles
+		// Enqueue framework styles.
 		$this->enqueue_framework_styles();
 
-		// Enqueue framework scripts
+		// Enqueue framework scripts.
 		$this->enqueue_framework_scripts();
 
-		// Localize scripts with translations
+		// Localize scripts with translations.
 		$this->localize_scripts();
 	}
 
@@ -49,7 +49,7 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 	 * @return bool True if it's a WPMoo page, false otherwise.
 	 */
 	private function is_wpmoo_page( string $hook_suffix ): bool {
-		// Check if the hook suffix contains 'wpmoo' to identify WPMoo pages
+		// Check if the hook suffix contains 'wpmoo' to identify WPMoo pages.
 		return strpos( $hook_suffix, 'wpmoo' ) !== false;
 	}
 
@@ -59,7 +59,7 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 	 * @return void
 	 */
 	private function enqueue_framework_styles(): void {
-		// Enqueue main framework styles
+		// Enqueue main framework styles.
 		$this->enqueue_style(
 			'wpmoo-framework',
 			$this->get_asset_url( 'css/wpmoo.azure.css' ),
@@ -68,7 +68,7 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 			'all'
 		);
 
-		// Enqueue PicoCSS if not already loaded
+		// Enqueue PicoCSS if not already loaded.
 		if ( ! wp_style_is( 'pico-css', 'enqueued' ) ) {
 			$this->enqueue_style(
 				'pico-css',
@@ -86,7 +86,7 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 	 * @return void
 	 */
 	private function enqueue_framework_scripts(): void {
-		// Enqueue main framework script
+		// Enqueue main framework script.
 		$this->enqueue_script(
 			'wpmoo-framework',
 			$this->get_asset_url( 'js/wpmoo.min.js' ),
@@ -123,8 +123,8 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 	 * @return bool True if the page has WPMoo components, false otherwise.
 	 */
 	private function has_wpmoo_components_on_page(): bool {
-		// For now, we'll return true if we're on a page that might have WPMoo components
-		// In a real implementation, you'd have more sophisticated detection
+		// For now, we'll return true if we're on a page that might have WPMoo components.
+		// In a real implementation, you'd have more sophisticated detection.
 		return true;
 	}
 }

@@ -151,22 +151,22 @@ class PageManager {
 
 			<form method="post" action="options.php" class="pico-settings-form">
 		<?php
-		// This function prints out all hidden setting fields
+		// This function prints out all hidden setting fields.
 		settings_fields( $unique_slug );
 
 		// If there are layouts for this plugin, render them.
 		if ( ! empty( $plugin_layouts ) ) {
-			echo '<div class="container">'; // PicoCSS container class
+			echo '<div class="container">'; // PicoCSS container class.
 			$this->render_layouts( $plugin_layouts, $page->get_id(), $unique_slug );
 			echo '</div>';
 		} else {
 			// Fallback for pages without layouts.
-			echo '<div class="container">'; // PicoCSS container class
+			echo '<div class="container">'; // PicoCSS container class.
 			do_settings_sections( $unique_slug );
 			echo '</div>';
 		}
 
-		echo '<div class="grid">'; // PicoCSS grid class for form buttons
+		echo '<div class="grid">'; // PicoCSS grid class for form buttons.
 		submit_button();
 		echo '</div>';
 		?>
@@ -174,7 +174,7 @@ class PageManager {
 
 			<!-- ### DEBUG: Show saved options ### -->
 			<hr>
-			<h2><?php _e( 'Saved Data', 'wpmoo' ); ?></h2>
+			<h2><?php esc_html_e( 'Saved Data', 'wpmoo' ); ?></h2>
 			<pre><?php echo esc_html( wp_json_encode( get_option( $unique_slug ), JSON_PRETTY_PRINT ) ); ?></pre>
 			<!-- ### END DEBUG ### -->
 
@@ -185,9 +185,9 @@ class PageManager {
 	/**
 	 * Render layouts for the page.
 	 *
-	 * @param  array<string, mixed> $pluginLayouts All layout components for the current plugin.
-	 * @param  string               $page_id       The ID of the current page, used as the top-level parent.
-	 * @param  string               $unique_slug   The unique slug for the page, used as the option group name.
+	 * @param  array<string, mixed> $plugin_layouts All layout components for the current plugin.
+	 * @param  string               $page_id        The ID of the current page, used as the top-level parent.
+	 * @param  string               $unique_slug    The unique slug for the page, used as the option group name.
 	 * @return void
 	 */
 	private function render_layouts( array $plugin_layouts, string $page_id, string $unique_slug ): void {
@@ -240,7 +240,7 @@ class PageManager {
 	 * @return void
 	 */
 	private function render_tabs_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void {
-		$orientation = 'horizontal'; // Default orientation, could be stored in Container properties if needed
+		$orientation = 'horizontal'; // Default orientation, could be stored in Container properties if needed.
 
 		$tab_class = 'vertical' === $orientation ? 'wpmoo-tabs-vertical' : 'wpmoo-tabs-horizontal';
 		?>
@@ -418,14 +418,14 @@ class PageManager {
 				// Get the saved value from the options array.
 				$value = $option_values[ $field_id ] ?? '';
 
-				// Try to get a renderer for this field
+				// Try to get a renderer for this field.
 				$renderer = $this->renderer_registry->get_renderer_for_field( $item );
 
 				if ( $renderer ) {
-					// Use the renderer to generate the HTML
-					echo $renderer->render( $item, $unique_slug, $value );
+					// Use the renderer to generate the HTML.
+					echo wp_kses_post( $renderer->render( $item, $unique_slug, $value ) );
 				} else {
-					// Fallback: render as a basic text input if no renderer is found
+					// Fallback: render as a basic text input if no renderer is found.
 					$field_name = $unique_slug . '[' . $field_id . ']';
 					$placeholder = method_exists( $item, 'get_placeholder' ) ? $item->get_placeholder() : '';
 					$label = method_exists( $item, 'get_label' ) ? $item->get_label() : '';

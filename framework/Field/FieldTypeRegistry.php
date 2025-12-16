@@ -58,15 +58,16 @@ class FieldTypeRegistry {
 	 * @param string                       $type The field type slug.
 	 * @param class-string<FieldInterface> $class The field class name.
 	 * @return void
+	 * @throws \InvalidArgumentException If the field class doesn't exist or doesn't implement FieldInterface.
 	 */
 	public function register_field_type( string $type, string $class ): void {
 		if ( ! class_exists( $class ) ) {
-			throw new \InvalidArgumentException( "Field class does not exist: {$class}" );
+			throw new \InvalidArgumentException( sprintf( 'Field class does not exist: %s', $class ) );
 		}
 
-		// Verify that the class implements the FieldInterface
+		// Verify that the class implements the FieldInterface.
 		if ( ! in_array( \WPMoo\Field\Interfaces\FieldInterface::class, class_implements( $class ) ) ) {
-			throw new \InvalidArgumentException( "Field class must implement FieldInterface: {$class}" );
+			throw new \InvalidArgumentException( sprintf( 'Field class must implement FieldInterface: %s', $class ) );
 		}
 
 		$this->field_types[ $type ] = $class;

@@ -30,8 +30,8 @@ class Grid extends AbstractLayout implements LayoutInterface {
 	 */
 	public function __construct( string $id, string $title = '' ) {
 		$this->id = $id;
-		// We don't store title in this implementation since AbstractLayout doesn't have a title property
-		// If needed, we could add a title property to AbstractLayout or create a getter method
+		// We don't store title in this implementation since AbstractLayout doesn't have a title property.
+		// If needed, we could add a title property to AbstractLayout or create a getter method.
 	}
 
 	/**
@@ -41,7 +41,7 @@ class Grid extends AbstractLayout implements LayoutInterface {
 	 * @return self
 	 */
 	public function columns( int $columns ): self {
-		$this->columns = max( 1, $columns ); // Ensure at least 1 column
+		$this->columns = max( 1, $columns ); // Ensure at least 1 column.
 		return $this;
 	}
 

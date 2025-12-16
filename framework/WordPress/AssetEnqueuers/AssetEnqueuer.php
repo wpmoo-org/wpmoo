@@ -78,12 +78,12 @@ abstract class AssetEnqueuer {
 	 * @return string The URL to the framework resource directory with optional additional path.
 	 */
 	protected function get_asset_url( string $path = '' ): string {
-		// Get the base URL for the framework directory
+		// Get the base URL for the framework directory.
 		$base_url = plugin_dir_url(
-			dirname( __DIR__, 3 ) . '/wpmoo.php'  // Navigate to the main plugin file
+			dirname( __DIR__, 3 ) . '/wpmoo.php'  // Navigate to the main plugin file.
 		);
 
-		// Append the assets path
+		// Append the assets path.
 		$resource_url = $base_url . 'assets/';
 
 		if ( ! empty( $path ) ) {
@@ -100,7 +100,7 @@ abstract class AssetEnqueuer {
 	 * @return string The path to the framework assets directory with optional additional path.
 	 */
 	protected function get_asset_path( string $path = '' ): string {
-		// Get the base path for the framework directory
+		// Get the base path for the framework directory.
 		$base_path = dirname( __DIR__, 3 ) . '/assets';
 
 		if ( ! empty( $path ) ) {

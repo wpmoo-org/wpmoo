@@ -58,15 +58,16 @@ class LayoutTypeRegistry {
 	 * @param string                        $type The layout type slug.
 	 * @param class-string<LayoutInterface> $class The layout class name.
 	 * @return void
+	 * @throws \InvalidArgumentException If the layout class doesn't exist or doesn't implement LayoutInterface.
 	 */
 	public function register_layout_type( string $type, string $class ): void {
 		if ( ! class_exists( $class ) ) {
-			throw new \InvalidArgumentException( "Layout class does not exist: {$class}" );
+			throw new \InvalidArgumentException( sprintf( 'Layout class does not exist: %s', $class ) );
 		}
 
-		// Verify that the class implements the LayoutInterface
+		// Verify that the class implements the LayoutInterface.
 		if ( ! in_array( \WPMoo\Layout\Interfaces\LayoutInterface::class, class_implements( $class ) ) ) {
-			throw new \InvalidArgumentException( "Layout class must implement LayoutInterface: {$class}" );
+			throw new \InvalidArgumentException( sprintf( 'Layout class must implement LayoutInterface: %s', $class ) );
 		}
 
 		$this->layout_types[ $type ] = $class;
@@ -116,8 +117,8 @@ class LayoutTypeRegistry {
 			return null;
 		}
 
-		// Different layout types might have different constructors
-		// For now, assuming all accept at least an ID
+		// Different layout types might have different constructors.
+		// For now, assuming all accept at least an ID.
 		return new $class( $id, $title );
 	}
 }

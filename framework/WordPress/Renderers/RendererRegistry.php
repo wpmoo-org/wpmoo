@@ -80,7 +80,7 @@ class RendererRegistry {
 		$field_class = get_class( $field );
 		$field_type = strtolower( pathinfo( $field_class, PATHINFO_FILENAME ) );
 
-		// Normalize field type names
+		// Normalize field type names.
 		if ( strpos( $field_class, 'Input' ) !== false ) {
 			$field_type = 'input';
 		} elseif ( strpos( $field_class, 'Textarea' ) !== false ) {

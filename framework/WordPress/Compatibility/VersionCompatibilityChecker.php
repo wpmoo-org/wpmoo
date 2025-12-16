@@ -62,8 +62,9 @@ class VersionCompatibilityChecker {
 		$messages = array();
 
 		// Process pairs of operator and version
-		for ( $i = 0; $i < count( $parts ); $i += 2 ) {
-			if ( $i + 1 >= count( $parts ) ) {
+		$parts_count = count( $parts );
+		for ( $i = 0; $i < $parts_count; $i += 2 ) {
+			if ( $i + 1 >= $parts_count ) {
 				// If there's an odd number of parts, the last one might be incomplete.
 				break;
 			}
@@ -160,7 +161,7 @@ class VersionCompatibilityChecker {
 		$version_parts = explode( '.', $version );
 		$version_major = $version_parts[0] ?? 0;
 
-		$compatible = $version_major == $major;
+		$compatible = $major == $version_major;
 
 		return array(
 			'compatible' => $compatible,
@@ -183,7 +184,7 @@ class VersionCompatibilityChecker {
 		$version_major = $version_parts[0] ?? 0;
 		$version_minor = $version_parts[1] ?? 0;
 
-		$compatible = ( $version_major == $major ) && ( $version_minor == $minor );
+		$compatible = ( $major == $version_major ) && ( $minor == $version_minor );
 
 		return array(
 			'compatible' => $compatible,
@@ -222,8 +223,8 @@ class VersionCompatibilityChecker {
 			);
 		}
 
-		// If constraint has a pre-release part but the version doesn't, it's only compatible if the version is stable
-		if ( $pre_release_constraint !== '' && $version_pre_release === '' ) {
+		// If constraint has a pre-release part but the version doesn't, it's only compatible if the version is stable.
+		if ( $pre_release_constraint !== '' && '' === $version_pre_release ) {
 			// Stable versions are considered greater than pre-release versions.
 			return array(
 				'compatible' => true,
@@ -241,16 +242,16 @@ class VersionCompatibilityChecker {
 			);
 		}
 
-		// If constraint is for a pre-release but version is stable, it's not compatible
-		if ( $pre_release_constraint !== '' && $version_pre_release === '' ) {
+		// If constraint is for a pre-release but version is stable, it's not compatible.
+		if ( $pre_release_constraint !== '' && '' === $version_pre_release ) {
 			return array(
 				'compatible' => false,
 				'message' => "Stable version {$version} does not satisfy pre-release constraint {$constraint}",
 			);
 		}
 
-		// If constraint is for stable but version has pre-release, it's not compatible
-		if ( $pre_release_constraint === '' && $version_pre_release !== '' ) {
+		// If constraint is for stable but version has pre-release, it's not compatible.
+		if ( '' === $pre_release_constraint && $version_pre_release !== '' ) {
 			return array(
 				'compatible' => false,
 				'message' => "Pre-release version {$version} does not satisfy stable constraint {$constraint}",
@@ -274,12 +275,16 @@ class VersionCompatibilityChecker {
 		$required_parts = explode( '.', $required );
 		$version_parts = explode( '.', $version );
 
-		// Pad arrays to same length with zeros
-		while ( count( $required_parts ) < 3 ) {
+		// Pad arrays to same length with zeros.
+		$required_parts_count = count( $required_parts );
+		while ( $required_parts_count < 3 ) {
 			$required_parts[] = '0';
+			$required_parts_count = count( $required_parts );
 		}
-		while ( count( $version_parts ) < 3 ) {
+		$version_parts_count = count( $version_parts );
+		while ( $version_parts_count < 3 ) {
 			$version_parts[] = '0';
+			$version_parts_count = count( $version_parts );
 		}
 
 		// Parse version numbers
@@ -319,12 +324,16 @@ class VersionCompatibilityChecker {
 		$required_parts = explode( '.', $required );
 		$version_parts = explode( '.', $version );
 
-		// Pad arrays to same length with zeros
-		while ( count( $required_parts ) < 3 ) {
+		// Pad arrays to same length with zeros.
+		$required_parts_count = count( $required_parts );
+		while ( $required_parts_count < 3 ) {
 			$required_parts[] = '0';
+			$required_parts_count = count( $required_parts );
 		}
-		while ( count( $version_parts ) < 3 ) {
+		$version_parts_count = count( $version_parts );
+		while ( $version_parts_count < 3 ) {
 			$version_parts[] = '0';
+			$version_parts_count = count( $version_parts );
 		}
 
 		// Parse version numbers

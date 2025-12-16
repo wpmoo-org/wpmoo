@@ -65,20 +65,20 @@ class FrameworkManager {
 	 */
 	public function register_plugin( string $slug, string $version, string $path ): void {
 		try {
-			// Validate plugin slug format
+			// Validate plugin slug format.
 			ValidationHelper::validate_plugin_slug( $slug );
 
-			// Validate version format
+			// Validate version format.
 			ValidationHelper::validate_version_format( $version );
 
-			// Validate path exists
+			// Validate path exists.
 			ValidationHelper::validate_file_path( $path );
 		} catch ( \InvalidArgumentException $e ) {
 			error_log( 'WPMoo: ' . $e->getMessage() );
 			return;
 		}
 
-		// Check version compatibility
+		// Check version compatibility.
 		$compatibility_result = VersionCompatibilityChecker::is_compatible( $version, WPMOO_VERSION );
 
 		if ( ! $compatibility_result['compatible'] ) {
@@ -224,7 +224,7 @@ class FrameworkManager {
 			$this->layouts[ $plugin_slug ] = array();
 		}
 
-		// Add plugin slug as prefix to layout ID to prevent conflicts across plugins
+		// Add plugin slug as prefix to layout ID to prevent conflicts across plugins.
 		$prefixed_id = $plugin_slug . '_' . $layout->get_id();
 
 		$this->layouts[ $plugin_slug ][ $prefixed_id ] = $layout;

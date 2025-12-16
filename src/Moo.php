@@ -9,6 +9,8 @@ namespace WPMoo;
 
 if ( ! class_exists( 'WPMoo\Moo' ) ) {
 	/**
+	 * The Local Facade for the 'wpmoo' plugin.
+	 *
 	 * @method static \WPMoo\Page\Builders\PageBuilder page(string $id, string $title)
 	 * @method static \WPMoo\Layout\Component\Tabs tabs(string $id)
 	 * @method static \WPMoo\Field\Interfaces\FieldInterface field(string $type, string $id)
@@ -21,7 +23,7 @@ if ( ! class_exists( 'WPMoo\Moo' ) ) {
 	 * @method static void register_layout_type(string $type, string $class)
 	 */
 	class Moo extends Facade {
-		// Extend the new Facade class
-		// APP_ID and __callStatic are now handled by the parent Facade class
+		// Extend the new Facade class.
+		// APP_ID and __callStatic are now handled by the parent Facade class.
 	}
 }

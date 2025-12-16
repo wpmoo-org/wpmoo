@@ -42,18 +42,18 @@ class PageSaveHandler {
 		$errors = array();
 		$sanitized_data = array();
 
-		// Get all fields for the specific plugin - we'll need to process fields differently
-		// since they're stored by plugin slug, not directly by page
+		// Get all fields for the specific plugin - we'll need to process fields differently.
+		// Since they're stored by plugin slug, not directly by page.
 		$all_fields_by_plugin = $this->framework_manager->get_fields();
 
-		// For now, we'll process all fields in the submitted data
-		// In a real implementation, you'd need to map which fields belong to which page
+		// For now, we'll process all fields in the submitted data.
+		// In a real implementation, you'd need to map which fields belong to which page.
 		foreach ( $submitted_data as $field_id => $field_value ) {
-			// Since we don't have direct mapping of page to fields, we'll get the field by ID
-			// This is a simplified approach - in a complete implementation, you'd have a more sophisticated mapping
+			// Since we don't have direct mapping of page to fields, we'll get the field by ID.
+			// This is a simplified approach - in a complete implementation, you'd have a more sophisticated mapping.
 			$field = null;
 
-			// Look for the field across all plugins
+			// Look for the field across all plugins.
 			foreach ( $all_fields_by_plugin as $plugin_fields ) {
 				if ( isset( $plugin_fields[ $field_id ] ) ) {
 					$field = $plugin_fields[ $field_id ];
@@ -70,10 +70,10 @@ class PageSaveHandler {
 					continue;
 				}
 
-				// Sanitize the field value
+				// Sanitize the field value.
 				$sanitized_data[ $field_id ] = $field->sanitize( $field_value );
 			} else {
-				// If we can't find a field definition, still sanitize the input for security
+				// If we can't find a field definition, still sanitize the input for security.
 				$sanitized_data[ $field_id ] = sanitize_text_field( $field_value );
 			}
 		}
@@ -124,7 +124,7 @@ class PageSaveHandler {
 		foreach ( $input as $field_id => $field_value ) {
 			$field = null;
 
-			// Look for the field across all plugins
+			// Look for the field across all plugins.
 			foreach ( $all_fields_by_plugin as $plugin_fields ) {
 				if ( isset( $plugin_fields[ $field_id ] ) ) {
 					$field = $plugin_fields[ $field_id ];
@@ -133,11 +133,11 @@ class PageSaveHandler {
 			}
 
 			if ( $field ) {
-				// Validate the field value
+				// Validate the field value.
 				$validation_result = $field->validate( $field_value );
 
 				if ( ! $validation_result['valid'] ) {
-					// Add error message using WordPress settings API
+					// Add error message using WordPress settings API.
 					add_settings_error(
 						$field_id,
 						'validation_error',
@@ -148,11 +148,11 @@ class PageSaveHandler {
 					$old_value = get_option( $field_id, '' );
 					$sanitized_data[ $field_id ] = $field->sanitize( $old_value );
 				} else {
-					// Sanitize the field value
+					// Sanitize the field value.
 					$sanitized_data[ $field_id ] = $field->sanitize( $field_value );
 				}
 			} else {
-				// If we can't find a field definition, still sanitize the input for security
+				// If we can't find a field definition, still sanitize the input for security.
 				$sanitized_data[ $field_id ] = sanitize_text_field( $field_value );
 			}
 		}

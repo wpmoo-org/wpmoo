@@ -6,6 +6,12 @@ use ReflectionClass;
 use WPMoo\Field\Field;
 use WPMoo\Shared\Helper\ValidationHelper;
 
+/**
+ * Abstract Facade class for creating static interfaces to the WPMoo framework services.
+ *
+ * @package WPMoo
+ * @since 0.1.0
+ */
 abstract class Facade {
 
 	/**
@@ -15,6 +21,13 @@ abstract class Facade {
 	 */
 	protected static array $app_ids = array();
 
+	/**
+	 * Handle dynamic static method calls into the facade.
+	 *
+	 * @param string $method Method name.
+	 * @param array $args Method arguments.
+	 * @return mixed
+	 */
 	public static function __callStatic( $method, $args ) {
 		$called_class = static::class;
 
@@ -87,13 +100,16 @@ abstract class Facade {
 
 	/**
 	 * Magic Method: Extracts the slug from the file path of the inheriting class.
+	 *
+	 * @return string The detected app ID.
+	 * @throws \RuntimeException If the class file path is not found.
 	 */
 	public static function detect_app_id(): string {
 		// 1. Get the identity of the class calling this method (inheriting class) using Reflection.
 		$reflector = new ReflectionClass( static::class );
 
 		// 2. Get the full path of the file where the class is located.
-		// E.g.: /var/www/html/wp-content/plugins/super-form/src/App.php
+		// E.g.: /var/www/html/wp-content/plugins/super-form/src/App.php.
 		$file_path = $reflector->getFileName();
 
 		if ( ! $file_path ) {
@@ -101,11 +117,11 @@ abstract class Facade {
 		}
 
 		// 3. Make the path plugin-relative using a WordPress function.
-		// Result: super-form/src/App.php
+		// Result: super-form/src/App.php.
 		$plugin_basename = plugin_basename( $file_path );
 
 		// 4. Get the part before the first '/' (Folder name = Slug).
-		// Result: super-form
+		// Result: super-form.
 		$parts = explode( '/', $plugin_basename );
 
 		// If it's a single-file plugin (without a folder), get the file name.
@@ -115,7 +131,7 @@ abstract class Facade {
 			$slug = basename( $slug, '.php' );
 		}
 
-		// Validate that the slug is a proper plugin slug
+		// Validate that the slug is a proper plugin slug.
 		ValidationHelper::validate_plugin_slug( $slug );
 
 		return $slug;

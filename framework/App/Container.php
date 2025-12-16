@@ -62,8 +62,8 @@ class Container {
 		}
 
 		$this->bindings[ $service_name ]  = $concrete;
-		$this->singletons[ $service_name ] = true; // Mark as singleton
-		unset( $this->instances[ $service_name ] ); // Ensure no old instance is present
+		$this->singletons[ $service_name ] = true; // Mark as singleton.
+		unset( $this->instances[ $service_name ] ); // Ensure no old instance is present.
 	}
 
 	/**
@@ -92,8 +92,8 @@ class Container {
 		}
 
 		// If it's a singleton, store the instance.
-		if ( isset( $this->singletons[ $service_name ] ) ) { // Check the new singletons array
-			$this->instances[ $service_name ] = $instance; // Store in instances
+		if ( isset( $this->singletons[ $service_name ] ) ) { // Check the new singletons array.
+			$this->instances[ $service_name ] = $instance; // Store in instances.
 		}
 
 		return $instance;

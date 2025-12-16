@@ -29,7 +29,7 @@ final class Field extends FieldBuilder {
 			'input' => new TextSanitizer(),
 			'textarea' => new TextareaSanitizer(),
 			'toggle' => new ToggleSanitizer(),
-			default => new TextSanitizer() // Default to text sanitizer
+			default => new TextSanitizer() // Default to text sanitizer.
 		};
 	}
 }
