@@ -58,7 +58,7 @@ class ValidationHelper {
 	 */
 	public static function validate_plugin_slug( string $slug ): bool {
 		if ( empty( $slug ) ) {
-			throw new \InvalidArgumentException( 'Plugin slug cannot be empty.' );
+			throw new \InvalidArgumentException( esc_html__( 'Plugin slug cannot be empty.', 'wpmoo' ) );
 		}
 
 		if ( ! preg_match( '/^[a-z0-9-]+$/', $slug ) ) {
