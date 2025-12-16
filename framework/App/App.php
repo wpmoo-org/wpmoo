@@ -4,10 +4,11 @@ namespace WPMoo\App;
 
 use WPMoo\Core;
 use WPMoo\WordPress\Managers\FrameworkManager;
-use WPMoo\Page\Builders\PageBuilder; // Corrected use statement
+use WPMoo\Page\Builders\PageBuilder;
 use WPMoo\Layout\Layout;
 use WPMoo\Field\Field;
 use WPMoo\Shared\Helper\ValidationHelper;
+use WPMoo\App\PluginSpecificContainer;
 
 /**
  * Plugin-specific Application instance.
@@ -25,20 +26,21 @@ class App {
     private string $app_id;
 
     /**
-     * The shared DI container.
-     * @var Container
+     * The plugin-specific DI container.
+     * @var PluginSpecificContainer
      */
-    private Container $container;
+    private PluginSpecificContainer $container;
 
     /**
      * Constructor.
      *
      * @param string    $app_id    The unique ID for this app instance.
-     * @param Container $container The shared DI container from the core.
+     * @param Container $container The shared DI container from the core. Will be wrapped in a plugin-specific container.
      */
     public function __construct(string $app_id, Container $container) {
         $this->app_id = $app_id;
-        $this->container = $container;
+        // Create a plugin-specific container that extends the base container with plugin-specific configurations
+        $this->container = new PluginSpecificContainer($app_id, $container);
     }
 
     /**
