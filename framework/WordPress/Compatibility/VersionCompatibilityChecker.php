@@ -56,12 +56,12 @@ class VersionCompatibilityChecker {
 	 * @return array ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_multiple_constraints( string $constraints, string $version ): array {
-		// Split the constraints by spaces, but preserve the operators with the versions
+		// Split the constraints by spaces, but preserve the operators with the versions.
 		$parts = preg_split( '/\s+/', trim( $constraints ) );
 		$all_compatible = true;
 		$messages = array();
 
-		// Process pairs of operator and version
+		// Process pairs of operator and version.
 		$parts_count = count( $parts );
 		for ( $i = 0; $i < $parts_count; $i += 2 ) {
 			if ( $i + 1 >= $parts_count ) {
@@ -104,10 +104,10 @@ class VersionCompatibilityChecker {
 	 * @return array ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_version_constraint( string $constraint, string $version ): array {
-		// Remove any whitespace
+		// Remove any whitespace.
 		$constraint = trim( $constraint );
 
-		// Handle wildcard versions (e.g., 1.x, 1.*, 1.x)
+		// Handle wildcard versions (e.g., 1.x, 1.*, 1.x).
 		if ( preg_match( '/^(\d+)\.x\.x$|^(\d+)\.x$|^(\d+)\.\*$/', $constraint, $matches ) ) {
 			$major = $matches[1] ?? $matches[2] ?? $matches[3];
 			return self::check_wildcard_constraint( $major, $version );
@@ -117,7 +117,7 @@ class VersionCompatibilityChecker {
 			return self::check_wildcard_minor_constraint( $major, $minor, $version );
 		}
 
-		// Handle different constraint types
+		// Handle different constraint types.
 		if ( str_starts_with( $constraint, '^' ) ) {
 			// Caret operator: allows patch-level changes if a minor version is specified.
 			// ^1.2.3 is equivalent to >=1.2.3 <2.0.0.
@@ -129,7 +129,7 @@ class VersionCompatibilityChecker {
 			$required = substr( $constraint, 1 );
 			return self::check_tilde_constraint( $required, $version );
 		} elseif ( preg_match( '/^([<>=!]+)\s*(.+)$/', $constraint, $matches ) ) {
-			// Direct comparison operators (>=, <=, >, <, !=)
+			// Direct comparison operators (>=, <=, >, <, !=).
 			$operator = $matches[1];
 			$required = $matches[2];
 			return self::check_direct_comparison( $operator, $required, $version );
@@ -202,7 +202,7 @@ class VersionCompatibilityChecker {
 	 * @return array ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_pre_release_constraint( string $constraint, string $version ): array {
-		// Split version and pre-release part
+		// Split version and pre-release part.
 		$parts = explode( '-', $constraint, 2 );
 		$base_version = $parts[0];
 		$pre_release_constraint = $parts[1] ?? '';
@@ -224,7 +224,7 @@ class VersionCompatibilityChecker {
 		}
 
 		// If constraint has a pre-release part but the version doesn't, it's only compatible if the version is stable.
-		if ( $pre_release_constraint !== '' && '' === $version_pre_release ) {
+		if ( '' !== $pre_release_constraint && '' === $version_pre_release ) {
 			// Stable versions are considered greater than pre-release versions.
 			return array(
 				'compatible' => true,
@@ -233,9 +233,9 @@ class VersionCompatibilityChecker {
 		}
 
 		// If both have pre-release parts, compare them.
-		if ( $pre_release_constraint !== '' && $version_pre_release !== '' ) {
-			// For pre-release comparison, we'll consider them equal for basic compatibility
-			// This could be enhanced to follow SemVer pre-release rules more strictly
+		if ( '' !== $pre_release_constraint && '' !== $version_pre_release ) {
+			// For pre-release comparison, we'll consider them equal for basic compatibility.
+			// This could be enhanced to follow SemVer pre-release rules more strictly.
 			return array(
 				'compatible' => true,
 				'message' => "Version {$version} satisfies pre-release constraint {$constraint}",
@@ -243,7 +243,7 @@ class VersionCompatibilityChecker {
 		}
 
 		// If constraint is for a pre-release but version is stable, it's not compatible.
-		if ( $pre_release_constraint !== '' && '' === $version_pre_release ) {
+		if ( '' !== $pre_release_constraint && '' === $version_pre_release ) {
 			return array(
 				'compatible' => false,
 				'message' => "Stable version {$version} does not satisfy pre-release constraint {$constraint}",
@@ -251,7 +251,7 @@ class VersionCompatibilityChecker {
 		}
 
 		// If constraint is for stable but version has pre-release, it's not compatible.
-		if ( '' === $pre_release_constraint && $version_pre_release !== '' ) {
+		if ( '' === $pre_release_constraint && '' !== $version_pre_release ) {
 			return array(
 				'compatible' => false,
 				'message' => "Pre-release version {$version} does not satisfy stable constraint {$constraint}",
@@ -287,7 +287,7 @@ class VersionCompatibilityChecker {
 			$version_parts_count = count( $version_parts );
 		}
 
-		// Parse version numbers
+		// Parse version numbers.
 		$required_major = intval( $required_parts[0] );
 		$required_minor = intval( $required_parts[1] ?? 0 );
 		$required_patch = intval( $required_parts[2] ?? 0 );
@@ -296,10 +296,10 @@ class VersionCompatibilityChecker {
 		$version_minor = intval( $version_parts[1] );
 		$version_patch = intval( $version_parts[2] );
 
-		// Check if version is greater than or equal to required
+		// Check if version is greater than or equal to required.
 		$gte = version_compare( $version, $required, '>=' );
 
-		// Check if version is less than next major version
+		// Check if version is less than next major version.
 		$next_major = ( $required_major + 1 ) . '.0.0';
 		$lt_next_major = version_compare( $version, $next_major, '<' );
 
@@ -336,7 +336,7 @@ class VersionCompatibilityChecker {
 			$version_parts_count = count( $version_parts );
 		}
 
-		// Parse version numbers
+		// Parse version numbers.
 		$required_major = intval( $required_parts[0] );
 		$required_minor = intval( $required_parts[1] ?? 0 );
 		$required_patch = intval( $required_parts[2] ?? 0 );
@@ -345,10 +345,10 @@ class VersionCompatibilityChecker {
 		$version_minor = intval( $version_parts[1] );
 		$version_patch = intval( $version_parts[2] );
 
-		// Check if version is greater than or equal to required
+		// Check if version is greater than or equal to required.
 		$gte = version_compare( $version, $required, '>=' );
 
-		// Check if version is less than next minor version
+		// Check if version is less than next minor version.
 		$next_minor = $required_major . '.' . ( $required_minor + 1 ) . '.0';
 		$lt_next_minor = version_compare( $version, $next_minor, '<' );
 
