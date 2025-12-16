@@ -5,6 +5,7 @@ namespace WPMoo\WordPress\Managers;
 use WPMoo\Page\Builders\PageBuilder;
 use WPMoo\Layout\Component\Tabs;
 use WPMoo\Layout\Component\Accordion;
+use WPMoo\Shared\Helper\ValidationHelper;
 
 /**
  * Framework manager for handling cross-plugin component registration and version loading.
@@ -62,11 +63,25 @@ class FrameworkManager {
 	 * @return void
 	 */
 	public function register_plugin( string $slug, string $version, string $path ): void {
-		$this->plugins[ $slug ] = array(
-			'slug'    => $slug,
-			'version' => $version,
-			'path'    => $path,
-		);
+	    try {
+	        // Validate plugin slug format
+	        ValidationHelper::validate_plugin_slug($slug);
+	        
+	        // Validate version format
+	        ValidationHelper::validate_version_format($version);
+	        
+	        // Validate path exists
+	        ValidationHelper::validate_file_path($path);
+	    } catch (\InvalidArgumentException $e) {
+	        error_log("WPMoo: " . $e->getMessage());
+	        return;
+	    }
+	    
+	    $this->plugins[ $slug ] = array(
+	        'slug'    => $slug,
+	        'version' => $version,
+	        'path'    => $path,
+	    );
 	}
 
 	/**

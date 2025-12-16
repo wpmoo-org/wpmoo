@@ -4,6 +4,7 @@ namespace WPMoo;
 
 use ReflectionClass;
 use WPMoo\Field\Field;
+use WPMoo\Shared\Helper\ValidationHelper;
 
 abstract class Facade {
 
@@ -61,25 +62,25 @@ abstract class Facade {
     /**
      * Magic Method: Extracts the slug from the file path of the inheriting class.
      */
-    public static function detect_app_id(): string { // Changed method name
+    public static function detect_app_id(): string {
         // 1. Get the identity of the class calling this method (inheriting class) using Reflection.
         $reflector = new ReflectionClass(static::class);
 
         // 2. Get the full path of the file where the class is located.
         // E.g.: /var/www/html/wp-content/plugins/super-form/src/App.php
-        $file_path = $reflector->getFileName(); // Changed to snake_case
+        $file_path = $reflector->getFileName();
 
-        if (!$file_path) { // Changed to snake_case
+        if (!$file_path) {
             throw new \RuntimeException("Class file path not found.");
         }
 
         // 3. Make the path plugin-relative using a WordPress function.
         // Result: super-form/src/App.php
-        $plugin_basename = plugin_basename($file_path); // Changed to snake_case
+        $plugin_basename = plugin_basename($file_path);
 
         // 4. Get the part before the first '/' (Folder name = Slug).
         // Result: super-form
-        $parts = explode('/', $plugin_basename); // Changed to snake_case
+        $parts = explode('/', $plugin_basename);
 
         // If it's a single-file plugin (without a folder), get the file name.
         $slug = $parts[0];
@@ -87,6 +88,9 @@ abstract class Facade {
         if (str_ends_with($slug, '.php')) {
             $slug = basename($slug, '.php');
         }
+
+        // Validate that the slug is a proper plugin slug
+        ValidationHelper::validate_plugin_slug($slug);
 
         return $slug;
     }

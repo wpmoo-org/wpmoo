@@ -53,7 +53,7 @@ Moo::tab( 'advanced', __( 'Advanced Settings', 'wpmoo-samples' ) )
 
 // Also demonstrate accordion container
 Moo::container( 'accordion', 'wpmoo_accordion' )
-	->parent( 'wpmoo_settings' );  // Link to the settings page.
+	->parent( 'settings' );  // Link to the settings page.
 
 Moo::accordion( 'acc_general', __( 'General Information', 'wpmoo-samples' ) )
 	->parent( 'wpmoo_accordion' )  // Link to the accordion container

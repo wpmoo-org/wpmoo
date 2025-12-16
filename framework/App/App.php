@@ -6,6 +6,7 @@ use WPMoo\WordPress\Managers\FrameworkManager;
 use WPMoo\Page\Builders\PageBuilder; // Corrected use statement
 use WPMoo\Layout\Layout;
 use WPMoo\Field\Field;
+use WPMoo\Shared\Helper\ValidationHelper;
 
 /**
  * Plugin-specific Application instance.
@@ -47,6 +48,9 @@ class App {
      * @return PageBuilder // Corrected return type
      */
     public function page(string $id, string $title): PageBuilder {
+        // Validate page ID format
+        ValidationHelper::validate_id_format($id, 'page');
+        
         $page = new PageBuilder($id, $title); // Corrected instantiation
         $this->get_framework_manager()->add_page($page, $this->app_id);
         return $page;
@@ -59,6 +63,9 @@ class App {
      * @return \WPMoo\Layout\Component\Tabs
      */
     public function tabs(string $id) {
+        // Validate layout ID format
+        ValidationHelper::validate_id_format($id, 'layout');
+        
         $tabs = Layout::tabs($id);
         $this->get_framework_manager()->add_layout($tabs, $this->app_id);
         return $tabs;
@@ -73,6 +80,9 @@ class App {
      * @return \WPMoo\Field\Interfaces\FieldInterface
      */
     public function field(string $type, string $id) {
+        // Validate field ID format
+        ValidationHelper::validate_id_format($id, 'field');
+        
         $field = Field::{$type}($id);
         $this->get_framework_manager()->add_field($field, $this->app_id);
         return $field;
@@ -86,6 +96,9 @@ class App {
      * @return \WPMoo\Layout\Component\Container
      */
     public function container(string $type, string $id) {
+        // Validate container ID format
+        ValidationHelper::validate_id_format($id, 'container');
+        
         $container = new \WPMoo\Layout\Component\Container($id, $type);
         $this->get_framework_manager()->add_layout($container, $this->app_id);
         return $container;
@@ -99,6 +112,9 @@ class App {
      * @return \WPMoo\Layout\Component\Tab
      */
     public function tab(string $id, string $title) {
+        // Validate tab ID format
+        ValidationHelper::validate_id_format($id, 'tab');
+        
         $tab = new \WPMoo\Layout\Component\Tab($id, $title);
         $this->get_framework_manager()->add_layout($tab, $this->app_id);
         return $tab;
@@ -112,6 +128,9 @@ class App {
      * @return \WPMoo\Layout\Component\Accordion
      */
     public function accordion(string $id, string $title) {
+        // Validate accordion ID format
+        ValidationHelper::validate_id_format($id, 'accordion');
+        
         $accordion = new \WPMoo\Layout\Component\Accordion($id, $title);
         $this->get_framework_manager()->add_layout($accordion, $this->app_id);
         return $accordion;
