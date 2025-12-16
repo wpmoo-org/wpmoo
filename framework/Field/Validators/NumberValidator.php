@@ -42,19 +42,25 @@ class NumberValidator extends BaseValidator implements FieldValidatorInterface {
 
 		$num_value = floatval( $value );
 
-		/* translators: %s is the minimum allowed value */
 		if ( isset( $min ) && $num_value < floatval( $min ) ) {
 			return array(
 				'valid' => false,
-				'error' => sprintf( __( 'Value must be greater than or equal to %s.', 'wpmoo' ), $min ),
+				'error' => sprintf(
+					/* translators: %s is the minimum allowed value */
+					__( 'Value must be greater than or equal to %s.', 'wpmoo' ),
+					$min
+				),
 			);
 		}
 
-		/* translators: %s is the maximum allowed value */
 		if ( isset( $max ) && $num_value > floatval( $max ) ) {
 			return array(
 				'valid' => false,
-				'error' => sprintf( __( 'Value must be less than or equal to %s.', 'wpmoo' ), $max ),
+				'error' => sprintf(
+					/* translators: %s is the maximum allowed value */
+					__( 'Value must be less than or equal to %s.', 'wpmoo' ),
+					$max
+				),
 			);
 		}
 

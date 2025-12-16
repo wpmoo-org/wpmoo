@@ -62,7 +62,7 @@ class PageSaveHandler {
 			}
 
 			if ( $field ) {
-				// Validate the field value
+				// Validate the field value.
 				$validation_result = $field->validate( $field_value );
 
 				if ( ! $validation_result['valid'] ) {
@@ -78,7 +78,7 @@ class PageSaveHandler {
 			}
 		}
 
-		// If there are validation errors, return them
+		// If there are validation errors, return them.
 		if ( ! empty( $errors ) ) {
 			return array(
 				'success' => false,
@@ -87,7 +87,7 @@ class PageSaveHandler {
 			);
 		}
 
-		// If validation passed, save the sanitized data
+		// If validation passed, save the sanitized data.
 		update_option( $option_group, $sanitized_data );
 
 		return array(
@@ -144,7 +144,7 @@ class PageSaveHandler {
 						$validation_result['error']
 					);
 
-					// Use the old value if validation fails
+					// Use the old value if validation fails.
 					$old_value = get_option( $field_id, '' );
 					$sanitized_data[ $field_id ] = $field->sanitize( $old_value );
 				} else {

@@ -36,7 +36,7 @@ class MetaboxManager {
 		// $all_metaboxes = $this->framework_manager->get_metaboxes();
 		// foreach ($all_metaboxes as $metabox) {
 		// add_meta_box(...);
-		// }
+		// }.
 	}
 
 	/**

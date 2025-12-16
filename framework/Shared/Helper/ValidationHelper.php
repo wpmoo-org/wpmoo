@@ -26,19 +26,24 @@ class ValidationHelper {
 	 */
 	public static function validate_id_format( string $id, string $component_type = 'component' ): bool {
 		if ( empty( $id ) ) {
-			/* translators: %s: Component type */
-			throw new \InvalidArgumentException( sprintf( esc_html__( '%s ID cannot be empty.', 'wpmoo' ), sanitize_text_field( $component_type ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			throw new \InvalidArgumentException(
+				sprintf(
+					/* translators: %s: Component type */
+					esc_html__( '%s ID cannot be empty.', 'wpmoo' ),
+					esc_html( $component_type )
+				)
+			);
 		}
 
 		if ( ! preg_match( '/^[a-z0-9_-]+$/', $id ) ) {
-			/* translators: 1: Component type 2: Invalid ID */
 			throw new \InvalidArgumentException(
 				sprintf(
+					/* translators: 1: Component type 2: Invalid ID */
 					esc_html__( 'Invalid %1$s ID: %2$s. Must contain only lowercase letters, numbers, hyphens, and underscores.', 'wpmoo' ),
-					sanitize_text_field( $component_type ),
-					sanitize_text_field( $id )
+					esc_html( $component_type ),
+					esc_html( $id )
 				)
-			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			);
 		}
 
 		return true;
@@ -57,13 +62,13 @@ class ValidationHelper {
 		}
 
 		if ( ! preg_match( '/^[a-z0-9-]+$/', $slug ) ) {
-			/* translators: %s: Invalid plugin slug */
 			throw new \InvalidArgumentException(
 				sprintf(
+					/* translators: %s: Invalid plugin slug */
 					esc_html__( 'Invalid plugin slug: %s. Must contain only lowercase letters, numbers, and hyphens.', 'wpmoo' ),
-					sanitize_text_field( $slug )
+					esc_html( $slug )
 				)
-			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			);
 		}
 
 		return true;
@@ -78,18 +83,18 @@ class ValidationHelper {
 	 */
 	public static function validate_version_format( string $version ): bool {
 		if ( empty( $version ) ) {
-			throw new \InvalidArgumentException( esc_html__( 'Version cannot be empty.', 'wpmoo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			throw new \InvalidArgumentException( esc_html__( 'Version cannot be empty.', 'wpmoo' ) );
 		}
 
 		// Basic semantic versioning format: X.Y or X.Y.Z, optionally with pre-release or build metadata.
 		if ( ! preg_match( '/^[\d]+\.[\d]+(?:\.[\d]+)?(?:-[a-zA-Z0-9.]+)?(?:\+[a-zA-Z0-9.]+)?$/', $version ) ) {
-			/* translators: %s: Invalid version */
 			throw new \InvalidArgumentException(
 				sprintf(
+					/* translators: %s: Invalid version */
 					esc_html__( 'Invalid version format: %s. Must follow semantic versioning (e.g., 1.0.0).', 'wpmoo' ),
-					sanitize_text_field( $version )
+					esc_html( $version )
 				)
-			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			);
 		}
 
 		return true;
@@ -104,21 +109,27 @@ class ValidationHelper {
 	 */
 	public static function validate_file_path( string $path ): bool {
 		if ( empty( $path ) ) {
-			throw new \InvalidArgumentException( esc_html__( 'File path cannot be empty.', 'wpmoo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			throw new \InvalidArgumentException( esc_html__( 'File path cannot be empty.', 'wpmoo' ) );
 		}
 
 		if ( ! file_exists( $path ) ) {
-			/* translators: %s: File path */
 			throw new \InvalidArgumentException(
-				sprintf( esc_html__( 'File does not exist: %s', 'wpmoo' ), sanitize_text_field( $path ) )
-			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				sprintf(
+					/* translators: %s: File path */
+					esc_html__( 'File does not exist: %s', 'wpmoo' ),
+					esc_html( $path )
+				)
+			);
 		}
 
 		if ( ! is_readable( $path ) ) {
-			/* translators: %s: File path */
 			throw new \InvalidArgumentException(
-				sprintf( esc_html__( 'File is not readable: %s', 'wpmoo' ), sanitize_text_field( $path ) )
-			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				sprintf(
+					/* translators: %s: File path */
+					esc_html__( 'File is not readable: %s', 'wpmoo' ),
+					esc_html( $path )
+				)
+			);
 		}
 
 		return true;

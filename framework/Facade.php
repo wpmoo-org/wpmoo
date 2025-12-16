@@ -25,7 +25,7 @@ abstract class Facade {
 	 * Handle dynamic static method calls into the facade.
 	 *
 	 * @param string $method Method name.
-	 * @param array $args Method arguments.
+	 * @param array  $args Method arguments.
 	 * @return mixed
 	 */
 	public static function __callStatic( $method, $args ) {

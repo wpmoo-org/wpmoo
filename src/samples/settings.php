@@ -29,7 +29,7 @@ Moo::container( 'tabs', 'wpmoo_main_tabs' )
 
 // Create individual tabs.
 Moo::tab( 'general', __( 'General Settings', 'wpmoo-samples' ) )
-	->parent( 'wpmoo_main_tabs' );  // Link to the tabs container.
+	->parent( 'wpmoo_main_tabs' )  // Link to the tabs container.
 	->fields(
 		array(
 			Moo::input( 'site_title' )
@@ -78,7 +78,7 @@ if ( $grid_layout ) {
 }
 
 Moo::tab( 'advanced', __( 'Advanced Settings', 'wpmoo-samples' ) )
-	->parent( 'wpmoo_main_tabs' );  // Link to the tabs container.
+	->parent( 'wpmoo_main_tabs' )  // Link to the tabs container.
 	->fields(
 		array(
 			Moo::input( 'cache_duration' )
@@ -94,7 +94,7 @@ Moo::container( 'accordion', 'wpmoo_accordion' )
 	->parent( 'settings' );  // Link to the settings page.
 
 Moo::accordion( 'acc_general', __( 'General Information', 'wpmoo-samples' ) )
-	->parent( 'wpmoo_accordion' );  // Link to the accordion container.
+	->parent( 'wpmoo_accordion' )  // Link to the accordion container.
 	->fields(
 		array(
 			Moo::input( 'info_field' )
@@ -103,7 +103,7 @@ Moo::accordion( 'acc_general', __( 'General Information', 'wpmoo-samples' ) )
 	);
 
 Moo::accordion( 'acc_help', __( 'Help & Support', 'wpmoo-samples' ) )
-	->parent( 'wpmoo_accordion' );  // Link to the accordion container.
+	->parent( 'wpmoo_accordion' )  // Link to the accordion container.
 	->fields(
 		array(
 			Moo::textarea( 'support_info' )
