@@ -60,6 +60,31 @@ abstract class Facade {
 
 
     /**
+     * Create a field using the field type registry.
+     *
+     * @param string $type The field type slug.
+     * @param string $id The field ID.
+     * @return \WPMoo\Field\Interfaces\FieldInterface|null The field instance or null if type is not registered.
+     */
+    public static function create_field(string $type, string $id) {
+        $app_id = static::detect_app_id();
+        return Core::get($app_id)->create_field($type, $id);
+    }
+    
+    /**
+     * Create a layout component using the layout type registry.
+     *
+     * @param string $type The layout type slug.
+     * @param string $id The layout ID.
+     * @param string $title The layout title (where applicable).
+     * @return \WPMoo\Layout\Interfaces\LayoutInterface|null The layout instance or null if type is not registered.
+     */
+    public static function create_layout(string $type, string $id, string $title = '') {
+        $app_id = static::detect_app_id();
+        return Core::get($app_id)->create_layout($type, $id, $title);
+    }
+    
+    /**
      * Magic Method: Extracts the slug from the file path of the inheriting class.
      */
     public static function detect_app_id(): string {

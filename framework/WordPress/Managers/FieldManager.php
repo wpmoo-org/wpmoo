@@ -6,7 +6,7 @@ namespace WPMoo\WordPress\Managers;
  * Manages field types in WordPress context.
  *
  * @package WPMoo\WordPress\Managers
- * @since 0.2.0
+ * @since 0.1.0
  */
 class FieldManager {
     /**

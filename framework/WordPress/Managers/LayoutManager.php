@@ -9,7 +9,7 @@ use WPMoo\Layout\Component\Accordion;
  * Layout manager.
  *
  * @package WPMoo\WordPress\Managers
- * @since 0.2.0
+ * @since 0.1.0
  */
 class LayoutManager {
 	/**

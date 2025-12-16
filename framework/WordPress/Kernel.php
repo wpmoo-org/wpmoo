@@ -14,7 +14,7 @@ use WPMoo\WordPress\Managers\PageManager;
  * framework function.
  *
  * @package WPMoo\WordPress
- * @since 0.2.0
+ * @since 0.1.0
  */
 final class Kernel {
     /**

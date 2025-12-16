@@ -31,7 +31,21 @@ add_action('init', function() {
         '0.2.0',   // Plugin version
         __FILE__  // Plugin's main file path
     );
+    
+    // 4.2. Register custom field and layout types
+    $app = \WPMoo\Core::get(\WPMoo\Moo::detect_app_id());
+    
+    // Register custom field types
+    $app->register_field_type('select', \WPMoo\Field\Type\Select::class);
+    
+    // Register custom layout types
+    $app->register_layout_type('grid', \WPMoo\Layout\Component\Grid::class);
 
     // Load sample pages and fields using the WPMoo Local Facade.
     require_once __DIR__ . '/samples/settings.php';
+});
+
+// Initialize the asset enqueuing system
+add_action('wp_loaded', function() {
+    \WPMoo\Core::instance()->init_asset_enqueuing();
 });

@@ -2,6 +2,7 @@
 
 namespace WPMoo\App;
 
+use WPMoo\Core;
 use WPMoo\WordPress\Managers\FrameworkManager;
 use WPMoo\Page\Builders\PageBuilder; // Corrected use statement
 use WPMoo\Layout\Layout;
@@ -14,7 +15,7 @@ use WPMoo\Shared\Helper\ValidationHelper;
  * Provides a scoped API for a plugin to interact with the shared WPMoo core.
  *
  * @package WPMoo\App
- * @since 0.2.0
+ * @since 0.1.0
  */
 class App {
     /**
@@ -54,6 +55,51 @@ class App {
         $page = new PageBuilder($id, $title); // Corrected instantiation
         $this->get_framework_manager()->add_page($page, $this->app_id);
         return $page;
+    }
+    
+    /**
+     * Register a custom field type.
+     *
+     * @param string $type The field type slug.
+     * @param string $class The field class name.
+     * @return void
+     */
+    public function register_field_type(string $type, string $class): void {
+        Core::instance()->get_field_type_registry()->register_field_type($type, $class);
+    }
+    
+    /**
+     * Create a field using the field type registry.
+     *
+     * @param string $type The field type slug.
+     * @param string $id The field ID.
+     * @return \WPMoo\Field\Interfaces\FieldInterface|null The field instance or null if type is not registered.
+     */
+    public function create_field(string $type, string $id) {
+        return Core::instance()->get_field_type_registry()->create_field($type, $id);
+    }
+    
+    /**
+     * Register a custom layout type.
+     *
+     * @param string $type The layout type slug.
+     * @param string $class The layout class name.
+     * @return void
+     */
+    public function register_layout_type(string $type, string $class): void {
+        Core::instance()->get_layout_type_registry()->register_layout_type($type, $class);
+    }
+    
+    /**
+     * Create a layout component using the layout type registry.
+     *
+     * @param string $type The layout type slug.
+     * @param string $id The layout ID.
+     * @param string $title The layout title (where applicable).
+     * @return \WPMoo\Layout\Interfaces\LayoutInterface|null The layout instance or null if type is not registered.
+     */
+    public function create_layout(string $type, string $id, string $title = '') {
+        return Core::instance()->get_layout_type_registry()->create_layout($type, $id, $title);
     }
 
     /**

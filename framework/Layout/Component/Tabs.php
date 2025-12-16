@@ -3,6 +3,7 @@
 namespace WPMoo\Layout\Component;
 
 use WPMoo\Layout\Abstracts\AbstractLayout;
+use WPMoo\Layout\Interfaces\LayoutInterface;
 
 /**
  * Tabs layout component.
@@ -13,7 +14,7 @@ use WPMoo\Layout\Abstracts\AbstractLayout;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Tabs extends AbstractLayout {
+class Tabs extends AbstractLayout implements LayoutInterface {
 	/**
 	 * Tabs orientation: horizontal or vertical.
 	 *

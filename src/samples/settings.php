@@ -38,8 +38,36 @@ Moo::tab( 'general', __( 'General Settings', 'wpmoo-samples' ) )
 			->label( __( 'Site Description', 'wpmoo-samples' ) )
 			->placeholder( __( 'Enter site description', 'wpmoo-samples' ) ),
 		Moo::toggle( 'enable_cache' )
-			->label( __( 'Enable Caching', 'wpmoo-samples' ) ),
-	) );
+		    ->label( __( 'Enable Caching', 'wpmoo-samples' ) ),
+) );
+
+// Example of using the custom select field
+$custom_fields_tab = Moo::tab( 'custom_fields', __( 'Custom Fields', 'wpmoo-samples' ) )
+    ->parent( 'wpmoo_main_tabs' );  // Link to the tabs container
+
+$custom_fields_tab->fields( array(
+    Moo::create_field('select', 'preferred_language')
+        ->label( __( 'Preferred Language', 'wpmoo-samples' ) )
+        ->options( array(
+            'en' => __( 'English', 'wpmoo-samples' ),
+            'de' => __( 'German', 'wpmoo-samples' ),
+            'fr' => __( 'French', 'wpmoo-samples' ),
+        ) ),
+    Moo::create_field('select', 'user_role')
+        ->label( __( 'Default User Role', 'wpmoo-samples' ) )
+        ->options( array(
+            'subscriber' => __( 'Subscriber', 'wpmoo-samples' ),
+            'contributor' => __( 'Contributor', 'wpmoo-samples' ),
+            'author' => __( 'Author', 'wpmoo-samples' ),
+        ) ),
+) );
+
+// Example of using the custom grid layout
+$grid_layout = Moo::create_layout('grid', 'feature_grid', __( 'Feature Grid', 'wpmoo-samples' ) );
+if ($grid_layout) {
+    $grid_layout->columns(3)
+        ->parent('settings');  // Link to the settings page
+}
 
 Moo::tab( 'advanced', __( 'Advanced Settings', 'wpmoo-samples' ) )
 	->parent( 'wpmoo_main_tabs' )  // Link to the tabs container

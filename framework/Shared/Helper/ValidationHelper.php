@@ -9,7 +9,7 @@ namespace WPMoo\Shared\Helper;
  * proper format and security.
  *
  * @package WPMoo\Shared\Helper
- * @since 0.2.0
+ * @since 0.1.0
  * @link https://wpmoo.org   WPMoo – WordPress Micro Object-Oriented Framework.
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
@@ -26,12 +26,16 @@ class ValidationHelper {
      */
     public static function validate_id_format(string $id, string $component_type = 'component'): bool {
         if (empty($id)) {
-            throw new \InvalidArgumentException("{$component_type} ID cannot be empty.");
+            throw new \InvalidArgumentException(sprintf(__('%s ID cannot be empty.', 'wpmoo'), $component_type));
         }
         
         if (!preg_match('/^[a-z0-9_-]+$/', $id)) {
             throw new \InvalidArgumentException(
-                "Invalid {$component_type} ID: {$id}. Must contain only lowercase letters, numbers, hyphens, and underscores."
+                sprintf(
+                    __('Invalid %1$s ID: %2$s. Must contain only lowercase letters, numbers, hyphens, and underscores.', 'wpmoo'),
+                    $component_type,
+                    $id
+                )
             );
         }
         
@@ -52,7 +56,10 @@ class ValidationHelper {
         
         if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
             throw new \InvalidArgumentException(
-                "Invalid plugin slug: {$slug}. Must contain only lowercase letters, numbers, and hyphens."
+                sprintf(
+                    __('Invalid plugin slug: %s. Must contain only lowercase letters, numbers, and hyphens.', 'wpmoo'),
+                    $slug
+                )
             );
         }
         
@@ -68,13 +75,16 @@ class ValidationHelper {
      */
     public static function validate_version_format(string $version): bool {
         if (empty($version)) {
-            throw new \InvalidArgumentException("Version cannot be empty.");
+            throw new \InvalidArgumentException(__('Version cannot be empty.', 'wpmoo'));
         }
         
         // Basic semantic versioning format: X.Y or X.Y.Z, optionally with pre-release or build metadata
         if (!preg_match('/^[\d]+\.[\d]+(?:\.[\d]+)?(?:-[a-zA-Z0-9.]+)?(?:\+[a-zA-Z0-9.]+)?$/', $version)) {
             throw new \InvalidArgumentException(
-                "Invalid version format: {$version}. Must follow semantic versioning (e.g., 1.0.0)."
+                sprintf(
+                    __('Invalid version format: %s. Must follow semantic versioning (e.g., 1.0.0).', 'wpmoo'),
+                    $version
+                )
             );
         }
         
@@ -90,18 +100,18 @@ class ValidationHelper {
      */
     public static function validate_file_path(string $path): bool {
         if (empty($path)) {
-            throw new \InvalidArgumentException("File path cannot be empty.");
+            throw new \InvalidArgumentException(__('File path cannot be empty.', 'wpmoo'));
         }
         
         if (!file_exists($path)) {
             throw new \InvalidArgumentException(
-                "File does not exist: {$path}"
+                sprintf(__('File does not exist: %s', 'wpmoo'), $path)
             );
         }
         
         if (!is_readable($path)) {
             throw new \InvalidArgumentException(
-                "File is not readable: {$path}"
+                sprintf(__('File is not readable: %s', 'wpmoo'), $path)
             );
         }
         

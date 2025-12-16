@@ -34,7 +34,7 @@ class FrameworkManager {
 	/**
 	 * Registered layouts by plugin.
 	 *
-	 * @var array<string, array<string, mixed>> Array containing all layout components (Tabs, Accordion, Container, Tab, AccordionItem, etc.)
+	 * @var array<string, array<string, mixed>> Array containing all layout components (Tabs, Accordion, Container, Tab, AccordionItem, Fieldset, etc.)
 	 */
 	private array $layouts = array();
 

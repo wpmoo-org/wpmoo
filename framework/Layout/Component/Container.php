@@ -3,6 +3,7 @@
 namespace WPMoo\Layout\Component;
 
 use WPMoo\Layout\Abstracts\AbstractLayout;
+use WPMoo\Layout\Interfaces\LayoutInterface;
 
 /**
  * Container layout component that can hold other layout components like tabs, accordions, etc.
@@ -13,7 +14,7 @@ use WPMoo\Layout\Abstracts\AbstractLayout;
  * @link https://github.com/wpmoo/wpmoo   GitHub Repository.
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
-class Container extends AbstractLayout {
+class Container extends AbstractLayout implements LayoutInterface {
     /**
      * The type of container (e.g., 'tabs', 'accordion', 'grid', etc.)
      *

@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Define framework constants if they haven't been defined yet.
 if ( ! defined( 'WPMOO_VERSION' ) ) {
-	define( 'WPMOO_VERSION', '0.2.0' ); // Update version
+	define( 'WPMOO_VERSION', '0.1.0' ); // Update version
 }
 if ( ! defined( 'WPMOO_PATH' ) ) {
 	// This path points to the root of the winning framework instance.
@@ -38,6 +38,6 @@ if ( class_exists( 'WPMoo\WordPress\Kernel' ) ) {
 /**
  * Fires once the WPMoo framework's core is loaded and ready.
  *
- * @since 0.2.0
+ * @since 0.1.0
  */
 do_action( 'wpmoo_loaded' );

@@ -3,29 +3,31 @@
 namespace WPMoo\WordPress\Managers;
 
 use WPMoo\Page\Builders\PageBuilder;
+use WPMoo\Core;
 
 /**
  * Page menu manager.
  *
  * @package WPMoo\WordPress\Managers
- * @since   0.2.0
+ * @since 0.1.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
+ * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
-class PageManager
-{
+class PageManager {
     /**
      * The framework manager instance.
      *
      * @var FrameworkManager
      */
     private FrameworkManager $framework_manager;
-
+    
     /**
      * Constructor.
      *
      * @param FrameworkManager $framework_manager The main framework manager.
      */
-    public function __construct(FrameworkManager $framework_manager)
-    {
+    public function __construct(FrameworkManager $framework_manager) {
         $this->framework_manager = $framework_manager;
     }
 
@@ -35,8 +37,7 @@ class PageManager
      * @throws \Exception If a page registration fails.
      * @return void
      */
-    public function register_all(): void
-    {
+    public function register_all(): void {
         // Get all pages from the central framework manager.
         $all_pages_by_plugin = $this->framework_manager->get_pages();
 
@@ -54,8 +55,7 @@ class PageManager
      * @return void
      * @throws \Exception If a page registration fails.
      */
-    private function register_pages_for_plugin( string $plugin_slug, array $pages ): void
-    {
+    private function register_pages_for_plugin( string $plugin_slug, array $pages ): void {
         foreach ( $pages as $page ) {
             // Make sure page registration doesn't fail the entire process.
             try {
@@ -73,8 +73,7 @@ class PageManager
      * @param  string $page_slug   The original slug of the page.
      * @return string The conflict-safe slug.
      */
-    public static function get_unique_slug( string $plugin_slug, string $page_slug ): string
-    {
+    public static function get_unique_slug( string $plugin_slug, string $page_slug ): string {
         return $plugin_slug . '_' . $page_slug;
     }
 
@@ -85,8 +84,7 @@ class PageManager
      * @param  PageBuilder $page        Page builder instance.
      * @return void
      */
-    private function register_page( string $plugin_slug, PageBuilder $page ): void
-    {
+    private function register_page( string $plugin_slug, PageBuilder $page ): void {
         $self = $this;  // Capture $this context for closure.
         $hook_suffix = '';
 
@@ -131,8 +129,7 @@ class PageManager
      * @param  string      $plugin_slug The slug of the plugin being rendered.
      * @return void
      */
-    private function render_page( PageBuilder $page, string $unique_slug, string $plugin_slug ): void
-    {
+    private function render_page( PageBuilder $page, string $unique_slug, string $plugin_slug ): void {
         // Get all layouts for the current plugin to build the page structure.
         $plugin_layouts = $this->framework_manager->get_layouts($plugin_slug);
 
@@ -143,26 +140,32 @@ class PageManager
                 <p><?php echo esc_html($page->get_description()); ?></p>
         <?php endif; ?>
 
-            <form method="post" action="options.php">
+            <form method="post" action="options.php" class="pico-settings-form">
         <?php
         // This function prints out all hidden setting fields
         settings_fields($unique_slug);
-
+        
         // If there are layouts for this plugin, render them.
         if (! empty($plugin_layouts) ) {
+            echo '<div class="container">'; // PicoCSS container class
             $this->render_layouts($plugin_layouts, $page->get_id(), $unique_slug);
+            echo '</div>';
         } else {
             // Fallback for pages without layouts.
+            echo '<div class="container">'; // PicoCSS container class
             do_settings_sections($unique_slug);
+            echo '</div>';
         }
-
+        
+        echo '<div class="grid">'; // PicoCSS grid class for form buttons
         submit_button();
+        echo '</div>';
         ?>
             </form>
 
             <!-- ### DEBUG: Show saved options ### -->
             <hr>
-            <h2>Saved Data</h2>
+            <h2><?php _e('Saved Data', 'wpmoo'); ?></h2>
             <pre><?php echo esc_html( wp_json_encode( get_option( $unique_slug ), JSON_PRETTY_PRINT ) ); ?></pre>
             <!-- ### END DEBUG ### -->
 
@@ -178,37 +181,39 @@ class PageManager
      * @param  string               $unique_slug   The unique slug for the page, used as the option group name.
      * @return void
      */
-    private function render_layouts( array $pluginLayouts, string $page_id, string $unique_slug ): void
-    {
+    private function render_layouts( array $plugin_layouts, string $page_id, string $unique_slug ): void {
         $containers    = [];
-        $itemsByParent = [];
+        $items_by_parent = [];
 
         // First, find the top-level containers for the current page.
-        foreach ( $pluginLayouts as $layout ) {
+        foreach ( $plugin_layouts as $layout ) {
             if ( $layout->get_parent() === $page_id && $layout instanceof \WPMoo\Layout\Component\Container ) {
                 $containers[ $layout->get_id() ] = $layout;
             }
         }
 
         // Now, find all the items that belong to those containers.
-        foreach ( $pluginLayouts as $layout ) {
+        foreach ( $plugin_layouts as $layout ) {
             $parent_id = $layout->get_parent();
             if ( $parent_id && isset( $containers[ $parent_id ] ) ) {
-                $itemsByParent[ $parent_id ][ $layout->get_id() ] = $layout;
+                $items_by_parent[ $parent_id ][ $layout->get_id() ] = $layout;
             }
         }
 
         // Render each container with its pre-categorized items.
-        foreach ( $containers as $containerId => $container ) {
-            $items         = $itemsByParent[ $containerId ] ?? [];
-            $containerType = $container->get_type();
+        foreach ( $containers as $container_id => $container ) {
+            $items         = $items_by_parent[ $container_id ] ?? [];
+            $container_type = $container->get_type();
 
-            switch ( $containerType ) {
+            switch ( $container_type ) {
                 case 'tabs':
                     $this->render_tabs_from_container( $container, $items, $unique_slug );
                     break;
                 case 'accordion':
                     $this->render_accordion_from_container( $container, $items, $unique_slug );
+                    break;
+                case 'fieldset':
+                    $this->render_fieldset_from_container( $container, $items, $unique_slug );
                     break;
                 default:
                     // Handle other container types if needed.
@@ -225,8 +230,7 @@ class PageManager
      * @param  string                            $unique_slug The unique slug for the page.
      * @return void
      */
-    private function render_tabs_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void
-    {
+    private function render_tabs_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void {
         $orientation = 'horizontal'; // Default orientation, could be stored in Container properties if needed
 
         $tab_class = 'vertical' === $orientation ? 'wpmoo-tabs-vertical' : 'wpmoo-tabs-horizontal';
@@ -266,7 +270,6 @@ class PageManager
             <?php $index++; ?>
         <?php endforeach; ?>
             </div>
-        </div>
         <?php
     }
 
@@ -278,8 +281,7 @@ class PageManager
      * @param  string                            $unique_slug The unique slug for the page.
      * @return void
      */
-    private function render_accordion_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void
-    {
+    private function render_accordion_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void {
         ?>
         <div class="wpmoo-accordion">
         <?php foreach ( $items as $item ) : ?>
@@ -301,13 +303,38 @@ class PageManager
     }
 
     /**
+     * Render fieldset layout from container and item components.
+     *
+     * @param  \WPMoo\Layout\Component\Container $container   Container component.
+     * @param  array                             $items       Item components for this container.
+     * @param  string                            $unique_slug The unique slug for the page.
+     * @return void
+     */
+    private function render_fieldset_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void {
+        ?>
+        <fieldset class="wpmoo-fieldset">
+            <legend class="wpmoo-fieldset-legend"><?php echo esc_html($container->get_title()); ?></legend>
+            <div class="wpmoo-fieldset-content">
+        <?php foreach ( $items as $item ) : ?>
+            <?php if ($item instanceof \WPMoo\Layout\Component\Fieldset ) : ?>
+                <?php
+                // Render content for this fieldset item.
+                $this->render_content($item->get_content(), $unique_slug);
+                ?>
+            <?php endif; ?>
+        <?php endforeach; ?>
+            </div>
+        </fieldset>
+        <?php
+    }
+
+    /**
      * Render tabs layout (legacy structure).
      *
      * @param  \WPMoo\Layout\Component\Tabs $tabs Tabs component.
      * @return void
      */
-    private function render_tabs( \WPMoo\Layout\Component\Tabs $tabs ): void
-    {
+    private function render_tabs( \WPMoo\Layout\Component\Tabs $tabs ): void {
         $items = $tabs->get_items();
         $orientation = $tabs->get_orientation();
 
@@ -350,8 +377,7 @@ class PageManager
      * @param  \WPMoo\Layout\Component\Accordion $accordion Accordion component.
      * @return void
      */
-    private function render_accordion( \WPMoo\Layout\Component\Accordion $accordion ): void
-    {
+    private function render_accordion( \WPMoo\Layout\Component\Accordion $accordion ): void {
         // Placeholder for accordion rendering.
         // This would render the accordion structure similar to tabs.
         echo '<!-- Accordion content to be implemented -->';
@@ -364,8 +390,7 @@ class PageManager
      * @param  string       $unique_slug The unique option group name for the page.
      * @return void
      */
-    private function render_content( array $content, string $unique_slug ): void
-    {
+    private function render_content( array $content, string $unique_slug ): void {
         if (empty($content) ) {
             return;
         }

@@ -4,6 +4,8 @@ namespace WPMoo;
 
 use WPMoo\App\App;
 use WPMoo\App\Container;
+use WPMoo\Field\FieldTypeRegistry;
+use WPMoo\Layout\LayoutTypeRegistry;
 use WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer;
 use WPMoo\WordPress\Managers\FieldManager;
 use WPMoo\WordPress\Managers\FrameworkManager;
@@ -19,35 +21,52 @@ use WPMoo\WordPress\Managers\PageManager;
  * in the framework and remains completely decoupled from WordPress.
  *
  * @package WPMoo
- * @since 0.2.0
+ * @since 0.1.0
+ * @link https://wpmoo.org WPMoo – WordPress Micro Object-Oriented Framework.
+ * @link https://github.com/wpmoo/wpmoo GitHub Repository.
+ * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 final class Core {
     /**
-     * The single, static instance of the Core class.
+     * The single, static instance of the Core registry.
      * @var self|null
      */
     private static ?self $instance = null;
-
+    
     /**
      * Holds all registered App instances, keyed by their unique App ID.
      * @var App[]
      */
     private array $apps = [];
-
+    
     /**
      * The master dependency injection container.
      * @var Container
      */
     private Container $container;
-
+    
+    /**
+     * Field type registry for dynamic field type management.
+     * @var FieldTypeRegistry
+     */
+    private FieldTypeRegistry $field_type_registry;
+    
+    /**
+     * Layout type registry for dynamic layout component management.
+     * @var LayoutTypeRegistry
+     */
+    private LayoutTypeRegistry $layout_type_registry;
+    
     /**
      * Private constructor to enforce the singleton pattern and setup the container.
      */
     private function __construct() {
         $this->container = new Container();
+        $this->field_type_registry = new FieldTypeRegistry();
+        $this->layout_type_registry = new LayoutTypeRegistry();
         $this->register_services(); // Call register_services here
     }
-
+    
     /**
      * Registers all core services in the container.
      * This method is called once when the Core singleton is instantiated.
@@ -63,7 +82,26 @@ final class Core {
         // Register asset enqueuers as singletons.
         $this->container->singleton(PageAssetEnqueuer::class);
     }
-
+    
+    /**
+     * Initialize the asset enqueuing system.
+     * This method should be called during the appropriate WordPress hook.
+     *
+     * @return void
+     */
+    public function init_asset_enqueuing(): void {
+        $this->container->resolve(PageAssetEnqueuer::class);
+    }
+    
+    /**
+     * Get the framework asset enqueuer instance.
+     *
+     * @return PageAssetEnqueuer
+     */
+    public function get_asset_enqueuer(): PageAssetEnqueuer {
+        return $this->container->resolve(PageAssetEnqueuer::class);
+    }
+    
     /**
      * Get the singleton instance of the Core registry.
      *
@@ -75,7 +113,7 @@ final class Core {
         }
         return self::$instance;
     }
-
+    
     /**
      * Gets or creates a plugin-specific App instance.
      *
@@ -104,5 +142,23 @@ final class Core {
      */
     public function get_container(): Container {
         return $this->container;
+    }
+    
+    /**
+     * Get the field type registry.
+     *
+     * @return FieldTypeRegistry
+     */
+    public function get_field_type_registry(): FieldTypeRegistry {
+        return $this->field_type_registry;
+    }
+    
+    /**
+     * Get the layout type registry.
+     *
+     * @return LayoutTypeRegistry
+     */
+    public function get_layout_type_registry(): LayoutTypeRegistry {
+        return $this->layout_type_registry;
     }
 }
