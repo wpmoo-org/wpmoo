@@ -79,7 +79,7 @@ class FrameworkManager {
 	    }
 	    
 	    // Check version compatibility
-	    $compatibility_result = VersionCompatibilityChecker::isCompatible($version, WPMOO_VERSION);
+	    $compatibility_result = VersionCompatibilityChecker::is_compatible($version, WPMOO_VERSION);
 	    
 	    if (!$compatibility_result['compatible']) {
 	        error_log("WPMoo: Plugin {$slug} requires framework version {$version}, but current version is " . WPMOO_VERSION . ". " . $compatibility_result['message']);
