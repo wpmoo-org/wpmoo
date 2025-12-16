@@ -5,6 +5,7 @@ namespace WPMoo\WordPress;
 use WPMoo\Core;
 use WPMoo\WordPress\Managers\FrameworkManager;
 use WPMoo\WordPress\Managers\PageManager;
+use WPMoo\WordPress\Compatibility\VersionCompatibilityChecker;
 
 /**
  * WPMoo WordPress Kernel.
@@ -121,5 +122,35 @@ final class Kernel {
         add_action('add_meta_boxes', function() use ($metaboxManager) {
             $metaboxManager->register_all();
         });
+        
+        // Log version compatibility information after all plugins have registered
+        add_action('wpmoo_loaded', [$this, 'log_version_compatibility'], 30);
+    }
+    
+    /**
+     * Log version compatibility information for all registered plugins.
+     *
+     * @return void
+     */
+    public function log_version_compatibility(): void {
+        $container = Core::instance()->get_container();
+        $frameworkManager = $container->resolve(FrameworkManager::class);
+        
+        $all_plugins = $frameworkManager->get_all_registered_plugins();
+        $incompatible_plugins = $frameworkManager->get_incompatible_plugins();
+        
+        // Log all plugins and their compatibility status
+        foreach ($all_plugins as $slug => $plugin) {
+            if (isset($plugin['compatibility'])) {
+                $status = $plugin['compatibility']['compatible'] ? 'COMPATIBLE' : 'INCOMPATIBLE';
+                error_log("WPMoo: Plugin {$slug} (v{$plugin['version']}) - Framework v" . WPMOO_VERSION . " - Status: {$status} - " . $plugin['compatibility']['message']);
+            }
+        }
+        
+        // If there are incompatible plugins, log them specifically
+        if (!empty($incompatible_plugins)) {
+            $incompatible_list = array_keys($incompatible_plugins);
+            error_log("WPMoo: Found " . count($incompatible_plugins) . " plugin(s) with version compatibility issues: " . implode(', ', $incompatible_list));
+        }
     }
 }

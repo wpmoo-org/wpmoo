@@ -6,6 +6,7 @@ use WPMoo\Page\Builders\PageBuilder;
 use WPMoo\Layout\Component\Tabs;
 use WPMoo\Layout\Component\Accordion;
 use WPMoo\Shared\Helper\ValidationHelper;
+use WPMoo\WordPress\Compatibility\VersionCompatibilityChecker;
 
 /**
  * Framework manager for handling cross-plugin component registration and version loading.
@@ -77,17 +78,25 @@ class FrameworkManager {
 	        return;
 	    }
 	    
+	    // Check version compatibility
+	    $compatibility_result = VersionCompatibilityChecker::isCompatible($version, WPMOO_VERSION);
+	    
+	    if (!$compatibility_result['compatible']) {
+	        error_log("WPMoo: Plugin {$slug} requires framework version {$version}, but current version is " . WPMOO_VERSION . ". " . $compatibility_result['message']);
+	    }
+	    
 	    $this->plugins[ $slug ] = array(
 	        'slug'    => $slug,
 	        'version' => $version,
 	        'path'    => $path,
+	        'compatibility' => $compatibility_result
 	    );
 	}
 
 	/**
 	 * Get all registered plugins
 	 *
-	 * @return array<string, array{slug: string, version: string, path: string}> All registered plugins.
+	 * @return array<string, array{slug: string, version: string, path: string, compatibility: array}> All registered plugins.
 	 */
 	public function get_all_registered_plugins(): array {
 		return $this->plugins;
@@ -111,6 +120,23 @@ class FrameworkManager {
 		}
 
 		return $latest_stable_plugin;
+	}
+	
+	/**
+		* Get all plugins with compatibility issues.
+		*
+		* @return array<string, array{slug: string, version: string, path: string, compatibility: array}> Plugins with compatibility issues.
+		*/
+	public function get_incompatible_plugins(): array {
+		   $incompatible = [];
+		   
+		   foreach ($this->plugins as $slug => $plugin) {
+		       if (isset($plugin['compatibility']) && !$plugin['compatibility']['compatible']) {
+		           $incompatible[$slug] = $plugin;
+		       }
+		   }
+		   
+		   return $incompatible;
 	}
 
 	/**

@@ -19,6 +19,11 @@ wpmoo_loader( 'load_autoloader', dirname( __DIR__ ) . '/framework' );
 // 2. Register this version of the framework with the loader.
 wpmoo_loader( 'register', dirname( __DIR__ ) . '/framework/WordPress/boot.php', '0.2.0' );
 
+// Define the current framework version if not already defined
+if (!defined('WPMOO_VERSION')) {
+    define('WPMOO_VERSION', '0.1.0');
+}
+
 // 3. Load the Local Facade for this plugin.
 require_once __DIR__ . '/Moo.php';
 
@@ -28,7 +33,7 @@ add_action('init', function() {
     // This ensures that its components (pages, fields) can be associated with it.
     \WPMoo\Core::instance()->get_container()->resolve(\WPMoo\WordPress\Managers\FrameworkManager::class)->register_plugin(
         \WPMoo\Moo::detect_app_id(),  // Dynamically detected plugin slug
-        '0.2.0',   // Plugin version
+        '0.1.0',   // Plugin version
         __FILE__  // Plugin's main file path
     );
     
