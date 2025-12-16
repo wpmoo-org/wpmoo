@@ -27,7 +27,7 @@ class EmailValidator extends BaseValidator implements FieldValidatorInterface {
         }
         
         if (!is_email($value)) {
-            return ['valid' => false, 'error' => 'Please enter a valid email address.'];
+            return ['valid' => false, 'error' => __('Please enter a valid email address.', 'wpmoo')];
         }
         
         return ['valid' => true, 'error' => null];

@@ -26,7 +26,7 @@ class RequiredValidator extends BaseValidator implements FieldValidatorInterface
         
         if ($required) {
             if (is_string($value) && trim($value) === '') {
-                return ['valid' => false, 'error' => 'This field is required.'];
+                return ['valid' => false, 'error' => __('This field is required.', 'wpmoo')];
             } elseif ($value === null || $value === []) {
                 return ['valid' => false, 'error' => 'This field is required.'];
             }

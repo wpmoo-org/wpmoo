@@ -27,7 +27,7 @@ class NumberValidator extends BaseValidator implements FieldValidatorInterface {
         }
         
         if (!is_numeric($value)) {
-            return ['valid' => false, 'error' => 'Please enter a valid number.'];
+            return ['valid' => false, 'error' => __('Please enter a valid number.', 'wpmoo')];
         }
         
         // Check min/max constraints if provided
@@ -37,11 +37,11 @@ class NumberValidator extends BaseValidator implements FieldValidatorInterface {
         $num_value = floatval($value);
         
         if (isset($min) && $num_value < floatval($min)) {
-            return ['valid' => false, 'error' => "Value must be greater than or equal to {$min}."];
+            return ['valid' => false, 'error' => sprintf(__('Value must be greater than or equal to %s.', 'wpmoo'), $min)];
         }
         
         if (isset($max) && $num_value > floatval($max)) {
-            return ['valid' => false, 'error' => "Value must be less than or equal to {$max}."];
+            return ['valid' => false, 'error' => sprintf(__('Value must be less than or equal to %s.', 'wpmoo'), $max)];
         }
         
         return ['valid' => true, 'error' => null];

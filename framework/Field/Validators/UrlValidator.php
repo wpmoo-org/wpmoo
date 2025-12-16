@@ -27,7 +27,7 @@ class UrlValidator extends BaseValidator implements FieldValidatorInterface {
         }
         
         if (!filter_var($value, FILTER_VALIDATE_URL)) {
-            return ['valid' => false, 'error' => 'Please enter a valid URL.'];
+            return ['valid' => false, 'error' => __('Please enter a valid URL.', 'wpmoo')];
         }
         
         return ['valid' => true, 'error' => null];

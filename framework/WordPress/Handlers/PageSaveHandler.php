@@ -83,7 +83,7 @@ class PageSaveHandler {
             return [
                 'success' => false,
                 'errors' => $errors,
-                'message' => 'Validation failed for one or more fields.'
+                'message' => __('Validation failed for one or more fields.', 'wpmoo')
             ];
         }
 
@@ -93,7 +93,7 @@ class PageSaveHandler {
         return [
             'success' => true,
             'errors' => [],
-            'message' => 'Settings saved successfully.'
+            'message' => __('Settings saved successfully.', 'wpmoo')
         ];
     }
     
