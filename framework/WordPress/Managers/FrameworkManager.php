@@ -64,33 +64,33 @@ class FrameworkManager {
 	 * @return void
 	 */
 	public function register_plugin( string $slug, string $version, string $path ): void {
-	    try {
-	        // Validate plugin slug format
-	        ValidationHelper::validate_plugin_slug($slug);
-	        
-	        // Validate version format
-	        ValidationHelper::validate_version_format($version);
-	        
-	        // Validate path exists
-	        ValidationHelper::validate_file_path($path);
-	    } catch (\InvalidArgumentException $e) {
-	        error_log("WPMoo: " . $e->getMessage());
-	        return;
-	    }
-	    
-	    // Check version compatibility
-	    $compatibility_result = VersionCompatibilityChecker::is_compatible($version, WPMOO_VERSION);
-	    
-	    if (!$compatibility_result['compatible']) {
-	        error_log("WPMoo: Plugin {$slug} requires framework version {$version}, but current version is " . WPMOO_VERSION . ". " . $compatibility_result['message']);
-	    }
-	    
-	    $this->plugins[ $slug ] = array(
-	        'slug'    => $slug,
-	        'version' => $version,
-	        'path'    => $path,
-	        'compatibility' => $compatibility_result
-	    );
+		try {
+			// Validate plugin slug format
+			ValidationHelper::validate_plugin_slug( $slug );
+
+			// Validate version format
+			ValidationHelper::validate_version_format( $version );
+
+			// Validate path exists
+			ValidationHelper::validate_file_path( $path );
+		} catch ( \InvalidArgumentException $e ) {
+			error_log( 'WPMoo: ' . $e->getMessage() );
+			return;
+		}
+
+		// Check version compatibility
+		$compatibility_result = VersionCompatibilityChecker::is_compatible( $version, WPMOO_VERSION );
+
+		if ( ! $compatibility_result['compatible'] ) {
+			error_log( "WPMoo: Plugin {$slug} requires framework version {$version}, but current version is " . WPMOO_VERSION . '. ' . $compatibility_result['message'] );
+		}
+
+		$this->plugins[ $slug ] = array(
+			'slug'    => $slug,
+			'version' => $version,
+			'path'    => $path,
+			'compatibility' => $compatibility_result,
+		);
 	}
 
 	/**
@@ -121,21 +121,21 @@ class FrameworkManager {
 
 		return $latest_stable_plugin;
 	}
-	
+
 	/**
-		* Get all plugins with compatibility issues.
-		*
-		* @return array<string, array{slug: string, version: string, path: string, compatibility: array}> Plugins with compatibility issues.
-		*/
+	 * Get all plugins with compatibility issues.
+	 *
+	 * @return array<string, array{slug: string, version: string, path: string, compatibility: array}> Plugins with compatibility issues.
+	 */
 	public function get_incompatible_plugins(): array {
-		   $incompatible = [];
-		   
-		   foreach ($this->plugins as $slug => $plugin) {
-		       if (isset($plugin['compatibility']) && !$plugin['compatibility']['compatible']) {
-		           $incompatible[$slug] = $plugin;
-		       }
-		   }
-		   
+		   $incompatible = array();
+
+		foreach ( $this->plugins as $slug => $plugin ) {
+			if ( isset( $plugin['compatibility'] ) && ! $plugin['compatibility']['compatible'] ) {
+				$incompatible[ $slug ] = $plugin;
+			}
+		}
+
 		   return $incompatible;
 	}
 
@@ -215,8 +215,8 @@ class FrameworkManager {
 	/**
 	 * Add a layout to the registry.
 	 *
-	 * @param mixed $layout Layout component instance (could be Tabs, Accordion, Container, Tab, AccordionItem, etc.).
-	 * @param string         $plugin_slug Plugin slug to register the layout under.
+	 * @param mixed  $layout Layout component instance (could be Tabs, Accordion, Container, Tab, AccordionItem, etc.).
+	 * @param string $plugin_slug Plugin slug to register the layout under.
 	 * @return void
 	 */
 	public function add_layout( $layout, string $plugin_slug ): void {
@@ -379,7 +379,7 @@ class FrameworkManager {
 	 * @return array<string, \WPMoo\Field\Interfaces\FieldInterface>
 	 */
 	public function get_fields_by_plugin( string $plugin_slug ): array {
-	return $this->fields[ $plugin_slug ] ?? array();
+		return $this->fields[ $plugin_slug ] ?? array();
 	}
 
 	/**

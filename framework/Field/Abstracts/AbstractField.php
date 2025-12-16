@@ -64,14 +64,14 @@ abstract class AbstractField implements FieldInterface {
 	 *
 	 * @var array
 	 */
-	protected array $validation_options = [];
-	
+	protected array $validation_options = array();
+
 	/**
 	 * Field options (for fields like select, radio, etc.).
 	 *
 	 * @var array
 	 */
-	protected array $options = [];
+	protected array $options = array();
 
 	/**
 	 * Constructor.
@@ -81,13 +81,16 @@ abstract class AbstractField implements FieldInterface {
 	public function __construct( string $id ) {
 		$this->id = $id;
 		$this->name = $id; // Default name to ID.
-	// Initialize with a default validator that doesn't do anything
-	// We don't want to instantiate BaseValidator directly as it's an abstract class
-	$this->validator = new class extends \WPMoo\Field\Validators\BaseValidator {
-		public function validate(mixed $value, array $field_options = []): array {
-			return ['valid' => true, 'error' => null];
-		}
-	};
+		// Initialize with a default validator that doesn't do anything
+		// We don't want to instantiate BaseValidator directly as it's an abstract class
+		$this->validator = new class() extends \WPMoo\Field\Validators\BaseValidator {
+			public function validate( mixed $value, array $field_options = array() ): array {
+				return array(
+					'valid' => true,
+					'error' => null,
+				);
+			}
+		};
 	}
 
 	/**
@@ -108,7 +111,7 @@ abstract class AbstractField implements FieldInterface {
 	 * @return self
 	 */
 	public function label( string $label ): self {
-	$this->label = $label;
+		$this->label = $label;
 		return $this;
 	}
 
@@ -155,18 +158,18 @@ abstract class AbstractField implements FieldInterface {
 		$this->validation_options = $options;
 		return $this;
 	}
-	
+
 	/**
 	 * Set field options.
 	 *
 	 * @param array $options Field options.
 	 * @return self
 	 */
-	public function options(array $options): self {
+	public function options( array $options ): self {
 		$this->options = $options;
-	return $this;
+		return $this;
 	}
-	
+
 	/**
 	 * Get field options.
 	 *
@@ -175,7 +178,7 @@ abstract class AbstractField implements FieldInterface {
 	public function get_options(): array {
 		return $this->options;
 	}
-	
+
 	/**
 	 * Get field ID.
 	 *

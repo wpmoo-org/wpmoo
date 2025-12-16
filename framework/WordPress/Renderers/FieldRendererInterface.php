@@ -14,13 +14,13 @@ use WPMoo\Field\Interfaces\FieldInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 interface FieldRendererInterface {
-    /**
-     * Render a field.
-     *
-     * @param FieldInterface $field The field to render.
-     * @param string $unique_slug The unique slug for the page.
-     * @param mixed $value The current value of the field.
-     * @return string The rendered HTML.
-     */
-    public function render(FieldInterface $field, string $unique_slug, $value): string;
+	/**
+	 * Render a field.
+	 *
+	 * @param FieldInterface $field The field to render.
+	 * @param string         $unique_slug The unique slug for the page.
+	 * @param mixed          $value The current value of the field.
+	 * @return string The rendered HTML.
+	 */
+	public function render( FieldInterface $field, string $unique_slug, $value ): string;
 }

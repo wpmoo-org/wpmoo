@@ -15,97 +15,97 @@ use WPMoo\Layout\Interfaces\LayoutInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
 class Container extends AbstractLayout implements LayoutInterface {
-    /**
-     * The type of container (e.g., 'tabs', 'accordion', 'grid', etc.)
-     *
-     * @var string
-     */
-    private string $type;
+	/**
+	 * The type of container (e.g., 'tabs', 'accordion', 'grid', etc.)
+	 *
+	 * @var string
+	 */
+	private string $type;
 
-    /**
-     * Item components of this container.
-     *
-     * @var array
-     */
-    private array $items = [];
+	/**
+	 * Item components of this container.
+	 *
+	 * @var array
+	 */
+	private array $items = array();
 
-    /**
-     * Constructor.
-     *
-     * @param string $id Layout ID.
-     * @param string $type Container type.
-     */
-    public function __construct(string $id, string $type) {
-        $this->id = $id;
-        $this->type = $type;
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param string $id Layout ID.
+	 * @param string $type Container type.
+	 */
+	public function __construct( string $id, string $type ) {
+		$this->id = $id;
+		$this->type = $type;
+	}
 
-    /**
-     * Set parent ID.
-     *
-     * @param string $parent Parent ID to link to.
-     * @return self
-     */
-    public function parent(string $parent): self {
-        $this->parent = $parent;
-        return $this;
-    }
+	/**
+	 * Set parent ID.
+	 *
+	 * @param string $parent Parent ID to link to.
+	 * @return self
+	 */
+	public function parent( string $parent ): self {
+		$this->parent = $parent;
+		return $this;
+	}
 
-    /**
-     * Add an item component to this container.
-     *
-     * @param mixed $item The item component to add.
-     * @return self
-     */
-    public function add_item($item): self {
-        $this->items[] = $item;
-        return $this;
-    }
+	/**
+	 * Add an item component to this container.
+	 *
+	 * @param mixed $item The item component to add.
+	 * @return self
+	 */
+	public function add_item( $item ): self {
+		$this->items[] = $item;
+		return $this;
+	}
 
-    /**
-     * Set multiple item components.
-     *
-     * @param array $items Array of item components.
-     * @return self
-     */
-    public function items(array $items): self {
-        $this->items = $items;
-        return $this;
-    }
+	/**
+	 * Set multiple item components.
+	 *
+	 * @param array $items Array of item components.
+	 * @return self
+	 */
+	public function items( array $items ): self {
+		$this->items = $items;
+		return $this;
+	}
 
-    /**
-     * Get container type.
-     *
-     * @return string
-     */
-    public function get_type(): string {
-        return $this->type;
-    }
+	/**
+	 * Get container type.
+	 *
+	 * @return string
+	 */
+	public function get_type(): string {
+		return $this->type;
+	}
 
-    /**
-     * Get item components.
-     *
-     * @return array
-     */
-    public function get_items(): array {
-        return $this->items;
-    }
+	/**
+	 * Get item components.
+	 *
+	 * @return array
+	 */
+	public function get_items(): array {
+		return $this->items;
+	}
 
-    /**
-     * Get layout ID.
-     *
-     * @return string
-     */
-    public function get_id(): string {
-        return $this->id;
-    }
+	/**
+	 * Get layout ID.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return $this->id;
+	}
 
-    /**
-     * Get parent ID.
-     *
-     * @return string
-     */
-    public function get_parent(): string {
-        return $this->parent;
-    }
+	/**
+	 * Get parent ID.
+	 *
+	 * @return string
+	 */
+	public function get_parent(): string {
+		return $this->parent;
+	}
 }

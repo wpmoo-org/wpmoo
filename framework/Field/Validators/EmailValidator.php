@@ -14,22 +14,31 @@ use WPMoo\Field\Interfaces\FieldValidatorInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 class EmailValidator extends BaseValidator implements FieldValidatorInterface {
-    /**
-     * Validate email field value.
-     *
-     * @param mixed $value The value to validate.
-     * @param array $field_options Additional field options that might be needed for validation.
-     * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
-     */
-    public function validate(mixed $value, array $field_options = []): array {
-        if (!is_string($value) || $value === '') {
-            return ['valid' => true, 'error' => null]; // Allow empty values to be handled by required validator
-        }
-        
-        if (!is_email($value)) {
-            return ['valid' => false, 'error' => __('Please enter a valid email address.', 'wpmoo')];
-        }
-        
-        return ['valid' => true, 'error' => null];
-    }
+	/**
+	 * Validate email field value.
+	 *
+	 * @param mixed $value The value to validate.
+	 * @param array $field_options Additional field options that might be needed for validation.
+	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
+	 */
+	public function validate( mixed $value, array $field_options = array() ): array {
+		if ( ! is_string( $value ) || $value === '' ) {
+			return array(
+				'valid' => true,
+				'error' => null,
+			); // Allow empty values to be handled by required validator
+		}
+
+		if ( ! is_email( $value ) ) {
+			return array(
+				'valid' => false,
+				'error' => __( 'Please enter a valid email address.', 'wpmoo' ),
+			);
+		}
+
+		return array(
+			'valid' => true,
+			'error' => null,
+		);
+	}
 }

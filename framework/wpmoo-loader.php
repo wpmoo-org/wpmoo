@@ -20,13 +20,13 @@ if ( function_exists( 'wpmoo_loader' ) ) {
  * @param mixed  ...$args Arguments for the action.
  */
 function wpmoo_loader( string $action, ...$args ) {
-	static $versions = [];
+	static $versions = array();
 	static $booted   = false;
 
 	switch ( $action ) {
 		case 'register':
 			list( $path, $version ) = $args;
-			$versions[ $version ]   = [ 'path' => $path ];
+			$versions[ $version ]   = array( 'path' => $path );
 
 			if ( ! $booted ) {
 				add_action(

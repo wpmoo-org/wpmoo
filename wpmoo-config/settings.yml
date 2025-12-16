@@ -22,4 +22,4 @@ dev:
       - "./**/*.php"
       - "./assets/js/**/*.js"
       - "./assets/css/**/*.css"
-  theme: "amber"
+  theme: "azure"

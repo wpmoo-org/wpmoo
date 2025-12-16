@@ -9,20 +9,21 @@ namespace WPMoo\WordPress\Managers;
  * @since 0.1.0
  */
 class FieldManager {
-    /**
-     * The framework manager instance.
-     * @var FrameworkManager
-     */
-    private FrameworkManager $framework_manager;
+	/**
+	 * The framework manager instance.
+	 *
+	 * @var FrameworkManager
+	 */
+	private FrameworkManager $framework_manager;
 
-    /**
-     * Constructor.
-     *
-     * @param FrameworkManager $framework_manager The main framework manager.
-     */
-    public function __construct(FrameworkManager $framework_manager) {
-        $this->framework_manager = $framework_manager;
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param FrameworkManager $framework_manager The main framework manager.
+	 */
+	public function __construct( FrameworkManager $framework_manager ) {
+		$this->framework_manager = $framework_manager;
+	}
 
 	/**
 	 * Register all fields with WordPress.
@@ -52,7 +53,8 @@ class FieldManager {
 
 	/**
 	 * Add a field to be registered.
-     * @deprecated This method is for backward compatibility and should not be used. Use App::field() instead.
+	 *
+	 * @deprecated This method is for backward compatibility and should not be used. Use App::field() instead.
 	 *
 	 * @param object      $field Field instance.
 	 * @param string|null $plugin_slug Plugin slug to register the field under.
@@ -63,4 +65,3 @@ class FieldManager {
 		$this->framework_manager->add_field( $field, $plugin_slug );
 	}
 }
-

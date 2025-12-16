@@ -14,21 +14,21 @@ use WPMoo\Field\Interfaces\FieldInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 class TextareaRenderer extends BaseRenderer {
-    /**
-     * Render a textarea field.
-     *
-     * @param FieldInterface $field The field to render.
-     * @param string $unique_slug The unique slug for the page.
-     * @param mixed $value The current value of the field.
-     * @return string The rendered HTML.
-     */
-    public function render(FieldInterface $field, string $unique_slug, $value): string {
-        $field_id = $field->get_id();
-        $field_name = $unique_slug . '[' . $field_id . ']';
-        $placeholder = method_exists($field, 'get_placeholder') ? $field->get_placeholder() : '';
-        
-        $input_html = '<div class="form-group"><textarea id="' . esc_attr($field_id) . '" name="' . esc_attr($field_name) . '" placeholder="' . esc_attr($placeholder) . '" class="wpmoo-textarea input-group">' . esc_textarea($value) . '</textarea></div>';
-        
-        return $this->renderFieldWrapper($field, $unique_slug, $value, $input_html);
-    }
+	/**
+	 * Render a textarea field.
+	 *
+	 * @param FieldInterface $field The field to render.
+	 * @param string         $unique_slug The unique slug for the page.
+	 * @param mixed          $value The current value of the field.
+	 * @return string The rendered HTML.
+	 */
+	public function render( FieldInterface $field, string $unique_slug, $value ): string {
+		$field_id = $field->get_id();
+		$field_name = $unique_slug . '[' . $field_id . ']';
+		$placeholder = method_exists( $field, 'get_placeholder' ) ? $field->get_placeholder() : '';
+
+		$input_html = '<div class="form-group"><textarea id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $placeholder ) . '" class="wpmoo-textarea input-group">' . esc_textarea( $value ) . '</textarea></div>';
+
+		return $this->renderFieldWrapper( $field, $unique_slug, $value, $input_html );
+	}
 }

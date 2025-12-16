@@ -14,14 +14,17 @@ use WPMoo\Field\Interfaces\FieldValidatorInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 abstract class BaseValidator implements FieldValidatorInterface {
-    /**
-     * Validate field value.
-     *
-     * @param mixed $value The value to validate.
-     * @param array $field_options Additional field options that might be needed for validation.
-     * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
-     */
-    public function validate(mixed $value, array $field_options = []): array {
-        return ['valid' => true, 'error' => null];
-    }
+	/**
+	 * Validate field value.
+	 *
+	 * @param mixed $value The value to validate.
+	 * @param array $field_options Additional field options that might be needed for validation.
+	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
+	 */
+	public function validate( mixed $value, array $field_options = array() ): array {
+		return array(
+			'valid' => true,
+			'error' => null,
+		);
+	}
 }

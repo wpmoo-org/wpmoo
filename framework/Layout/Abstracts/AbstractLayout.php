@@ -14,46 +14,46 @@ use WPMoo\Layout\Interfaces\LayoutInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html   GPL-2.0-or-later
  */
 abstract class AbstractLayout implements LayoutInterface {
-    /**
-     * Layout ID.
-     *
-     * @var string
-     */
-    protected string $id;
+	/**
+	 * Layout ID.
+	 *
+	 * @var string
+	 */
+	protected string $id;
 
-    /**
-     * Parent ID to link to a page or other container.
-     *
-     * @var string
-     */
-    protected string $parent = '';
-    
-    /**
-     * Get layout ID.
-     *
-     * @return string
-     */
-    public function get_id(): string {
-        return $this->id;
-    }
+	/**
+	 * Parent ID to link to a page or other container.
+	 *
+	 * @var string
+	 */
+	protected string $parent = '';
 
-    /**
-     * Get parent ID.
-     *
-     * @return string
-     */
-    public function get_parent(): string {
-        return $this->parent;
-    }
+	/**
+	 * Get layout ID.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return $this->id;
+	}
 
-    /**
-     * Set parent ID.
-     *
-     * @param string $parent Parent ID to link to.
-     * @return self
-     */
-    public function parent( string $parent ): self {
-        $this->parent = $parent;
-        return $this;
-    }
+	/**
+	 * Get parent ID.
+	 *
+	 * @return string
+	 */
+	public function get_parent(): string {
+		return $this->parent;
+	}
+
+	/**
+	 * Set parent ID.
+	 *
+	 * @param string $parent Parent ID to link to.
+	 * @return self
+	 */
+	public function parent( string $parent ): self {
+		$this->parent = $parent;
+		return $this;
+	}
 }

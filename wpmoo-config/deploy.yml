@@ -1,5 +1,5 @@
 # Distribution settings for the WPMoo project.
-theme: "amber"
+theme: "azure"
 
 # Vendor packages to include/exclude in the distribution
 vendor_packages:

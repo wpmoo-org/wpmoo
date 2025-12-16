@@ -14,24 +14,33 @@ use WPMoo\Field\Interfaces\FieldValidatorInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 class RequiredValidator extends BaseValidator implements FieldValidatorInterface {
-    /**
-     * Validate required field value.
-     *
-     * @param mixed $value The value to validate.
-     * @param array $field_options Additional field options that might be needed for validation.
-     * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
-     */
-    public function validate(mixed $value, array $field_options = []): array {
-        $required = $field_options['required'] ?? false;
-        
-        if ($required) {
-            if (is_string($value) && trim($value) === '') {
-                return ['valid' => false, 'error' => __('This field is required.', 'wpmoo')];
-            } elseif ($value === null || $value === []) {
-                return ['valid' => false, 'error' => __('This field is required.', 'wpmoo')];
-            }
-        }
-        
-        return ['valid' => true, 'error' => null];
-    }
+	/**
+	 * Validate required field value.
+	 *
+	 * @param mixed $value The value to validate.
+	 * @param array $field_options Additional field options that might be needed for validation.
+	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
+	 */
+	public function validate( mixed $value, array $field_options = array() ): array {
+		$required = $field_options['required'] ?? false;
+
+		if ( $required ) {
+			if ( is_string( $value ) && trim( $value ) === '' ) {
+				return array(
+					'valid' => false,
+					'error' => __( 'This field is required.', 'wpmoo' ),
+				);
+			} elseif ( $value === null || $value === array() ) {
+				return array(
+					'valid' => false,
+					'error' => __( 'This field is required.', 'wpmoo' ),
+				);
+			}
+		}
+
+		return array(
+			'valid' => true,
+			'error' => null,
+		);
+	}
 }

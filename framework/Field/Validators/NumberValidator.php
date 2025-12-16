@@ -14,36 +14,51 @@ use WPMoo\Field\Interfaces\FieldValidatorInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 class NumberValidator extends BaseValidator implements FieldValidatorInterface {
-    /**
-     * Validate number field value.
-     *
-     * @param mixed $value The value to validate.
-     * @param array $field_options Additional field options that might be needed for validation.
-     * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
-     */
-    public function validate(mixed $value, array $field_options = []): array {
-        if (!is_numeric($value) && (!is_string($value) || $value === '')) {
-            return ['valid' => true, 'error' => null]; // Allow empty values to be handled by required validator
-        }
-        
-        if (!is_numeric($value)) {
-            return ['valid' => false, 'error' => __('Please enter a valid number.', 'wpmoo')];
-        }
-        
-        // Check min/max constraints if provided
-        $min = $field_options['min'] ?? null;
-        $max = $field_options['max'] ?? null;
-        
-        $num_value = floatval($value);
-        
-        if (isset($min) && $num_value < floatval($min)) {
-            return ['valid' => false, 'error' => sprintf(__('Value must be greater than or equal to %s.', 'wpmoo'), $min)];
-        }
-        
-        if (isset($max) && $num_value > floatval($max)) {
-            return ['valid' => false, 'error' => sprintf(__('Value must be less than or equal to %s.', 'wpmoo'), $max)];
-        }
-        
-        return ['valid' => true, 'error' => null];
-    }
+	/**
+	 * Validate number field value.
+	 *
+	 * @param mixed $value The value to validate.
+	 * @param array $field_options Additional field options that might be needed for validation.
+	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
+	 */
+	public function validate( mixed $value, array $field_options = array() ): array {
+		if ( ! is_numeric( $value ) && ( ! is_string( $value ) || $value === '' ) ) {
+			return array(
+				'valid' => true,
+				'error' => null,
+			); // Allow empty values to be handled by required validator
+		}
+
+		if ( ! is_numeric( $value ) ) {
+			return array(
+				'valid' => false,
+				'error' => __( 'Please enter a valid number.', 'wpmoo' ),
+			);
+		}
+
+		// Check min/max constraints if provided
+		$min = $field_options['min'] ?? null;
+		$max = $field_options['max'] ?? null;
+
+		$num_value = floatval( $value );
+
+		if ( isset( $min ) && $num_value < floatval( $min ) ) {
+			return array(
+				'valid' => false,
+				'error' => sprintf( __( 'Value must be greater than or equal to %s.', 'wpmoo' ), $min ),
+			);
+		}
+
+		if ( isset( $max ) && $num_value > floatval( $max ) ) {
+			return array(
+				'valid' => false,
+				'error' => sprintf( __( 'Value must be less than or equal to %s.', 'wpmoo' ), $max ),
+			);
+		}
+
+		return array(
+			'valid' => true,
+			'error' => null,
+		);
+	}
 }

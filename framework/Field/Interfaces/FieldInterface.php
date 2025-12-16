@@ -42,15 +42,15 @@ interface FieldInterface {
 	 * @return string Field ID.
 	 */
 	public function get_id(): string;
-	
+
 	/**
 	 * Set field options.
 	 *
 	 * @param array $options Field options.
 	 * @return self
 	 */
-	public function options(array $options);
-	
+	public function options( array $options );
+
 	/**
 	 * Get field options.
 	 *

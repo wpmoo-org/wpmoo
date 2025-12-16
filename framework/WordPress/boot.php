@@ -20,7 +20,7 @@ if ( ! defined( 'WPMOO_VERSION' ) ) {
 }
 if ( ! defined( 'WPMOO_PATH' ) ) {
 	// This path points to the root of the winning framework instance.
-	define( 'WPMOO_PATH', dirname( __DIR__, 2 ) ); 
+	define( 'WPMOO_PATH', dirname( __DIR__, 2 ) );
 }
 
 // 1. Load the Composer autoloader for the winning framework version.
@@ -31,7 +31,7 @@ if ( file_exists( WPMOO_PATH . '/vendor/autoload.php' ) ) {
 
 // 2. Boot the WordPress Kernel, which registers all hooks.
 if ( class_exists( 'WPMoo\WordPress\Kernel' ) ) {
-    \WPMoo\WordPress\Kernel::instance()->boot();
+	\WPMoo\WordPress\Kernel::instance()->boot();
 }
 
 // 3. Fire the action to let all consuming plugins know the core is ready.

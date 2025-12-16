@@ -18,18 +18,18 @@ use WPMoo\Field\Sanitizers\ToggleSanitizer;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 final class Field extends FieldBuilder {
-    /**
-     * Get sanitizer for a specific field type.
-     *
-     * @param string $type Field type.
-     * @return FieldSanitizerInterface The sanitizer instance.
-     */
-    public static function get_sanitizer(string $type): FieldSanitizerInterface {
-        return match ($type) {
-            'input' => new TextSanitizer(),
-            'textarea' => new TextareaSanitizer(),
-            'toggle' => new ToggleSanitizer(),
-            default => new TextSanitizer() // Default to text sanitizer
-        };
-    }
+	/**
+	 * Get sanitizer for a specific field type.
+	 *
+	 * @param string $type Field type.
+	 * @return FieldSanitizerInterface The sanitizer instance.
+	 */
+	public static function get_sanitizer( string $type ): FieldSanitizerInterface {
+		return match ( $type ) {
+			'input' => new TextSanitizer(),
+			'textarea' => new TextareaSanitizer(),
+			'toggle' => new ToggleSanitizer(),
+			default => new TextSanitizer() // Default to text sanitizer
+		};
+	}
 }

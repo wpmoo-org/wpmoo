@@ -14,13 +14,13 @@ use WPMoo\Field\Interfaces\FieldSanitizerInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 class TextareaSanitizer extends BaseSanitizer implements FieldSanitizerInterface {
-    /**
-     * Sanitize textarea field value.
-     *
-     * @param mixed $value The value to sanitize.
-     * @return string The sanitized value.
-     */
-    public function sanitize(mixed $value): string {
-        return sanitize_textarea_field($value);
-    }
+	/**
+	 * Sanitize textarea field value.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 * @return string The sanitized value.
+	 */
+	public function sanitize( mixed $value ): string {
+		return sanitize_textarea_field( $value );
+	}
 }

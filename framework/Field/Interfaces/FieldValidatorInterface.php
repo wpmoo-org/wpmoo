@@ -12,12 +12,12 @@ namespace WPMoo\Field\Interfaces;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 interface FieldValidatorInterface {
-    /**
-     * Validate field value.
-     *
-     * @param mixed $value The value to validate.
-     * @param array $field_options Additional field options that might be needed for validation.
-     * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
-     */
-    public function validate(mixed $value, array $field_options = []): array;
+	/**
+	 * Validate field value.
+	 *
+	 * @param mixed $value The value to validate.
+	 * @param array $field_options Additional field options that might be needed for validation.
+	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
+	 */
+	public function validate( mixed $value, array $field_options = array() ): array;
 }

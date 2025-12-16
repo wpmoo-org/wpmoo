@@ -19,20 +19,21 @@ class LayoutManager {
 	 */
 	private array $layouts = array();
 
-    /**
-     * The framework manager instance.
-     * @var FrameworkManager
-     */
-    private FrameworkManager $framework_manager;
+	/**
+	 * The framework manager instance.
+	 *
+	 * @var FrameworkManager
+	 */
+	private FrameworkManager $framework_manager;
 
-    /**
-     * Constructor.
-     *
-     * @param FrameworkManager $framework_manager The main framework manager.
-     */
-    public function __construct(FrameworkManager $framework_manager) {
-        $this->framework_manager = $framework_manager;
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param FrameworkManager $framework_manager The main framework manager.
+	 */
+	public function __construct( FrameworkManager $framework_manager ) {
+		$this->framework_manager = $framework_manager;
+	}
 
 	/**
 	 * Add a layout to be registered.

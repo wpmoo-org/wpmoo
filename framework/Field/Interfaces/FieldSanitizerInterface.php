@@ -12,11 +12,11 @@ namespace WPMoo\Field\Interfaces;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 interface FieldSanitizerInterface {
-    /**
-     * Sanitize field value.
-     *
-     * @param mixed $value The value to sanitize.
-     * @return mixed The sanitized value.
-     */
-    public function sanitize(mixed $value): mixed;
+	/**
+	 * Sanitize field value.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 * @return mixed The sanitized value.
+	 */
+	public function sanitize( mixed $value ): mixed;
 }

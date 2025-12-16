@@ -15,5 +15,5 @@ use WPMoo\Field\Interfaces\FieldInterface;
  * @license https://spdx.org/licenses/GPL-2.0-or-later.html GPL-2.0-or-later
  */
 class Select extends AbstractField implements FieldInterface {
-    
+
 }
