@@ -353,7 +353,20 @@ class FrameworkManager {
 	 * @return array<string, \WPMoo\Field\Interfaces\FieldInterface>
 	 */
 	public function get_fields_by_plugin( string $plugin_slug ): array {
-		return $this->fields[ $plugin_slug ] ?? array();
+	return $this->fields[ $plugin_slug ] ?? array();
+	}
+
+	/**
+	 * Get fields by page ID (placeholder method - needs implementation based on your structure).
+	 *
+	 * @param string $page_id Page ID to get fields for.
+	 * @return array<string, \WPMoo\Field\Interfaces\FieldInterface> Array of fields associated with the page.
+	 */
+	public function get_fields_by_page( string $page_id ): array {
+		// This is a placeholder implementation. In a real scenario, you'd need to track
+		// which fields belong to which page through the layout structure.
+		// For now, we'll return an empty array.
+		return array();
 	}
 
 	/**

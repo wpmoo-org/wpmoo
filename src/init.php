@@ -27,9 +27,9 @@ add_action('init', function() {
     // 4.1. Register this plugin with the FrameworkManager for component tracking.
     // This ensures that its components (pages, fields) can be associated with it.
     \WPMoo\Core::instance()->get_container()->resolve(\WPMoo\WordPress\Managers\FrameworkManager::class)->register_plugin(
-        __FILE__, // Plugin's main file path
         \WPMoo\Moo::detect_app_id(),  // Dynamically detected plugin slug
-        '0.2.0'   // Plugin version
+        '0.2.0',   // Plugin version
+        __FILE__  // Plugin's main file path
     );
 
     // Load sample pages and fields using the WPMoo Local Facade.

@@ -3,6 +3,9 @@
 namespace WPMoo\Field\Abstracts;
 
 use WPMoo\Field\Interfaces\FieldInterface;
+use WPMoo\Field\Interfaces\FieldSanitizerInterface;
+use WPMoo\Field\Interfaces\FieldValidatorInterface;
+use WPMoo\Field\Validators\BaseValidator;
 
 /**
  * Base field implementation.
@@ -43,6 +46,27 @@ abstract class AbstractField implements FieldInterface {
 	protected string $placeholder = '';
 
 	/**
+	 * Sanitizer instance.
+	 *
+	 * @var FieldSanitizerInterface|null
+	 */
+	protected ?FieldSanitizerInterface $sanitizer = null;
+
+	/**
+	 * Validator instance.
+	 *
+	 * @var FieldValidatorInterface
+	 */
+	protected FieldValidatorInterface $validator;
+
+	/**
+	 * Field options for validation.
+	 *
+	 * @var array
+	 */
+	protected array $validation_options = [];
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $id Field ID.
@@ -50,6 +74,13 @@ abstract class AbstractField implements FieldInterface {
 	public function __construct( string $id ) {
 		$this->id = $id;
 		$this->name = $id; // Default name to ID.
+	// Initialize with a default validator that doesn't do anything
+	// We don't want to instantiate BaseValidator directly as it's an abstract class
+	$this->validator = new class extends \WPMoo\Field\Validators\BaseValidator {
+		public function validate(mixed $value, array $field_options = []): array {
+			return ['valid' => true, 'error' => null];
+		}
+	};
 	}
 
 	/**
@@ -70,7 +101,7 @@ abstract class AbstractField implements FieldInterface {
 	 * @return self
 	 */
 	public function label( string $label ): self {
-		$this->label = $label;
+	$this->label = $label;
 		return $this;
 	}
 
@@ -82,6 +113,39 @@ abstract class AbstractField implements FieldInterface {
 	 */
 	public function placeholder( string $placeholder ): self {
 		$this->placeholder = $placeholder;
+		return $this;
+	}
+
+	/**
+	 * Set sanitizer.
+	 *
+	 * @param FieldSanitizerInterface $sanitizer Sanitizer instance.
+	 * @return self
+	 */
+	public function set_sanitizer( FieldSanitizerInterface $sanitizer ): self {
+		$this->sanitizer = $sanitizer;
+		return $this;
+	}
+
+	/**
+	 * Set validator.
+	 *
+	 * @param FieldValidatorInterface $validator Validator instance.
+	 * @return self
+	 */
+	public function set_validator( FieldValidatorInterface $validator ): self {
+		$this->validator = $validator;
+		return $this;
+	}
+
+	/**
+	 * Set validation options.
+	 *
+	 * @param array $options Validation options.
+	 * @return self
+	 */
+	public function validation_options( array $options ): self {
+		$this->validation_options = $options;
 		return $this;
 	}
 
@@ -119,5 +183,28 @@ abstract class AbstractField implements FieldInterface {
 	 */
 	public function get_placeholder(): string {
 		return $this->placeholder;
+	}
+
+	/**
+	 * Sanitize a value using the field's sanitizer.
+	 *
+	 * @param mixed $value The value to sanitize.
+	 * @return mixed The sanitized value.
+	 */
+	public function sanitize( mixed $value ): mixed {
+		if ( $this->sanitizer ) {
+			return $this->sanitizer->sanitize( $value );
+		}
+		return $value;
+	}
+
+	/**
+	 * Validate a value using the field's validator.
+	 *
+	 * @param mixed $value The value to validate.
+	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
+	 */
+	public function validate( mixed $value ): array {
+		return $this->validator->validate( $value, $this->validation_options );
 	}
 }
