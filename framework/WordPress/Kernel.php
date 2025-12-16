@@ -72,6 +72,9 @@ final class Kernel {
         // Register settings groups on admin_init.
         add_action('admin_init', [$this, 'register_settings_groups']);
 
+        // Register the renderer registry in the container
+        $container->singleton(\WPMoo\WordPress\Renderers\RendererRegistry::class);
+
         // Register PageManager and MetaboxManager hooks on wpmoo_loaded
         // This ensures pages are registered after all plugins have declared them.
         add_action('wpmoo_loaded', [$this, 'register_admin_page_related_hooks'], 20);

@@ -4,6 +4,7 @@ namespace WPMoo\WordPress\Managers;
 
 use WPMoo\Page\Builders\PageBuilder;
 use WPMoo\Core;
+use WPMoo\WordPress\Renderers\RendererRegistry;
 
 /**
  * Page menu manager.
@@ -23,12 +24,20 @@ class PageManager {
     private FrameworkManager $framework_manager;
     
     /**
+     * Renderer registry for field rendering.
+     *
+     * @var RendererRegistry
+     */
+    private RendererRegistry $renderer_registry;
+    
+    /**
      * Constructor.
      *
      * @param FrameworkManager $framework_manager The main framework manager.
      */
     public function __construct(FrameworkManager $framework_manager) {
         $this->framework_manager = $framework_manager;
+        $this->renderer_registry = new RendererRegistry();
     }
 
     /**
@@ -387,7 +396,7 @@ class PageManager {
      * Render content (fields or other elements).
      *
      * @param  array<mixed> $content     Content to render.
-     * @param  string       $unique_slug The unique option group name for the page.
+     * @param  string       $unique_slug The unique slug for the page.
      * @return void
      */
     private function render_content( array $content, string $unique_slug ): void {
@@ -401,54 +410,33 @@ class PageManager {
         // Render each item in the content array.
         // This processes fields and other content elements.
         foreach ( $content as $item ) {
-            // If item is a field, render it.
+            // If item is a field, render it using the appropriate renderer.
             if (is_object($item) && method_exists($item, 'get_id') ) {
                 // This is a field that needs to be rendered.
                 $field_id = $item->get_id();
-                // Determine field type from the class name
-                $field_class = get_class($item);
-                $field_type = strtolower(pathinfo($field_class, PATHINFO_FILENAME)); // Extract type from class name like 'Input', 'Toggle', etc.
-
-                // As a fallback, we can check the class name directly
-                if (strpos($field_class, 'Input') !== false) {
-                    $field_type = 'text';
-                } elseif (strpos($field_class, 'Textarea') !== false) {
-                    $field_type = 'textarea';
-                } elseif (strpos($field_class, 'Toggle') !== false) {
-                    $field_type = 'toggle';
-                } else {
-                    $field_type = 'text'; // Default to text
-                }
-
-                // The name attribute should be in the format 'option_group[field_id]'
-                $field_name = $unique_slug . '[' . $field_id . ']';
 
                 // Get the saved value from the options array.
                 $value = $option_values[ $field_id ] ?? '';
 
-                // Get other field properties
-                $label = method_exists($item, 'get_label') ? $item->get_label() : '';
-                $placeholder = method_exists($item, 'get_placeholder') ? $item->get_placeholder() : '';
-
-                // Output the field based on its type
-                echo '<div class="field-wrapper" data-field-id="' . esc_attr($field_id) . '">';
-                if (! empty($label) ) {
-                    echo '<label for="' . esc_attr($field_id) . '">' . esc_html($label) . '</label>';
-                }
-
-                // Render different field types
-                switch ( $field_type ) {
-                case 'toggle':
-                    $checked = checked( $value, true, false );
-                    echo '<div class="form-group"><input type="checkbox" id="' . esc_attr($field_id) . '" name="' . esc_attr($field_name) . '" value="1" ' . $checked . ' class="wpmoo-toggle form-switch"></div>';
-                    break;
-                case 'textarea':
-                    echo '<div class="form-group"><textarea id="' . esc_attr($field_id) . '" name="' . esc_attr($field_name) . '" placeholder="' . esc_attr($placeholder) . '" class="wpmoo-textarea input-group">' . esc_textarea($value) . '</textarea></div>';
-                    break;
-                default: // Includes text, number, etc.
+                // Try to get a renderer for this field
+                $renderer = $this->renderer_registry->get_renderer_for_field($item);
+                
+                if ($renderer) {
+                    // Use the renderer to generate the HTML
+                    echo $renderer->render($item, $unique_slug, $value);
+                } else {
+                    // Fallback: render as a basic text input if no renderer is found
+                    $field_name = $unique_slug . '[' . $field_id . ']';
+                    $placeholder = method_exists($item, 'get_placeholder') ? $item->get_placeholder() : '';
+                    $label = method_exists($item, 'get_label') ? $item->get_label() : '';
+                    
+                    echo '<div class="field-wrapper" data-field-id="' . esc_attr($field_id) . '">';
+                    if (! empty($label) ) {
+                        echo '<label for="' . esc_attr($field_id) . '">' . esc_html($label) . '</label>';
+                    }
                     echo '<div class="form-group"><input type="text" id="' . esc_attr($field_id) . '" name="' . esc_attr($field_name) . '" value="' . esc_attr($value) . '" placeholder="' . esc_attr($placeholder) . '" class="wpmoo-input input-group"></div>';
+                    echo '</div>';
                 }
-                echo '</div>';
             } elseif (is_string($item) ) {
                 // This could be other content.
                 echo wp_kses_post($item);

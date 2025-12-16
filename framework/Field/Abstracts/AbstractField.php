@@ -65,6 +65,13 @@ abstract class AbstractField implements FieldInterface {
 	 * @var array
 	 */
 	protected array $validation_options = [];
+	
+	/**
+	 * Field options (for fields like select, radio, etc.).
+	 *
+	 * @var array
+	 */
+	protected array $options = [];
 
 	/**
 	 * Constructor.
@@ -148,7 +155,27 @@ abstract class AbstractField implements FieldInterface {
 		$this->validation_options = $options;
 		return $this;
 	}
-
+	
+	/**
+	 * Set field options.
+	 *
+	 * @param array $options Field options.
+	 * @return self
+	 */
+	public function options(array $options): self {
+		$this->options = $options;
+	return $this;
+	}
+	
+	/**
+	 * Get field options.
+	 *
+	 * @return array
+	 */
+	public function get_options(): array {
+		return $this->options;
+	}
+	
 	/**
 	 * Get field ID.
 	 *
