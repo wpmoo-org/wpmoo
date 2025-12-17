@@ -337,60 +337,7 @@ class PageManager {
 		<?php
 	}
 
-	/**
-	 * Render tabs layout (legacy structure).
-	 *
-	 * @param  \WPMoo\Layout\Component\Tabs $tabs Tabs component.
-	 * @return void
-	 */
-	private function render_tabs( \WPMoo\Layout\Component\Tabs $tabs ): void {
-		$items = $tabs->get_items();
-		$orientation = $tabs->get_orientation();
 
-		$tab_class = 'vertical' === $orientation ? 'wpmoo-tabs-vertical' : 'wpmoo-tabs-horizontal';
-		?>
-		<div class="wpmoo-tabs <?php echo esc_attr( $tab_class ); ?>">
-			<div class="wpmoo-tab-nav">
-				<ul role="tablist">
-		<?php foreach ( $items as $index => $item ) : ?>
-					<li role="presentation" class="<?php echo 0 === $index ? 'active' : ''; ?>">
-						<a href="#<?php echo esc_attr( $item['id'] ); ?>"
-							role="tab"
-							aria-selected="<?php echo 0 === $index ? 'true' : 'false'; ?>">
-			<?php echo esc_html( $item['title'] ); ?>
-						</a>
-					</li>
-		<?php endforeach; ?>
-				</ul>
-			</div>
-
-			<div class="wpmoo-tab-content">
-		<?php foreach ( $items as $index => $item ) : ?>
-					<div id="<?php echo esc_attr( $item['id'] ); ?>"
-						 role="tabpanel"
-						 class="tab-pane <?php echo 0 === $index ? 'active' : ''; ?>">
-			<?php
-			// Render content for this tab.
-			$this->render_content( $item['content'], $unique_slug );
-			?>
-					</div>
-		<?php endforeach; ?>
-			</div>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render accordion layout.
-	 *
-	 * @param  \WPMoo\Layout\Component\Accordion $accordion Accordion component.
-	 * @return void
-	 */
-	private function render_accordion( \WPMoo\Layout\Component\Accordion $accordion ): void {
-		// Placeholder for accordion rendering.
-		// This would render the accordion structure similar to tabs.
-		echo '<!-- Accordion content to be implemented -->';
-	}
 
 	/**
 	 * Render content (fields or other elements).
