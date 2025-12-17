@@ -32,7 +32,7 @@ class PluginIsolationTest extends TestCase {
 		$page1 = new \WPMoo\Page\Builders\PageBuilder( 'test_page', 'Test Page' );
 		$page1->capability( 'manage_options' )
 			->menu_slug( 'plugin-one-test' );
-		
+
 		$field1 = new \WPMoo\Field\Type\Input( 'test_field' );
 		$field1->label( 'Test Field' );
 
@@ -44,13 +44,13 @@ class PluginIsolationTest extends TestCase {
 		$page2 = new \WPMoo\Page\Builders\PageBuilder( 'test_page', 'Test Page' );
 		$page2->capability( 'manage_options' )
 			->menu_slug( 'plugin-two-test' );
-		
+
 		$field2 = new \WPMoo\Field\Type\Input( 'test_field' );
 		$field2->label( 'Test Field' );
 
 		// Register components for second plugin.
 		$framework_manager->add_page( $page2, 'plugin-two' );
-	$framework_manager->add_field( $field2, 'plugin-two' );
+		$framework_manager->add_field( $field2, 'plugin-two' );
 
 		// Use the framework manager directly since we created it.
 		$registry = $framework_manager;

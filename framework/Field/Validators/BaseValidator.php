@@ -18,7 +18,7 @@ abstract class BaseValidator implements FieldValidatorInterface {
 	 * Validate field value.
 	 *
 	 * @param mixed        $value The value to validate.
-	 * @param array        $field_options Additional field options that might be needed for validation.
+	 * @param array<mixed> $field_options Additional field options that might be needed for validation.
 	 * @return array{valid:bool, error:string|null} Array containing validation result ['valid' => bool, 'error' => string|null].
 	 */
 	public function validate( $value, array $field_options = array() ): array {

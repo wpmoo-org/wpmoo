@@ -120,11 +120,55 @@ abstract class Facade {
 		// Result: super-form/src/App.php.
 		$plugin_basename = plugin_basename( $file_path );
 
-		// 4. Get the part before the first '/' (Folder name = Slug).
-		// Result: super-form.
+		// 4. Check if plugin_basename returned an unexpected absolute path (e.g., starts with directory like 'Users').
+		// This can happen when the plugin is symlinked from outside the standard WordPress directory structure.
 		$parts = explode( '/', $plugin_basename );
 
-		// If it's a single-file plugin (without a folder), get the file name.
+		// If the first part looks like a system directory instead of a plugin slug, we need to determine the slug differently.
+		if ( isset( $parts[0] ) && ( 'Users' === $parts[0] || 'home' === $parts[0] || 'var' === $parts[0] || 'opt' === $parts[0] ) ) {
+			// Alternative approach: get the plugin slug from the file path by finding the plugin directory.
+			$plugin_dir = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : WP_CONTENT_DIR . '/plugins';
+
+			if ( 0 === strpos( $file_path, $plugin_dir ) ) {
+				// Extract the relative path from the plugin directory.
+				$relative_path = substr( $file_path, strlen( $plugin_dir ) + 1 );
+				$parts = explode( '/', $relative_path );
+			} else {
+				// If the file is not in the standard plugin directory, try to get the directory name from the path.
+				// Find the plugin directory name by looking for the last directory before 'src' or other common directories.
+				$path_parts = explode( '/', $file_path );
+
+				// Look for the plugin directory name in the path.
+				$plugin_dir_name = '';
+				for ( $i = count( $path_parts ) - 1; $i >= 0; $i-- ) {
+					if ( 'src' === $path_parts[ $i ] || 'includes' === $path_parts[ $i ] || 'admin' === $path_parts[ $i ] ) {
+						// The parent directory is likely the plugin directory.
+						if ( isset( $path_parts[ $i - 1 ] ) ) {
+							$plugin_dir_name = $path_parts[ $i - 1 ];
+							break;
+						}
+					}
+				}
+
+				if ( ! empty( $plugin_dir_name ) ) {
+					$parts = array( $plugin_dir_name );
+				} else {
+					// Fallback: use the directory name from the symlink.
+					$real_path = realpath( $file_path );
+					if ( $real_path ) {
+						$path_parts = explode( '/', dirname( $real_path ) );
+						$parts = array( end( $path_parts ) );
+					} else {
+						// Last fallback: use the last directory in the original path.
+						$path_parts = explode( '/', dirname( $file_path ) );
+						$parts = array( end( $path_parts ) );
+					}
+				}
+			}
+		}
+
+		// 5. Get the part before the first '/' (Folder name = Slug).
+		// Result: super-form.
 		$slug = $parts[0];
 
 		if ( str_ends_with( $slug, '.php' ) ) {
