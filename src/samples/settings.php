@@ -16,9 +16,9 @@ use WPMoo\Moo;
 // We can make static calls directly. The APP_ID 'wpmoo' is handled by the facade.
 
 // Create a settings page.
-Moo::page( 'settings', __( 'WPMoo Settings', 'wpmoo-samples' ) )
+Moo::page( 'settings', __( 'WPMoo Settings', 'wpmoo' ) )
 ->capability( 'manage_options' )
-->description( __( 'Configure WPMoo Framework settings', 'wpmoo-samples' ) )
+->description( __( 'Configure WPMoo Framework settings', 'wpmoo' ) )
 ->menu_slug( 'settings' )
 ->menu_position( 20 )
 ->menu_icon( 'dashicons-admin-generic' );
@@ -28,64 +28,64 @@ Moo::container( 'tabs', 'wpmoo_main_tabs' )
 	->parent( 'settings' );  // Link to the settings page.
 
 // Create individual tabs.
-Moo::tab( 'general', __( 'General Settings', 'wpmoo-samples' ) )
+Moo::tab( 'general', __( 'General Settings', 'wpmoo' ) )
 	->parent( 'wpmoo_main_tabs' )  // Link to the tabs container.
 	->fields(
 		array(
 			Moo::input( 'site_title' )
-				->label( __( 'Site Title', 'wpmoo-samples' ) )
-				->placeholder( __( 'Enter your site title', 'wpmoo-samples' ) ),
+				->label( __( 'Site Title', 'wpmoo' ) )
+				->placeholder( __( 'Enter your site title', 'wpmoo' ) ),
 			Moo::textarea( 'site_description' )
-				->label( __( 'Site Description', 'wpmoo-samples' ) )
-				->placeholder( __( 'Enter site description', 'wpmoo-samples' ) ),
+				->label( __( 'Site Description', 'wpmoo' ) )
+				->placeholder( __( 'Enter site description', 'wpmoo' ) ),
 			Moo::toggle( 'enable_cache' )
-				->label( __( 'Enable Caching', 'wpmoo-samples' ) ),
+				->label( __( 'Enable Caching', 'wpmoo' ) ),
 		)
 	);
 
 // Example of using the custom select field.
-$custom_fields_tab = Moo::tab( 'custom_fields', __( 'Custom Fields', 'wpmoo-samples' ) )
+$custom_fields_tab = Moo::tab( 'custom_fields', __( 'Custom Fields', 'wpmoo' ) )
 	->parent( 'wpmoo_main_tabs' );  // Link to the tabs container.
 
 $custom_fields_tab->fields(
 	array(
 		Moo::create_field( 'select', 'preferred_language' )
-		->label( __( 'Preferred Language', 'wpmoo-samples' ) )
+		->label( __( 'Preferred Language', 'wpmoo' ) )
 		->options(
 			array(
-				'en' => __( 'English', 'wpmoo-samples' ),
-				'de' => __( 'German', 'wpmoo-samples' ),
-				'fr' => __( 'French', 'wpmoo-samples' ),
+				'en' => __( 'English', 'wpmoo' ),
+				'de' => __( 'German', 'wpmoo' ),
+				'fr' => __( 'French', 'wpmoo' ),
 			)
 		),
 		Moo::create_field( 'select', 'user_role' )
-		->label( __( 'Default User Role', 'wpmoo-samples' ) )
+		->label( __( 'Default User Role', 'wpmoo' ) )
 		->options(
 			array(
-				'subscriber' => __( 'Subscriber', 'wpmoo-samples' ),
-				'contributor' => __( 'Contributor', 'wpmoo-samples' ),
-				'author' => __( 'Author', 'wpmoo-samples' ),
+				'subscriber' => __( 'Subscriber', 'wpmoo' ),
+				'contributor' => __( 'Contributor', 'wpmoo' ),
+				'author' => __( 'Author', 'wpmoo' ),
 			)
 		),
 	)
 );
 
 // Example of using the custom grid layout.
-$grid_layout = Moo::create_layout( 'grid', 'feature_grid', __( 'Feature Grid', 'wpmoo-samples' ) );
+$grid_layout = Moo::create_layout( 'grid', 'feature_grid', __( 'Feature Grid', 'wpmoo' ) );
 if ( $grid_layout ) {
 	$grid_layout->columns( 3 )
 		->parent( 'settings' );  // Link to the settings page.
 }
 
-Moo::tab( 'advanced', __( 'Advanced Settings', 'wpmoo-samples' ) )
+Moo::tab( 'advanced', __( 'Advanced Settings', 'wpmoo' ) )
 	->parent( 'wpmoo_main_tabs' )  // Link to the tabs container.
 	->fields(
 		array(
 			Moo::input( 'cache_duration' )
-				->label( __( 'Cache Duration (seconds)', 'wpmoo-samples' ) )
-				->placeholder( __( 'Enter cache duration', 'wpmoo-samples' ) ),
+				->label( __( 'Cache Duration (seconds)', 'wpmoo' ) )
+				->placeholder( __( 'Enter cache duration', 'wpmoo' ) ),
 			Moo::toggle( 'enable_debug' )
-				->label( __( 'Enable Debug Mode', 'wpmoo-samples' ) ),
+				->label( __( 'Enable Debug Mode', 'wpmoo' ) ),
 		)
 	);
 
@@ -93,20 +93,20 @@ Moo::tab( 'advanced', __( 'Advanced Settings', 'wpmoo-samples' ) )
 Moo::container( 'accordion', 'wpmoo_accordion' )
 	->parent( 'settings' );  // Link to the settings page.
 
-Moo::accordion( 'acc_general', __( 'General Information', 'wpmoo-samples' ) )
+Moo::accordion( 'acc_general', __( 'General Information', 'wpmoo' ) )
 	->parent( 'wpmoo_accordion' )  // Link to the accordion container.
 	->fields(
 		array(
 			Moo::input( 'info_field' )
-				->label( __( 'Info Field', 'wpmoo-samples' ) ),
+				->label( __( 'Info Field', 'wpmoo' ) ),
 		)
 	);
 
-Moo::accordion( 'acc_help', __( 'Help & Support', 'wpmoo-samples' ) )
+Moo::accordion( 'acc_help', __( 'Help & Support', 'wpmoo' ) )
 	->parent( 'wpmoo_accordion' )  // Link to the accordion container.
 	->fields(
 		array(
 			Moo::textarea( 'support_info' )
-				->label( __( 'Support Information', 'wpmoo-samples' ) ),
+				->label( __( 'Support Information', 'wpmoo' ) ),
 		)
 	);

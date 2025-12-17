@@ -67,17 +67,6 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 			(string) filemtime( $this->get_asset_path( 'css/wpmoo.azure.css' ) ),
 			'all'
 		);
-
-		// Enqueue PicoCSS if not already loaded.
-		if ( ! wp_style_is( 'pico-css', 'enqueued' ) ) {
-			$this->enqueue_style(
-				'pico-css',
-				$this->get_asset_url( 'css/pico.min.css' ),
-				array(),
-				'2.0.0',
-				'all'
-			);
-		}
 	}
 
 	/**
