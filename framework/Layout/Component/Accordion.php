@@ -18,7 +18,7 @@ class Accordion extends AbstractLayout implements LayoutInterface {
 	/**
 	 * Content fields for this accordion item.
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	private array $content = array();
 
@@ -54,7 +54,7 @@ class Accordion extends AbstractLayout implements LayoutInterface {
 	/**
 	 * Set content fields for the accordion item.
 	 *
-	 * @param array $content Array of field components.
+	 * @param array<mixed> $content Array of field components.
 	 * @return self
 	 */
 	public function content( array $content ): self {
@@ -65,7 +65,7 @@ class Accordion extends AbstractLayout implements LayoutInterface {
 	/**
 	 * Set content fields for the accordion item (alternative method name for API consistency).
 	 *
-	 * @param array $fields Array of field components.
+	 * @param array<mixed> $fields Array of field components.
 	 * @return self
 	 */
 	public function fields( array $fields ): self {
@@ -75,7 +75,7 @@ class Accordion extends AbstractLayout implements LayoutInterface {
 	/**
 	 * Get content fields.
 	 *
-	 * @return array
+	 * @return array<mixed>
 	 */
 	public function get_content(): array {
 		return $this->content;

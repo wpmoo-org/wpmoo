@@ -62,14 +62,14 @@ abstract class AbstractField implements FieldInterface {
 	/**
 	 * Field options for validation.
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	protected array $validation_options = array();
 
 	/**
 	 * Field options (for fields like select, radio, etc.).
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	protected array $options = array();
 
@@ -87,9 +87,9 @@ abstract class AbstractField implements FieldInterface {
 			/**
 			 * Validate the field value.
 			 *
-			 * @param mixed $value The value to validate.
-			 * @param array $field_options Field options for validation.
-			 * @return array Array with validation result ['valid' => bool, 'error' => string|null].
+			 * @param mixed        $value The value to validate.
+			 * @param array<mixed> $field_options Field options for validation.
+			 * @return array{valid:bool, error:string|null} Array with validation result ['valid' => bool, 'error' => string|null].
 			 */
 			public function validate( mixed $value, array $field_options = array() ): array {
 				return array(
@@ -158,7 +158,7 @@ abstract class AbstractField implements FieldInterface {
 	/**
 	 * Set validation options.
 	 *
-	 * @param array $options Validation options.
+	 * @param array<mixed> $options Validation options.
 	 * @return self
 	 */
 	public function validation_options( array $options ): self {
@@ -169,7 +169,7 @@ abstract class AbstractField implements FieldInterface {
 	/**
 	 * Set field options.
 	 *
-	 * @param array $options Field options.
+	 * @param array<mixed> $options Field options.
 	 * @return self
 	 */
 	public function options( array $options ): self {
@@ -180,7 +180,7 @@ abstract class AbstractField implements FieldInterface {
 	/**
 	 * Get field options.
 	 *
-	 * @return array
+	 * @return array<mixed>
 	 */
 	public function get_options(): array {
 		return $this->options;
@@ -239,7 +239,7 @@ abstract class AbstractField implements FieldInterface {
 	 * Validate a value using the field's validator.
 	 *
 	 * @param mixed $value The value to validate.
-	 * @return array Array containing validation result ['valid' => bool, 'error' => string|null].
+	 * @return array{valid:bool, error:string|null} Array containing validation result ['valid' => bool, 'error' => string|null].
 	 */
 	public function validate( mixed $value ): array {
 		return $this->validator->validate( $value, $this->validation_options );

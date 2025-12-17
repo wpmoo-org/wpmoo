@@ -25,7 +25,7 @@ class Container extends AbstractLayout implements LayoutInterface {
 	/**
 	 * Item components of this container.
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	private array $items = array();
 
@@ -65,7 +65,7 @@ class Container extends AbstractLayout implements LayoutInterface {
 	/**
 	 * Set multiple item components.
 	 *
-	 * @param array $items Array of item components.
+	 * @param array<mixed> $items Array of item components.
 	 * @return self
 	 */
 	public function items( array $items ): self {
@@ -85,7 +85,7 @@ class Container extends AbstractLayout implements LayoutInterface {
 	/**
 	 * Get item components.
 	 *
-	 * @return array
+	 * @return array<mixed>
 	 */
 	public function get_items(): array {
 		return $this->items;

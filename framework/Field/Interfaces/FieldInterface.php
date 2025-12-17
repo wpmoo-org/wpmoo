@@ -46,7 +46,7 @@ interface FieldInterface {
 	/**
 	 * Set field options.
 	 *
-	 * @param array $options Field options.
+	 * @param array<mixed> $options Field options.
 	 * @return self
 	 */
 	public function options( array $options );
@@ -54,7 +54,7 @@ interface FieldInterface {
 	/**
 	 * Get field options.
 	 *
-	 * @return array
+	 * @return array<mixed>
 	 */
 	public function get_options(): array;
 }
