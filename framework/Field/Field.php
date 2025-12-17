@@ -25,11 +25,15 @@ final class Field extends FieldBuilder {
 	 * @return FieldSanitizerInterface The sanitizer instance.
 	 */
 	public static function get_sanitizer( string $type ): FieldSanitizerInterface {
-		return match ( $type ) {
-			'input' => new TextSanitizer(),
-			'textarea' => new TextareaSanitizer(),
-			'toggle' => new ToggleSanitizer(),
-			default => new TextSanitizer() // Default to text sanitizer.
-		};
+		switch ( $type ) {
+			case 'input':
+				return new TextSanitizer();
+			case 'textarea':
+				return new TextareaSanitizer();
+			case 'toggle':
+				return new ToggleSanitizer();
+			default:
+				return new TextSanitizer(); // Default to text sanitizer.
+		}
 	}
 }
