@@ -49,7 +49,9 @@ add_action(
 		$app->register_layout_type( 'grid', \WPMoo\Layout\Component\Grid::class );
 
 		// Load sample pages and fields using the WPMoo Local Facade.
-		require_once __DIR__ . '/samples/settings.php';
+		if ( get_option( 'wpmoo_demo_active' ) ) {
+			require_once __DIR__ . '/samples/settings.php';
+		}
 	}
 );
 
