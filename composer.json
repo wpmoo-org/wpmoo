@@ -43,7 +43,10 @@
   },
   "autoload": {
     "psr-4": {
-      "WPMoo\\": "framework/",
+      "WPMoo\\": [
+        "framework/",
+        "src/"
+      ],
       "WPMoo\\Samples\\": "src/samples/"
     }
   },
