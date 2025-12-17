@@ -21,7 +21,7 @@ class FrameworkManager {
 	/**
 	 * Registered plugins that use WPMoo.
 	 *
-	 * @var array<string, array{slug: string, version: string, path: string}>
+	 * @var array<string, array{slug: string, version: string, path: string, compatibility: array<string, mixed>}>
 	 */
 	private array $plugins = array();
 

@@ -24,8 +24,7 @@ abstract class AssetEnqueuer {
 	 * @return void
 	 */
 	protected function enqueue_style( string $handle, string $src, array $deps = array(), ?string $version = null, string $media = 'all' ): void {
-		wp_enqueue_style( $handle, $src, $deps, $version );
-		wp_style_add_data( $handle, 'media', $media );
+		wp_enqueue_style( $handle, $src, $deps, $version, $media );
 	}
 
 	/**
@@ -53,8 +52,7 @@ abstract class AssetEnqueuer {
 	 * @return void
 	 */
 	protected function register_style( string $handle, string $src, array $deps = array(), ?string $version = null, string $media = 'all' ): void {
-		wp_register_style( $handle, $src, $deps, $version );
-		wp_style_add_data( $handle, 'media', $media );
+		wp_register_style( $handle, $src, $deps, $version, $media );
 	}
 
 	/**

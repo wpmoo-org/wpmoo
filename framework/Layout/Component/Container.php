@@ -23,6 +23,20 @@ class Container extends AbstractLayout implements LayoutInterface {
 	private string $type;
 
 	/**
+	 * Container title/legend.
+	 *
+	 * @var string
+	 */
+	private string $title = '';
+
+	/**
+	 * Container orientation: horizontal or vertical.
+	 *
+	 * @var string
+	 */
+	private string $orientation = 'horizontal';
+
+	/**
 	 * Item components of this container.
 	 *
 	 * @var array<mixed>
@@ -34,10 +48,12 @@ class Container extends AbstractLayout implements LayoutInterface {
 	 *
 	 * @param string $id Layout ID.
 	 * @param string $type Container type.
+	 * @param string $title Container title.
 	 */
-	public function __construct( string $id, string $type ) {
+	public function __construct( string $id, string $type, string $title = '' ) {
 		$this->id = $id;
 		$this->type = $type;
+		$this->title = $title;
 	}
 
 	/**
@@ -80,6 +96,44 @@ class Container extends AbstractLayout implements LayoutInterface {
 	 */
 	public function get_type(): string {
 		return $this->type;
+	}
+
+	/**
+	 * Get container title.
+	 *
+	 * @return string
+	 */
+	public function get_title(): string {
+		return $this->title;
+	}
+
+	/**
+	 * Set container orientation to vertical.
+	 *
+	 * @return self
+	 */
+	public function vertical(): self {
+		$this->orientation = 'vertical';
+		return $this;
+	}
+
+	/**
+	 * Set container orientation to horizontal (default).
+	 *
+	 * @return self
+	 */
+	public function horizontal(): self {
+		$this->orientation = 'horizontal';
+		return $this;
+	}
+
+	/**
+	 * Get container orientation.
+	 *
+	 * @return string
+	 */
+	public function get_orientation(): string {
+		return $this->orientation;
 	}
 
 	/**

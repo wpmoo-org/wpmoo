@@ -240,7 +240,7 @@ class PageManager {
 	 * @return void
 	 */
 	private function render_tabs_from_container( \WPMoo\Layout\Component\Container $container, array $items, string $unique_slug ): void {
-		$orientation = 'horizontal'; // Default orientation, could be stored in Container properties if needed.
+		$orientation = $container->get_orientation();
 
 		$tab_class = 'vertical' === $orientation ? 'wpmoo-tabs-vertical' : 'wpmoo-tabs-horizontal';
 		?>
@@ -371,7 +371,7 @@ class PageManager {
 						 class="tab-pane <?php echo 0 === $index ? 'active' : ''; ?>">
 			<?php
 			// Render content for this tab.
-			$this->render_content( $item['content'] );
+			$this->render_content( $item['content'], $unique_slug );
 			?>
 					</div>
 		<?php endforeach; ?>

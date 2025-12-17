@@ -18,8 +18,9 @@ if ( function_exists( 'wpmoo_loader' ) ) {
  *
  * @param string $action The action to perform ('register', 'negotiate_and_boot', 'load_autoloader').
  * @param mixed  ...$args Arguments for the action.
+ * @return void
  */
-function wpmoo_loader( string $action, ...$args ) {
+function wpmoo_loader( string $action, ...$args ): void {
 	static $versions = array();
 	static $booted   = false;
 

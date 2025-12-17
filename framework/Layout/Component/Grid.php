@@ -26,12 +26,9 @@ class Grid extends AbstractLayout implements LayoutInterface {
 	 * Constructor.
 	 *
 	 * @param string $id The grid ID.
-	 * @param string $title The grid title.
 	 */
-	public function __construct( string $id, string $title = '' ) {
+	public function __construct( string $id ) {
 		$this->id = $id;
-		// We don't store title in this implementation since AbstractLayout doesn't have a title property.
-		// If needed, we could add a title property to AbstractLayout or create a getter method.
 	}
 
 	/**
