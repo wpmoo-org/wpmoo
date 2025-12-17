@@ -64,7 +64,7 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 			'wpmoo-framework',
 			$this->get_asset_url( 'css/wpmoo.azure.css' ),
 			array(),
-			filemtime( $this->get_asset_path( 'css/wpmoo.azure.css' ) ),
+			(string) filemtime( $this->get_asset_path( 'css/wpmoo.azure.css' ) ),
 			'all'
 		);
 
@@ -91,7 +91,7 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 			'wpmoo-framework',
 			$this->get_asset_url( 'js/wpmoo.min.js' ),
 			array( 'jquery' ),
-			filemtime( $this->get_asset_path( 'js/wpmoo.min.js' ) ),
+			(string) filemtime( $this->get_asset_path( 'js/wpmoo.min.js' ) ),
 			true
 		);
 	}
@@ -115,16 +115,5 @@ class PageAssetEnqueuer extends AssetEnqueuer {
 				),
 			)
 		);
-	}
-
-	/**
-	 * Check if the current page has WPMoo components.
-	 *
-	 * @return bool True if the page has WPMoo components, false otherwise.
-	 */
-	private function has_wpmoo_components_on_page(): bool {
-		// For now, we'll return true if we're on a page that might have WPMoo components.
-		// In a real implementation, you'd have more sophisticated detection.
-		return true;
 	}
 }
