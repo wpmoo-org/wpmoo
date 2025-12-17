@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Field\Type;
+namespace WPMoo\Field\Type\Textarea;
 
 use WPMoo\Field\Abstracts\AbstractField;
 

@@ -31,9 +31,10 @@ class FieldTypeRegistry {
 	 * @var array<string, class-string<FieldInterface>>
 	 */
 	private array $default_field_types = array(
-		'input' => \WPMoo\Field\Type\Input::class,
-		'textarea' => \WPMoo\Field\Type\Textarea::class,
-		'toggle' => \WPMoo\Field\Type\Toggle::class,
+		'input' => \WPMoo\Field\Type\Input\Input::class,
+		'textarea' => \WPMoo\Field\Type\Textarea\Textarea::class,
+		'toggle' => \WPMoo\Field\Type\Toggle\Toggle::class,
+		'select' => \WPMoo\Field\Type\Select\Select::class,
 	);
 
 	/**

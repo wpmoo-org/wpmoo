@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMoo\Field\Type;
+namespace WPMoo\Field\Type\Input;
 
 use WPMoo\Field\Abstracts\AbstractField;
 

@@ -1,9 +1,8 @@
 <?php
 
-namespace WPMoo\Tests\Unit\Field\Type;
+namespace WPMoo\Field\Type\Select;
 
 use PHPUnit\Framework\TestCase;
-use WPMoo\Field\Type\Select;
 
 class SelectTest extends TestCase {
 	public function test_defaults() {

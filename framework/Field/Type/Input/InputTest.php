@@ -1,9 +1,8 @@
 <?php
 
-namespace WPMoo\Tests\Unit\Field\Type;
+namespace WPMoo\Field\Type\Input;
 
 use PHPUnit\Framework\TestCase;
-use WPMoo\Field\Type\Input;
 
 class InputTest extends TestCase {
 	public function test_defaults() {

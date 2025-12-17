@@ -4,7 +4,6 @@ namespace WPMoo\WordPress\Managers;
 
 use WPMoo\Page\Builders\PageBuilder;
 use WPMoo\Core;
-use WPMoo\WordPress\Renderers\RendererRegistry;
 
 /**
  * Page menu manager.
@@ -24,20 +23,21 @@ class PageManager {
 	private FrameworkManager $framework_manager;
 
 	/**
-	 * Renderer registry for field rendering.
+	 * Field manager for field rendering.
 	 *
-	 * @var RendererRegistry
+	 * @var FieldManager
 	 */
-	private RendererRegistry $renderer_registry;
+	private FieldManager $field_manager;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param FrameworkManager $framework_manager The main framework manager.
+	 * @param FieldManager     $field_manager     The field manager.
 	 */
-	public function __construct( FrameworkManager $framework_manager ) {
+	public function __construct( FrameworkManager $framework_manager, FieldManager $field_manager ) {
 		$this->framework_manager = $framework_manager;
-		$this->renderer_registry = new RendererRegistry();
+		$this->field_manager = $field_manager;
 	}
 
 	/**
@@ -365,25 +365,8 @@ class PageManager {
 				// Get the saved value from the options array.
 				$value = $option_values[ $field_id ] ?? '';
 
-				// Try to get a renderer for this field.
-				$renderer = $this->renderer_registry->get_renderer_for_field( $item );
-
-				if ( $renderer ) {
-					// Use the renderer to generate the HTML.
-					echo $renderer->render( $item, $unique_slug, $value );
-				} else {
-					// Fallback: render as a basic text input if no renderer is found.
-					$field_name = $unique_slug . '[' . $field_id . ']';
-					$placeholder = method_exists( $item, 'get_placeholder' ) ? $item->get_placeholder() : '';
-					$label = method_exists( $item, 'get_label' ) ? $item->get_label() : '';
-
-					echo '<div class="field-wrapper" data-field-id="' . esc_attr( $field_id ) . '">';
-					if ( ! empty( $label ) ) {
-						echo '<label for="' . esc_attr( $field_id ) . '">' . esc_html( $label ) . '</label>';
-					}
-					echo '<div class="form-group"><input type="text" id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" value="' . esc_attr( $value ) . '" placeholder="' . esc_attr( $placeholder ) . '" class="wpmoo-input input-group"></div>';
-					echo '</div>';
-				}
+				// Render the field using FieldManager.
+				echo $this->field_manager->render_field( $item, $unique_slug, $value );
 			} elseif ( is_string( $item ) ) {
 				// This could be other content.
 				echo wp_kses_post( $item );

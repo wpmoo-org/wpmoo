@@ -2,9 +2,9 @@
 
 namespace WPMoo\Field\Builders;
 
-use WPMoo\Field\Type\Input;
-use WPMoo\Field\Type\Textarea;
-use WPMoo\Field\Type\Toggle;
+use WPMoo\Field\Type\Input\Input;
+use WPMoo\Field\Type\Textarea\Textarea;
+use WPMoo\Field\Type\Toggle\Toggle;
 
 /**
  * Fluent field builder.

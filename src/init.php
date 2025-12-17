@@ -42,9 +42,6 @@ add_action(
 		// 4.2. Register custom field and layout types
 		$app = \WPMoo\Core::get( \WPMoo\Moo::detect_app_id() );
 
-		// Register custom field types.
-		$app->register_field_type( 'select', \WPMoo\Field\Type\Select::class );
-
 		// Register custom layout types.
 		$app->register_layout_type( 'grid', \WPMoo\Layout\Component\Grid::class );
 

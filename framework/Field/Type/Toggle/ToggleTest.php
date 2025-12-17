@@ -1,9 +1,8 @@
 <?php
 
-namespace WPMoo\Tests\Unit\Field\Type;
+namespace WPMoo\Field\Type\Toggle;
 
 use PHPUnit\Framework\TestCase;
-use WPMoo\Field\Type\Toggle;
 
 class ToggleTest extends TestCase {
 	public function test_defaults() {

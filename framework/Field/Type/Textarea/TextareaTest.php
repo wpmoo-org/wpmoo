@@ -1,9 +1,8 @@
 <?php
 
-namespace WPMoo\Tests\Unit\Field\Type;
+namespace WPMoo\Field\Type\Textarea;
 
 use PHPUnit\Framework\TestCase;
-use WPMoo\Field\Type\Textarea;
 
 class TextareaTest extends TestCase {
 	public function test_defaults() {

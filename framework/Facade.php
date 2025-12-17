@@ -46,7 +46,7 @@ abstract class Facade {
 	 * Create an input field.
 	 *
 	 * @param string $id Field ID.
-	 * @return \WPMoo\Field\Type\Input
+	 * @return \WPMoo\Field\Type\Input\Input
 	 */
 	public static function input( string $id ) {
 		return Field::input( $id );
@@ -56,7 +56,7 @@ abstract class Facade {
 	 * Create a textarea field.
 	 *
 	 * @param string $id Field ID.
-	 * @return \WPMoo\Field\Type\Textarea
+	 * @return \WPMoo\Field\Type\Textarea\Textarea
 	 */
 	public static function textarea( string $id ) {
 		return Field::textarea( $id );
@@ -66,7 +66,7 @@ abstract class Facade {
 	 * Create a toggle field.
 	 *
 	 * @param string $id Field ID.
-	 * @return \WPMoo\Field\Type\Toggle
+	 * @return \WPMoo\Field\Type\Toggle\Toggle
 	 */
 	public static function toggle( string $id ) {
 		return Field::toggle( $id );

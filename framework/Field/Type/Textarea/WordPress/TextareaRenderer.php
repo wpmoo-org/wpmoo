@@ -1,8 +1,9 @@
 <?php
 
-namespace WPMoo\WordPress\Renderers;
+namespace WPMoo\Field\Type\Textarea\WordPress;
 
 use WPMoo\Field\Interfaces\FieldInterface;
+use WPMoo\WordPress\Renderers\BaseRenderer;
 
 /**
  * WordPress renderer for textarea field.
