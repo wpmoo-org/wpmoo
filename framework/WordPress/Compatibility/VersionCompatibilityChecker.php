@@ -18,7 +18,7 @@ class VersionCompatibilityChecker {
 	 *
 	 * @param string $required_version The version required by the plugin (e.g., '1.0.0', '^1.0', '~1.0.0', '>=1.0 <2.0.0').
 	 * @param string $current_version The current framework version.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	public static function is_compatible( string $required_version, string $current_version ): array {
 		// If the required version is a simple version string (e.g., '1.0.0').
@@ -53,7 +53,7 @@ class VersionCompatibilityChecker {
 	 *
 	 * @param string $constraints The version constraints (e.g., '>=1.0.0 <2.0.0').
 	 * @param string $version The version to check.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_multiple_constraints( string $constraints, string $version ): array {
 		// Split the constraints by spaces, but preserve the operators with the versions.
@@ -101,7 +101,7 @@ class VersionCompatibilityChecker {
 	 *
 	 * @param string $constraint The version constraint (e.g., '^1.0', '~1.0.0', '>=1.0.0').
 	 * @param string $version The version to check.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_version_constraint( string $constraint, string $version ): array {
 		// Remove any whitespace.
@@ -155,7 +155,7 @@ class VersionCompatibilityChecker {
 	 *
 	 * @param string $major The major version.
 	 * @param string $version The version to check.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_wildcard_constraint( string $major, string $version ): array {
 		$version_parts = explode( '.', $version );
@@ -177,7 +177,7 @@ class VersionCompatibilityChecker {
 	 * @param string $major The major version.
 	 * @param string $minor The minor version.
 	 * @param string $version The version to check.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_wildcard_minor_constraint( string $major, string $minor, string $version ): array {
 		$version_parts = explode( '.', $version );
@@ -199,7 +199,7 @@ class VersionCompatibilityChecker {
 	 *
 	 * @param string $constraint The constraint including pre-release info.
 	 * @param string $version The version to check.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_pre_release_constraint( string $constraint, string $version ): array {
 		// Split version and pre-release part.
@@ -269,7 +269,7 @@ class VersionCompatibilityChecker {
 	 *
 	 * @param string $required The required version after caret.
 	 * @param string $version The version to check.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_caret_constraint( string $required, string $version ): array {
 		$required_parts = explode( '.', $required );
@@ -318,7 +318,7 @@ class VersionCompatibilityChecker {
 	 *
 	 * @param string $required The required version after tilde.
 	 * @param string $version The version to check.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_tilde_constraint( string $required, string $version ): array {
 		$required_parts = explode( '.', $required );
@@ -368,7 +368,7 @@ class VersionCompatibilityChecker {
 	 * @param string $operator The comparison operator.
 	 * @param string $required The required version.
 	 * @param string $version The version to check.
-	 * @return array ['compatible' => bool, 'message' => string]
+	 * @return array{compatible:bool, message:string} ['compatible' => bool, 'message' => string]
 	 */
 	private static function check_direct_comparison( string $operator, string $required, string $version ): array {
 		$compatible = version_compare( $version, $required, $operator );

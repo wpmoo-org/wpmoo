@@ -96,7 +96,7 @@ class FrameworkManager {
 	/**
 	 * Get all registered plugins
 	 *
-	 * @return array<string, array{slug: string, version: string, path: string, compatibility: array}> All registered plugins.
+	 * @return array<string, array{slug: string, version: string, path: string, compatibility: array<string, mixed>}> All registered plugins.
 	 */
 	public function get_all_registered_plugins(): array {
 		return $this->plugins;
@@ -125,7 +125,7 @@ class FrameworkManager {
 	/**
 	 * Get all plugins with compatibility issues.
 	 *
-	 * @return array<string, array{slug: string, version: string, path: string, compatibility: array}> Plugins with compatibility issues.
+	 * @return array<string, array{slug: string, version: string, path: string, compatibility: array<string, mixed>}> Plugins with compatibility issues.
 	 */
 	public function get_incompatible_plugins(): array {
 		   $incompatible = array();

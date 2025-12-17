@@ -34,9 +34,9 @@ class PageSaveHandler {
 	/**
 	 * Process form submission for a specific page.
 	 *
-	 * @param string $option_group The option group name (matches the page slug).
-	 * @param array  $submitted_data The submitted form data.
-	 * @return array Result of the processing ['success' => bool, 'errors' => array, 'message' => string].
+	 * @param string       $option_group The option group name (matches the page slug).
+	 * @param array<mixed> $submitted_data The submitted form data.
+	 * @return array{success:bool, errors:array<mixed>, message:string} Result of the processing ['success' => bool, 'errors' => array, 'message' => string].
 	 */
 	public function process_page_submission( string $option_group, array $submitted_data ): array {
 		$errors = array();
@@ -114,8 +114,8 @@ class PageSaveHandler {
 	/**
 	 * Sanitization callback for the settings API.
 	 *
-	 * @param array $input The input data to sanitize.
-	 * @return array The sanitized data.
+	 * @param array<mixed> $input The input data to sanitize.
+	 * @return array<mixed> The sanitized data.
 	 */
 	public function sanitize_callback( array $input ): array {
 		$all_fields_by_plugin = $this->framework_manager->get_fields();

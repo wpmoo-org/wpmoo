@@ -16,11 +16,11 @@ abstract class AssetEnqueuer {
 	/**
 	 * Enqueue styles for the framework.
 	 *
-	 * @param string      $handle Asset handle.
-	 * @param string      $src Asset source URL.
-	 * @param array       $deps Asset dependencies.
-	 * @param string|null $version Asset version.
-	 * @param string      $media Media attribute for CSS.
+	 * @param string        $handle Asset handle.
+	 * @param string        $src Asset source URL.
+	 * @param array<string> $deps Asset dependencies.
+	 * @param string|null   $version Asset version.
+	 * @param string        $media Media attribute for CSS.
 	 * @return void
 	 */
 	protected function enqueue_style( string $handle, string $src, array $deps = array(), ?string $version = null, string $media = 'all' ): void {
@@ -31,11 +31,11 @@ abstract class AssetEnqueuer {
 	/**
 	 * Enqueue scripts for the framework.
 	 *
-	 * @param string      $handle Asset handle.
-	 * @param string      $src Asset source URL.
-	 * @param array       $deps Asset dependencies.
-	 * @param string|null $version Asset version.
-	 * @param bool        $in_footer Whether to enqueue in footer.
+	 * @param string        $handle Asset handle.
+	 * @param string        $src Asset source URL.
+	 * @param array<string> $deps Asset dependencies.
+	 * @param string|null   $version Asset version.
+	 * @param bool          $in_footer Whether to enqueue in footer.
 	 * @return void
 	 */
 	protected function enqueue_script( string $handle, string $src, array $deps = array(), ?string $version = null, bool $in_footer = true ): void {
@@ -45,11 +45,11 @@ abstract class AssetEnqueuer {
 	/**
 	 * Register styles for the framework.
 	 *
-	 * @param string      $handle Asset handle.
-	 * @param string      $src Asset source URL.
-	 * @param array       $deps Asset dependencies.
-	 * @param string|null $version Asset version.
-	 * @param string      $media Media attribute for CSS.
+	 * @param string        $handle Asset handle.
+	 * @param string        $src Asset source URL.
+	 * @param array<string> $deps Asset dependencies.
+	 * @param string|null   $version Asset version.
+	 * @param string        $media Media attribute for CSS.
 	 * @return void
 	 */
 	protected function register_style( string $handle, string $src, array $deps = array(), ?string $version = null, string $media = 'all' ): void {
@@ -60,11 +60,11 @@ abstract class AssetEnqueuer {
 	/**
 	 * Register scripts for the framework.
 	 *
-	 * @param string      $handle Asset handle.
-	 * @param string      $src Asset source URL.
-	 * @param array       $deps Asset dependencies.
-	 * @param string|null $version Asset version.
-	 * @param bool        $in_footer Whether to enqueue in footer.
+	 * @param string        $handle Asset handle.
+	 * @param string        $src Asset source URL.
+	 * @param array<string> $deps Asset dependencies.
+	 * @param string|null   $version Asset version.
+	 * @param bool          $in_footer Whether to enqueue in footer.
 	 * @return void
 	 */
 	protected function register_script( string $handle, string $src, array $deps = array(), ?string $version = null, bool $in_footer = true ): void {

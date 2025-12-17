@@ -235,7 +235,7 @@ class PageManager {
 	 * Render tabs layout from container and item components.
 	 *
 	 * @param  \WPMoo\Layout\Component\Container $container   Container component.
-	 * @param  array                             $items       Item components for this container.
+	 * @param  array<mixed>                      $items       Item components for this container.
 	 * @param  string                            $unique_slug The unique slug for the page.
 	 * @return void
 	 */
@@ -286,7 +286,7 @@ class PageManager {
 	 * Render accordion layout from container and item components.
 	 *
 	 * @param  \WPMoo\Layout\Component\Container $container   Container component.
-	 * @param  array                             $items       Item components for this container.
+	 * @param  array<mixed>                      $items       Item components for this container.
 	 * @param  string                            $unique_slug The unique slug for the page.
 	 * @return void
 	 */
@@ -315,7 +315,7 @@ class PageManager {
 	 * Render fieldset layout from container and item components.
 	 *
 	 * @param  \WPMoo\Layout\Component\Container $container   Container component.
-	 * @param  array                             $items       Item components for this container.
+	 * @param  array<mixed>                      $items       Item components for this container.
 	 * @param  string                            $unique_slug The unique slug for the page.
 	 * @return void
 	 */

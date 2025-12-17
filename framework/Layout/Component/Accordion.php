@@ -35,7 +35,7 @@ class Accordion extends AbstractLayout implements LayoutInterface {
 	 * @param string $id Layout ID.
 	 * @param string $title Accordion item title.
 	 */
-	public function __construct( string $id, string $title ) {
+	public function __construct( string $id, string $title = '' ) {
 		$this->id = $id;
 		$this->title = $title;
 	}
