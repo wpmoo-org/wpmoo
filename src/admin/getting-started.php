@@ -35,6 +35,22 @@ function wpmoo_handle_demo_actions(): void {
         wp_safe_redirect( admin_url( 'tools.php?page=wpmoo-getting-started&deactivated=true' ) );
         exit;
     }
+
+    // Handle clearing demo data.
+    if ( isset( $_POST['wpmoo_clear_demo_data'] ) ) {
+        if ( ! isset( $_POST['wpmoo_clear_demo_data_nonce_field'] ) || ! wp_verify_nonce( $_POST['wpmoo_clear_demo_data_nonce_field'], 'wpmoo_clear_demo_data_nonce' ) ) {
+            wp_die( 'Security check failed' );
+        }
+
+        // Delete the sample settings option.
+        delete_option( 'wpmoo_settings' );
+        
+        // Deactivate the demo.
+        update_option( 'wpmoo_demo_active', false );
+        
+        wp_safe_redirect( admin_url( 'tools.php?page=wpmoo-getting-started&cleared=true' ) );
+        exit;
+    }
 }
 add_action( 'admin_init', 'wpmoo_handle_demo_actions' );
 
@@ -76,6 +92,15 @@ function wpmoo_render_getting_started_page(): void {
         ?>
         <div class="notice notice-success is-dismissible">
             <p><?php esc_html_e( 'WPMoo demo successfully deactivated!', 'wpmoo' ); ?></p>
+        </div>
+        <?php
+    }
+
+    // Show data cleared success message.
+    if ( isset( $_GET['cleared'] ) && $_GET['cleared'] === 'true' ) {
+        ?>
+        <div class="notice notice-success is-dismissible">
+            <p><?php esc_html_e( 'WPMoo demo data successfully cleared!', 'wpmoo' ); ?></p>
         </div>
         <?php
     }

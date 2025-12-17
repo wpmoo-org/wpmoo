@@ -13,8 +13,12 @@
     
     <?php if ( get_option( 'wpmoo_demo_active' ) ) : ?>
         <p><?php esc_html_e( 'The demo is currently active. You can deactivate it below.', 'wpmoo' ); ?></p>
-        <form method="post" action="">
+        <form method="post" action="" style="display: inline-block; margin-right: 10px;">
             <input type="submit" name="wpmoo_deactivate_demo" class="button" value="<?php esc_attr_e( 'Deactivate Samples', 'wpmoo' ); ?>">
+        </form>
+        <form method="post" action="" style="display: inline-block;">
+            <?php wp_nonce_field( 'wpmoo_clear_demo_data_nonce', 'wpmoo_clear_demo_data_nonce_field' ); ?>
+            <input type="submit" name="wpmoo_clear_demo_data" class="button button-secondary" value="<?php esc_attr_e( 'Clear Samples Data', 'wpmoo' ); ?>">
         </form>
     <?php else : ?>
         <p><?php esc_html_e( 'You can activate a demo to see WPMoo in action. This will add some sample data and settings to your WordPress installation.', 'wpmoo' ); ?></p>
