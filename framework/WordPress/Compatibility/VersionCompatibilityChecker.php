@@ -109,11 +109,11 @@ class VersionCompatibilityChecker {
 
 		// Handle wildcard versions (e.g., 1.x, 1.*, 1.x).
 		if ( preg_match( '/^(\d+)\.x\.x$|^(\d+)\.x$|^(\d+)\.\*$/', $constraint, $matches ) ) {
-			$major = $matches[1] ?? ( $matches[2] ?? $matches[3] );
+			$major = '' !== $matches[1] ? $matches[1] : ( '' !== $matches[2] ? $matches[2] : $matches[3] );
 			return self::check_wildcard_constraint( $major, $version );
 		} elseif ( preg_match( '/^(\d+)\.(\d+)\.x$|^(\d+)\.(\d+)\.\*$/', $constraint, $matches ) ) {
-			$major = $matches[1] ?? $matches[3];
-			$minor = $matches[2] ?? $matches[4];
+			$major = '' !== $matches[1] ? $matches[1] : $matches[3];
+			$minor = '' !== $matches[2] ? $matches[2] : $matches[4];
 			return self::check_wildcard_minor_constraint( $major, $minor, $version );
 		}
 
