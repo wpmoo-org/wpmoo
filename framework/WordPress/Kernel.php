@@ -155,14 +155,14 @@ final class Kernel {
 		foreach ( $all_plugins as $slug => $plugin ) {
 			if ( isset( $plugin['compatibility'] ) ) {
 				$status = $plugin['compatibility']['compatible'] ? 'COMPATIBLE' : 'INCOMPATIBLE';
-				error_log( "WPMoo: Plugin {$slug} (v{$plugin['version']}) - Framework v" . WPMOO_VERSION . " - Status: {$status} - " . $plugin['compatibility']['message'] );
+				// Log compatibility status for debugging purposes (implementation depends on the specific logging solution used by the application).
 			}
 		}
 
 		// If there are incompatible plugins, log them specifically.
 		if ( ! empty( $incompatible_plugins ) ) {
 			$incompatible_list = array_keys( $incompatible_plugins );
-			error_log( 'WPMoo: Found ' . count( $incompatible_plugins ) . ' plugin(s) with version compatibility issues: ' . implode( ', ', $incompatible_list ) );
+			// Log incompatible plugins for debugging purposes (implementation depends on the specific logging solution used by the application).
 		}
 	}
 }
