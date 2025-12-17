@@ -27,6 +27,9 @@ if ( ! defined( 'WPMOO_VERSION' ) ) {
 // 3. Load the Local Facade for this plugin.
 require_once __DIR__ . '/Moo.php';
 
+// 3.1. Load admin-related files.
+require_once __DIR__ . '/admin/getting-started.php';
+
 // 4. Hook into the core loaded action to initialize samples.
 add_action(
 	'init',
