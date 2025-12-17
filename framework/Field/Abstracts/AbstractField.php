@@ -74,6 +74,13 @@ abstract class AbstractField implements FieldInterface {
 	protected array $options = array();
 
 	/**
+	 * Default value.
+	 *
+	 * @var mixed
+	 */
+	protected $default_value = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $id Field ID.
@@ -81,8 +88,7 @@ abstract class AbstractField implements FieldInterface {
 	public function __construct( string $id ) {
 		$this->id = $id;
 		$this->name = $id; // Default name to ID.
-		// Initialize with a default validator that doesn't do anything.
-		// We don't want to instantiate BaseValidator directly as it's an abstract class.
+		// Initialize with a default validator that handles 'required'.
 		$this->validator = new class() extends \WPMoo\Field\Validators\BaseValidator {
 			/**
 			 * Validate the field value.
@@ -92,6 +98,12 @@ abstract class AbstractField implements FieldInterface {
 			 * @return array{valid:bool, error:string|null} Array with validation result ['valid' => bool, 'error' => string|null].
 			 */
 			public function validate( mixed $value, array $field_options = array() ): array {
+				if ( ! empty( $field_options['required'] ) && empty( $value ) && '0' !== $value ) {
+					return array(
+						'valid' => false,
+						'error' => 'This field is required.',
+					);
+				}
 				return array(
 					'valid' => true,
 					'error' => null,
@@ -131,6 +143,37 @@ abstract class AbstractField implements FieldInterface {
 	public function placeholder( string $placeholder ): self {
 		$this->placeholder = $placeholder;
 		return $this;
+	}
+
+	/**
+	 * Set field as required.
+	 *
+	 * @param bool $required Whether the field is required.
+	 * @return self
+	 */
+	public function required( bool $required = true ): self {
+		$this->validation_options['required'] = $required;
+		return $this;
+	}
+
+	/**
+	 * Set default value.
+	 *
+	 * @param mixed $value Default value.
+	 * @return self
+	 */
+	public function default( $value ): self {
+		$this->default_value = $value;
+		return $this;
+	}
+
+	/**
+	 * Get default value.
+	 *
+	 * @return mixed
+	 */
+	public function get_default() {
+		return $this->default_value;
 	}
 
 	/**

@@ -34,12 +34,16 @@ Moo::tab( 'general', __( 'General Settings', 'wpmoo' ) )
 		array(
 			Moo::input( 'site_title' )
 				->label( __( 'Site Title', 'wpmoo' ) )
-				->placeholder( __( 'Enter your site title', 'wpmoo' ) ),
+				->placeholder( __( 'Enter your site title', 'wpmoo' ) )
+				->required(), // New: Required validation.
 			Moo::textarea( 'site_description' )
 				->label( __( 'Site Description', 'wpmoo' ) )
-				->placeholder( __( 'Enter site description', 'wpmoo' ) ),
+				->placeholder( __( 'Enter site description', 'wpmoo' ) )
+				->rows( 8 ), // New: Custom rows.
 			Moo::toggle( 'enable_cache' )
-				->label( __( 'Enable Caching', 'wpmoo' ) ),
+				->label( __( 'Enable Caching', 'wpmoo' ) )
+				->on_label( __( 'Active', 'wpmoo' ) ) // New: Custom labels.
+				->off_label( __( 'Inactive', 'wpmoo' ) ),
 		)
 	);
 
@@ -58,13 +62,15 @@ $custom_fields_tab->fields(
 				'fr' => __( 'French', 'wpmoo' ),
 			)
 		),
-		Moo::create_field( 'select', 'user_role' )
-		->label( __( 'Default User Role', 'wpmoo' ) )
+		Moo::create_field( 'select', 'allowed_roles' )
+		->label( __( 'Allowed Roles (Multiple)', 'wpmoo' ) )
+		->multiple() // New: Multiple select support.
 		->options(
 			array(
 				'subscriber' => __( 'Subscriber', 'wpmoo' ),
 				'contributor' => __( 'Contributor', 'wpmoo' ),
 				'author' => __( 'Author', 'wpmoo' ),
+				'editor' => __( 'Editor', 'wpmoo' ),
 			)
 		),
 	)
@@ -82,8 +88,12 @@ Moo::tab( 'advanced', __( 'Advanced Settings', 'wpmoo' ) )
 	->fields(
 		array(
 			Moo::input( 'cache_duration' )
+				->type( 'number' ) // New: Input type.
 				->label( __( 'Cache Duration (seconds)', 'wpmoo' ) )
-				->placeholder( __( 'Enter cache duration', 'wpmoo' ) ),
+				->min( 60 ) // New: Min validation.
+				->max( 3600 ) // New: Max validation.
+				->step( 60 ) // New: Step.
+				->default( 300 ), // New: Default value.
 			Moo::toggle( 'enable_debug' )
 				->label( __( 'Enable Debug Mode', 'wpmoo' ) ),
 		)
@@ -107,6 +117,7 @@ Moo::accordion( 'acc_help', __( 'Help & Support', 'wpmoo' ) )
 	->fields(
 		array(
 			Moo::textarea( 'support_info' )
-				->label( __( 'Support Information', 'wpmoo' ) ),
+				->label( __( 'Support Information', 'wpmoo' ) )
+				->rows( 3 ),
 		)
 	);

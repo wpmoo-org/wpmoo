@@ -370,7 +370,7 @@ class PageManager {
 
 				if ( $renderer ) {
 					// Use the renderer to generate the HTML.
-					echo wp_kses_post( $renderer->render( $item, $unique_slug, $value ) );
+					echo $renderer->render( $item, $unique_slug, $value );
 				} else {
 					// Fallback: render as a basic text input if no renderer is found.
 					$field_name = $unique_slug . '[' . $field_id . ']';

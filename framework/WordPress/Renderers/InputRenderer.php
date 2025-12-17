@@ -26,8 +26,24 @@ class InputRenderer extends BaseRenderer {
 		$field_id = $field->get_id();
 		$field_name = $unique_slug . '[' . $field_id . ']';
 		$placeholder = method_exists( $field, 'get_placeholder' ) ? $field->get_placeholder() : '';
+		
+		$type = method_exists( $field, 'get_type' ) ? $field->get_type() : 'text';
+		$min = method_exists( $field, 'get_min' ) ? $field->get_min() : null;
+		$max = method_exists( $field, 'get_max' ) ? $field->get_max() : null;
+		$step = method_exists( $field, 'get_step' ) ? $field->get_step() : null;
 
-		$input_html = '<div class="form-group"><input type="text" id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" value="' . esc_attr( $value ) . '" placeholder="' . esc_attr( $placeholder ) . '" class="wpmoo-input input-group"></div>';
+		$attributes = '';
+		if ( null !== $min ) {
+			$attributes .= ' min="' . esc_attr( $min ) . '"';
+		}
+		if ( null !== $max ) {
+			$attributes .= ' max="' . esc_attr( $max ) . '"';
+		}
+		if ( null !== $step ) {
+			$attributes .= ' step="' . esc_attr( $step ) . '"';
+		}
+
+		$input_html = '<div class="form-group"><input type="' . esc_attr( $type ) . '" id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" value="' . esc_attr( $value ) . '" placeholder="' . esc_attr( $placeholder ) . '" class="wpmoo-input input-group"' . $attributes . '></div>';
 
 		return $this->renderFieldWrapper( $field, $unique_slug, $value, $input_html );
 	}

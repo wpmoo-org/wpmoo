@@ -57,4 +57,27 @@ interface FieldInterface {
 	 * @return array<mixed>
 	 */
 	public function get_options(): array;
+
+	/**
+	 * Set field as required.
+	 *
+	 * @param bool $required Whether the field is required.
+	 * @return self
+	 */
+	public function required( bool $required = true );
+
+	/**
+	 * Set default value.
+	 *
+	 * @param mixed $value Default value.
+	 * @return self
+	 */
+	public function default( $value );
+
+	/**
+	 * Get default value.
+	 *
+	 * @return mixed
+	 */
+	public function get_default();
 }

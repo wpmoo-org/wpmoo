@@ -25,6 +25,13 @@ class SelectRenderer extends BaseRenderer {
 	public function render( FieldInterface $field, string $unique_slug, $value ): string {
 		$field_id = $field->get_id();
 		$field_name = $unique_slug . '[' . $field_id . ']';
+		
+		$is_multiple = method_exists( $field, 'get_multiple' ) && $field->get_multiple();
+		$attributes = '';
+		if ( $is_multiple ) {
+			$attributes = ' multiple';
+			$field_name .= '[]';
+		}
 
 		// Get options if the field has them.
 		$options = array();
@@ -32,10 +39,18 @@ class SelectRenderer extends BaseRenderer {
 			$options = $field->get_options();
 		}
 
-		$select_html = '<div class="form-group"><select id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" class="wpmoo-select input-group">';
+		$select_html = '<div class="form-group"><select id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" class="wpmoo-select input-group"' . $attributes . '>';
 
 		foreach ( $options as $option_value => $option_label ) {
-			$selected = selected( $value, $option_value, false );
+			$is_selected = false;
+			if ( $is_multiple && is_array( $value ) ) {
+				$is_selected = in_array( $option_value, $value );
+			} else {
+				// Loose comparison to handle string vs int issues.
+				$is_selected = ( (string) $value === (string) $option_value );
+			}
+			
+			$selected = selected( $is_selected, true, false );
 			$select_html .= '<option value="' . esc_attr( $option_value ) . '" ' . $selected . '>' . esc_html( $option_label ) . '</option>';
 		}
 

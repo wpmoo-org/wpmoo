@@ -26,8 +26,16 @@ class TextareaRenderer extends BaseRenderer {
 		$field_id = $field->get_id();
 		$field_name = $unique_slug . '[' . $field_id . ']';
 		$placeholder = method_exists( $field, 'get_placeholder' ) ? $field->get_placeholder() : '';
+		
+		$rows = method_exists( $field, 'get_rows' ) ? $field->get_rows() : 5;
+		$cols = method_exists( $field, 'get_cols' ) ? $field->get_cols() : null;
 
-		$input_html = '<div class="form-group"><textarea id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $placeholder ) . '" class="wpmoo-textarea input-group">' . esc_textarea( $value ) . '</textarea></div>';
+		$attributes = ' rows="' . esc_attr( $rows ) . '"';
+		if ( null !== $cols ) {
+			$attributes .= ' cols="' . esc_attr( $cols ) . '"';
+		}
+
+		$input_html = '<div class="form-group"><textarea id="' . esc_attr( $field_id ) . '" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $placeholder ) . '" class="wpmoo-textarea input-group"' . $attributes . '>' . esc_textarea( $value ) . '</textarea></div>';
 
 		return $this->renderFieldWrapper( $field, $unique_slug, $value, $input_html );
 	}
