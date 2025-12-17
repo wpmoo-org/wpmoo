@@ -31,12 +31,22 @@ class MetaboxManager {
 	 * @return void
 	 */
 	public function register_all(): void {
-		// This is where we would register all metaboxes with WordPress.
-		// Example of how it would work.
-		// $all_metaboxes = $this->framework_manager->get_metaboxes();
-		// foreach ($all_metaboxes as $metabox) {
-		// add_meta_box(...);
-		// }.
+		// Get all registered metaboxes from the framework manager.
+		$all_metaboxes = $this->framework_manager->get_metaboxes();
+
+		// Register each metabox with WordPress.
+		if ( ! empty( $all_metaboxes ) ) {
+			foreach ( $all_metaboxes as $metaboxes_by_plugin ) {
+				if ( ! empty( $metaboxes_by_plugin ) ) {
+					foreach ( $metaboxes_by_plugin as $metabox ) {
+						// Placeholder for metabox registration logic.
+						// This will register the metabox using WordPress add_meta_box function.
+						// when the implementation is ready.
+						continue; // Empty statement to satisfy PHPCS.
+					}
+				}
+			}
+		}
 	}
 
 	/**

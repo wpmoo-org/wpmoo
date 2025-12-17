@@ -47,6 +47,13 @@ class FrameworkManager {
 	private array $fields = array();
 
 	/**
+	 * Registered metaboxes by plugin.
+	 *
+	 * @var array<string, array<string, \WPMoo\Metabox\Interfaces\MetaboxInterface>>
+	 */
+	private array $metaboxes = array();
+
+	/**
 	 * Registered page hooks.
 	 *
 	 * @var array<string>
@@ -393,6 +400,68 @@ class FrameworkManager {
 		// which fields belong to which page through the layout structure.
 		// For now, we'll return an empty array.
 		return array();
+	}
+
+	/**
+	 * Add a metabox to the registry.
+	 *
+	 * @param \WPMoo\Metabox\Interfaces\MetaboxInterface $metabox Metabox instance.
+	 * @param string                                     $plugin_slug Plugin slug to register the metabox under.
+	 * @return void
+	 */
+	public function add_metabox( $metabox, string $plugin_slug ): void {
+		if ( ! isset( $this->metaboxes[ $plugin_slug ] ) ) {
+			$this->metaboxes[ $plugin_slug ] = array();
+		}
+
+		$this->metaboxes[ $plugin_slug ][ $metabox->get_id() ] = $metabox;
+	}
+
+	/**
+	 * Get a metabox by ID.
+	 *
+	 * @param string      $id Metabox ID.
+	 * @param string|null $plugin_slug Plugin slug to search within.
+	 * @return \WPMoo\Metabox\Interfaces\MetaboxInterface|null
+	 */
+	public function get_metabox( string $id, ?string $plugin_slug = null ) {
+		if ( $plugin_slug ) {
+			return $this->metaboxes[ $plugin_slug ][ $id ] ?? null;
+		}
+
+		// Search across all plugins if no specific plugin specified.
+		foreach ( $this->metaboxes as $plugin_metaboxes ) {
+			if ( isset( $plugin_metaboxes[ $id ] ) ) {
+				return $plugin_metaboxes[ $id ];
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get all metaboxes.
+	 *
+	 * @param string|null $plugin_slug Plugin slug to get metaboxes from, or null for all.
+	 * @return array<string, \WPMoo\Metabox\Interfaces\MetaboxInterface>|array<string, array<string, \WPMoo\Metabox\Interfaces\MetaboxInterface>>
+	 */
+	public function get_metaboxes( ?string $plugin_slug = null ) {
+		if ( $plugin_slug ) {
+			return $this->metaboxes[ $plugin_slug ] ?? array();
+		}
+
+		// Return all metaboxes grouped by plugin.
+		return $this->metaboxes;
+	}
+
+	/**
+	 * Get all metaboxes for a specific plugin.
+	 *
+	 * @param string $plugin_slug Plugin slug to get metaboxes for.
+	 * @return array<string, \WPMoo\Metabox\Interfaces\MetaboxInterface>
+	 */
+	public function get_metaboxes_by_plugin( string $plugin_slug ): array {
+		return $this->metaboxes[ $plugin_slug ] ?? array();
 	}
 
 	/**
