@@ -7,6 +7,7 @@ use WPMoo\App\Container;
 use WPMoo\Field\FieldTypeRegistry;
 use WPMoo\Layout\LayoutTypeRegistry;
 use WPMoo\WordPress\AssetEnqueuers\PageAssetEnqueuer;
+use WPMoo\WordPress\Renderers\RendererRegistry;
 use WPMoo\WordPress\Managers\FieldManager;
 use WPMoo\WordPress\Managers\FrameworkManager;
 use WPMoo\WordPress\Managers\LayoutManager;
@@ -63,13 +64,21 @@ final class Core {
 	private LayoutTypeRegistry $layout_type_registry;
 
 	/**
+	 * Renderer registry for managing field renderers.
+	 *
+	 * @var RendererRegistry
+	 */
+	private RendererRegistry $renderer_registry;
+
+	/**
 	 * Private constructor to enforce the singleton pattern and setup the container.
 	 */
 	private function __construct() {
-		$this->container = new Container();
-		$this->field_type_registry = new FieldTypeRegistry();
-		$this->layout_type_registry = new LayoutTypeRegistry();
-		$this->register_services(); // Call register_services here.
+			$this->container = new Container();
+			$this->field_type_registry = new FieldTypeRegistry();
+			$this->layout_type_registry = new LayoutTypeRegistry();
+			$this->renderer_registry = new RendererRegistry();
+			$this->register_services(); // Call register_services here.	
 	}
 
 	/**
@@ -79,9 +88,8 @@ final class Core {
 	private function register_services(): void {
 		// Register all managers as singletons.
 		$this->container->singleton( FrameworkManager::class );
-		$this->container->singleton( FieldManager::class );
-		$this->container->singleton( PageManager::class );
-		$this->container->singleton( LayoutManager::class );
+		$this->container->singleton( FieldManager::class, function (Container $container) { return new FieldManager($container->resolve(FrameworkManager::class), $this->get_renderer_registry()); } );
+		$this->container->singleton( PageManager::class );		$this->container->singleton( LayoutManager::class );
 		$this->container->singleton( MetaboxManager::class );
 
 		// Register asset enqueuers as singletons.
@@ -165,6 +173,15 @@ final class Core {
 	 * @return LayoutTypeRegistry
 	 */
 	public function get_layout_type_registry(): LayoutTypeRegistry {
-		return $this->layout_type_registry;
+			return $this->layout_type_registry;
+	}
+
+	/**
+	 * Get the renderer registry.
+	 *
+	 * @return RendererRegistry
+	 */
+	public function get_renderer_registry(): RendererRegistry {
+			return $this->renderer_registry;
 	}
 }
