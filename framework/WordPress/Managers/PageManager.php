@@ -156,7 +156,7 @@ class PageManager {
 
 		// If there are layouts for this plugin, render them.
 		if ( ! empty( $plugin_layouts ) ) {
-			echo '<div class="container">'; // PicoCSS container class.
+			echo '<div class="container-fluid">'; // PicoCSS container class.
 			$this->render_layouts( $plugin_layouts, $page->get_id(), $unique_slug );
 			echo '</div>';
 		} else {

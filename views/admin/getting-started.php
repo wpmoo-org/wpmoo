@@ -1,34 +1,12 @@
-<div class="wrap wpmoo-getting-started">
-    <header class="wpmoo-header">
+<div class="wrap wpmoo wpmoo-getting-started" data-theme="light">
+    <header>
         <h1><?php esc_html_e( 'Welcome to WPMoo!', 'wpmoo' ); ?></h1>
-        <p class="pico-muted-text"><?php esc_html_e( 'A lightweight and modern framework for WordPress.', 'wpmoo' ); ?></p>
+        <p><?php esc_html_e( 'A lightweight and modern framework for WordPress.', 'wpmoo' ); ?></p>
     </header>
 
     <div class="grid">
-        <article>
-            <hgroup>
-                <h2><?php esc_html_e( 'Getting Started', 'wpmoo' ); ?></h2>
-                <p><?php esc_html_e( 'Here are some resources to help you get started with the WPMoo framework.', 'wpmoo' ); ?></p>
-            </hgroup>
-            <ul>
-                <li>
-                    <a href="https://wpmoo.org/docs" target="_blank" rel="noopener noreferrer">
-                        <strong><?php esc_html_e( 'Documentation', 'wpmoo' ); ?></strong>
-                        <br>
-                        <small><?php esc_html_e( 'Explore the official documentation for detailed guides and API references.', 'wpmoo' ); ?></small>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/wpmoo/wpmoo/issues" target="_blank" rel="noopener noreferrer">
-                        <strong><?php esc_html_e( 'Support & Issues', 'wpmoo' ); ?></strong>
-                        <br>
-                        <small><?php esc_html_e( 'Found a bug or have a question? Open an issue on our GitHub repository.', 'wpmoo' ); ?></small>
-                    </a>
-                </li>
-            </ul>
-        </article>
 
-        <article>
+    <article>
             <hgroup>
                 <h2><?php esc_html_e( 'Demo Activation', 'wpmoo' ); ?></h2>
             </hgroup>
@@ -40,7 +18,7 @@
                     </form>
                     <form method="post" action="">
                         <?php wp_nonce_field( 'wpmoo_clear_demo_data_nonce', 'wpmoo_clear_demo_data_nonce_field' ); ?>
-                        <button type="submit" name="wpmoo_clear_demo_data" class="contrast"><?php esc_html_e( 'Clear Samples Data', 'wpmoo' ); ?></button>
+                        <button type="reset" name="wpmoo_clear_demo_data" class="contrast"><?php esc_html_e( 'Clear Samples Data', 'wpmoo' ); ?></button>
                     </form>
                 </div>
             <?php else : ?>
@@ -50,6 +28,30 @@
                 </form>
             <?php endif; ?>
         </article>
+
+        <article>
+            <hgroup>
+                <h2><?php esc_html_e( 'Getting Started', 'wpmoo' ); ?></h2>
+                <p><?php esc_html_e( 'Here are some resources to help you get started with the WPMoo framework.', 'wpmoo' ); ?></p>
+            </hgroup>
+            <ul>
+                <li>
+                    <a href="https://wpmoo.org" target="_blank" rel="noopener noreferrer">
+                        <strong><?php esc_html_e( 'Documentation', 'wpmoo' ); ?></strong>
+                        <br>
+                        <small><?php esc_html_e( 'Explore the official documentation for detailed guides and API references.', 'wpmoo' ); ?></small>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/wpmoo-org/wpmoo/issues" target="_blank" rel="noopener noreferrer">
+                        <strong><?php esc_html_e( 'Support & Issues', 'wpmoo' ); ?></strong>
+                        <br>
+                        <small><?php esc_html_e( 'Found a bug or have a question? Open an issue on our GitHub repository.', 'wpmoo' ); ?></small>
+                    </a>
+                </li>
+            </ul>
+        </article>
+
     </div>
 </div>
 <style>
@@ -67,15 +69,16 @@
     }
     .wpmoo-getting-started article li {
         margin-bottom: 1rem;
+        list-style: none;
     }
     .wpmoo-getting-started article li a {
         display: block;
         padding: 1rem;
-        border: 1px solid var(--pico-muted-border-color);
-        border-radius: var(--pico-border-radius);
+        border: 1px solid var(--wpmoo-muted-border-color);
+        border-radius: var(--wpmoo-border-radius);
         text-decoration: none;
     }
     .wpmoo-getting-started article li a:hover {
-        background-color: var(--pico-muted-background-color);
+        background-color: var(--wpmoo-muted-background-color);
     }
 </style>
